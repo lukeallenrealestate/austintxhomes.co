@@ -1,0 +1,423 @@
+const express = require('express');
+const router = express.Router();
+const db = require('../db/database');
+const fetch = require('node-fetch');
+const fs = require('fs');
+const path = require('path');
+
+const PHOTO_CACHE_DIR = path.join(__dirname, '../cache/photos');
+
+function resolvePhotos(photos, listingKey) {
+  if (!photos || !photos.length) return [];
+  return photos.map((_, idx) => `/api/properties/photos/${listingKey}/${idx}`);
+}
+
+// Point-in-polygon (ray casting)
+function pointInPolygon(lat, lng, polygon) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].lat, yi = polygon[i].lng;
+    const xj = polygon[j].lat, yj = polygon[j].lng;
+    if (((yi > lng) !== (yj > lng)) && (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi)) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+// GET /api/properties/search
+router.get('/search', (req, res) => {
+  try {
+    const {
+      status, propertyType, subType, forRent,
+      minPrice, maxPrice, minBeds, maxBeds, minBaths,
+      minSqft, maxSqft, minYear, maxYear,
+      city, zip, neighborhood, schoolDistrict, keyword,
+      pool, waterfront, newConstruction,
+      sortBy, page = 1, limit = 24,
+      // Map bounds
+      north, south, east, west,
+      // Polygon (JSON string of [{lat,lng},...])
+      polygon
+    } = req.query;
+
+    const conditions = ['mlg_can_view = 1', 'latitude IS NOT NULL', 'longitude IS NOT NULL'];
+    const values = [];
+
+    // Status
+    if (status) {
+      const statuses = status.split(',').map(s => s.trim());
+      conditions.push(`standard_status IN (${statuses.map(() => '?').join(',')})`);
+      values.push(...statuses);
+    } else if (forRent === 'true') {
+      conditions.push(`(property_type LIKE '%Lease%' OR standard_status = 'Active')`);
+    } else {
+      // Default: active listings
+      conditions.push(`standard_status = 'Active'`);
+    }
+
+    // For rent vs for sale
+    if (forRent === 'true') {
+      conditions.push(`(property_type LIKE '%Lease%' OR property_type LIKE '%Rental%')`);
+    } else if (forRent === 'false') {
+      conditions.push(`property_type NOT LIKE '%Lease%'`);
+    }
+
+    // Property type / sub type
+    if (propertyType) {
+      conditions.push(`property_type = ?`);
+      values.push(propertyType);
+    }
+    if (subType) {
+      const types = subType.split(',').map(s => s.trim());
+      conditions.push(`property_sub_type IN (${types.map(() => '?').join(',')})`);
+      values.push(...types);
+    }
+
+    // Price
+    if (minPrice) { conditions.push('list_price >= ?'); values.push(Number(minPrice)); }
+    if (maxPrice) { conditions.push('list_price <= ?'); values.push(Number(maxPrice)); }
+
+    // Beds
+    if (minBeds) { conditions.push('bedrooms_total >= ?'); values.push(Number(minBeds)); }
+    if (maxBeds) { conditions.push('bedrooms_total <= ?'); values.push(Number(maxBeds)); }
+
+    // Baths
+    if (minBaths) { conditions.push('bathrooms_total >= ?'); values.push(Number(minBaths)); }
+
+    // Sqft
+    if (minSqft) { conditions.push('living_area >= ?'); values.push(Number(minSqft)); }
+    if (maxSqft) { conditions.push('living_area <= ?'); values.push(Number(maxSqft)); }
+
+    // Year built
+    if (minYear) { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
+    if (maxYear) { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
+
+    // Location
+    if (city) {
+      const cities = city.split(',').map(s => s.trim());
+      conditions.push(`city IN (${cities.map(() => '?').join(',')})`);
+      values.push(...cities);
+    }
+    if (zip) {
+      const zips = zip.split(',').map(s => s.trim());
+      conditions.push(`postal_code IN (${zips.map(() => '?').join(',')})`);
+      values.push(...zips);
+    }
+    if (neighborhood) {
+      conditions.push(`subdivision_name LIKE ?`);
+      values.push(`%${neighborhood}%`);
+    }
+    if (schoolDistrict) {
+      conditions.push(`school_district LIKE ?`);
+      values.push(`%${schoolDistrict}%`);
+    }
+
+    // Keyword search
+    if (keyword) {
+      conditions.push(`(
+        unparsed_address LIKE ? OR city LIKE ? OR postal_code LIKE ?
+        OR subdivision_name LIKE ? OR school_district LIKE ?
+        OR elementary_school LIKE ? OR high_school LIKE ?
+        OR public_remarks LIKE ?
+      )`);
+      const kw = `%${keyword}%`;
+      values.push(kw, kw, kw, kw, kw, kw, kw, kw);
+    }
+
+    // Features
+    if (pool === 'true') { conditions.push(`pool_features IS NOT NULL AND pool_features != ''`); }
+    if (waterfront === 'true') { conditions.push(`waterfront_yn = 1`); }
+    if (newConstruction === 'true') { conditions.push(`new_construction_yn = 1`); }
+
+    // Map bounds (bounding box)
+    if (north && south && east && west) {
+      conditions.push('latitude BETWEEN ? AND ?');
+      values.push(Number(south), Number(north));
+      conditions.push('longitude BETWEEN ? AND ?');
+      values.push(Number(west), Number(east));
+    }
+
+    // Sort
+    const sortMap = {
+      price_asc: 'list_price ASC',
+      price_desc: 'list_price DESC',
+      newest: 'listing_contract_date DESC',
+      oldest: 'listing_contract_date ASC',
+      beds_desc: 'bedrooms_total DESC',
+      sqft_desc: 'living_area DESC',
+      dom_asc: 'days_on_market ASC'
+    };
+    const orderBy = sortMap[sortBy] || 'listing_contract_date DESC';
+
+    const where = conditions.join(' AND ');
+
+    // Get total count
+    const countRow = db.prepare(`SELECT COUNT(*) as total FROM listings WHERE ${where}`).get(values);
+    let total = countRow.total;
+
+    // If polygon search, we need all results in bounds then filter — skip SQL pagination
+    const hasPolygon = polygon && polygon !== '[]';
+    let polygonArr = [];
+    if (hasPolygon) {
+      try { polygonArr = JSON.parse(polygon); } catch {}
+    }
+
+    let rows;
+    if (hasPolygon && polygonArr.length > 2) {
+      // Get all within bounds (already constrained by bbox above), then filter by polygon
+      rows = db.prepare(`SELECT * FROM listings WHERE ${where} ORDER BY ${orderBy}`).all(values);
+      rows = rows.filter(r => pointInPolygon(r.latitude, r.longitude, polygonArr));
+      total = rows.length;
+      // Manual pagination
+      const offset = (Number(page) - 1) * Number(limit);
+      rows = rows.slice(offset, offset + Number(limit));
+    } else {
+      const offset = (Number(page) - 1) * Number(limit);
+      rows = db.prepare(`SELECT * FROM listings WHERE ${where} ORDER BY ${orderBy} LIMIT ? OFFSET ?`)
+        .all([...values, Number(limit), offset]);
+    }
+
+    rows = rows.map(r => {
+      const photos = tryParse(r.photos, []);
+      return { ...r, photos: resolvePhotos(photos, r.listing_key) };
+    });
+
+    res.json({
+      total,
+      page: Number(page),
+      pages: Math.ceil(total / Number(limit)),
+      listings: rows
+    });
+
+  } catch (err) {
+    console.error('[SEARCH]', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/properties/map-pins — lightweight for map rendering
+router.get('/map-pins', (req, res) => {
+  try {
+    const { north, south, east, west, polygon, status, forRent, minPrice, maxPrice,
+            minBeds, minBaths, propertyType, subType,
+            city, zip, neighborhood, schoolDistrict,
+            minSqft, maxSqft, minYear, maxYear, pool, waterfront, newConstruction, keyword } = req.query;
+
+    const conditions = ['mlg_can_view = 1', 'latitude IS NOT NULL', 'longitude IS NOT NULL'];
+    const values = [];
+
+    if (status) {
+      const statuses = status.split(',');
+      conditions.push(`standard_status IN (${statuses.map(() => '?').join(',')})`);
+      values.push(...statuses);
+    } else {
+      conditions.push(`standard_status = 'Active'`);
+    }
+
+    if (forRent === 'true') {
+      conditions.push(`property_type LIKE '%Lease%'`);
+    } else if (forRent === 'false') {
+      conditions.push(`property_type NOT LIKE '%Lease%'`);
+    }
+
+    if (propertyType) { conditions.push('property_type = ?'); values.push(propertyType); }
+    if (subType) {
+      const types = subType.split(',');
+      conditions.push(`property_sub_type IN (${types.map(() => '?').join(',')})`);
+      values.push(...types);
+    }
+    if (minPrice) { conditions.push('list_price >= ?'); values.push(Number(minPrice)); }
+    if (maxPrice) { conditions.push('list_price <= ?'); values.push(Number(maxPrice)); }
+    if (minBeds) { conditions.push('bedrooms_total >= ?'); values.push(Number(minBeds)); }
+    if (minBaths) { conditions.push('bathrooms_total >= ?'); values.push(Number(minBaths)); }
+
+    if (city) {
+      const cities = city.split(',').map(s => s.trim());
+      conditions.push(`city IN (${cities.map(() => '?').join(',')})`);
+      values.push(...cities);
+    }
+    if (zip) {
+      const zips = zip.split(',').map(s => s.trim());
+      conditions.push(`postal_code IN (${zips.map(() => '?').join(',')})`);
+      values.push(...zips);
+    }
+    if (neighborhood) {
+      conditions.push(`subdivision_name LIKE ?`);
+      values.push(`%${neighborhood}%`);
+    }
+    if (schoolDistrict) {
+      conditions.push(`school_district LIKE ?`);
+      values.push(`%${schoolDistrict}%`);
+    }
+
+    if (minSqft) { conditions.push('living_area >= ?'); values.push(Number(minSqft)); }
+    if (maxSqft) { conditions.push('living_area <= ?'); values.push(Number(maxSqft)); }
+    if (minYear) { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
+    if (maxYear) { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
+    if (pool === 'true') { conditions.push(`pool_features IS NOT NULL AND pool_features != ''`); }
+    if (waterfront === 'true') { conditions.push(`waterfront_yn = 1`); }
+    if (newConstruction === 'true') { conditions.push(`new_construction_yn = 1`); }
+    if (keyword) {
+      conditions.push(`(unparsed_address LIKE ? OR city LIKE ? OR postal_code LIKE ? OR subdivision_name LIKE ? OR school_district LIKE ?)`);
+      const kw = `%${keyword}%`;
+      values.push(kw, kw, kw, kw, kw);
+    }
+
+    if (north && south && east && west) {
+      conditions.push('latitude BETWEEN ? AND ?');
+      values.push(Number(south), Number(north));
+      conditions.push('longitude BETWEEN ? AND ?');
+      values.push(Number(west), Number(east));
+    }
+
+    const where = conditions.join(' AND ');
+    let pins = db.prepare(`
+      SELECT listing_key, list_price, latitude, longitude, standard_status,
+             bedrooms_total, bathrooms_total, living_area, unparsed_address,
+             city, postal_code, photos
+      FROM listings WHERE ${where} LIMIT 2000
+    `).all(values);
+
+    if (polygon && polygon !== '[]') {
+      try {
+        const polygonArr = JSON.parse(polygon);
+        if (polygonArr.length > 2) {
+          pins = pins.filter(p => pointInPolygon(p.latitude, p.longitude, polygonArr));
+        }
+      } catch {}
+    }
+
+    res.json(pins.map(p => {
+      const photos = tryParse(p.photos, []);
+      return { ...p, photos: resolvePhotos(photos, p.listing_key) };
+    }));
+  } catch (err) {
+    console.error('[MAP-PINS]', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/properties/autocomplete?q=
+router.get('/autocomplete', (req, res) => {
+  const q = (req.query.q || '').trim();
+  if (q.length < 2) return res.json([]);
+
+  // Split into individual words so "2505 thornton" matches "2505  Thornton Rd" (double spaces in MLS data)
+  const words = q.split(/\s+/).filter(w => w.length > 0);
+  const wordConditions = words.map(() => 'unparsed_address LIKE ?').join(' AND ');
+  const wordParams = words.map(w => `%${w}%`);
+  const firstWordStart = `${words[0]}%`;
+
+  const like = `%${q}%`;
+
+  const addresses = db.prepare(`
+    SELECT listing_key, unparsed_address as value, city, list_price, 'address' as type
+    FROM listings
+    WHERE ${wordConditions} AND standard_status = 'Active' AND mlg_can_view = 1
+    ORDER BY CASE WHEN unparsed_address LIKE ? THEN 0 ELSE 1 END, list_price ASC
+    LIMIT 5
+  `).all([...wordParams, firstWordStart]);
+
+  const cities = db.prepare(`SELECT DISTINCT city as value, 'city' as type FROM listings WHERE city LIKE ? AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 4`).all(like);
+  const zips = db.prepare(`SELECT DISTINCT postal_code as value, 'zip' as type FROM listings WHERE postal_code LIKE ? AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 3`).all(like);
+  const hoods = db.prepare(`SELECT DISTINCT subdivision_name as value, 'neighborhood' as type FROM listings WHERE subdivision_name LIKE ? AND subdivision_name != '' AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 3`).all(like);
+  const schools = db.prepare(`SELECT DISTINCT school_district as value, 'school' as type FROM listings WHERE school_district LIKE ? AND school_district != '' AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 2`).all(like);
+
+  res.json([...addresses, ...cities, ...zips, ...hoods, ...schools].filter(r => r.value));
+});
+
+// GET /api/properties/sync-status
+router.get('/sync-status', (req, res) => {
+  const state = db.prepare('SELECT * FROM sync_state WHERE id = 1').get();
+  const count = db.prepare('SELECT COUNT(*) as total FROM listings WHERE mlg_can_view = 1').get();
+  res.json({ ...state, active_listings: count.total });
+});
+
+// GET /api/properties/photos/:listingKey/:idx — serve from disk cache, fetch from CDN on miss
+router.get('/photos/:listingKey/:idx', async (req, res) => {
+  const { listingKey, idx } = req.params;
+  const photoIdx = parseInt(idx) || 0;
+  const cacheFile = path.join(PHOTO_CACHE_DIR, `${listingKey}-${photoIdx}.jpg`);
+
+  // Serve from disk cache if available
+  if (fs.existsSync(cacheFile)) {
+    return res.sendFile(cacheFile);
+  }
+
+  // Look up CDN URL from DB
+  const dbRow = db.prepare('SELECT photos FROM listings WHERE listing_key = ?').get(listingKey);
+  if (!dbRow) return res.status(404).end();
+
+  const urls = tryParse(dbRow.photos, []);
+  const photoUrl = urls[photoIdx];
+  if (!photoUrl) return res.status(404).end();
+
+  // Fetch from CDN, cache to disk, serve
+  try {
+    const cdnRes = await fetch(photoUrl);
+    if (!cdnRes.ok) return res.status(cdnRes.status).end();
+    const buffer = await cdnRes.buffer();
+    fs.writeFileSync(cacheFile, buffer);
+    res.set('Content-Type', cdnRes.headers.get('content-type') || 'image/jpeg');
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.send(buffer);
+  } catch (e) {
+    console.error('[PHOTO CACHE]', listingKey, photoIdx, e.message);
+    res.status(502).end();
+  }
+});
+
+// GET /api/properties/:listingKey
+router.get('/:listingKey', (req, res) => {
+  try {
+    const row = db.prepare('SELECT * FROM listings WHERE listing_key = ?').get(req.params.listingKey);
+    if (!row) return res.status(404).json({ error: 'Not found' });
+    const photos = tryParse(row.photos, []);
+    row.photos = resolvePhotos(photos, row.listing_key);
+    res.json(row);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/properties/:listingKey/similar
+router.get('/:listingKey/similar', (req, res) => {
+  try {
+    const listing = db.prepare('SELECT * FROM listings WHERE listing_key = ?').get(req.params.listingKey);
+    if (!listing) return res.status(404).json({ error: 'Not found' });
+
+    const similar = db.prepare(`
+      SELECT * FROM listings
+      WHERE listing_key != ?
+        AND mlg_can_view = 1
+        AND standard_status = 'Active'
+        AND city = ?
+        AND list_price BETWEEN ? AND ?
+        AND (bedrooms_total IS NULL OR ABS(bedrooms_total - ?) <= 1)
+        AND latitude IS NOT NULL
+      ORDER BY ABS(list_price - ?) ASC
+      LIMIT 6
+    `).all(
+      listing.listing_key,
+      listing.city,
+      (listing.list_price || 0) * 0.8,
+      (listing.list_price || 9999999) * 1.2,
+      listing.bedrooms_total || 0,
+      listing.list_price || 0
+    );
+
+    res.json(similar.map(r => {
+      const photos = tryParse(r.photos, []);
+      return { ...r, photos: resolvePhotos(photos, r.listing_key) };
+    }));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+function tryParse(str, fallback) {
+  try { return JSON.parse(str); } catch { return fallback; }
+}
+
+module.exports = router;

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /api/
+Disallow: /admin.html
+Disallow: /account.html
+
+Sitemap: https://austintxhomes.co/sitemap.xml

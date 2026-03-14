@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Austin TX Homes for Sale | Austin Real Estate Experts</title>
+  <meta name="description" content="Search every Austin TX home for sale. Expert buyer and seller representation from licensed Austin Realtor Luke Allen — luxury homes, condos, new construction, and investment properties." />
+  <link rel="canonical" href="https://austintxhomes.co/" />
+  <link rel="icon" href="/favicon.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Austin TX Homes for Sale | Austin Real Estate Experts" />
+  <meta property="og:description" content="Search Austin TX homes for sale with licensed Realtor Luke Allen. Expert guidance, live MLS data, and deep local knowledge." />
+  <meta property="og:url" content="https://austintxhomes.co/" />
+  <meta property="og:image" content="https://austintxhomes.co/images/luke-allen.jpg" />
+  <meta property="og:site_name" content="Austin TX Homes" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <meta name="geo.region" content="US-TX" />
+  <meta name="geo.placename" content="Austin, Texas" />
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"RealEstateAgent","name":"Austin TX Homes | Luke Allen","url":"https://austintxhomes.co","telephone":"+12547182567","email":"luke@austintxhomes.co","description":"Licensed Austin TX Realtor specializing in luxury homes, buyer and seller representation, condos, new construction, and investment properties.","areaServed":{"@type":"City","name":"Austin","sameAs":"https://www.wikidata.org/wiki/Q16559"},"address":{"@type":"PostalAddress","addressLocality":"Austin","addressRegion":"TX","addressCountry":"US"},"hasCredential":{"@type":"EducationalOccupationalCredential","credentialCategory":"license","recognizedBy":{"@type":"Organization","name":"Texas Real Estate Commission"},"identifier":"788149"}}
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:      #b8935a;
+      --gold-lt:   #cda96f;
+      --gold-pale: #f5ede0;
+      --ink:       #0f0f0e;
+      --text:      #1a1918;
+      --mid:       #5c5b57;
+      --light:     #999690;
+      --bg:        #ffffff;
+      --warm:      #faf8f4;
+      --cream:     #f1ece3;
+      --border:    #e5dfd4;
+      --r:         4px;
+      --w:         1180px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ──────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 300;
+      height: 64px;
+      padding: 0 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background .3s, box-shadow .3s;
+    }
+    nav.up { background: transparent; }
+    nav.down {
+      background: rgba(255,255,255,.97);
+      box-shadow: 0 1px 0 var(--border);
+      backdrop-filter: blur(12px);
+    }
+    .logo img {
+      height: 36px;
+      filter: brightness(0) invert(1);
+      transition: filter .3s;
+    }
+    nav.down .logo img { filter: none; }
+    .nav-r {
+      display: flex; align-items: center; gap: 30px;
+      list-style: none;
+    }
+    .nav-r a {
+      font-size: 12px; font-weight: 500;
+      letter-spacing: .09em; text-transform: uppercase;
+      text-decoration: none;
+      color: rgba(255,255,255,.8);
+      transition: color .2s;
+    }
+    nav.down .nav-r a { color: var(--mid); }
+    .nav-r a:hover { color: #fff; }
+    nav.down .nav-r a:hover { color: var(--text); }
+    .nav-cta {
+      padding: 9px 20px;
+      background: var(--gold); color: #fff !important;
+      border-radius: var(--r);
+      transition: background .2s !important;
+    }
+    .nav-cta:hover { background: var(--gold-lt) !important; }
+
+    /* ─── HERO ─────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      height: 100vh; min-height: 700px;
+      display: flex; align-items: center;
+      overflow: hidden;
+      background: var(--ink);
+    }
+    .hero video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+    }
+    .hero video.ready { opacity: 1; }
+    .hero-veil {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        105deg,
+        rgba(0,0,0,.72) 0%,
+        rgba(0,0,0,.42) 55%,
+        rgba(0,0,0,.18) 100%
+      );
+    }
+    .hero-body {
+      position: relative; z-index: 2;
+      max-width: var(--w);
+      margin: 0 auto;
+      padding: 0 52px;
+      width: 100%;
+    }
+    .hero-kicker {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: var(--gold-lt);
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .hero-kicker::before {
+      content: ''; width: 24px; height: 1px;
+      background: var(--gold-lt); opacity: .7;
+    }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(52px, 7vw, 96px);
+      font-weight: 300; line-height: 1.04;
+      color: #fff; letter-spacing: -.02em;
+      max-width: 720px;
+      margin-bottom: 32px;
+    }
+    .hero h1 em { font-style: italic; }
+
+    .search-bar {
+      display: flex; align-items: stretch;
+      max-width: 540px;
+      background: rgba(255,255,255,.96);
+      border-radius: var(--r);
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      margin-bottom: 20px;
+    }
+    .search-bar input {
+      flex: 1; border: none; outline: none;
+      padding: 16px 18px;
+      font-family: 'Inter', sans-serif; font-size: 14px;
+      color: var(--text); background: transparent;
+    }
+    .search-bar input::placeholder { color: #aaa8a3; }
+    .search-bar button {
+      border: none; background: var(--gold); color: #fff;
+      padding: 0 26px;
+      font-family: 'Inter', sans-serif; font-size: 11.5px;
+      font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+      cursor: pointer; transition: background .2s; white-space: nowrap;
+    }
+    .search-bar button:hover { background: var(--gold-lt); }
+
+    .hero-pills {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .pill {
+      font-family: 'Inter', sans-serif;
+      font-size: 11.5px; font-weight: 600;
+      letter-spacing: .09em; text-transform: uppercase;
+      text-decoration: none;
+      padding: 9px 22px;
+      border-radius: var(--r);
+      transition: all .2s;
+    }
+    .pill-outline {
+      color: rgba(255,255,255,.85);
+      border: 1.5px solid rgba(255,255,255,.32);
+      background: rgba(255,255,255,.05);
+    }
+    .pill-outline:hover {
+      background: rgba(255,255,255,.13);
+      border-color: rgba(255,255,255,.6); color: #fff;
+    }
+    .pill-gold { background: var(--gold); color: #fff; border: 1.5px solid var(--gold); }
+    .pill-gold:hover { background: var(--gold-lt); border-color: var(--gold-lt); }
+
+    /* live stat tucked bottom-right */
+    .hero-foot {
+      position: absolute; bottom: 40px; right: 52px;
+      z-index: 2;
+      display: flex; gap: 40px;
+    }
+    .hf-item { text-align: right; }
+    .hf-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px; font-weight: 400; color: #fff; line-height: 1;
+    }
+    .hf-lbl {
+      font-size: 9.5px; font-weight: 500; letter-spacing: .14em;
+      text-transform: uppercase; color: rgba(255,255,255,.42);
+      margin-top: 3px;
+    }
+
+    /* ─── BRAND PILLARS (thin strip) ───────────────────────── */
+    .pillars {
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .pillars-inner {
+      max-width: var(--w); margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4,1fr);
+      border-left: 1px solid var(--border);
+    }
+    .pillar {
+      padding: 28px 32px;
+      border-right: 1px solid var(--border);
+      display: flex; align-items: center; gap: 14px;
+    }
+    .pillar-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 400; color: var(--gold); line-height: 1;
+      flex-shrink: 0;
+    }
+    .pillar-text-top {
+      font-size: 12.5px; font-weight: 600; color: var(--text);
+      letter-spacing: .01em; margin-bottom: 2px;
+    }
+    .pillar-text-bot {
+      font-size: 11.5px; font-weight: 300; color: var(--light);
+      line-height: 1.4;
+    }
+
+    /* ─── SERVICES ──────────────────────────────────────────── */
+    .services { background: var(--warm); padding: 100px 52px; }
+    .services-inner { max-width: var(--w); margin: 0 auto; }
+
+    .sec-ey {
+      font-size: 10.5px; font-weight: 500;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 12px;
+    }
+    h2.serif {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(32px, 3.8vw, 50px);
+      font-weight: 400; line-height: 1.12; color: var(--text);
+    }
+    h2.serif em { font-style: italic; }
+
+    .services-head {
+      display: flex; align-items: flex-end;
+      justify-content: space-between; gap: 24px;
+      margin-bottom: 56px; flex-wrap: wrap;
+    }
+    .services-sub {
+      font-size: 15.5px; font-weight: 300;
+      color: var(--mid); line-height: 1.75;
+      max-width: 480px; margin-top: 10px;
+    }
+    .arrow-link {
+      font-size: 12px; font-weight: 600;
+      letter-spacing: .07em; text-transform: uppercase;
+      color: var(--text); text-decoration: none;
+      border-bottom: 1.5px solid var(--text);
+      padding-bottom: 2px;
+      white-space: nowrap;
+      transition: color .2s, border-color .2s;
+    }
+    .arrow-link:hover { color: var(--gold); border-color: var(--gold); }
+
+    .svc-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 2px; background: var(--border);
+    }
+    .svc {
+      background: var(--bg);
+      padding: 44px 36px 40px;
+      display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+      transition: background .22s;
+    }
+    .svc::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 0; height: 2px;
+      background: var(--gold);
+      transition: width .38s ease;
+    }
+    .svc:hover { background: #fdfcfa; }
+    .svc:hover::before { width: 100%; }
+    .svc-tag {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: .17em; text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .svc-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 400;
+      color: var(--text); line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    .svc-body {
+      font-size: 13.5px; font-weight: 300;
+      color: var(--mid); line-height: 1.82;
+      flex: 1; margin-bottom: 28px;
+    }
+
+    /* ─── EDITORIAL STATEMENT ───────────────────────────────── */
+    .statement {
+      background: var(--ink);
+      padding: 100px 52px;
+      overflow: hidden;
+      position: relative;
+    }
+    .statement::before {
+      content: '"';
+      position: absolute;
+      top: -40px; left: 40px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 400px; font-weight: 300; line-height: 1;
+      color: rgba(255,255,255,.03);
+      pointer-events: none;
+    }
+    .statement-inner {
+      max-width: var(--w); margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+    .statement-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 3.2vw, 42px);
+      font-weight: 300; font-style: italic;
+      color: rgba(255,255,255,.88);
+      line-height: 1.45;
+    }
+    .statement-quote strong {
+      font-style: normal; font-weight: 400;
+      color: #fff;
+    }
+    .statement-right { padding-top: 4px; }
+    .statement-body {
+      font-size: 15px; font-weight: 300;
+      color: rgba(255,255,255,.5);
+      line-height: 1.85; margin-bottom: 32px;
+    }
+    .stat-row {
+      display: flex; gap: 36px; margin-bottom: 36px;
+    }
+
+    .stat-block-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px; font-weight: 400;
+      color: var(--gold-lt); line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-block-lbl {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: rgba(255,255,255,.3);
+    }
+    .btn-gold-solid {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px;
+      background: var(--gold); color: #fff;
+      border-radius: var(--r); border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 11.5px; font-weight: 600;
+      letter-spacing: .09em; text-transform: uppercase;
+      text-decoration: none; cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-gold-solid:hover { background: var(--gold-lt); }
+    .btn-ghost-w {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px;
+      background: transparent; color: rgba(255,255,255,.75);
+      border: 1.5px solid rgba(255,255,255,.22);
+      border-radius: var(--r);
+      font-family: 'Inter', sans-serif;
+      font-size: 11.5px; font-weight: 600;
+      letter-spacing: .09em; text-transform: uppercase;
+      text-decoration: none;
+      transition: all .2s;
+    }
+    .btn-ghost-w:hover {
+      color: #fff; border-color: rgba(255,255,255,.55);
+      background: rgba(255,255,255,.08);
+    }
+
+    /* ─── ABOUT ─────────────────────────────────────────────── */
+    .about { background: var(--bg); padding: 0 52px; }
+    .about-inner {
+      max-width: var(--w); margin: 0 auto;
+      display: grid; grid-template-columns: 5fr 7fr;
+      min-height: 640px; align-items: stretch;
+    }
+    .about-img {
+      position: relative; overflow: hidden;
+    }
+    .about-img img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: top center;
+      display: block;
+    }
+    .about-copy {
+      padding: 80px 0 80px 72px;
+      display: flex; flex-direction: column;
+      justify-content: center;
+    }
+    .about-copy h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(34px, 3.8vw, 48px);
+      font-weight: 400; line-height: 1.1;
+      color: var(--text); margin-bottom: 22px;
+    }
+    .about-copy h2 em { font-style: italic; }
+    .about-p {
+      font-size: 15px; font-weight: 300;
+      color: var(--mid); line-height: 1.88;
+      margin-bottom: 18px;
+    }
+    .rule { width: 36px; height: 1.5px; background: var(--gold); margin: 26px 0; }
+    .cred-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px 20px; margin-bottom: 32px;
+    }
+    .cred {
+      font-size: 12.5px; color: var(--mid);
+      display: flex; align-items: center; gap: 7px;
+    }
+    .cred::before {
+      content: ''; width: 3px; height: 3px;
+      border-radius: 50%; background: var(--gold); flex-shrink: 0;
+    }
+    .btn-dark {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 26px;
+      background: var(--text); color: #fff;
+      border-radius: var(--r);
+      font-family: 'Inter', sans-serif;
+      font-size: 11.5px; font-weight: 600;
+      letter-spacing: .09em; text-transform: uppercase;
+      text-decoration: none;
+      transition: background .2s;
+    }
+    .btn-dark:hover { background: var(--gold); }
+    .btn-border {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 26px;
+      background: transparent; color: var(--text);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r);
+      font-family: 'Inter', sans-serif;
+      font-size: 11.5px; font-weight: 600;
+      letter-spacing: .09em; text-transform: uppercase;
+      text-decoration: none;
+      transition: all .2s;
+    }
+    .btn-border:hover { border-color: var(--text); }
+
+    /* ─── FEATURED LISTINGS ─────────────────────────────────── */
+    .listings-section { background: var(--cream); padding: 100px 52px; }
+    .listings-inner { max-width: var(--w); margin: 0 auto; }
+    .listings-head {
+      display: flex; align-items: flex-end;
+      justify-content: space-between; gap: 24px;
+      margin-bottom: 44px; flex-wrap: wrap;
+    }
+    .listings-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 24px;
+    }
+    .listing-card {
+      background: var(--bg); border-radius: 8px;
+      overflow: hidden; text-decoration: none;
+      color: var(--text);
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+      transition: transform .24s, box-shadow .24s;
+    }
+    .listing-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 36px rgba(0,0,0,.11);
+    }
+    .lc-img {
+      width: 100%; aspect-ratio: 16/11;
+      background: var(--cream); overflow: hidden;
+      position: relative;
+    }
+    .lc-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .4s;
+    }
+    .listing-card:hover .lc-img img { transform: scale(1.04); }
+    .lc-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(255,255,255,.92);
+      font-size: 10px; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 3px;
+      color: #1a7a4a;
+    }
+    .lc-body { padding: 18px 20px; }
+    .lc-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 500;
+      color: var(--text); margin-bottom: 4px;
+    }
+    .lc-addr {
+      font-size: 13px; color: var(--mid);
+      margin-bottom: 10px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .lc-stats {
+      display: flex; gap: 14px;
+      font-size: 12.5px; color: var(--light);
+    }
+
+    /* ─── NEIGHBORHOODS ─────────────────────────────────────── */
+    .hoods-section { background: var(--bg); padding: 100px 52px; }
+    .hoods-inner { max-width: var(--w); margin: 0 auto; }
+    .hoods-head {
+      display: flex; align-items: flex-end;
+      justify-content: space-between; gap: 24px;
+      margin-bottom: 48px; flex-wrap: wrap;
+    }
+    /* Asymmetric grid — breaks the uniform box feeling */
+    .hoods-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      grid-template-rows: auto auto;
+      gap: 1px; background: var(--border);
+    }
+    /* First card spans 2 cols */
+    .hood {
+      background: var(--bg); padding: 28px 24px;
+      text-decoration: none; display: block;
+      position: relative; overflow: hidden;
+      transition: background .2s;
+    }
+    .hood:first-child {
+      grid-column: span 2;
+      padding: 36px 32px;
+    }
+    .hood::after {
+      content: '';
+      position: absolute; left: 0; bottom: 0;
+      height: 2px; width: 0; background: var(--gold);
+      transition: width .3s ease;
+    }
+    .hood:hover { background: var(--warm); }
+    .hood:hover::after { width: 100%; }
+    .hood-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px; font-weight: 500; color: var(--text);
+      margin-bottom: 5px; transition: color .2s;
+    }
+    .hood:first-child .hood-name { font-size: 24px; }
+    .hood:hover .hood-name { color: var(--gold); }
+    .hood-desc {
+      font-size: 12.5px; color: var(--light);
+      line-height: 1.6; margin-bottom: 12px;
+    }
+    .hood-ct {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: .07em; text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* ─── CONTACT ───────────────────────────────────────────── */
+    .contact { background: var(--warm); padding: 100px 52px; }
+    .contact-inner {
+      max-width: var(--w); margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: start;
+    }
+    .contact-l h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(34px, 3.8vw, 48px);
+      font-weight: 400; line-height: 1.12; color: var(--text);
+      margin-bottom: 18px;
+    }
+    .contact-l h2 em { font-style: italic; }
+    .contact-l p {
+      font-size: 15px; font-weight: 300;
+      color: var(--mid); line-height: 1.8;
+      margin-bottom: 36px;
+    }
+    .c-detail {
+      display: flex; align-items: flex-start;
+      gap: 14px; margin-bottom: 18px;
+    }
+    .c-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--cream); color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .c-lbl {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .13em; text-transform: uppercase;
+      color: var(--light); margin-bottom: 2px;
+    }
+    .c-val { font-size: 14.5px; color: var(--text); }
+    .c-val a { color: var(--text); text-decoration: none; transition: color .2s; }
+    .c-val a:hover { color: var(--gold); }
+
+    .contact-form {
+      background: var(--bg); padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 32px rgba(0,0,0,.06);
+    }
+    .fg { margin-bottom: 13px; }
+    .fg label {
+      display: block; font-size: 10px; font-weight: 500;
+      letter-spacing: .13em; text-transform: uppercase;
+      color: var(--light); margin-bottom: 5px;
+    }
+    .fg input, .fg select, .fg textarea {
+      width: 100%; padding: 11px 13px;
+      border: 1px solid var(--border); border-radius: var(--r);
+      font-family: 'Inter', sans-serif; font-size: 13.5px;
+      color: var(--text); background: var(--bg);
+      outline: none; transition: border-color .2s;
+    }
+    .fg input:focus, .fg select:focus, .fg textarea:focus {
+      border-color: var(--gold);
+    }
+    .fg textarea { resize: vertical; min-height: 86px; }
+    .fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    .form-btn {
+      width: 100%; padding: 14px;
+      background: var(--text); color: #fff; border: none;
+      border-radius: var(--r);
+      font-family: 'Inter', sans-serif;
+      font-size: 11.5px; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase;
+      cursor: pointer; margin-top: 4px;
+      transition: background .2s;
+    }
+    .form-btn:hover { background: var(--gold); }
+
+    /* ─── FOOTER ────────────────────────────────────────────── */
+    footer { background: var(--ink); padding: 64px 52px 32px; }
+    .foot-inner { max-width: var(--w); margin: 0 auto; }
+    .foot-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px; padding-bottom: 44px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      margin-bottom: 26px;
+    }
+    .foot-logo img {
+      height: 30px; filter: brightness(0) invert(1);
+      margin-bottom: 14px;
+    }
+    .foot-about {
+      font-size: 12.5px; color: rgba(255,255,255,.33); line-height: 1.75;
+    }
+    .fc-label {
+      font-size: 9.5px; font-weight: 600;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: rgba(255,255,255,.65); margin-bottom: 14px;
+    }
+    .fc a {
+      display: block; font-size: 12.5px;
+      color: rgba(255,255,255,.33); text-decoration: none;
+      margin-bottom: 8px; transition: color .2s;
+    }
+    .fc a:hover { color: rgba(255,255,255,.72); }
+    .foot-bottom {
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 8px;
+      font-size: 11.5px; color: rgba(255,255,255,.22);
+    }
+    .foot-lic { color: var(--gold); opacity: .75; }
+
+    /* ─── TOAST ─────────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(56px);
+      background: var(--text); color: #fff;
+      padding: 12px 24px; border-radius: var(--r);
+      font-size: 13.5px; pointer-events: none; z-index: 9999;
+      box-shadow: 0 8px 28px rgba(0,0,0,.18);
+      transition: transform .3s ease;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .hero-foot { display: none; }
+      .statement-inner { grid-template-columns: 1fr; gap: 40px; }
+      .about-inner { grid-template-columns: 1fr; }
+      .about-img { height: 420px; }
+      .about-copy { padding: 52px 0; }
+      .listings-grid { grid-template-columns: repeat(2,1fr); }
+      .hoods-grid { grid-template-columns: repeat(3,1fr); }
+      .hood:first-child { grid-column: span 3; }
+      .contact-inner { grid-template-columns: 1fr; gap: 48px; }
+      .foot-top { grid-template-columns: 1fr 1fr; gap: 28px; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-r { display: none; }
+      .hero-body { padding: 0 20px; }
+      .hero h1 { font-size: clamp(40px, 9vw, 64px); }
+      .services, .about, .listings-section, .hoods-section, .contact { padding-left: 20px; padding-right: 20px; }
+      .pillars-inner { grid-template-columns: repeat(2,1fr); }
+      .svc-grid { grid-template-columns: 1fr; }
+      .listings-grid { grid-template-columns: 1fr; }
+      .hoods-grid { grid-template-columns: 1fr 1fr; }
+      .hood:first-child { grid-column: span 2; }
+      .foot-top { grid-template-columns: 1fr; }
+      footer { padding: 48px 20px 24px; }
+      .fg-row { grid-template-columns: 1fr; }
+      .statement { padding: 64px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav" class="up">
+  <a href="/" class="logo">
+    <img src="/images/logo.png" alt="Austin TX Homes" />
+  </a>
+  <ul class="nav-r">
+    <li><a href="/site/buy.html">Buy</a></li>
+    <li><a href="/site/sell.html">Sell</a></li>
+    <li><a href="/?forRent=true">Rentals</a></li>
+    <li><a href="/site/neighborhoods.html">Neighborhoods</a></li>
+    <li><a href="/site/about.html">About</a></li>
+    <li><a href="#contact" class="nav-cta">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <video id="hv" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
+  <div class="hero-veil"></div>
+  <div class="hero-body">
+    <div class="hero-kicker">Austin, Texas</div>
+    <h1>Austin Real<br>Estate <em>Experts</em></h1>
+    <form class="search-bar" onsubmit="doSearch(event)" style="margin-bottom:20px;">
+      <input id="sq" type="text" placeholder="Neighborhood, ZIP code, or address…" autocomplete="off" />
+      <button type="submit">Search</button>
+    </form>
+    <div class="hero-pills">
+      <a class="pill pill-gold" href="/site/buy.html">Buy</a>
+      <a class="pill pill-outline" href="/site/sell.html">Sell</a>
+      <a class="pill pill-outline" href="/?forRent=true">Rent</a>
+    </div>
+  </div>
+  <div class="hero-foot">
+    <div class="hf-item">
+      <div class="hf-num" id="hf-listings">—</div>
+      <div class="hf-lbl">Active Listings</div>
+    </div>
+    <div class="hf-item">
+      <div class="hf-num" id="hf-price">—</div>
+      <div class="hf-lbl">Avg. List Price</div>
+    </div>
+    <div class="hf-item">
+      <div class="hf-num" id="hf-dom">—</div>
+      <div class="hf-lbl">Avg. Days on Mkt</div>
+    </div>
+  </div>
+</section>
+
+<!-- BRAND PILLARS -->
+<div class="pillars">
+  <div class="pillars-inner">
+    <div class="pillar">
+      <div class="pillar-num" id="pp-listings">—</div>
+      <div>
+        <div class="pillar-text-top">Active Listings</div>
+        <div class="pillar-text-bot">Updated every 15 min</div>
+      </div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">5+</div>
+      <div>
+        <div class="pillar-text-top">Years in Austin</div>
+        <div class="pillar-text-bot">Deep local expertise</div>
+      </div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">#1</div>
+      <div>
+        <div class="pillar-text-top">Your Advocate</div>
+        <div class="pillar-text-bot">Zero pressure, honest advice</div>
+      </div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">ATX</div>
+      <div>
+        <div class="pillar-text-top">Austin Only</div>
+        <div class="pillar-text-bot">We don't split focus</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="services">
+  <div class="services-inner">
+    <div class="services-head">
+      <div>
+        <div class="sec-ey">What We Do</div>
+        <h2 class="serif">Austin Real Estate <em>Services</em></h2>
+        <p class="services-sub">Expert representation for buyers, sellers, and investors across all of greater Austin — from Westlake Hills to downtown and everywhere in between.</p>
+      </div>
+      <a href="/" class="arrow-link">Search All Listings →</a>
+    </div>
+    <div class="svc-grid">
+      <div class="svc">
+        <div class="svc-tag">Buy</div>
+        <div class="svc-title">Find Your Austin Home</div>
+        <p class="svc-body">Access every active Austin listing with a Realtor who actually knows each neighborhood. Luxury homes, condos, new construction — we'll find the right fit before it's gone.</p>
+        <a href="/site/buy.html" class="arrow-link" style="align-self:flex-start;">Buyer's Guide →</a>
+      </div>
+      <div class="svc">
+        <div class="svc-tag">Sell</div>
+        <div class="svc-title">Sell for Top Dollar</div>
+        <p class="svc-body">Strategic pricing, professional photography, and targeted digital marketing. We position your home to attract qualified buyers and maximize what you walk away with.</p>
+        <a href="/site/sell.html" class="arrow-link" style="align-self:flex-start;">Free Home Valuation →</a>
+      </div>
+      <div class="svc">
+        <div class="svc-tag">Invest</div>
+        <div class="svc-title">Austin Investment Properties</div>
+        <p class="svc-body">Austin's long-term fundamentals remain strong. Whether you're buying your first investment property or expanding a portfolio — we know where the opportunity is and where it isn't.</p>
+        <a href="/?forRent=true" class="arrow-link" style="align-self:flex-start;">View Rentals →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDITORIAL STATEMENT (dark) -->
+<section class="statement">
+  <div class="statement-inner">
+    <div class="statement-quote">
+      "Austin's market moves fast. <strong>I make sure you're a step ahead of it.</strong>"
+    </div>
+    <div class="statement-right">
+      <p class="statement-body">Whether you're relocating from out of state, upsizing into a luxury home, or quietly building an investment portfolio — you need someone who knows Austin from the inside out, not from a map.</p>
+      <div class="stat-row">
+        <div class="stat-block">
+          <div class="stat-block-num" id="sb-listings">—</div>
+          <div class="stat-block-lbl">Active Austin Listings</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-block-num" id="sb-price">—</div>
+          <div class="stat-block-lbl">Avg. List Price</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-block-num" id="sb-dom">—</div>
+          <div class="stat-block-lbl">Avg. Days on Market</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="/" class="btn-gold-solid">Search All Listings</a>
+        <a href="#contact" class="btn-ghost-w">Talk to Luke</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-inner">
+    <div class="about-img">
+      <img src="/images/luke-allen.jpg" alt="Luke Allen — Licensed Austin TX Realtor" />
+    </div>
+    <div class="about-copy">
+      <div class="sec-ey">Your Agent</div>
+      <h2>Meet <em>Luke Allen</em></h2>
+      <p class="about-p">Welcome to Austin TX Homes — your source for the Austin market. Whether you're buying a first home, a luxury estate, or an investment property, I work to make sure you have the right information and a genuine advocate in your corner.</p>
+      <p class="about-p">I specialize in buyers, sellers, and investors across all of greater Austin. My approach is simple: honest advice, zero pressure, and I don't stop working until you're genuinely satisfied with the outcome.</p>
+      <div class="rule"></div>
+      <div class="cred-grid">
+        <div class="cred">Licensed Realtor — TREC #788149</div>
+        <div class="cred">Austin Marketing + Dev. Group</div>
+        <div class="cred">Luxury &amp; Relocation Specialist</div>
+        <div class="cred">Buyer, Seller &amp; Investor Rep.</div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="/site/about.html" class="btn-dark">More About Luke</a>
+        <a href="tel:+12547182567" class="btn-border">(254) 718-2567</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED LISTINGS -->
+<section class="listings-section">
+  <div class="listings-inner">
+    <div class="listings-head">
+      <div>
+        <div class="sec-ey">Live MLS Data</div>
+        <h2 class="serif">Recently Listed in <em>Austin</em></h2>
+      </div>
+      <a href="/" class="arrow-link">All Listings →</a>
+    </div>
+    <div class="listings-grid" id="feat-grid">
+      <!-- Injected by JS -->
+      <div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--light);font-size:13px;">Loading listings…</div>
+    </div>
+  </div>
+</section>
+
+<!-- NEIGHBORHOODS (late in page, soft intro) -->
+<section class="hoods-section">
+  <div class="hoods-inner">
+    <div class="hoods-head">
+      <div>
+        <div class="sec-ey">Explore Austin</div>
+        <h2 class="serif">Where Do You<br>Want to <em>Live?</em></h2>
+      </div>
+      <a href="/site/neighborhoods.html" class="arrow-link">All Neighborhoods →</a>
+    </div>
+    <div class="hoods-grid">
+      <a class="hood" href="/?neighborhood=Barton+Hills">
+        <div class="hood-name">Barton Hills</div>
+        <div class="hood-desc">Greenbelt trails, mature oaks, and Austin's best outdoor access.</div>
+        <div class="hood-ct" id="hn-bh">View Listings →</div>
+      </a>
+      <a class="hood" href="/?neighborhood=Tarrytown">
+        <div class="hood-name">Tarrytown</div>
+        <div class="hood-desc">Old-money charm, quiet streets, lakeside luxury.</div>
+        <div class="hood-ct" id="hn-tt">View Listings →</div>
+      </a>
+      <a class="hood" href="/?neighborhood=Westlake+Hills">
+        <div class="hood-name">Westlake Hills</div>
+        <div class="hood-desc">Top schools, executive estates, Hill Country views.</div>
+        <div class="hood-ct" id="hn-wh">View Listings →</div>
+      </a>
+      <a class="hood" href="/?neighborhood=Hyde+Park">
+        <div class="hood-name">Hyde Park</div>
+        <div class="hood-desc">Austin's original suburb — bungalows, porches, walkable blocks.</div>
+        <div class="hood-ct" id="hn-hp">View Listings →</div>
+      </a>
+      <a class="hood" href="/?neighborhood=Travis+Heights">
+        <div class="hood-name">Travis Heights</div>
+        <div class="hood-desc">Hillside living with sweeping city views south of the river.</div>
+        <div class="hood-ct" id="hn-th">View Listings →</div>
+      </a>
+      <a class="hood" href="/?neighborhood=Mueller">
+        <div class="hood-name">Mueller</div>
+        <div class="hood-desc">Masterplanned, walkable, and sustainably built.</div>
+        <div class="hood-ct" id="hn-ml">View Listings →</div>
+      </a>
+      <a class="hood" href="/?neighborhood=Clarksville">
+        <div class="hood-name">Clarksville</div>
+        <div class="hood-desc">Historic, eclectic, beloved.</div>
+        <div class="hood-ct" id="hn-cs">View Listings →</div>
+      </a>
+      <a class="hood" href="/?neighborhood=South+Congress">
+        <div class="hood-name">South Congress</div>
+        <div class="hood-desc">Food trucks, music, and the creative pulse of Austin.</div>
+        <div class="hood-ct" id="hn-sc">View Listings →</div>
+      </a>
+      <a class="hood" href="/?neighborhood=Zilker">
+        <div class="hood-name">Zilker</div>
+        <div class="hood-desc">Steps from the park, Barton Springs, and Austin summers.</div>
+        <div class="hood-ct" id="hn-zk">View Listings →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-inner">
+    <div class="contact-l">
+      <div class="sec-ey">Get in Touch</div>
+      <h2>Let's Talk<br><em>Real Estate</em></h2>
+      <p>Buying, selling, relocating, or investing — reach out. No pressure, no obligation. Just honest conversation about what makes sense for you.</p>
+      <div class="c-detail">
+        <div class="c-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 013.07 4.18 2 2 0 015.06 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L9.09 9.91a16 16 0 006.99 6.99l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        </div>
+        <div><div class="c-lbl">Phone</div><div class="c-val"><a href="tel:+12547182567">(254) 718-2567</a></div></div>
+      </div>
+      <div class="c-detail">
+        <div class="c-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div><div class="c-lbl">Email</div><div class="c-val"><a href="mailto:luke@austintxhomes.co">luke@austintxhomes.co</a></div></div>
+      </div>
+      <div class="c-detail">
+        <div class="c-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div><div class="c-lbl">Brokerage</div><div class="c-val">Austin Marketing + Development Group</div></div>
+      </div>
+    </div>
+
+    <div class="contact-form">
+      <form onsubmit="doContact(event)">
+        <div class="fg-row">
+          <div class="fg"><label>First Name</label><input type="text" name="first_name" placeholder="Jane" required /></div>
+          <div class="fg"><label>Last Name</label><input type="text" name="last_name" placeholder="Smith" /></div>
+        </div>
+        <div class="fg"><label>Email</label><input type="email" name="email" placeholder="jane@example.com" required /></div>
+        <div class="fg"><label>Phone</label><input type="tel" name="phone" placeholder="(512) 555-0000" /></div>
+        <div class="fg">
+          <label>I'm looking to…</label>
+          <select name="intent">
+            <option value="">Select one</option>
+            <option value="buy">Buy a home</option>
+            <option value="sell">Sell my home</option>
+            <option value="both">Buy &amp; Sell</option>
+            <option value="invest">Invest</option>
+            <option value="rent">Rent</option>
+            <option value="question">Just have a question</option>
+          </select>
+        </div>
+        <div class="fg"><label>Message</label><textarea name="message" placeholder="Tell me what you're looking for…"></textarea></div>
+        <button type="submit" class="form-btn">Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-inner">
+    <div class="foot-top">
+      <div>
+        <div class="foot-logo"><img src="/images/logo.png" alt="Austin TX Homes" /></div>
+        <p class="foot-about">Live MLS listings for Austin, TX. Expert buyer, seller, and investor representation from a licensed local Realtor who knows every neighborhood.</p>
+      </div>
+      <div class="fc">
+        <div class="fc-label">Search</div>
+        <a href="/">All Homes</a>
+        <a href="/?minPrice=1000000">Luxury Homes</a>
+        <a href="/?subType=Condominium">Condos</a>
+        <a href="/?newConstruction=true">New Construction</a>
+        <a href="/?forRent=true">For Rent</a>
+      </div>
+      <div class="fc">
+        <div class="fc-label">Neighborhoods</div>
+        <a href="/?neighborhood=Barton+Hills">Barton Hills</a>
+        <a href="/?neighborhood=Tarrytown">Tarrytown</a>
+        <a href="/?neighborhood=Hyde+Park">Hyde Park</a>
+        <a href="/?neighborhood=Westlake+Hills">Westlake Hills</a>
+        <a href="/?neighborhood=Mueller">Mueller</a>
+      </div>
+      <div class="fc">
+        <div class="fc-label">Company</div>
+        <a href="/site/about.html">About Luke</a>
+        <a href="/site/sell.html">Sell Your Home</a>
+        <a href="/site/buy.html">Buyer's Guide</a>
+        <a href="/site/neighborhoods.html">Neighborhoods</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2025 Austin TX Homes. All rights reserved.</span>
+      <span class="foot-lic">TREC #788149 · Austin Marketing + Development Group</span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Nav
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.className = window.scrollY > 48 ? 'down' : 'up';
+}, { passive: true });
+
+// Video
+const vid = document.getElementById('hv');
+if (vid) {
+  if (vid.readyState >= 3) vid.classList.add('ready');
+  else vid.addEventListener('canplay', () => vid.classList.add('ready'), { once: true });
+}
+
+// Hero search
+function doSearch(e) {
+  e.preventDefault();
+  const v = document.getElementById('sq').value.trim();
+  location.href = v ? '/?q=' + encodeURIComponent(v) : '/';
+}
+
+// Market stats
+fetch('/api/market-stats').then(r => r.json()).then(d => {
+  const k = n => n ? '$' + Math.round(n/1000) + 'K' : '—';
+  const n = n => n ? Number(n).toLocaleString() : '—';
+  const dom = n => n ? Math.round(n) : '—';
+
+  // hero foot
+  const hfl = document.getElementById('hf-listings');
+  const hfp = document.getElementById('hf-price');
+  const hfd = document.getElementById('hf-dom');
+  if (hfl) hfl.textContent = n(d.activeListings);
+  if (hfp) hfp.textContent = k(d.avgPrice);
+  if (hfd) hfd.textContent = dom(d.avgDom);
+
+  // pillars
+  const pp = document.getElementById('pp-listings');
+  if (pp) pp.textContent = n(d.activeListings);
+
+  // statement
+  const sl = document.getElementById('sb-listings');
+  const sp = document.getElementById('sb-price');
+  const sd = document.getElementById('sb-dom');
+  if (sl) sl.textContent = n(d.activeListings);
+  if (sp) sp.textContent = k(d.avgPrice);
+  if (sd) sd.textContent = dom(d.avgDom);
+}).catch(() => {});
+
+// Featured listings
+fetch('/api/listings?limit=3&sortBy=newest&status=Active')
+  .then(r => r.json())
+  .then(d => {
+    const grid = document.getElementById('feat-grid');
+    if (!grid) return;
+    const items = d.listings || d.data || [];
+    if (!items.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--light);font-size:13px;">Browse all active listings →</div>'; return; }
+    grid.innerHTML = items.map(l => {
+      const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : '';
+      const addr = [l.unparsed_address, l.city].filter(Boolean).join(', ');
+      const stats = [
+        l.bedrooms_total && l.bedrooms_total + ' bd',
+        l.bathrooms_total && l.bathrooms_total + ' ba',
+        l.living_area && Number(l.living_area).toLocaleString() + ' sqft'
+      ].filter(Boolean).join(' · ');
+      const img = l.photos?.[0] || l.primary_photo || '';
+      return `<a class="listing-card" href="/property/${l.listing_key}">
+        <div class="lc-img">
+          ${img ? `<img src="${img}" alt="${addr}" loading="lazy" />` : ''}
+          <span class="lc-badge">Active</span>
+        </div>
+        <div class="lc-body">
+          <div class="lc-price">${price}</div>
+          <div class="lc-addr">${addr}</div>
+          <div class="lc-stats"><span>${stats}</span></div>
+        </div>
+      </a>`;
+    }).join('');
+  })
+  .catch(() => {
+    const grid = document.getElementById('feat-grid');
+    if (grid) grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px;">
+      <a href="/" style="font-size:13px;color:var(--gold);text-decoration:none;font-weight:500;">Browse All Active Listings →</a>
+    </div>`;
+  });
+
+// Neighborhood counts
+[
+  ['hn-bh','Barton Hills'],['hn-tt','Tarrytown'],['hn-wh','Westlake Hills'],
+  ['hn-hp','Hyde Park'],['hn-th','Travis Heights'],['hn-ml','Mueller'],
+  ['hn-cs','Clarksville'],['hn-sc','South Congress'],['hn-zk','Zilker']
+].forEach(([id, name]) => {
+  fetch('/api/listings?limit=1&neighborhood=' + encodeURIComponent(name))
+    .then(r => r.json()).then(d => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const ct = d.total || 0;
+      el.textContent = ct > 0 ? ct + (ct === 1 ? ' Home' : ' Homes') + ' →' : 'View Listings →';
+    }).catch(() => {});
+});
+
+// Contact form
+function showToast(m) {
+  const t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+async function doContact(e) {
+  e.preventDefault();
+  const f = e.target, btn = f.querySelector('.form-btn');
+  btn.textContent = 'Sending…'; btn.disabled = true;
+  const data = {};
+  new FormData(f).forEach((v,k) => data[k] = v);
+  try {
+    const res = await fetch('/api/contact', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
+    });
+    showToast(res.ok ? 'Message sent! Luke will be in touch soon.' : 'Something went wrong — please email luke@austintxhomes.co');
+    if (res.ok) f.reset();
+  } catch { showToast('Could not send — please call (254) 718-2567.'); }
+  btn.textContent = 'Send Message'; btn.disabled = false;
+}
+</script>
+</body>
+</html>

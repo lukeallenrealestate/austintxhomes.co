@@ -1,0 +1,305 @@
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
+const fetch = require('node-fetch');
+const db = require('../db/database');
+const fs = require('fs');
+const path = require('path');
+
+const PHOTO_CACHE_DIR = path.join(__dirname, '../cache/photos');
+
+const BASE_URL = 'https://api.mlsgrid.com/v2';
+const SYSTEM = process.env.MLSGRID_ORIGINATING_SYSTEM || 'actris';
+const TOKEN = process.env.MLSGRID_ACCESS_TOKEN;
+
+const HEADERS = {
+  Authorization: `Bearer ${TOKEN}`,
+  'Accept-Encoding': 'gzip'
+};
+
+// Fields to select from MLS GRID (reduces payload)
+const SELECT_FIELDS = [
+  'ListingKey', 'ListingId', 'StandardStatus', 'PropertyType', 'PropertySubType',
+  'ListPrice', 'BedroomsTotal', 'BathroomsTotalInteger', 'BathroomsFull', 'BathroomsHalf',
+  'LivingArea', 'LotSizeAcres', 'LotSizeSquareFeet', 'YearBuilt', 'GarageSpaces',
+  'UnparsedAddress', 'StreetNumber', 'StreetName', 'UnitNumber',
+  'City', 'StateOrProvince', 'PostalCode', 'CountyOrParish',
+  'SubdivisionName', 'Latitude', 'Longitude',
+  'PublicRemarks', 'ListAgentFullName', 'ListAgentDirectPhone', 'ListAgentEmail',
+  'ListOfficeName', 'ElementarySchool', 'MiddleOrJuniorSchool', 'HighSchool',
+  'DaysOnMarket', 'ListingContractDate', 'CloseDate', 'ClosePrice',
+  'ModificationTimestamp', 'PhotosChangeTimestamp', 'MlgCanView', 'MlgCanUse',
+  'PoolFeatures', 'WaterfrontYN', 'NewConstructionYN', 'StoriesTotal',
+  'ParkingTotal', 'AssociationFee', 'AssociationFeeFrequency', 'TaxAnnualAmount'
+].join(',');
+
+const upsertListing = db.prepare(`
+  INSERT OR REPLACE INTO listings (
+    listing_key, listing_id, standard_status, property_type, property_sub_type,
+    list_price, bedrooms_total, bathrooms_total, bathrooms_full, bathrooms_half,
+    living_area, lot_size_acres, lot_size_sqft, year_built, garage_spaces,
+    unparsed_address, street_number, street_name, unit_number,
+    city, state_or_province, postal_code, county, subdivision_name,
+    latitude, longitude, public_remarks,
+    list_agent_full_name, list_agent_direct_phone, list_agent_email, list_office_name,
+    elementary_school, middle_school, high_school, school_district,
+    days_on_market, listing_contract_date, close_date, close_price,
+    modification_timestamp, photos_change_timestamp, mlg_can_view,
+    photos, pool_features, waterfront_yn, new_construction_yn,
+    stories, parking_total, association_fee, association_fee_frequency,
+    tax_annual_amount, raw_data, synced_at
+  ) VALUES (
+    @listing_key, @listing_id, @standard_status, @property_type, @property_sub_type,
+    @list_price, @bedrooms_total, @bathrooms_total, @bathrooms_full, @bathrooms_half,
+    @living_area, @lot_size_acres, @lot_size_sqft, @year_built, @garage_spaces,
+    @unparsed_address, @street_number, @street_name, @unit_number,
+    @city, @state_or_province, @postal_code, @county, @subdivision_name,
+    @latitude, @longitude, @public_remarks,
+    @list_agent_full_name, @list_agent_direct_phone, @list_agent_email, @list_office_name,
+    @elementary_school, @middle_school, @high_school, @school_district,
+    @days_on_market, @listing_contract_date, @close_date, @close_price,
+    @modification_timestamp, @photos_change_timestamp, @mlg_can_view,
+    @photos, @pool_features, @waterfront_yn, @new_construction_yn,
+    @stories, @parking_total, @association_fee, @association_fee_frequency,
+    @tax_annual_amount, @raw_data, CURRENT_TIMESTAMP
+  )
+`);
+
+const deleteListing = db.prepare(`DELETE FROM listings WHERE listing_key = ?`);
+const updateSyncState = db.prepare(`
+  UPDATE sync_state SET last_sync_timestamp = ?, last_sync_at = CURRENT_TIMESTAMP,
+  total_synced = total_synced + ? WHERE id = 1
+`);
+
+function mapListing(p) {
+  const photos = (p.Media || [])
+    .filter(m => m.MediaCategory === 'Photo' || !m.MediaCategory)
+    .sort((a, b) => {
+      if (a.PreferredPhotoYN && !b.PreferredPhotoYN) return -1;
+      if (!a.PreferredPhotoYN && b.PreferredPhotoYN) return 1;
+      return (a.Order || 0) - (b.Order || 0);
+    })
+    .map(m => m.MediaURL)
+    .filter(Boolean);
+
+  return {
+    listing_key: p.ListingKey,
+    listing_id: p.ListingId || null,
+    standard_status: p.StandardStatus || null,
+    property_type: p.PropertyType || null,
+    property_sub_type: Array.isArray(p.PropertySubType) ? p.PropertySubType[0] : (p.PropertySubType || null),
+    list_price: p.ListPrice || null,
+    bedrooms_total: p.BedroomsTotal || null,
+    bathrooms_total: p.BathroomsTotalInteger || null,
+    bathrooms_full: p.BathroomsFull || null,
+    bathrooms_half: p.BathroomsHalf || null,
+    living_area: p.LivingArea || null,
+    lot_size_acres: p.LotSizeAcres || null,
+    lot_size_sqft: p.LotSizeSquareFeet || null,
+    year_built: p.YearBuilt || null,
+    garage_spaces: p.GarageSpaces || null,
+    unparsed_address: p.UnparsedAddress || null,
+    street_number: p.StreetNumber || null,
+    street_name: p.StreetName || null,
+    unit_number: p.UnitNumber || null,
+    city: p.City || null,
+    state_or_province: p.StateOrProvince || null,
+    postal_code: p.PostalCode || null,
+    county: p.CountyOrParish || null,
+    subdivision_name: p.SubdivisionName || null,
+    latitude: p.Latitude || null,
+    longitude: p.Longitude || null,
+    public_remarks: p.PublicRemarks || null,
+    list_agent_full_name: p.ListAgentFullName || null,
+    list_agent_direct_phone: p.ListAgentDirectPhone || null,
+    list_agent_email: p.ListAgentEmail || null,
+    list_office_name: p.ListOfficeName || null,
+    elementary_school: p.ElementarySchool || null,
+    middle_school: p.MiddleOrJuniorSchool || null,
+    high_school: p.HighSchool || null,
+    school_district: p.SchoolDistrict || null,
+    days_on_market: p.DaysOnMarket || null,
+    listing_contract_date: p.ListingContractDate || null,
+    close_date: p.CloseDate || null,
+    close_price: p.ClosePrice || null,
+    modification_timestamp: p.ModificationTimestamp || null,
+    photos_change_timestamp: p.PhotosChangeTimestamp || null,
+    mlg_can_view: p.MlgCanView ? 1 : 0,
+    photos: JSON.stringify(photos),
+    pool_features: Array.isArray(p.PoolFeatures) ? p.PoolFeatures.join(', ') : (p.PoolFeatures || null),
+    waterfront_yn: p.WaterfrontYN ? 1 : 0,
+    new_construction_yn: p.NewConstructionYN ? 1 : 0,
+    stories: p.StoriesTotal || null,
+    parking_total: p.ParkingTotal || null,
+    association_fee: p.AssociationFee || null,
+    association_fee_frequency: p.AssociationFeeFrequency || null,
+    tax_annual_amount: p.TaxAnnualAmount || null,
+    raw_data: JSON.stringify(p)
+  };
+}
+
+const batchUpsert = db.transaction((listings) => {
+  let count = 0;
+  for (const listing of listings) {
+    if (!listing.mlg_can_view) {
+      deleteListing.run(listing.listing_key);
+    } else {
+      upsertListing.run(listing);
+      count++;
+    }
+  }
+  return count;
+});
+
+async function fetchPage(url) {
+  const res = await fetch(url, { headers: HEADERS });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`MLS GRID API error ${res.status}: ${text}`);
+  }
+  return res.json();
+}
+
+async function syncListings(isInitial = false) {
+  if (!TOKEN) {
+    console.warn('[SYNC] No MLSGRID_ACCESS_TOKEN set — skipping sync');
+    return;
+  }
+
+  const syncState = db.prepare('SELECT * FROM sync_state WHERE id = 1').get();
+  const lastTimestamp = syncState?.last_sync_timestamp;
+
+  let filterParts = [`OriginatingSystemName eq '${SYSTEM}'`];
+
+  if (isInitial || !lastTimestamp) {
+    console.log('[SYNC] Starting initial import...');
+    filterParts.push('MlgCanView eq true');
+  } else {
+    console.log(`[SYNC] Incremental sync since ${lastTimestamp}`);
+    filterParts.push(`ModificationTimestamp gt ${lastTimestamp}`);
+  }
+
+  const filter = encodeURIComponent(filterParts.join(' and '));
+  // No $select — let the API return all fields so we don't hit unsupported field errors
+  let url = `${BASE_URL}/Property?$filter=${filter}&$expand=Media&$top=1000`;
+
+  let totalSynced = 0;
+  let latestTimestamp = lastTimestamp;
+  let pageCount = 0;
+
+  while (url) {
+    try {
+      pageCount++;
+      console.log(`[SYNC] Fetching page ${pageCount}...`);
+      const data = await fetchPage(url);
+      const records = data.value || [];
+
+      if (records.length === 0) break;
+
+      const mapped = records.map(mapListing);
+      const saved = batchUpsert(mapped);
+      totalSynced += saved;
+
+      // Track latest modification timestamp
+      for (const r of records) {
+        if (r.ModificationTimestamp) {
+          if (!latestTimestamp || r.ModificationTimestamp > latestTimestamp) {
+            latestTimestamp = r.ModificationTimestamp;
+          }
+        }
+      }
+
+      url = data['@odata.nextLink'] || null;
+
+      // Small delay to be nice to the API
+      if (url) await new Promise(r => setTimeout(r, 200));
+
+    } catch (err) {
+      console.error(`[SYNC] Error on page ${pageCount}:`, err.message);
+      // Save progress and exit — next incremental sync will catch up
+      break;
+    }
+  }
+
+  if (latestTimestamp) {
+    updateSyncState.run(latestTimestamp, totalSynced);
+  }
+
+  console.log(`[SYNC] Done. Synced ${totalSynced} listings (${pageCount} pages).`);
+}
+
+let refreshRunning = false;
+
+// Bulk photo URL refresh — pages through Property+Media to get fresh signed CDN URLs
+async function refreshPhotos() {
+  if (!TOKEN) return;
+  if (refreshRunning) { console.log('[PHOTOS] Refresh already in progress, skipping.'); return; }
+  refreshRunning = true;
+  console.log('[PHOTOS] Starting bulk photo URL refresh...');
+
+  const photosByListing = {};
+  const filter = `OriginatingSystemName eq '${SYSTEM}' and MlgCanView eq true`;
+  let url = `${BASE_URL}/Property?$filter=${encodeURIComponent(filter)}&$expand=Media&$select=ListingKey&$top=500`;
+  let pageCount = 0;
+
+  while (url) {
+    pageCount++;
+    try {
+      const res = await fetch(url, { headers: HEADERS });
+      if (!res.ok) {
+        const text = await res.text();
+        console.warn(`[PHOTOS] API error ${res.status} on page ${pageCount}: ${text.substring(0,100)}`);
+        break;
+      }
+      const data = await res.json();
+      for (const p of (data.value || [])) {
+        if (!p.ListingKey || !p.Media?.length) continue;
+        const urls = p.Media
+          .filter(m => m.MediaCategory === 'Photo' || !m.MediaCategory)
+          .sort((a, b) => (a.Order || 0) - (b.Order || 0))
+          .map(m => m.MediaURL)
+          .filter(Boolean);
+        if (urls.length) photosByListing[p.ListingKey] = urls;
+      }
+      url = data['@odata.nextLink'] || null;
+      if (pageCount % 10 === 0) {
+        console.log(`[PHOTOS] Page ${pageCount}, refreshed ${Object.keys(photosByListing).length} listings...`);
+      }
+      // 700ms between pages keeps us well under 2 RPS limit
+      if (url) await new Promise(r => setTimeout(r, 700));
+    } catch (e) {
+      console.error('[PHOTOS] Error:', e.message);
+      break;
+    }
+  }
+
+  const entries = Object.entries(photosByListing);
+  if (entries.length === 0) {
+    console.log('[PHOTOS] No photos to refresh.');
+    refreshRunning = false;
+    return;
+  }
+
+  const stmt = db.prepare('UPDATE listings SET photos = ? WHERE listing_key = ?');
+  const batchUpdate = db.transaction((batch) => {
+    for (const [key, urls] of batch) stmt.run(JSON.stringify(urls), key);
+  });
+  for (let i = 0; i < entries.length; i += 1000) {
+    batchUpdate(entries.slice(i, i + 1000));
+  }
+
+  // Clear disk-cached photo files for refreshed listings so stale bytes aren't served
+  if (fs.existsSync(PHOTO_CACHE_DIR)) {
+    let cleared = 0;
+    for (const [key] of entries) {
+      try {
+        const files = fs.readdirSync(PHOTO_CACHE_DIR).filter(f => f.startsWith(key + '-'));
+        for (const f of files) { fs.unlinkSync(path.join(PHOTO_CACHE_DIR, f)); cleared++; }
+      } catch {}
+    }
+    if (cleared > 0) console.log(`[PHOTOS] Cleared ${cleared} stale cache files.`);
+  }
+
+  console.log(`[PHOTOS] Refreshed photos for ${entries.length} listings across ${pageCount} pages.`);
+  refreshRunning = false;
+}
+
+module.exports = { syncListings, refreshPhotos };

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Property Details — Austin TX Homes</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <a href="/" class="header-logo"><img src="/images/logo.png" alt="Luke Allen Austin Marketing + Development Group" /></a>
+  <div class="header-actions" style="margin-left:auto;">
+    <a href="/" class="btn btn-ghost">← Back to Search</a>
+    <a href="/account.html" id="account-link" class="btn btn-ghost" style="display:none;">My Account</a>
+    <a href="/admin.html" id="admin-link" class="btn btn-ghost" style="display:none;">Admin</a>
+    <button id="login-btn" class="btn btn-outline">Log In</button>
+    <button id="signup-btn" class="btn btn-primary">Sign Up</button>
+  </div>
+</header>
+
+<div class="detail-header">
+  <!-- GALLERY -->
+  <div class="gallery" id="gallery">
+    <div class="loading" style="height:480px;">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- DETAIL CONTENT -->
+  <div class="detail-content" id="detail-content" style="display:none;">
+
+    <!-- MAIN -->
+    <div class="detail-main">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+        <div>
+          <div class="detail-price" id="detail-price"></div>
+          <div class="detail-status-row">
+            <span class="card-status" id="detail-status"></span>
+            <span id="detail-dom" style="font-size:13px;color:var(--text-light);"></span>
+          </div>
+          <div class="detail-address" id="detail-address"></div>
+        </div>
+        <button class="heart-btn" id="detail-heart" style="position:static;width:44px;height:44px;border:1.5px solid var(--border);border-radius:50%;flex-shrink:0;" onclick="toggleDetailFavorite()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="detail-stats" id="detail-stats"></div>
+
+      <!-- Description -->
+      <div class="detail-section">
+        <h3>About This Home</h3>
+        <div class="detail-description desc-truncated" id="detail-description"></div>
+        <button class="show-more-btn" id="show-more-btn" onclick="toggleDesc()">Show more ▼</button>
+      </div>
+
+      <!-- Facts & Features -->
+      <div class="detail-section">
+        <h3>Property Details</h3>
+        <div class="detail-facts" id="detail-facts"></div>
+      </div>
+
+      <!-- Schools -->
+      <div class="detail-section" id="schools-section" style="display:none;">
+        <h3>Schools</h3>
+        <div class="detail-facts" id="detail-schools"></div>
+      </div>
+
+      <!-- Map -->
+      <div class="detail-section">
+        <h3>Location</h3>
+        <div id="detail-map" style="height:320px;border-radius:var(--radius-lg);overflow:hidden;background:var(--bg);"></div>
+      </div>
+
+      <!-- Similar Listings -->
+      <div class="detail-section" id="similar-section">
+        <h3>Similar Homes</h3>
+        <div class="similar-grid" id="similar-listings"></div>
+      </div>
+
+      <!-- Listing Agent Disclosure -->
+      <div class="detail-section" id="listing-agent-section">
+        <h3>Listing Information</h3>
+        <div class="listing-agent-row">
+          <div class="agent-avatar agent-avatar-sm" id="agent-avatar"></div>
+          <div>
+            <div style="font-size:14px;font-weight:600;" id="agent-name"></div>
+            <div style="font-size:13px;color:var(--text-light);" id="agent-office"></div>
+            <div style="font-size:12px;color:var(--text-light);margin-top:2px;">Listing Agent</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="detail-sidebar">
+      <div class="contact-card">
+        <div class="price-big" id="sidebar-price"></div>
+        <div class="est-payment" id="sidebar-payment"></div>
+
+        <form class="contact-form" onsubmit="submitContact(event)">
+          <input type="text" name="name" placeholder="Your name" required />
+          <input type="email" name="email" placeholder="Your email" required />
+          <input type="tel" name="phone" placeholder="Your phone (optional)" />
+          <textarea name="message" rows="3" placeholder="I'm interested in this property..."></textarea>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;border-radius:var(--radius);">
+            Request Info
+          </button>
+        </form>
+
+        <div class="agent-info">
+          <div class="agent-avatar" style="background:var(--blue);">L</div>
+          <div>
+            <div class="agent-name">Luke Allen</div>
+            <div class="agent-office">Austin Marketing + Development Group</div>
+            <div style="font-size:12px;color:var(--text-light);margin-top:2px;">(254) 718-2567</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Open House (if any) -->
+      <div id="open-house-card" style="display:none;margin-top:16px;background:var(--blue-light);border-radius:var(--radius-lg);padding:16px;">
+        <div style="font-weight:700;color:var(--blue);margin-bottom:4px;">🏡 Open House</div>
+        <div id="open-house-details" style="font-size:14px;"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ERROR STATE -->
+  <div id="detail-error" style="display:none;" class="empty-state">
+    <h3>Listing not found</h3>
+    <p>This listing may have been removed or is no longer available.</p>
+    <a href="/" class="btn btn-primary">Back to Search</a>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuthModal()">×</button>
+    <div id="login-form">
+      <h2>Welcome back</h2>
+      <p class="modal-subtitle">Log in to save homes</p>
+      <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="you@email.com" /></div>
+      <div class="form-group"><label>Password</label><input type="password" id="login-password" placeholder="••••••••" /></div>
+      <div id="login-error" class="form-error"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;" onclick="doLogin()">Log In</button>
+      <div class="modal-footer">Don't have an account? <a onclick="showSignup()">Sign Up</a></div>
+    </div>
+    <div id="signup-form" style="display:none;">
+      <h2>Create account</h2>
+      <p class="modal-subtitle">Save homes and searches</p>
+      <div class="form-group"><label>Full Name</label><input type="text" id="signup-name" placeholder="Your name" /></div>
+      <div class="form-group"><label>Email</label><input type="email" id="signup-email" placeholder="you@email.com" /></div>
+      <div class="form-group"><label>Phone</label><input type="tel" id="signup-phone" placeholder="(512) 555-0000" /></div>
+      <div class="form-group"><label>Password</label><input type="password" id="signup-password" placeholder="At least 8 characters" /></div>
+      <div id="signup-error" class="form-error"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;" onclick="doSignup()">Create Account</button>
+      <div class="modal-footer">Already have an account? <a onclick="showLogin()">Log In</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/js/auth.js"></script>
+<script src="/js/list.js"></script>
+<script src="/js/property.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Austin TX Homes</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+
+<header class="header">
+  <a href="/" class="header-logo"><img src="/images/logo.png" alt="Luke Allen Austin Marketing + Development Group" /></a>
+  <div class="header-actions" style="margin-left:auto;">
+    <a href="/" class="btn btn-ghost">← Search</a>
+    <span id="admin-greeting" style="font-size:14px;color:var(--text-light);"></span>
+    <button class="btn btn-ghost" onclick="Auth.logout()">Log Out</button>
+  </div>
+</header>
+
+<div class="admin-layout">
+  <div id="not-admin" style="display:none;text-align:center;padding:60px;">
+    <h2>Access Denied</h2>
+    <p style="color:var(--text-light);margin:12px 0;">You need admin access to view this page.</p>
+    <a href="/" class="btn btn-primary">Go Home</a>
+  </div>
+
+  <div id="admin-main" style="display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+      <h1 style="font-size:28px;font-weight:800;">Admin Dashboard</h1>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="sync-badge">
+          <div class="sync-dot"></div>
+          <span id="sync-status-text">Checking sync...</span>
+        </div>
+        <button class="btn btn-outline" onclick="triggerSync()">Force Sync</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="admin-stats" id="admin-stats">
+      <div class="stat-card"><div class="stat-num" id="stat-listings">—</div><div class="stat-label">Active Listings</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-users">—</div><div class="stat-label">Registered Users</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-favorites">—</div><div class="stat-label">Total Favorites</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-searches">—</div><div class="stat-label">Saved Searches</div></div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="admin-section">
+      <h2>Recent Activity</h2>
+      <div class="activity-feed" id="activity-feed">
+        <div class="loading" style="padding:24px;"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- Users -->
+    <div class="admin-section">
+      <h2>Users</h2>
+      <div id="users-loading" class="loading" style="padding:24px;"><div class="spinner"></div></div>
+      <table class="users-table" id="users-table" style="display:none;">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Joined</th>
+            <th>Last Login</th>
+            <th>Favorites</th>
+            <th>Searches</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/js/auth.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>
