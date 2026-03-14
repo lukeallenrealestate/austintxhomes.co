@@ -7,6 +7,14 @@ const cron = require('node-cron');
 const { syncListings, refreshPhotos } = require('./sync/mlsSync');
 const { runAlertJob } = require('./services/alertJob');
 
+// Prevent unhandled errors from crashing the server
+process.on('uncaughtException', (err) => {
+  console.error('[IDX] Uncaught exception (server kept alive):', err.message);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[IDX] Unhandled promise rejection (server kept alive):', reason);
+});
+
 // Ensure photo cache directory exists
 fs.mkdirSync(path.join(__dirname, 'cache', 'photos'), { recursive: true });
 

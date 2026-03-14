@@ -4,9 +4,18 @@ const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
 
+// Prevent unhandled errors from crashing the server
+process.on('uncaughtException', (err) => {
+  console.error('[MAIN] Uncaught exception (server kept alive):', err.message);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[MAIN] Unhandled promise rejection (server kept alive):', reason);
+});
+
 const app = express();
 const PORT = process.env.PORT || 3002;
 const IDX_SERVER = 'http://localhost:3000'; // idx-search backend
+const IDX_PUBLIC = path.join(__dirname, '../idx-search/public');
 
 // Neighborhood page system
 const neighborhoods = require('./data/neighborhoods');
@@ -127,10 +136,9 @@ app.get('/api/deal-radar/:id', async (req, res) => {
 
 // ── End Deal Radar API ───────────────────────────────────────────────────────
 
-// /search redirects to the idx-search SPA, passing through any query params
-app.get('/search', (req, res) => {
-  const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
-  res.redirect(302, IDX_SERVER + '/' + qs);
+// /search serves the idx-search SPA directly (no localhost redirect)
+app.get('/search', (_req, res) => {
+  res.sendFile(path.join(IDX_PUBLIC, 'index.html'));
 });
 
 // Market stats endpoint — computed from live MLS data, cached 1 hour
@@ -325,6 +333,9 @@ app.get('/neighborhoods/:slug', (req, res) => {
 
 // Serve all static files from /public
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Fallback: serve idx-search static assets (js, css, html used by the /search SPA)
+app.use(express.static(IDX_PUBLIC));
 
 // Fallback: any /site/*.html request
 app.get('/site/:page', (req, res) => {

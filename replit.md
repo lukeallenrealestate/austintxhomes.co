@@ -1,0 +1,36 @@
+# Austin TX Homes — Project Overview
+
+## Architecture
+
+Two Node.js Express servers run together via `start.sh`:
+
+| Server | Port | Purpose |
+|--------|------|---------|
+| `austintxhomes` | 3002 (→ external port 80) | Main marketing site — neighborhood pages, Deal Radar, static content |
+| `idx-search` | 3000 (internal only) | MLS/IDX property search SPA + API |
+
+## How They Connect
+
+- `austintxhomes` proxies `/api/*` and `/property/*` to `idx-search` (port 3000)
+- `/search` on `austintxhomes` directly serves the idx-search SPA's `index.html` — **no localhost redirect**
+- idx-search JS/CSS assets (`/js/app.js`, `/css/styles.css`, etc.) are served from `idx-search/public/` via a fallback `express.static` in `austintxhomes/server.js`
+
+## Runtime
+
+- Node.js v20 (upgraded from v14)
+- `start.sh` uses `/proc/net/tcp` to kill any lingering processes on ports 3000 and 3002 before starting
+- Both servers have `uncaughtException` and `unhandledRejection` handlers to prevent crashes
+
+## Key Files
+
+- `start.sh` — startup script, handles port cleanup and process sequencing
+- `austintxhomes/server.js` — main site server
+- `idx-search/server.js` — IDX search server
+- `idx-search/sync/mlsSync.js` — MLS data sync + photo URL refresh
+- `austintxhomes/lib/dealRadar/` — Deal Radar scoring engine
+
+## Accessing the App
+
+- **Main site**: Replit dev domain (port 3002 → port 80)
+- **IDX search**: `<domain>/search` — served through austintxhomes (no direct port 3000 access required)
+- **Do NOT use `localhost:3000`** from external devices — always use the Replit public URL
