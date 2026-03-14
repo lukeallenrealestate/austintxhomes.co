@@ -23,7 +23,7 @@
       text-decoration: none; display: flex; align-items: center; flex-shrink: 0;
     }
     #site-nav .sn-logo img {
-      height: 36px; width: auto;
+      height: 52px; width: auto;
       filter: brightness(0) invert(1);
       opacity: .92;
       transition: opacity .2s;
