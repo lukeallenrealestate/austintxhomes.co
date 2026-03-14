@@ -5,6 +5,11 @@ const path = require('path');
 
 const wasmDb = new WasmDB(path.join(__dirname, 'idx.db'));
 
+// WAL mode = better concurrency (readers don't block writers and vice-versa).
+// busy_timeout = wait up to 30 s instead of throwing immediately when locked.
+try { wasmDb.run('PRAGMA journal_mode=WAL'); } catch {}
+try { wasmDb.run('PRAGMA busy_timeout=30000'); } catch {}
+
 // Convert {key: val} → {'@key': val} so named SQL params (@key) resolve correctly
 function normalizeParams(args) {
   if (!args || args.length === 0) return [];

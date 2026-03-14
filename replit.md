@@ -18,8 +18,16 @@ Two Node.js Express servers run together via `start.sh`:
 ## Runtime
 
 - Node.js v20 (upgraded from v14)
-- `start.sh` uses `/proc/net/tcp` to kill any lingering processes on ports 3000 and 3002 before starting
-- Both servers have `uncaughtException` and `unhandledRejection` handlers to prevent crashes
+- `start.sh` kills lingering processes by cwd (`kill_by_dir "idx-search"`) and by port, then cleans up SQLite lock artifacts before starting
+- idx-search runs inside a watchdog loop — if it crashes, it restarts automatically after 5 seconds
+- `idx-search/server.js` distinguishes pre-startup errors (exits so watchdog can restart) from runtime errors (logs but keeps serving)
+- SQLite uses WAL mode + busy_timeout=30000ms for concurrent read/write during MLS sync
+
+## SQLite Locking (Critical)
+
+`node-sqlite3-wasm` implements file locking using `mkdirSync("idx.db.lock")`. When any process is killed with SIGKILL, this directory is never cleaned up, causing "database is locked" on every subsequent startup.
+
+**`start.sh` removes `idx.db.lock/` and any stale journal files before starting idx-search.** The cleanup trap also removes it on shutdown. Never skip this step.
 
 ## Key Files
 

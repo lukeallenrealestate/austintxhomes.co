@@ -7,11 +7,23 @@ const cron = require('node-cron');
 const { syncListings, refreshPhotos } = require('./sync/mlsSync');
 const { runAlertJob } = require('./services/alertJob');
 
-// Prevent unhandled errors from crashing the server
+// Track whether the server has fully started so we know when startup errors are fatal.
+let serverStarted = false;
+
+// Exit on errors that occur before the server is up (watchdog will restart us).
+// After startup, log but keep running to avoid dropping live traffic.
 process.on('uncaughtException', (err) => {
+  if (!serverStarted) {
+    console.error('[IDX] Fatal startup error — exiting for watchdog restart:', err.message);
+    process.exit(1);
+  }
   console.error('[IDX] Uncaught exception (server kept alive):', err.message);
 });
 process.on('unhandledRejection', (reason) => {
+  if (!serverStarted) {
+    console.error('[IDX] Fatal startup rejection — exiting for watchdog restart:', reason);
+    process.exit(1);
+  }
   console.error('[IDX] Unhandled promise rejection (server kept alive):', reason);
 });
 
@@ -174,6 +186,7 @@ app.get('*', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
+  serverStarted = true;
   console.log(`\n🏠 Austin TX Homes IDX running on port ${PORT}`);
 
   // Check if DB is empty, do initial sync
