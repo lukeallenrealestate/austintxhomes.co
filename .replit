@@ -3,7 +3,6 @@ modules = ["nodejs-20"]
 
 [[ports]]
 localPort = 3000
-externalPort = 3000
 
 [[ports]]
 localPort = 3002
@@ -32,3 +31,7 @@ author = "agent"
 task = "shell.exec"
 args = "bash /home/runner/workspace/start.sh"
 waitForPort = 3002
+
+[deployment]
+deploymentTarget = "gce"
+run = ["sh", "-c", "bash start.sh"]
