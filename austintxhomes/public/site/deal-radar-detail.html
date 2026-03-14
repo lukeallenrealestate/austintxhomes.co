@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deal Analysis | Austin Real Estate Deal Radar</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; color: #1a1918; background: #faf8f4; line-height: 1.6; }
+    #site-nav { min-height: 64px; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── BREADCRUMB ── */
+    .breadcrumb {
+      background: #fff; border-bottom: 1px solid #e8e2d8;
+      padding: .65rem 2rem;
+    }
+    .breadcrumb-inner {
+      max-width: 1100px; margin: 0 auto;
+      font-size: .78rem; color: #888;
+      display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+    }
+    .breadcrumb-inner a { color: #b8935a; }
+    .breadcrumb-inner span { color: #ccc; }
+
+    /* ── PAGE WRAP ── */
+    .page-wrap { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem 6rem; }
+    .detail-layout { display: grid; grid-template-columns: 1fr 380px; gap: 2.5rem; align-items: start; }
+
+    /* ── PHOTO GALLERY ── */
+    .photos-wrap {
+      position: relative; border-radius: 10px; overflow: hidden;
+      background: #1a1918; padding-top: 65%;
+    }
+    .photos-wrap img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .photo-placeholder {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #1a1918 0%, #2c2925 100%);
+      color: rgba(255,255,255,.15); font-size: 5rem;
+    }
+    .photo-nav {
+      position: absolute; bottom: 12px; right: 12px;
+      display: flex; gap: .5rem;
+    }
+    .photo-nav button {
+      background: rgba(15,15,14,.7); color: #fff; border: none; border-radius: 4px;
+      padding: .35rem .7rem; cursor: pointer; font-size: .82rem; font-family: inherit;
+      backdrop-filter: blur(4px); transition: background .2s;
+    }
+    .photo-nav button:hover { background: rgba(184,147,90,.8); }
+    .photo-counter {
+      position: absolute; bottom: 14px; left: 14px;
+      background: rgba(15,15,14,.6); color: rgba(255,255,255,.8);
+      font-size: .72rem; padding: .25rem .6rem; border-radius: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* ── ADDRESS HEADER ── */
+    .addr-block { margin: 1.5rem 0 0; }
+    .addr-price {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.4rem; font-weight: 500; color: #1a1918; line-height: 1;
+      margin-bottom: .35rem;
+    }
+    .addr-drop { font-size: .85rem; color: #c0392b; margin-left: .5rem; }
+    .addr-street { font-size: 1.1rem; color: #333; margin-bottom: .25rem; }
+    .addr-city { font-size: .88rem; color: #888; }
+
+    .prop-stats {
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      margin: 1.25rem 0; padding: 1.25rem 0;
+      border-top: 1px solid #e8e2d8; border-bottom: 1px solid #e8e2d8;
+    }
+    .prop-stat .ps-val { font-size: 1.05rem; font-weight: 600; color: #1a1918; }
+    .prop-stat .ps-lbl { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: #888; }
+
+    /* Remarks */
+    .remarks-block {
+      background: #fff; border: 1px solid #e8e2d8; border-radius: 8px; padding: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .remarks-block h3 { font-size: .8rem; letter-spacing: .15em; text-transform: uppercase; color: #b8935a; margin-bottom: .75rem; }
+    .remarks-block p  { font-size: .88rem; color: #555; line-height: 1.75; }
+
+    /* ── SCORE SIDEBAR ── */
+    .score-sidebar { position: sticky; top: 80px; }
+
+    .score-card {
+      background: #fff; border: 1px solid #e8e2d8; border-radius: 10px; overflow: hidden;
+    }
+    .score-card-head {
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid #f0ebe2;
+    }
+    .score-ring {
+      width: 100px; height: 100px; border-radius: 50%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+      border: 4px solid;
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .score-ring .sr-num  { font-size: 2.2rem; font-weight: 500; line-height: 1; }
+    .score-ring .sr-max  { font-size: .7rem; opacity: .6; }
+    .score-ring .sr-lbl  { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; opacity: .7; }
+    .score-tier-label {
+      font-size: .8rem; letter-spacing: .12em; text-transform: uppercase;
+      font-weight: 600; margin-bottom: .35rem;
+    }
+    .score-card-head p {
+      font-size: .8rem; color: #888; line-height: 1.6; max-width: 260px; margin: 0 auto;
+    }
+
+    /* Breakdown bars */
+    .score-breakdown { padding: 1.25rem; }
+    .score-breakdown h3 {
+      font-size: .72rem; letter-spacing: .16em; text-transform: uppercase;
+      color: #888; margin-bottom: 1rem;
+    }
+    .breakdown-row { margin-bottom: .9rem; }
+    .br-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: .3rem; }
+    .br-label { font-size: .8rem; color: #333; font-weight: 500; }
+    .br-pts   { font-size: .78rem; color: #888; }
+    .br-bar   { height: 6px; background: #f0ebe2; border-radius: 3px; overflow: hidden; }
+    .br-fill  { height: 100%; border-radius: 3px; transition: width .5s ease; }
+
+    /* Badges strip */
+    .badges-strip {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid #f0ebe2;
+      display: flex; gap: .4rem; flex-wrap: wrap;
+    }
+    .badge {
+      font-size: 9px; letter-spacing: .08em; text-transform: uppercase;
+      border-radius: 3px; padding: 3px 8px; font-weight: 600; border: 1px solid;
+    }
+    .badge-drop  { color: #c0392b; border-color: rgba(192,57,43,.3); background: rgba(192,57,43,.07); }
+    .badge-below { color: #27ae60; border-color: rgba(39,174,96,.3); background: rgba(39,174,96,.07); }
+    .badge-dom   { color: #2980b9; border-color: rgba(41,128,185,.3); background: rgba(41,128,185,.07); }
+    .badge-value { color: #8e44ad; border-color: rgba(142,68,173,.3); background: rgba(142,68,173,.07); }
+    .badge-yield { color: #b8935a; border-color: rgba(184,147,90,.3); background: rgba(184,147,90,.1);  }
+    .badge-lot   { color: #16a085; border-color: rgba(22,160,133,.3); background: rgba(22,160,133,.07); }
+
+    /* CTA in sidebar */
+    .score-cta { padding: 1.25rem; border-top: 1px solid #f0ebe2; }
+    .score-cta a {
+      display: block; text-align: center;
+      background: #b8935a; color: #fff; border-radius: 5px;
+      padding: .85rem; font-size: .88rem; font-weight: 500;
+      letter-spacing: .05em; transition: background .2s;
+    }
+    .score-cta a:hover { background: #a07e4d; }
+    .score-cta-note { font-size: .72rem; color: #aaa; text-align: center; margin-top: .6rem; line-height: 1.5; }
+
+    /* ── SIGNAL DETAILS SECTION ── */
+    .signal-section { margin-top: 2.5rem; }
+    .signal-section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; color: #1a1918; margin-bottom: 1.25rem;
+    }
+    .signal-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .signal-card {
+      background: #fff; border: 1px solid #e8e2d8; border-radius: 8px; padding: 1.25rem;
+    }
+    .sc-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: .75rem; }
+    .sc-name { font-size: .82rem; font-weight: 600; color: #1a1918; }
+    .sc-score {
+      font-size: .75rem; font-weight: 600; padding: .2rem .55rem;
+      border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+    }
+    .sc-conf { font-size: .7rem; color: #999; margin-bottom: .6rem; }
+    .sc-conf span { background: #f5ede0; color: #b8935a; padding: 1px 6px; border-radius: 10px; font-size: .65rem; text-transform: uppercase; letter-spacing: .06em; }
+    .sc-reasons { list-style: none; }
+    .sc-reasons li {
+      font-size: .78rem; color: #555; line-height: 1.55; padding: .18rem 0;
+      display: flex; gap: .4rem;
+    }
+    .sc-reasons li::before { content: '›'; color: #b8935a; flex-shrink: 0; }
+    .sc-note { font-size: .73rem; color: #aaa; font-style: italic; margin-top: .5rem; line-height: 1.5; }
+
+    /* ── DISCLAIMER ── */
+    .disclaimer-full {
+      background: #fff; border: 1px solid #e8e2d8; border-radius: 8px;
+      padding: 1.5rem; margin-top: 2.5rem;
+      font-size: .78rem; color: #777; line-height: 1.75;
+    }
+    .disclaimer-full h4 {
+      font-size: .72rem; letter-spacing: .15em; text-transform: uppercase;
+      color: #b8935a; margin-bottom: .75rem;
+    }
+
+    /* ── LOADING / ERROR ── */
+    .loading-state { text-align: center; padding: 6rem 2rem; color: #888; }
+    .loading-state .spin {
+      width: 40px; height: 40px; border: 3px solid #e8e2d8;
+      border-top-color: #b8935a; border-radius: 50%;
+      animation: spin .8s linear infinite; margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-state { text-align: center; padding: 5rem 2rem; }
+    .error-state h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; color: #1a1918; margin-bottom: .5rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 920px) {
+      .detail-layout { grid-template-columns: 1fr; }
+      .score-sidebar { position: static; }
+      .signal-cards  { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 580px) {
+      .page-wrap { padding: 1.25rem 1rem 4rem; }
+      .addr-price { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<script src="/js/nav.js"></script>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="/">Home</a>
+    <span>/</span>
+    <a href="/deal-radar">Deal Radar</a>
+    <span>/</span>
+    <span id="bc-address">Property Analysis</span>
+  </div>
+</div>
+
+<!-- Main content (populated by JS) -->
+<div class="page-wrap" id="main-content">
+  <div class="loading-state">
+    <div class="spin"></div>
+    <p>Loading deal analysis…</p>
+  </div>
+</div>
+
+<script src="/js/footer.js"></script>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+function fmt$(n) {
+  if (!n) return '—';
+  if (n >= 1000000) return '$' + (n / 1000000).toFixed(2).replace(/\.?0+$/, '') + 'M';
+  if (n >= 1000)    return '$' + (n / 1000).toFixed(0) + 'K';
+  return '$' + n;
+}
+function fmtFull$(n) {
+  return n ? '$' + n.toLocaleString() : '—';
+}
+function scoreColor(s) {
+  if (s >= 90) return '#27ae60';
+  if (s >= 75) return '#b8935a';
+  if (s >= 60) return '#2980b9';
+  return '#888';
+}
+function badgeClass(type) { return 'badge badge-' + (type || 'below'); }
+
+const SIGNAL_LABELS = {
+  priceVsComps:    '$/Sqft vs Comps',
+  priceDrops:      'Price Drop History',
+  domAnomaly:      'Days on Market',
+  rentYield:       'Rental Yield Est.',
+  valueAddSignals: 'Value-Add Signals',
+  lotPotential:    'Lot Potential',
+  assessedDiscount:'Assessed vs List',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Photo gallery
+// ─────────────────────────────────────────────────────────────────────────────
+let photoIdx = 0;
+let photoList = [];
+
+function showPhoto(idx) {
+  const img = document.getElementById('main-photo');
+  const ctr = document.getElementById('photo-counter');
+  if (!img || !photoList.length) return;
+  photoIdx = Math.max(0, Math.min(photoList.length - 1, idx));
+  img.src = photoList[photoIdx];
+  if (ctr) ctr.textContent = `${photoIdx + 1} / ${photoList.length}`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Render full detail page
+// ─────────────────────────────────────────────────────────────────────────────
+function renderDetail(d) {
+  const color = scoreColor(d.dealScore);
+  const bd = d.breakdown || {};
+
+  // Photo gallery
+  photoList = Array.isArray(d.photos) ? d.photos.filter(Boolean) : [];
+  const photoHtml = photoList.length > 0
+    ? `<img id="main-photo" src="${photoList[0]}" alt="${d.address || ''}" onerror="this.outerHTML='<div class=\\'photo-placeholder\\'>⌂</div>'" />
+       <div class="photo-counter" id="photo-counter">1 / ${photoList.length}</div>
+       ${photoList.length > 1 ? `<div class="photo-nav">
+         <button onclick="showPhoto(photoIdx-1)">‹ Prev</button>
+         <button onclick="showPhoto(photoIdx+1)">Next ›</button>
+       </div>` : ''}`
+    : `<div class="photo-placeholder">⌂</div>`;
+
+  const dropHtml = d.priceDropPct > 0
+    ? `<span class="addr-drop">↓ ${d.priceDropPct}% price reduction</span>` : '';
+
+  // Property stats
+  const stats = [
+    d.bedrooms_total  && { val: d.bedrooms_total,          lbl: 'Beds' },
+    d.bathrooms_total && { val: d.bathrooms_total,         lbl: 'Baths' },
+    d.living_area     && { val: d.living_area.toLocaleString() + ' sqft', lbl: 'Living Area' },
+    d.lot_size_area   && { val: Math.round(d.lot_size_area).toLocaleString() + ' sqft', lbl: 'Lot Size' },
+    d.ppsf            && { val: '$' + d.ppsf + '/sqft',   lbl: '$/Sqft' },
+    d.days_on_market  && { val: d.days_on_market + ' days', lbl: 'Days on Market' },
+    d.year_built      && { val: d.year_built,              lbl: 'Year Built' },
+    d.property_sub_type && { val: d.property_sub_type,    lbl: 'Property Type' },
+  ].filter(Boolean);
+
+  const statsHtml = stats.map(s => `
+    <div class="prop-stat">
+      <div class="ps-val">${s.val}</div>
+      <div class="ps-lbl">${s.lbl}</div>
+    </div>`).join('');
+
+  // Badges
+  const badgesHtml = (d.badges || []).map(b =>
+    `<span class="${badgeClass(b.type)}">${b.label}</span>`).join('');
+
+  // Score breakdown bars
+  const bdRows = Object.entries(bd).map(([key, cat]) => {
+    const label = SIGNAL_LABELS[key] || key;
+    const pct   = cat.maxScore > 0 ? Math.round((cat.score / cat.maxScore) * 100) : 0;
+    const fill  = pct >= 70 ? '#27ae60' : pct >= 40 ? '#b8935a' : '#2980b9';
+    return `
+      <div class="breakdown-row">
+        <div class="br-header">
+          <span class="br-label">${label}</span>
+          <span class="br-pts">${cat.score}/${cat.maxScore}</span>
+        </div>
+        <div class="br-bar"><div class="br-fill" style="width:${pct}%;background:${fill}"></div></div>
+      </div>`;
+  }).join('');
+
+  // Signal cards (only show signals with data)
+  const signalCardsHtml = Object.entries(bd).map(([key, cat]) => {
+    const label = SIGNAL_LABELS[key] || key;
+    const pct   = cat.maxScore > 0 ? Math.round((cat.score / cat.maxScore) * 100) : 0;
+    const bg    = pct >= 70 ? 'rgba(39,174,96,.1)'  : pct >= 40 ? 'rgba(184,147,90,.1)' : 'rgba(233,236,239,.7)';
+    const col   = pct >= 70 ? '#27ae60' : pct >= 40 ? '#b8935a' : '#888';
+    const reasonsHtml = (cat.reasons || []).map(r => `<li>${r}</li>`).join('') ||
+      '<li style="color:#aaa;list-style:none">No signals detected for this category</li>';
+    const confLabel = cat.confidence === 'high' ? 'High confidence' :
+                      cat.confidence === 'medium' ? 'Medium confidence' : 'Low confidence / estimated';
+    return `
+      <div class="signal-card">
+        <div class="sc-head">
+          <span class="sc-name">${label}</span>
+          <span class="sc-score" style="background:${bg};color:${col}">${cat.score}/${cat.maxScore}</span>
+        </div>
+        <div class="sc-conf"><span>${confLabel}</span></div>
+        <ul class="sc-reasons">${reasonsHtml}</ul>
+        ${cat.note ? `<p class="sc-note">⚠ ${cat.note}</p>` : ''}
+        ${cat.estimated ? `<p class="sc-note">⚠ Based on estimated data — verify with real rent comps</p>` : ''}
+      </div>`;
+  }).join('');
+
+  // Remarks
+  const remarksHtml = d.public_remarks ? `
+    <div class="remarks-block">
+      <h3>Listing Remarks</h3>
+      <p>${d.public_remarks}</p>
+    </div>` : '';
+
+  const content = `
+    <div class="detail-layout">
+
+      <!-- Left: photos + details -->
+      <div>
+        <div class="photos-wrap">${photoHtml}</div>
+
+        <div class="addr-block">
+          <div class="addr-price">${fmtFull$(d.list_price)}${dropHtml}</div>
+          <div class="addr-street">${d.address || ''}</div>
+          <div class="addr-city">${d.city || ''}${d.neighborhood && d.neighborhood !== d.city ? ' · ' + d.neighborhood : ''}</div>
+        </div>
+
+        <div class="prop-stats">${statsHtml}</div>
+
+        ${remarksHtml}
+
+        <div class="signal-section">
+          <h2>Deal Signal Analysis</h2>
+          <div class="signal-cards">${signalCardsHtml}</div>
+        </div>
+
+        <div class="disclaimer-full">
+          <h4>Important Disclaimer</h4>
+          <p>This Deal Score is an <strong>algorithmic screening result</strong> for informational purposes only. It does not constitute a professional appraisal, legal advice, financial advice, or a guarantee of value, condition, future performance, or legal development potential.</p>
+          <p style="margin-top:.75rem">Before making any real estate decision, independently verify: <strong>property condition</strong> (inspection), <strong>title</strong>, <strong>zoning and legal uses</strong>, <strong>floodplain status</strong>, <strong>HOA rules and restrictions</strong>, <strong>outstanding liens</strong>, and all financial assumptions including rent estimates. Consult licensed professionals as appropriate.</p>
+          <p style="margin-top:.75rem">Comparable analysis is based on currently active MLS listings using automated matching and does not account for material differences in condition, finishes, views, or other qualitative factors.</p>
+        </div>
+      </div>
+
+      <!-- Right: score sidebar -->
+      <div class="score-sidebar">
+        <div class="score-card">
+          <div class="score-card-head">
+            <div class="score-ring" style="color:${color};border-color:${color}">
+              <span class="sr-num">${d.dealScore}</span>
+              <span class="sr-max">/100</span>
+              <span class="sr-lbl">Score</span>
+            </div>
+            <div class="score-tier-label" style="color:${color}">${d.tier ? d.tier.label : ''}</div>
+            <p>Algorithmic screening result — see signal breakdown below for the reasons behind this score.</p>
+          </div>
+
+          <div class="score-breakdown">
+            <h3>Score Breakdown</h3>
+            ${bdRows}
+          </div>
+
+          ${badgesHtml ? `<div class="badges-strip">${badgesHtml}</div>` : ''}
+
+          <div class="score-cta">
+            <a href="/about#contact">Discuss This Property with Luke</a>
+            <p class="score-cta-note">Licensed Austin realtor. No obligation consultation.</p>
+          </div>
+        </div>
+
+        <!-- Key numbers card -->
+        ${d.breakdown && d.breakdown.priceVsComps && d.breakdown.priceVsComps.details ? `
+        <div class="score-card" style="margin-top:1rem;overflow:hidden">
+          <div style="padding:1.25rem">
+            <div style="font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:1rem">Comparable Analysis</div>
+            ${d.breakdown.priceVsComps.details.subjectPpsf ? `
+            <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid #f0ebe2;font-size:.83rem">
+              <span style="color:#666">This property $/sqft</span>
+              <strong>$${d.breakdown.priceVsComps.details.subjectPpsf}</strong>
+            </div>` : ''}
+            ${d.breakdown.priceVsComps.details.medianCompPpsf ? `
+            <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid #f0ebe2;font-size:.83rem">
+              <span style="color:#666">Area median $/sqft</span>
+              <strong>$${d.breakdown.priceVsComps.details.medianCompPpsf}</strong>
+            </div>` : ''}
+            ${d.breakdown.priceVsComps.details.discountPct != null ? `
+            <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid #f0ebe2;font-size:.83rem">
+              <span style="color:#666">Discount vs comps</span>
+              <strong style="color:${d.breakdown.priceVsComps.details.discountPct > 0 ? '#27ae60' : '#c0392b'}">${d.breakdown.priceVsComps.details.discountPct > 0 ? '-' : '+'}${Math.abs(d.breakdown.priceVsComps.details.discountPct)}%</strong>
+            </div>` : ''}
+            ${d.breakdown.priceVsComps.details.compCount ? `
+            <div style="display:flex;justify-content:space-between;padding:.5rem 0;font-size:.83rem">
+              <span style="color:#666">Comparables used</span>
+              <strong>${d.breakdown.priceVsComps.details.compCount} listings</strong>
+            </div>` : ''}
+            <p style="font-size:.7rem;color:#aaa;margin-top:.75rem;line-height:1.6">Comparables are active listings with similar type, size, and location. This is not a formal appraisal.</p>
+          </div>
+        </div>` : ''}
+
+        ${d.breakdown && d.breakdown.rentYield && d.breakdown.rentYield.details ? `
+        <div class="score-card" style="margin-top:1rem;overflow:hidden">
+          <div style="padding:1.25rem">
+            <div style="font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:1rem">Rental Yield Estimate</div>
+            <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid #f0ebe2;font-size:.83rem">
+              <span style="color:#666">Est. monthly rent</span>
+              <strong>${fmt$(d.breakdown.rentYield.details.estimatedRent)}/mo</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.5rem 0;font-size:.83rem">
+              <span style="color:#666">Est. gross yield</span>
+              <strong>${d.breakdown.rentYield.details.grossYieldPct}%</strong>
+            </div>
+            <p style="font-size:.7rem;color:#aaa;margin-top:.75rem;line-height:1.6">
+              ⚠ Estimated only. ${d.breakdown.rentYield.details.note || 'Verify with MLS rent comps.'}
+            </p>
+          </div>
+        </div>` : ''}
+
+      </div><!-- /score-sidebar -->
+
+    </div><!-- /detail-layout -->
+  `;
+
+  document.getElementById('main-content').innerHTML = content;
+  document.getElementById('bc-address').textContent = d.address || 'Property Analysis';
+  document.title = `${d.address ? d.address + ' | ' : ''}Deal Analysis | Austin Deal Radar`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Fetch and render
+// ─────────────────────────────────────────────────────────────────────────────
+async function init() {
+  // Extract listing key from URL path: /deal-radar/LISTING_KEY
+  const parts = window.location.pathname.split('/').filter(Boolean);
+  const listingKey = parts[parts.length - 1];
+
+  if (!listingKey || listingKey === 'deal-radar') {
+    document.getElementById('main-content').innerHTML = `
+      <div class="error-state">
+        <h2>No listing specified</h2>
+        <p><a href="/deal-radar" style="color:#b8935a">← Back to Deal Radar</a></p>
+      </div>`;
+    return;
+  }
+
+  try {
+    const res  = await fetch('/api/deal-radar/' + encodeURIComponent(listingKey));
+    if (res.status === 404) throw new Error('not_found');
+    if (!res.ok) throw new Error('api_error');
+    const data = await res.json();
+    renderDetail(data);
+  } catch (err) {
+    const msg = err.message === 'not_found'
+      ? 'This listing was not found in the Deal Radar. It may have sold or been removed.'
+      : 'Unable to load deal analysis. Please try again.';
+    document.getElementById('main-content').innerHTML = `
+      <div class="error-state">
+        <h2>Deal Not Found</h2>
+        <p style="color:#888;margin-bottom:1.5rem">${msg}</p>
+        <a href="/deal-radar" style="color:#b8935a">← Back to Deal Radar</a>
+      </div>`;
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>

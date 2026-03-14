@@ -1,0 +1,20 @@
+[
+  {
+    "id": "mmocxzjh7e6ia",
+    "email": "luke@austinmdg.com",
+    "name": "My Deal Alert",
+    "minScore": 70,
+    "maxPrice": null,
+    "city": null,
+    "subType": null,
+    "badgeType": null,
+    "createdAt": "2026-03-13T03:49:10.829Z",
+    "lastChecked": "2026-03-13T23:34:28.016Z",
+    "lastSentAt": "2026-03-13T04:38:01.217Z",
+    "lastSentKeys": [
+      "ACT222317378",
+      "ACT222279592"
+    ],
+    "active": true
+  }
+]

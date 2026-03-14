@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deal Radar Admin | AustinTXHomes</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #0f0f0e; color: #d0ccc4; min-height: 100vh; }
+
+    /* Auth gate */
+    .auth-gate {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 2rem;
+    }
+    .auth-card {
+      background: #1a1918; border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px; padding: 2.5rem; max-width: 380px; width: 100%;
+      text-align: center;
+    }
+    .auth-card h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; color: #b8935a; margin-bottom: .5rem;
+    }
+    .auth-card p { font-size: .85rem; color: rgba(255,255,255,.4); margin-bottom: 1.5rem; }
+    .auth-input {
+      width: 100%; padding: .85rem 1rem;
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 5px; color: #fff; font-size: .9rem; font-family: inherit;
+      outline: none; margin-bottom: .75rem;
+    }
+    .auth-input:focus { border-color: #b8935a; }
+    .auth-btn {
+      width: 100%; padding: .85rem; background: #b8935a; color: #fff;
+      border: none; border-radius: 5px; font-size: .9rem; font-family: inherit;
+      cursor: pointer; transition: background .2s;
+    }
+    .auth-btn:hover { background: #a07e4d; }
+    .auth-error { color: #e74c3c; font-size: .8rem; margin-top: .5rem; display: none; }
+
+    /* Admin UI */
+    #admin-ui { display: none; }
+    .admin-header {
+      background: #1a1918; border-bottom: 1px solid rgba(255,255,255,.07);
+      padding: 1rem 2rem;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem;
+    }
+    .admin-header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; color: #b8935a;
+    }
+    .admin-header-actions { display: flex; gap: .75rem; }
+    .btn {
+      padding: .5rem 1.1rem; border-radius: 4px; font-size: .8rem; font-family: inherit;
+      cursor: pointer; transition: all .2s; border: 1px solid; letter-spacing: .05em;
+    }
+    .btn-primary { background: #b8935a; color: #fff; border-color: #b8935a; }
+    .btn-primary:hover { background: #a07e4d; border-color: #a07e4d; }
+    .btn-ghost { background: transparent; color: rgba(255,255,255,.5); border-color: rgba(255,255,255,.15); }
+    .btn-ghost:hover { border-color: rgba(255,255,255,.4); color: rgba(255,255,255,.8); }
+    .btn-danger { background: transparent; color: #e74c3c; border-color: rgba(231,76,60,.3); }
+    .btn-danger:hover { background: rgba(231,76,60,.1); }
+
+    .admin-wrap { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+    .panel {
+      background: #1a1918; border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden;
+    }
+    .panel-head {
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .panel-head h2 { font-size: .85rem; font-weight: 600; color: rgba(255,255,255,.8); }
+    .panel-head p  { font-size: .75rem; color: rgba(255,255,255,.35); margin-top: .2rem; }
+    .panel-body { padding: 1.5rem; }
+
+    /* Weight sliders */
+    .weight-row { margin-bottom: 1.25rem; }
+    .weight-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: .4rem; }
+    .weight-label { font-size: .82rem; color: rgba(255,255,255,.75); }
+    .weight-val {
+      font-size: .85rem; font-weight: 600; color: #b8935a;
+      min-width: 40px; text-align: right;
+    }
+    input[type="range"] {
+      width: 100%; height: 4px; appearance: none;
+      background: rgba(255,255,255,.12); border-radius: 2px; outline: none; cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none; width: 16px; height: 16px; border-radius: 50%;
+      background: #b8935a; cursor: pointer; box-shadow: 0 0 4px rgba(0,0,0,.4);
+    }
+    .weight-total {
+      margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,.07);
+      display: flex; justify-content: space-between;
+      font-size: .82rem; color: rgba(255,255,255,.5);
+    }
+    .weight-total strong { font-size: .95rem; }
+    .weight-total.over  strong { color: #e74c3c; }
+    .weight-total.exact strong { color: #27ae60; }
+
+    /* Toggles */
+    .toggle-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: .75rem 0; border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-info h3 { font-size: .85rem; color: rgba(255,255,255,.8); }
+    .toggle-info p  { font-size: .72rem; color: rgba(255,255,255,.35); margin-top: .15rem; }
+    .toggle {
+      position: relative; width: 42px; height: 22px; flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute; inset: 0; border-radius: 11px;
+      background: rgba(255,255,255,.15); cursor: pointer; transition: background .2s;
+    }
+    .toggle-track::before {
+      content: ''; position: absolute;
+      width: 16px; height: 16px; border-radius: 50%; background: #fff;
+      left: 3px; top: 3px; transition: transform .2s;
+    }
+    .toggle input:checked + .toggle-track { background: #b8935a; }
+    .toggle input:checked + .toggle-track::before { transform: translateX(20px); }
+
+    /* Number inputs */
+    .num-input {
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 4px; color: #fff; font-size: .85rem; font-family: inherit;
+      padding: .4rem .65rem; width: 80px; outline: none; text-align: center;
+    }
+    .num-input:focus { border-color: #b8935a; }
+    .input-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: .65rem 0; border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .input-row:last-child { border-bottom: none; }
+    .input-row label { font-size: .82rem; color: rgba(255,255,255,.7); }
+    .input-row .hint { font-size: .7rem; color: rgba(255,255,255,.3); margin-top: .15rem; }
+
+    /* Status bar */
+    .status-bar {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: #27ae60; color: #fff; border-radius: 6px;
+      padding: .7rem 1.5rem; font-size: .85rem; font-weight: 500;
+      opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 200;
+    }
+    .status-bar.show { opacity: 1; }
+    .status-bar.error { background: #e74c3c; }
+
+    @media (max-width: 580px) {
+      .admin-wrap { padding: 1rem; }
+      .panel-body { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Auth gate -->
+<div class="auth-gate" id="auth-gate">
+  <div class="auth-card">
+    <h1>Deal Radar Admin</h1>
+    <p>Enter admin key to access scoring settings</p>
+    <input type="password" class="auth-input" id="auth-input" placeholder="Admin key" />
+    <button class="auth-btn" onclick="checkAuth()">Access Admin Panel</button>
+    <p class="auth-error" id="auth-error">Incorrect key. Try again.</p>
+  </div>
+</div>
+
+<!-- Admin UI -->
+<div id="admin-ui">
+
+  <div class="admin-header">
+    <div>
+      <h1>Deal Radar — Scoring Admin</h1>
+    </div>
+    <div class="admin-header-actions">
+      <button class="btn btn-ghost" onclick="loadSettings()">↺ Reload</button>
+      <button class="btn btn-danger" onclick="resetDefaults()">Reset Defaults</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Save & Rescore</button>
+    </div>
+  </div>
+
+  <div class="admin-wrap">
+
+    <!-- Score weights -->
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Scoring Weights</h2>
+          <p>Adjust how many points each signal contributes. Total should equal 100.</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div id="weights-container"></div>
+        <div class="weight-total" id="weight-total">
+          <span>Total weight</span>
+          <strong id="weight-sum">—</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signal toggles -->
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Signal Enable / Disable</h2>
+          <p>Turn individual scoring signals on or off without losing their weight settings.</p>
+        </div>
+      </div>
+      <div class="panel-body" id="signals-container"></div>
+    </div>
+
+    <!-- General thresholds -->
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>General Settings</h2>
+          <p>Configure overall behavior and filtering.</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="input-row">
+          <div>
+            <label>Min Score to Show</label>
+            <div class="hint">Listings below this score are hidden from Deal Radar (default: 45)</div>
+          </div>
+          <input type="number" class="num-input" id="s-minScore" min="0" max="100" step="5" />
+        </div>
+        <div class="input-row">
+          <div>
+            <label>Cache Duration (minutes)</label>
+            <div class="hint">How long scored results are cached before rescoring (default: 30)</div>
+          </div>
+          <input type="number" class="num-input" id="s-cacheMinutes" min="5" max="240" step="5" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Price comp thresholds -->
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Comparable Analysis Thresholds</h2>
+          <p>Controls how the price-vs-comps signal finds and scores comparable listings.</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="input-row">
+          <div>
+            <label>Min Comps Required</label>
+            <div class="hint">Minimum similar listings needed to use direct-comp method (default: 3)</div>
+          </div>
+          <input type="number" class="num-input" id="c-minComps" min="1" max="20" step="1" />
+        </div>
+        <div class="input-row">
+          <div>
+            <label>Sqft Window (0–1)</label>
+            <div class="hint">Allowed sqft difference as fraction, e.g. 0.30 = ±30% (default: 0.30)</div>
+          </div>
+          <input type="number" class="num-input" id="c-sqftWindow" min="0.05" max="0.8" step="0.05" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions row -->
+    <div style="display:flex;gap:.75rem;justify-content:flex-end;padding-top:.5rem">
+      <button class="btn btn-ghost" onclick="window.location='/deal-radar'">← View Deal Radar</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Save & Rescore</button>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="status-bar" id="status-bar"></div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// Auth
+// ─────────────────────────────────────────────────────────────────────────────
+let adminKey = sessionStorage.getItem('dr_admin_key') || '';
+if (adminKey) unlockAdmin();
+
+function checkAuth() {
+  adminKey = document.getElementById('auth-input').value;
+  // Test key by calling settings endpoint
+  fetch('/api/deal-radar/settings', {
+    headers: { 'x-admin-key': adminKey }
+  }).then(r => {
+    if (r.ok) {
+      sessionStorage.setItem('dr_admin_key', adminKey);
+      unlockAdmin();
+    } else {
+      document.getElementById('auth-error').style.display = 'block';
+    }
+  }).catch(() => {
+    document.getElementById('auth-error').style.display = 'block';
+  });
+}
+
+function unlockAdmin() {
+  document.getElementById('auth-gate').style.display = 'none';
+  document.getElementById('admin-ui').style.display   = 'block';
+  loadSettings();
+}
+
+document.getElementById('auth-input')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkAuth();
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Defaults (mirrors config.js)
+// ─────────────────────────────────────────────────────────────────────────────
+const WEIGHT_LABELS = {
+  priceVsComps:    '$/Sqft vs Comparable Listings',
+  priceDrops:      'Price Drop History',
+  domAnomaly:      'Days on Market Anomaly',
+  rentYield:       'Rental Yield Estimate',
+  valueAddSignals: 'Value-Add Language in Remarks',
+  lotPotential:    'Lot / Redevelopment Potential',
+  assessedDiscount:'Assessed Value Discount',
+};
+const SIGNAL_DESCS = {
+  priceVsComps:    'Compare $/sqft to similar active listings in same city',
+  priceDrops:      'Detect and score recent price reductions',
+  domAnomaly:      'Flag listings with DOM significantly above area median',
+  rentYield:       'Estimate gross rental yield using Austin rent benchmarks',
+  valueAddSignals: 'Parse public remarks for investor/motivated-seller language',
+  lotPotential:    'Score oversized lots and older construction for redevelopment upside',
+  assessedDiscount:'Compare list price to county appraised value (not yet integrated)',
+};
+const DEFAULTS = {
+  weights:      { priceVsComps:35, priceDrops:15, domAnomaly:10, rentYield:15, valueAddSignals:10, lotPotential:10, assessedDiscount:5 },
+  signals:      { priceVsComps:true, priceDrops:true, domAnomaly:true, rentYield:true, valueAddSignals:true, lotPotential:true, assessedDiscount:false },
+  minScoreToShow: 45,
+  cacheMinutes:   30,
+  priceComps:    { minComps:3, sqftWindow:0.30 },
+};
+
+let currentSettings = JSON.parse(JSON.stringify(DEFAULTS));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Load settings from server
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadSettings() {
+  try {
+    const r = await fetch('/api/deal-radar/settings', { headers: { 'x-admin-key': adminKey } });
+    if (!r.ok) return;
+    const data = await r.json();
+    // Merge into defaults
+    currentSettings = JSON.parse(JSON.stringify(DEFAULTS));
+    if (data.weights)    Object.assign(currentSettings.weights,  data.weights);
+    if (data.signals)    Object.assign(currentSettings.signals,  data.signals);
+    if (data.priceComps) Object.assign(currentSettings.priceComps, data.priceComps);
+    if (typeof data.minScoreToShow === 'number') currentSettings.minScoreToShow = data.minScoreToShow;
+    if (typeof data.cacheMinutes   === 'number') currentSettings.cacheMinutes   = data.cacheMinutes;
+    renderUI();
+  } catch (e) {
+    renderUI(); // render with defaults
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Render UI from currentSettings
+// ─────────────────────────────────────────────────────────────────────────────
+function renderUI() {
+  // Weights
+  const wc = document.getElementById('weights-container');
+  wc.innerHTML = '';
+  for (const [key, label] of Object.entries(WEIGHT_LABELS)) {
+    const val = currentSettings.weights[key] ?? 0;
+    wc.insertAdjacentHTML('beforeend', `
+      <div class="weight-row">
+        <div class="weight-head">
+          <span class="weight-label">${label}</span>
+          <span class="weight-val" id="wv-${key}">${val}</span>
+        </div>
+        <input type="range" min="0" max="50" step="1" value="${val}"
+          id="w-${key}" oninput="updateWeight('${key}', this.value)" />
+      </div>`);
+  }
+  updateWeightTotal();
+
+  // Signals
+  const sc = document.getElementById('signals-container');
+  sc.innerHTML = '';
+  for (const [key, label] of Object.entries(WEIGHT_LABELS)) {
+    const enabled = currentSettings.signals[key] !== false;
+    sc.insertAdjacentHTML('beforeend', `
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <h3>${label}</h3>
+          <p>${SIGNAL_DESCS[key] || ''}</p>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="sig-${key}" ${enabled ? 'checked' : ''} />
+          <span class="toggle-track"></span>
+        </label>
+      </div>`);
+  }
+
+  // General
+  document.getElementById('s-minScore').value    = currentSettings.minScoreToShow;
+  document.getElementById('s-cacheMinutes').value = currentSettings.cacheMinutes;
+  document.getElementById('c-minComps').value    = currentSettings.priceComps.minComps;
+  document.getElementById('c-sqftWindow').value  = currentSettings.priceComps.sqftWindow;
+}
+
+function updateWeight(key, val) {
+  document.getElementById('wv-' + key).textContent = val;
+  updateWeightTotal();
+}
+
+function updateWeightTotal() {
+  const keys = Object.keys(WEIGHT_LABELS);
+  const sum  = keys.reduce((s, k) => s + Number(document.getElementById('w-' + k)?.value || 0), 0);
+  const el   = document.getElementById('weight-total');
+  document.getElementById('weight-sum').textContent = sum;
+  el.className = 'weight-total ' + (sum === 100 ? 'exact' : sum > 100 ? 'over' : '');
+}
+
+function resetDefaults() {
+  if (!confirm('Reset all scoring weights and settings to defaults?')) return;
+  currentSettings = JSON.parse(JSON.stringify(DEFAULTS));
+  renderUI();
+  showStatus('Defaults loaded — click Save & Rescore to apply', false);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Save settings
+// ─────────────────────────────────────────────────────────────────────────────
+async function saveSettings() {
+  // Gather weights
+  const weights = {};
+  for (const key of Object.keys(WEIGHT_LABELS)) {
+    weights[key] = Number(document.getElementById('w-' + key)?.value || 0);
+  }
+  const sum = Object.values(weights).reduce((s, v) => s + v, 0);
+  if (sum !== 100) {
+    if (!confirm(`Weights sum to ${sum}, not 100. Save anyway?`)) return;
+  }
+
+  // Gather signals
+  const signals = {};
+  for (const key of Object.keys(WEIGHT_LABELS)) {
+    signals[key] = document.getElementById('sig-' + key)?.checked ?? true;
+  }
+
+  const payload = {
+    weights,
+    signals,
+    minScoreToShow: Number(document.getElementById('s-minScore').value),
+    cacheMinutes:   Number(document.getElementById('s-cacheMinutes').value),
+    priceComps: {
+      minComps:   Number(document.getElementById('c-minComps').value),
+      sqftWindow: Number(document.getElementById('c-sqftWindow').value),
+    },
+  };
+
+  try {
+    const r = await fetch('/api/deal-radar/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify(payload),
+    });
+    if (!r.ok) throw new Error('Save failed');
+    showStatus('Settings saved. Cache cleared — scores will recalculate on next request.', false);
+  } catch (e) {
+    showStatus('Save failed — check console', true);
+  }
+}
+
+function showStatus(msg, isError) {
+  const el = document.getElementById('status-bar');
+  el.textContent = msg;
+  el.className   = 'status-bar show' + (isError ? ' error' : '');
+  setTimeout(() => el.className = 'status-bar', 3500);
+}
+</script>
+
+</body>
+</html>

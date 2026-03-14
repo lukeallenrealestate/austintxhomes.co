@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Austin Real Estate Deal Radar | Underpriced Homes Austin TX | Luke Allen</title>
+  <meta name="description" content="Austin Real Estate Deal Radar — algorithmically scored listings that may be underpriced relative to comparable homes. Transparent scoring. Updated daily." />
+  <meta name="keywords" content="Austin real estate deals, underpriced homes Austin TX, Austin home deals, Austin fixer upper, Austin price reduced, investor deals Austin TX" />
+  <link rel="canonical" href="https://austintxhomes.co/deal-radar" />
+  <meta property="og:title" content="Austin Real Estate Deal Radar — Scored Opportunities" />
+  <meta property="og:description" content="Algorithmically scored Austin listings that may be underpriced. Transparent scoring, updated daily." />
+  <meta property="og:url" content="https://austintxhomes.co/deal-radar" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://austintxhomes.co/images/luke-allen.jpg" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <meta name="geo.region" content="US-TX" />
+  <meta name="geo.placename" content="Austin, Texas" />
+
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "name": "Luke Allen – Austin TX Homes",
+    "url": "https://austintxhomes.co",
+    "telephone": "+12547182567",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5.0",
+      "reviewCount": "15",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "sameAs": ["https://share.google/hETte82InqUPvWeNC", "https://www.linkedin.com/in/lukeallentx/", "https://www.instagram.com/lukeallenrealty/", "https://www.tiktok.com/@austintxapartments"]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Austin Real Estate Deal Radar",
+    "description": "Algorithmically scored Austin TX listings screened for potential value relative to comparable properties.",
+    "url": "https://austintxhomes.co/deal-radar",
+    "author": { "@type": "Person", "name": "Luke Allen", "url": "https://austintxhomes.co/about" }
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; color: #1a1918; background: #faf8f4; line-height: 1.6; }
+    #site-nav { min-height: 64px; }
+    a { text-decoration: none; }
+
+    /* ── HERO ── */
+    .hero {
+      background: #0f0f0e;
+      padding: 5rem 2rem 3.5rem;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+      color: #b8935a; margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 400;
+      color: #fff; line-height: 1.15; margin-bottom: 1rem;
+    }
+    .hero h1 span { color: #b8935a; }
+    .hero-sub {
+      font-size: clamp(.9rem, 1.5vw, 1.05rem);
+      color: rgba(255,255,255,.6); max-width: 560px; margin: 0 auto 2rem;
+    }
+    .hero-meta {
+      display: flex; justify-content: center; align-items: center;
+      gap: 1.5rem; flex-wrap: wrap; font-size: .78rem;
+      color: rgba(255,255,255,.35); letter-spacing: .04em;
+    }
+    .hero-meta span { display: flex; align-items: center; gap: .35rem; }
+    .hero-meta .dot { width: 6px; height: 6px; border-radius: 50%; background: #27ae60; flex-shrink: 0; }
+
+    /* ── DISCLAIMER BANNER ── */
+    .disclaimer-banner {
+      background: rgba(184,147,90,.08);
+      border-bottom: 1px solid rgba(184,147,90,.2);
+      padding: .65rem 2rem;
+      font-size: .75rem; color: rgba(26,25,24,.65);
+      text-align: center; line-height: 1.6;
+    }
+
+    /* ── FILTERS ── */
+    .filter-wrap {
+      background: #fff; border-bottom: 1px solid #e8e2d8;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .filter-inner {
+      max-width: 1220px; margin: 0 auto;
+      padding: .85rem 2rem;
+      display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
+    }
+    .filter-group { display: flex; align-items: center; gap: .4rem; }
+    .filter-label {
+      font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+      color: #888; white-space: nowrap;
+    }
+    .filter-select, .filter-input {
+      font-family: inherit; font-size: .82rem; color: #1a1918;
+      background: #f9f7f4; border: 1px solid #e0dbd0;
+      border-radius: 4px; padding: .4rem .65rem;
+      cursor: pointer; outline: none; transition: border-color .2s;
+      min-width: 120px;
+    }
+    .filter-select:hover, .filter-input:hover { border-color: #b8935a; }
+    .filter-input { min-width: 90px; }
+    .filter-sep { width: 1px; height: 24px; background: #e8e2d8; flex-shrink: 0; }
+    .filter-count {
+      margin-left: auto; font-size: .8rem; color: #888;
+      white-space: nowrap;
+    }
+    .filter-count strong { color: #1a1918; }
+
+    /* ── MAIN LAYOUT ── */
+    .page-wrap {
+      max-width: 1220px; margin: 0 auto;
+      padding: 2rem 2rem 5rem;
+    }
+
+    /* ── STATS BAR ── */
+    .stats-strip {
+      display: flex; gap: 2rem; flex-wrap: wrap;
+      margin-bottom: 2rem; padding-bottom: 1.5rem;
+      border-bottom: 1px solid #e8e2d8;
+    }
+    .stat-pill {
+      display: flex; flex-direction: column;
+    }
+    .stat-pill .sp-val {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.6rem; color: #b8935a; line-height: 1;
+    }
+    .stat-pill .sp-lbl {
+      font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+      color: #888; margin-top: .2rem;
+    }
+
+    /* ── DEAL GRID ── */
+    .deal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* ── DEAL CARD ── */
+    .deal-card {
+      background: #fff; border: 1px solid #e8e2d8; border-radius: 10px;
+      overflow: hidden; transition: box-shadow .25s, transform .25s;
+      cursor: pointer; position: relative;
+    }
+    .deal-card:hover { box-shadow: 0 10px 40px rgba(0,0,0,.1); transform: translateY(-3px); }
+
+    .card-img-wrap {
+      position: relative; padding-top: 62%; overflow: hidden; background: #1a1918;
+    }
+    .card-img-wrap img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; transition: transform .4s ease;
+    }
+    .deal-card:hover .card-img-wrap img { transform: scale(1.04); }
+    .card-img-placeholder {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #1a1918 0%, #2c2925 100%);
+      color: rgba(255,255,255,.2); font-size: 2.5rem;
+    }
+
+    /* Score badge — top right of image */
+    .score-badge {
+      position: absolute; top: 12px; right: 12px; z-index: 2;
+      width: 52px; height: 52px; border-radius: 50%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1.05rem; color: #fff;
+      box-shadow: 0 3px 12px rgba(0,0,0,.35);
+      line-height: 1; gap: 1px;
+      border: 2px solid rgba(255,255,255,.25);
+    }
+    .score-badge .sb-label {
+      font-size: 8px; letter-spacing: .06em; text-transform: uppercase;
+      font-weight: 500; opacity: .85;
+    }
+
+    /* Save / bookmark button */
+    .save-btn {
+      position: absolute; top: 12px; left: 12px; z-index: 2;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(15,15,14,.65); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s; backdrop-filter: blur(4px);
+    }
+    .save-btn:hover { background: rgba(184,147,90,.85); }
+    .save-btn svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2; }
+    .save-btn.saved svg { fill: #b8935a; stroke: #b8935a; }
+
+    /* Card body */
+    .card-body { padding: 1.1rem 1.25rem; }
+
+    .card-price {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.55rem; font-weight: 500; color: #1a1918;
+      line-height: 1; margin-bottom: .2rem;
+    }
+    .card-address { font-size: .82rem; color: #555; margin-bottom: .6rem; }
+
+    .card-stats {
+      display: flex; gap: .8rem; flex-wrap: wrap;
+      font-size: .76rem; color: #666;
+      padding-bottom: .65rem; margin-bottom: .65rem;
+      border-bottom: 1px solid #f0ebe2;
+    }
+    .card-stats span { display: flex; align-items: center; gap: .25rem; }
+
+    .card-badges {
+      display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: .65rem;
+    }
+    .badge {
+      font-size: 9px; letter-spacing: .08em; text-transform: uppercase;
+      border-radius: 3px; padding: 2px 7px; font-weight: 600;
+      border: 1px solid;
+    }
+    .badge-drop  { color: #c0392b; border-color: rgba(192,57,43,.3); background: rgba(192,57,43,.07); }
+    .badge-below { color: #27ae60; border-color: rgba(39,174,96,.3); background: rgba(39,174,96,.07); }
+    .badge-dom   { color: #2980b9; border-color: rgba(41,128,185,.3); background: rgba(41,128,185,.07); }
+    .badge-value { color: #8e44ad; border-color: rgba(142,68,173,.3); background: rgba(142,68,173,.07); }
+    .badge-yield { color: #b8935a; border-color: rgba(184,147,90,.3); background: rgba(184,147,90,.1);  }
+    .badge-lot   { color: #16a085; border-color: rgba(22,160,133,.3); background: rgba(22,160,133,.07); }
+    .badge-cad   { color: #6c5ce7; border-color: rgba(108,92,231,.3); background: rgba(108,92,231,.07); }
+
+    /* Cash flow pill on card */
+    .cf-pill {
+      display: inline-flex; align-items: center; gap: .3rem;
+      font-size: .75rem; font-weight: 600; border-radius: 4px;
+      padding: 3px 8px; margin-bottom: .5rem;
+    }
+    .cf-pill.positive { color: #1a7a45; background: rgba(39,174,96,.1); border: 1px solid rgba(39,174,96,.25); }
+    .cf-pill.negative { color: #8b2c2c; background: rgba(192,57,43,.07); border: 1px solid rgba(192,57,43,.2); }
+    .cf-pill.breakeven { color: #7d6608; background: rgba(243,156,18,.08); border: 1px solid rgba(243,156,18,.2); }
+
+    /* Cash flow PITI mini table on card */
+    .cf-mini {
+      font-size: .72rem; color: #666; border-top: 1px solid #f0ebe2;
+      padding-top: .55rem; margin-top: .55rem;
+      display: grid; grid-template-columns: 1fr auto; gap: .15rem .75rem;
+    }
+    .cf-mini .cf-row-label { color: #888; }
+    .cf-mini .cf-row-val   { text-align: right; font-weight: 500; color: #1a1918; }
+    .cf-mini .cf-total-label { color: #1a1918; font-weight: 600; }
+    .cf-mini .cf-total-val   { text-align: right; font-weight: 700; }
+    .cf-mini .cf-total-val.pos { color: #27ae60; }
+    .cf-mini .cf-total-val.neg { color: #c0392b; }
+
+    .card-reasons { list-style: none; }
+    .card-reasons li {
+      font-size: .78rem; color: #555; line-height: 1.55;
+      padding: .2rem 0;
+      display: flex; gap: .45rem; align-items: baseline;
+    }
+    .card-reasons li::before {
+      content: '›'; color: #b8935a; font-size: .9rem; flex-shrink: 0;
+    }
+
+    .card-footer {
+      padding: .75rem 1.25rem;
+      border-top: 1px solid #f0ebe2;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .card-tier {
+      font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+      font-weight: 600;
+    }
+    .card-cta {
+      font-size: .76rem; color: #b8935a; font-weight: 500;
+      transition: color .2s;
+    }
+    .deal-card:hover .card-cta { color: #a07e4d; }
+
+    /* ── SKELETON LOADING ── */
+    .skeleton { background: #f0ebe2; border-radius: 4px; animation: shimmer 1.5s infinite; }
+    @keyframes shimmer {
+      0%   { opacity: 1; }
+      50%  { opacity: .55; }
+      100% { opacity: 1; }
+    }
+    .skel-card { background: #fff; border: 1px solid #e8e2d8; border-radius: 10px; overflow: hidden; }
+    .skel-img  { padding-top: 62%; background: #e8e2d8; animation: shimmer 1.5s infinite; }
+    .skel-body { padding: 1.1rem 1.25rem; }
+    .skel-line { height: 14px; border-radius: 4px; margin-bottom: .6rem; }
+
+    /* ── EMPTY / ERROR STATES ── */
+    .state-center {
+      text-align: center; padding: 5rem 2rem; color: #888;
+      grid-column: 1 / -1;
+    }
+    .state-center h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; color: #1a1918; margin-bottom: .5rem;
+    }
+    .state-center p { font-size: .9rem; }
+
+    /* ── PAGINATION ── */
+    .pagination {
+      display: flex; justify-content: center; align-items: center;
+      gap: .5rem; margin-top: 3rem; flex-wrap: wrap;
+    }
+    .page-btn {
+      width: 38px; height: 38px; border-radius: 4px;
+      border: 1px solid #e8e2d8; background: #fff;
+      font-size: .85rem; color: #555; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s; font-family: inherit;
+    }
+    .page-btn:hover   { border-color: #b8935a; color: #b8935a; }
+    .page-btn.active  { background: #b8935a; border-color: #b8935a; color: #fff; }
+    .page-btn:disabled { opacity: .35; cursor: default; }
+    .page-ellipsis    { font-size: .85rem; color: #888; padding: 0 .25rem; }
+
+    /* ── SAVED DRAWER ── */
+    .saved-toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 500;
+      background: #1a1918; color: #fff; border-radius: 6px;
+      padding: .7rem 1.2rem; font-size: .83rem;
+      transform: translateY(120%); transition: transform .3s ease;
+      pointer-events: none;
+    }
+    .saved-toast.show { transform: translateY(0); }
+
+    /* ── VIEW TOGGLE ── */
+    .view-toggle {
+      display: flex; gap: .35rem;
+      background: #f0ebe2; border-radius: 6px; padding: 3px;
+    }
+    .vt-btn {
+      display: flex; align-items: center; gap: .4rem;
+      font-size: .78rem; font-family: inherit; font-weight: 500;
+      color: #666; background: transparent; border: none;
+      padding: .38rem .75rem; border-radius: 4px; cursor: pointer;
+      transition: all .2s; white-space: nowrap;
+    }
+    .vt-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .vt-btn.active { background: #fff; color: #1a1918; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+    .vt-btn:hover:not(.active) { color: #1a1918; }
+
+    /* ── MAP VIEW ── */
+    #map-view { display: none; }
+    #map-container {
+      height: 600px; border-radius: 10px; overflow: hidden;
+      border: 1px solid #e8e2d8;
+      margin-bottom: 2rem;
+    }
+    .mapboxgl-popup-content {
+      font-family: 'Inter', sans-serif; padding: 0;
+      border-radius: 8px; overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,.18);
+      max-width: 220px;
+    }
+    .map-popup { cursor: pointer; }
+    .map-popup-img {
+      width: 100%; height: 110px; object-fit: cover;
+      display: block; background: #1a1918;
+    }
+    .map-popup-body { padding: .65rem .75rem; }
+    .map-popup-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; font-weight: 500; color: #1a1918; line-height: 1;
+    }
+    .map-popup-addr { font-size: .72rem; color: #666; margin: .2rem 0 .4rem; }
+    .map-popup-row {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .map-popup-stats { font-size: .7rem; color: #888; }
+    .map-popup-score {
+      font-size: .7rem; font-weight: 700; color: #fff;
+      padding: 2px 7px; border-radius: 10px;
+    }
+    .map-popup-link {
+      display: block; text-align: center;
+      font-size: .72rem; color: #b8935a; font-weight: 500;
+      padding: .45rem; border-top: 1px solid #f0ebe2;
+      transition: background .15s;
+    }
+    .map-popup-link:hover { background: #faf8f4; }
+    /* Custom map marker */
+    .map-marker {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .65rem; font-weight: 700; color: #fff;
+      border: 2px solid rgba(255,255,255,.8);
+      box-shadow: 0 2px 8px rgba(0,0,0,.3);
+      cursor: pointer; transition: transform .15s;
+    }
+    .map-marker:hover { transform: scale(1.15); }
+
+    /* ── ALERT SUBSCRIBE ── */
+    .alert-bar {
+      background: linear-gradient(135deg, rgba(184,147,90,.08) 0%, rgba(184,147,90,.04) 100%);
+      border: 1px solid rgba(184,147,90,.2); border-radius: 8px;
+      padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .alert-bar-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .alert-bar-text { flex: 1; min-width: 200px; }
+    .alert-bar-text strong { display: block; font-size: .88rem; color: #1a1918; }
+    .alert-bar-text span { font-size: .78rem; color: #888; }
+    .alert-open-btn {
+      font-family: inherit; font-size: .82rem; font-weight: 500;
+      background: #b8935a; color: #fff; border: none; border-radius: 5px;
+      padding: .5rem 1.1rem; cursor: pointer; transition: background .2s;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .alert-open-btn:hover { background: #a07e4d; }
+
+    /* Alert drawer overlay */
+    .alert-overlay {
+      position: fixed; inset: 0; z-index: 800;
+      background: rgba(15,15,14,.55); backdrop-filter: blur(2px);
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .alert-overlay.open { opacity: 1; pointer-events: all; }
+    .alert-drawer {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 801;
+      background: #fff; border-radius: 16px 16px 0 0;
+      padding: 2rem 1.5rem 2.5rem;
+      transform: translateY(100%); transition: transform .3s ease;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .alert-drawer.open { transform: translateY(0); }
+    .drawer-handle {
+      width: 40px; height: 4px; background: #e0dbd0; border-radius: 2px;
+      margin: 0 auto 1.5rem;
+    }
+    .drawer-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; color: #1a1918; margin-bottom: .25rem;
+    }
+    .drawer-sub { font-size: .82rem; color: #888; margin-bottom: 1.5rem; }
+    .alert-form { display: flex; flex-direction: column; gap: .85rem; }
+    .alert-field label {
+      display: block; font-size: .76rem; letter-spacing: .1em; text-transform: uppercase;
+      color: #888; margin-bottom: .35rem;
+    }
+    .alert-field input {
+      width: 100%; padding: .6rem .85rem; font-family: inherit; font-size: .9rem;
+      border: 1px solid #e0dbd0; border-radius: 5px; background: #faf8f4;
+      outline: none; transition: border-color .2s; color: #1a1918;
+    }
+    .alert-field input:focus { border-color: #b8935a; }
+    .alert-filters-summary {
+      background: #f9f7f4; border: 1px solid #e8e2d8; border-radius: 5px;
+      padding: .6rem .85rem; font-size: .8rem; color: #555; line-height: 1.6;
+    }
+    .alert-filters-summary strong { color: #1a1918; }
+    .alert-submit-btn {
+      font-family: inherit; font-size: .9rem; font-weight: 500;
+      background: #1a1918; color: #fff; border: none; border-radius: 6px;
+      padding: .75rem; cursor: pointer; transition: background .2s;
+    }
+    .alert-submit-btn:hover { background: #2c2925; }
+    .alert-submit-btn:disabled { opacity: .5; cursor: default; }
+    .alert-feedback {
+      font-size: .82rem; text-align: center; padding: .35rem 0;
+      min-height: 1.4em;
+    }
+    .alert-feedback.ok  { color: #27ae60; }
+    .alert-feedback.err { color: #c0392b; }
+    .alert-close-btn {
+      position: absolute; top: 1.25rem; right: 1.25rem;
+      background: none; border: none; font-size: 1.3rem; cursor: pointer;
+      color: #888; transition: color .2s;
+    }
+    .alert-close-btn:hover { color: #1a1918; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .filter-inner { gap: .5rem; }
+      .filter-sep   { display: none; }
+      .deal-grid    { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    }
+    @media (max-width: 580px) {
+      .hero { padding: 4rem 1.25rem 2.5rem; }
+      .filter-inner { padding: .75rem 1rem; }
+      .filter-group { flex: 1 1 45%; }
+      .filter-select { width: 100%; }
+      .filter-count { width: 100%; text-align: left; }
+      .page-wrap { padding: 1.25rem 1rem 4rem; }
+      .deal-grid { grid-template-columns: 1fr; }
+      .stats-strip { gap: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<script src="/js/nav.js"></script>
+
+<!-- Hero -->
+<section class="hero">
+  <p class="hero-eyebrow">Austin TX · Algorithmic Screening Tool</p>
+  <h1>Austin Real Estate<br><span>Deal Radar</span></h1>
+  <p class="hero-sub">Active listings screened and scored for potential value relative to nearby comparables. Updated daily from live MLS data.</p>
+  <div class="hero-meta">
+    <span><span class="dot"></span> Live MLS data</span>
+    <span id="hero-count">Loading…</span>
+    <span id="hero-updated"></span>
+  </div>
+</section>
+
+<!-- Disclaimer -->
+<div class="disclaimer-banner">
+  <strong>Algorithmic screening tool only.</strong> Deal Scores are based on automated rules and estimated data. They do not guarantee value, condition, legal development potential, or future performance.
+  Independently verify condition, title, zoning, floodplain, HOA rules, and all financial assumptions before making any real estate decision.
+</div>
+
+<!-- Filters -->
+<div class="filter-wrap">
+  <div class="filter-inner">
+    <div class="filter-group">
+      <span class="filter-label">Min Score</span>
+      <select class="filter-select" id="f-score">
+        <option value="45">Any (45+)</option>
+        <option value="60" selected>60+  Worth Watching</option>
+        <option value="75">75+  Strong</option>
+        <option value="90">90+  Exceptional</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Max Price</span>
+      <select class="filter-select" id="f-price">
+        <option value="">Any</option>
+        <option value="300000">$300K</option>
+        <option value="500000">$500K</option>
+        <option value="750000">$750K</option>
+        <option value="1000000">$1M</option>
+        <option value="1500000">$1.5M</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Area</span>
+      <select class="filter-select" id="f-city">
+        <option value="">All Areas</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Type</span>
+      <select class="filter-select" id="f-type">
+        <option value="">All Types</option>
+        <option value="Single Family">Single Family</option>
+        <option value="Condominium">Condo</option>
+        <option value="Townhouse">Townhouse</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Signal</span>
+      <select class="filter-select" id="f-badge">
+        <option value="">All Signals</option>
+        <option value="below">Below Market</option>
+        <option value="drop">Price Reduced</option>
+        <option value="dom">Long DOM</option>
+        <option value="value">Value-Add</option>
+        <option value="yield">Yield Signal</option>
+        <option value="lot">Large Lot</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Cash Flow</span>
+      <select class="filter-select" id="f-cashflow">
+        <option value="">All</option>
+        <option value="positive">Cash Flow+ Only</option>
+      </select>
+    </div>
+    <div class="filter-sep"></div>
+    <div class="filter-count" id="result-count"></div>
+    <div class="view-toggle" style="margin-left:auto">
+      <button class="vt-btn active" id="vt-list" onclick="setView('list')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="3" rx="1"/><rect x="3" y="11" width="18" height="3" rx="1"/><rect x="3" y="17" width="18" height="3" rx="1"/></svg>
+        List
+      </button>
+      <button class="vt-btn" id="vt-map" onclick="setView('map')">
+        <svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+        Map
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Main content -->
+<div class="page-wrap">
+
+  <!-- Alert subscribe bar -->
+  <div class="alert-bar">
+    <span class="alert-bar-icon">🔔</span>
+    <div class="alert-bar-text">
+      <strong>Get notified when new deals appear</strong>
+      <span>We'll email you when listings matching your current filters score above your threshold.</span>
+    </div>
+    <button class="alert-open-btn" onclick="openAlertDrawer()">Set Up Alert</button>
+  </div>
+
+  <!-- Map view container (hidden by default) -->
+  <div id="map-view">
+    <div id="map-container"></div>
+  </div>
+
+  <!-- Stats strip -->
+  <div class="stats-strip" id="stats-strip" style="display:none">
+    <div class="stat-pill"><div class="sp-val" id="st-total">—</div><div class="sp-lbl">Deals Found</div></div>
+    <div class="stat-pill"><div class="sp-val" id="st-avg">—</div><div class="sp-lbl">Avg Deal Score</div></div>
+    <div class="stat-pill"><div class="sp-val" id="st-top">—</div><div class="sp-lbl">Highest Score</div></div>
+    <div class="stat-pill"><div class="sp-val" id="st-median">—</div><div class="sp-lbl">Median Price</div></div>
+  </div>
+
+  <!-- Listings grid -->
+  <div class="deal-grid" id="deal-grid">
+    <!-- Skeleton loading state -->
+    <div class="skel-card"><div class="skel-img"></div><div class="skel-body"><div class="skeleton skel-line" style="width:60%"></div><div class="skeleton skel-line" style="width:85%"></div><div class="skeleton skel-line" style="width:50%"></div></div></div>
+    <div class="skel-card"><div class="skel-img"></div><div class="skel-body"><div class="skeleton skel-line" style="width:55%"></div><div class="skeleton skel-line" style="width:80%"></div><div class="skeleton skel-line" style="width:60%"></div></div></div>
+    <div class="skel-card"><div class="skel-img"></div><div class="skel-body"><div class="skeleton skel-line" style="width:65%"></div><div class="skeleton skel-line" style="width:75%"></div><div class="skeleton skel-line" style="width:45%"></div></div></div>
+    <div class="skel-card"><div class="skel-img"></div><div class="skel-body"><div class="skeleton skel-line" style="width:58%"></div><div class="skeleton skel-line" style="width:88%"></div><div class="skeleton skel-line" style="width:55%"></div></div></div>
+    <div class="skel-card"><div class="skel-img"></div><div class="skel-body"><div class="skeleton skel-line" style="width:70%"></div><div class="skeleton skel-line" style="width:72%"></div><div class="skeleton skel-line" style="width:50%"></div></div></div>
+    <div class="skel-card"><div class="skel-img"></div><div class="skel-body"><div class="skeleton skel-line" style="width:62%"></div><div class="skeleton skel-line" style="width:83%"></div><div class="skeleton skel-line" style="width:48%"></div></div></div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" id="pagination"></div>
+
+</div><!-- /page-wrap -->
+
+<!-- Saved toast -->
+<div class="saved-toast" id="saved-toast"></div>
+
+<!-- Alert drawer -->
+<div class="alert-overlay" id="alert-overlay" onclick="closeAlertDrawer()"></div>
+<div class="alert-drawer" id="alert-drawer">
+  <div class="drawer-handle"></div>
+  <button class="alert-close-btn" onclick="closeAlertDrawer()">×</button>
+  <h2 class="drawer-title">Deal Alert</h2>
+  <p class="drawer-sub">Get an email when new listings match your current filters.</p>
+  <form class="alert-form" onsubmit="submitAlert(event)">
+    <div class="alert-field">
+      <label>Your email</label>
+      <input type="email" id="alert-email" placeholder="you@example.com" required />
+    </div>
+    <div class="alert-field">
+      <label>Alert name (optional)</label>
+      <input type="text" id="alert-label" placeholder="e.g. Cedar Park under $500K" maxlength="60" />
+    </div>
+    <div class="alert-field">
+      <label>Current filters</label>
+      <div class="alert-filters-summary" id="alert-filters-summary"></div>
+    </div>
+    <div class="alert-feedback" id="alert-feedback"></div>
+    <button type="submit" class="alert-submit-btn" id="alert-submit-btn">Create Alert</button>
+  </form>
+</div>
+
+<script src="/js/footer.js"></script>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// State
+// ─────────────────────────────────────────────────────────────────────────────
+let currentPage = 1;
+let totalPages  = 1;
+let allStats    = {};
+let savedKeys   = JSON.parse(localStorage.getItem('dr_saved') || '[]');
+let debounceTimer;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+function fmt$(n) {
+  if (!n) return '—';
+  if (n >= 1000000) return '$' + (n / 1000000).toFixed(2).replace(/\.?0+$/, '') + 'M';
+  if (n >= 1000)    return '$' + (n / 1000).toFixed(0) + 'K';
+  return '$' + n;
+}
+function fmtFull$(n) {
+  if (!n) return '—';
+  return '$' + n.toLocaleString();
+}
+function scoreColor(score) {
+  if (score >= 90) return '#27ae60';
+  if (score >= 75) return '#b8935a';
+  if (score >= 60) return '#2980b9';
+  return '#888';
+}
+function badgeClass(type) {
+  return 'badge badge-' + (type || 'below');
+}
+function showToast(msg) {
+  const t = document.getElementById('saved-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Saved deals (localStorage)
+// ─────────────────────────────────────────────────────────────────────────────
+function toggleSave(key, btn) {
+  const idx = savedKeys.indexOf(key);
+  if (idx === -1) {
+    savedKeys.push(key);
+    btn.classList.add('saved');
+    showToast('Deal saved');
+  } else {
+    savedKeys.splice(idx, 1);
+    btn.classList.remove('saved');
+    showToast('Deal removed');
+  }
+  localStorage.setItem('dr_saved', JSON.stringify(savedKeys));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Render one deal card
+// ─────────────────────────────────────────────────────────────────────────────
+function renderCard(d) {
+  const photo  = (d.photos && d.photos[0]) ? d.photos[0] : null;
+  const isSaved = savedKeys.includes(d.listing_key);
+  const color  = scoreColor(d.dealScore);
+
+  const badgesHtml = (d.badges || []).map(b =>
+    `<span class="${badgeClass(b.type)}">${b.label}</span>`
+  ).join('');
+
+  const reasonsHtml = (d.reasons || []).slice(0, 3).map(r =>
+    `<li>${r}</li>`
+  ).join('');
+
+  const ppsf = d.ppsf ? `$${d.ppsf}/sqft` : '';
+  const dom  = d.days_on_market ? `${d.days_on_market} DOM` : '';
+  const dropBadge = d.priceDropPct > 0
+    ? `<span class="badge badge-drop">↓${d.priceDropPct}%</span>` : '';
+
+  // Cash flow mini section
+  const cf = d.cashFlowData;
+  let cfHtml = '';
+  if (cf) {
+    const cfAmt  = cf.monthlyCashFlow;
+    const cfSign = cfAmt >= 50 ? '+' : cfAmt <= -50 ? '' : '~';
+    const cfCls  = cfAmt >= 50 ? 'positive' : cfAmt <= -50 ? 'negative' : 'breakeven';
+    const cfLabel = cfAmt >= 50 ? 'Cash Flow+' : cfAmt <= -50 ? 'Negative CF' : 'Near Break-even';
+    const cocPct = cf.cashOnCashReturn;
+
+    cfHtml = `
+      <div class="cf-mini">
+        <span class="cf-row-label">Est. rent</span><span class="cf-row-val">${fmt$(cf.estimatedRent)}/mo</span>
+        <span class="cf-row-label">PITI</span><span class="cf-row-val">−${fmt$(cf.totalPITI)}/mo</span>
+        <span class="cf-total-label">${cfLabel}</span>
+        <span class="cf-total-val ${cfAmt >= 0 ? 'pos' : 'neg'}">${cfSign}${fmt$(Math.abs(cfAmt))}/mo</span>
+        ${cocPct !== null ? `<span class="cf-row-label" style="grid-column:1/-1;font-size:.68rem;color:#aaa">CoC return: ${cocPct > 0 ? '+' : ''}${cocPct}% · 25% down · ${cf.interestRate}% rate · ${cf.rentSource === 'mls-comps' ? cf.rentCompCount + ' MLS rent comps' : 'est. rent'}</span>` : ''}
+      </div>`;
+  }
+
+  const imgHtml = photo
+    ? `<img src="${photo}" alt="${d.address || ''}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'card-img-placeholder\\'>⌂</div>'" />`
+    : `<div class="card-img-placeholder">⌂</div>`;
+
+  return `
+    <article class="deal-card" onclick="window.location='/deal-radar/${d.listing_key}'">
+      <div class="card-img-wrap">
+        ${imgHtml}
+        <div class="score-badge" style="background:${color}">
+          <span>${d.dealScore}</span>
+          <span class="sb-label">Score</span>
+        </div>
+        <button class="save-btn ${isSaved ? 'saved' : ''}" title="${isSaved ? 'Remove saved' : 'Save deal'}"
+          onclick="event.stopPropagation(); toggleSave('${d.listing_key}', this)">
+          <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="card-price">${fmtFull$(d.list_price)}</div>
+        <div class="card-address">${d.address || ''}${d.city ? ', ' + d.city : ''}</div>
+        <div class="card-stats">
+          ${d.bedrooms_total   ? `<span>${d.bedrooms_total} bd</span>` : ''}
+          ${d.bathrooms_total  ? `<span>${d.bathrooms_total} ba</span>` : ''}
+          ${d.living_area      ? `<span>${d.living_area.toLocaleString()} sqft</span>` : ''}
+          ${ppsf               ? `<span>${ppsf}</span>` : ''}
+          ${dom                ? `<span>${dom}</span>` : ''}
+        </div>
+        <div class="card-badges">${dropBadge}${badgesHtml}</div>
+        <ul class="card-reasons">${reasonsHtml}</ul>
+        ${cfHtml}
+      </div>
+      <div class="card-footer">
+        <span class="card-tier" style="color:${color}">${d.tier ? d.tier.label : ''}</span>
+        <span class="card-cta">View analysis →</span>
+      </div>
+    </article>
+  `;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Fetch and render
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadDeals(page) {
+  currentPage = page || 1;
+  const grid = document.getElementById('deal-grid');
+
+  // Build query params
+  const params = new URLSearchParams({
+    page: currentPage,
+    limit: 24,
+    minScore: document.getElementById('f-score').value || 60,
+  });
+  const price    = document.getElementById('f-price').value;
+  const city     = document.getElementById('f-city').value;
+  const subType  = document.getElementById('f-type').value;
+  const badge    = document.getElementById('f-badge').value;
+  const cashFlow = document.getElementById('f-cashflow').value;
+  if (price)    params.set('maxPrice', price);
+  if (city)     params.set('city', city);
+  if (subType)  params.set('subType', subType);
+  if (badge)    params.set('badgeType', badge);
+  if (cashFlow) params.set('cashFlow', cashFlow);
+
+  try {
+    const res  = await fetch('/api/deal-radar?' + params.toString());
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+
+    totalPages = data.pages || 1;
+
+    // Hero meta
+    document.getElementById('hero-count').textContent =
+      data.total + ' listings scored today';
+    if (data.updatedAt) {
+      const d = new Date(data.updatedAt);
+      document.getElementById('hero-updated').textContent =
+        'Updated ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    }
+
+    // Result count in filter bar
+    document.getElementById('result-count').innerHTML =
+      `<strong>${data.total}</strong> deal${data.total !== 1 ? 's' : ''} found`;
+
+    // Stats strip
+    if (data.items && data.items.length > 0) {
+      const scores = data.items.map(d => d.dealScore);
+      const prices = data.items.map(d => d.list_price).filter(Boolean).sort((a,b)=>a-b);
+      document.getElementById('st-total').textContent  = data.total;
+      document.getElementById('st-avg').textContent    = Math.round(scores.reduce((s,v)=>s+v,0)/scores.length);
+      document.getElementById('st-top').textContent    = Math.max(...scores);
+      document.getElementById('st-median').textContent = fmt$(prices[Math.floor(prices.length/2)]);
+      document.getElementById('stats-strip').style.display = '';
+    }
+
+    // Populate city filter (once)
+    populateCityFilter(data.items);
+
+    // Render cards
+    if (!data.items || data.items.length === 0) {
+      grid.innerHTML = `
+        <div class="state-center">
+          <h3>No deals found</h3>
+          <p>Try lowering the minimum score or broadening your filters.</p>
+        </div>`;
+    } else {
+      grid.innerHTML = data.items.map(renderCard).join('');
+    }
+
+    renderPagination(data.page, data.pages);
+
+  } catch (err) {
+    grid.innerHTML = `
+      <div class="state-center">
+        <h3>Unable to load Deal Radar</h3>
+        <p>The scoring engine is warming up or the MLS connection is unavailable. Please try again in a moment.</p>
+      </div>`;
+    console.error('Deal Radar error:', err);
+  }
+}
+
+// Populate city dropdown from returned listings (once, first load)
+let cityPopulated = false;
+function populateCityFilter(items) {
+  if (cityPopulated || !items || !items.length) return;
+  const sel = document.getElementById('f-city');
+  const cities = [...new Set(items.map(d => d.city).filter(Boolean))].sort();
+  cities.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    sel.appendChild(opt);
+  });
+  cityPopulated = true;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Pagination
+// ─────────────────────────────────────────────────────────────────────────────
+function renderPagination(page, pages) {
+  const container = document.getElementById('pagination');
+  if (pages <= 1) { container.innerHTML = ''; return; }
+
+  let html = '';
+  html += `<button class="page-btn" onclick="loadDeals(${page-1})" ${page===1?'disabled':''}>‹</button>`;
+
+  const range = [];
+  for (let i = 1; i <= pages; i++) {
+    if (i === 1 || i === pages || (i >= page - 2 && i <= page + 2)) range.push(i);
+    else if (range[range.length-1] !== '…') range.push('…');
+  }
+  range.forEach(r => {
+    if (r === '…') html += `<span class="page-ellipsis">…</span>`;
+    else html += `<button class="page-btn ${r===page?'active':''}" onclick="loadDeals(${r})">${r}</button>`;
+  });
+
+  html += `<button class="page-btn" onclick="loadDeals(${page+1})" ${page===pages?'disabled':''}>›</button>`;
+  container.innerHTML = html;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Filter change → debounced reload
+// ─────────────────────────────────────────────────────────────────────────────
+['f-score','f-price','f-city','f-type','f-badge','f-cashflow'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => {
+    clearTimeout(debounceTimer);
+    cityPopulated = false;
+    debounceTimer = setTimeout(() => loadDeals(1), 300);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// View toggle (List / Map)
+// ─────────────────────────────────────────────────────────────────────────────
+let currentView = 'list';
+let mapInstance = null;
+let mapLoaded   = false;
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('vt-list').classList.toggle('active', v === 'list');
+  document.getElementById('vt-map').classList.toggle('active',  v === 'map');
+
+  const listView = document.getElementById('deal-grid');
+  const pagView  = document.getElementById('pagination');
+  const mapView  = document.getElementById('map-view');
+
+  if (v === 'list') {
+    listView.style.display = '';
+    pagView.style.display  = '';
+    mapView.style.display  = 'none';
+  } else {
+    listView.style.display = 'none';
+    pagView.style.display  = 'none';
+    mapView.style.display  = '';
+    if (!mapLoaded) initMap();
+    else            refreshMapPins();
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Mapbox map view
+// ─────────────────────────────────────────────────────────────────────────────
+async function initMap() {
+  mapLoaded = true;
+
+  // Load Mapbox GL JS script dynamically
+  await new Promise((resolve) => {
+    const s = document.createElement('script');
+    s.src = 'https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js';
+    s.onload = resolve;
+    document.head.appendChild(s);
+  });
+
+  // Fetch token from server
+  let token = '';
+  try {
+    const cfg = await fetch('/api/deal-radar/config').then(r => r.json());
+    token = cfg.mapboxToken || '';
+  } catch (_) {}
+
+  if (!token) {
+    document.getElementById('map-container').innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;font-size:.9rem">Map unavailable — Mapbox token not configured.</div>';
+    return;
+  }
+
+  mapboxgl.accessToken = token;
+  mapInstance = new mapboxgl.Map({
+    container: 'map-container',
+    style:     'mapbox://styles/mapbox/light-v11',
+    center:    [-97.7431, 30.2672], // Austin, TX
+    zoom:      10,
+  });
+  mapInstance.addControl(new mapboxgl.NavigationControl(), 'top-right');
+  mapInstance.on('load', refreshMapPins);
+}
+
+async function refreshMapPins() {
+  if (!mapInstance) return;
+
+  // Build same params as list view
+  const params = new URLSearchParams({
+    minScore: document.getElementById('f-score').value || 60,
+  });
+  const price    = document.getElementById('f-price').value;
+  const city     = document.getElementById('f-city').value;
+  const subType  = document.getElementById('f-type').value;
+  const badge    = document.getElementById('f-badge').value;
+  const cashFlow = document.getElementById('f-cashflow').value;
+  if (price)    params.set('maxPrice', price);
+  if (city)     params.set('city', city);
+  if (subType)  params.set('subType', subType);
+  if (badge)    params.set('badgeType', badge);
+  if (cashFlow) params.set('cashFlow', cashFlow);
+
+  let pins = [];
+  try {
+    pins = await fetch('/api/deal-radar/pins?' + params.toString()).then(r => r.json());
+  } catch (_) { return; }
+
+  // Remove existing markers
+  if (window._mapMarkers) window._mapMarkers.forEach(m => m.remove());
+  window._mapMarkers = [];
+
+  // Close any open popup
+  if (window._activePopup) { window._activePopup.remove(); window._activePopup = null; }
+
+  pins.forEach(pin => {
+    if (!pin.latitude || !pin.longitude) return;
+    const color = scoreColor(pin.dealScore);
+
+    // Custom marker element
+    const el = document.createElement('div');
+    el.className = 'map-marker';
+    el.style.background = color;
+    el.textContent = pin.dealScore;
+    el.title = pin.address;
+
+    const photo = pin.photos && pin.photos[0] ? pin.photos[0] : null;
+    const popup = new mapboxgl.Popup({ offset: 20, maxWidth: '220px', closeButton: false })
+      .setHTML(`
+        <div class="map-popup" onclick="window.location='/deal-radar/${pin.listing_key}'">
+          ${photo ? `<img class="map-popup-img" src="${photo}" alt="${pin.address||''}" />` : ''}
+          <div class="map-popup-body">
+            <div class="map-popup-price">${fmtFull$(pin.list_price)}</div>
+            <div class="map-popup-addr">${pin.address || ''}${pin.city ? ', ' + pin.city : ''}</div>
+            <div class="map-popup-row">
+              <span class="map-popup-stats">
+                ${pin.bedrooms_total||''}${pin.bedrooms_total?'bd ':''}
+                ${pin.living_area ? pin.living_area.toLocaleString() + ' sqft' : ''}
+              </span>
+              <span class="map-popup-score" style="background:${color}">${pin.dealScore}</span>
+            </div>
+          </div>
+          <a class="map-popup-link" href="/deal-radar/${pin.listing_key}">View full analysis →</a>
+        </div>
+      `);
+
+    el.addEventListener('click', () => {
+      if (window._activePopup) window._activePopup.remove();
+      popup.setLngLat([pin.longitude, pin.latitude]).addTo(mapInstance);
+      window._activePopup = popup;
+    });
+
+    const marker = new mapboxgl.Marker({ element: el })
+      .setLngLat([pin.longitude, pin.latitude])
+      .addTo(mapInstance);
+
+    window._mapMarkers.push(marker);
+  });
+
+  // Fit bounds if we have pins
+  if (pins.length > 0) {
+    const coords = pins.filter(p => p.latitude && p.longitude).map(p => [p.longitude, p.latitude]);
+    if (coords.length > 1) {
+      const bounds = coords.reduce(
+        (b, c) => b.extend(c),
+        new mapboxgl.LngLatBounds(coords[0], coords[0])
+      );
+      mapInstance.fitBounds(bounds, { padding: 60, maxZoom: 13 });
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Alert drawer
+// ─────────────────────────────────────────────────────────────────────────────
+function openAlertDrawer() {
+  // Populate filter summary
+  const scoreEl    = document.getElementById('f-score');
+  const priceEl    = document.getElementById('f-price');
+  const cityEl     = document.getElementById('f-city');
+  const typeEl     = document.getElementById('f-type');
+  const badgeEl    = document.getElementById('f-badge');
+  const cashFlowEl = document.getElementById('f-cashflow');
+
+  const lines = [];
+  lines.push(`<strong>Min Score:</strong> ${scoreEl.options[scoreEl.selectedIndex].text}`);
+  if (priceEl.value)    lines.push(`<strong>Max Price:</strong> ${priceEl.options[priceEl.selectedIndex].text}`);
+  if (cityEl.value)     lines.push(`<strong>Area:</strong> ${cityEl.value}`);
+  if (typeEl.value)     lines.push(`<strong>Type:</strong> ${typeEl.value}`);
+  if (badgeEl.value)    lines.push(`<strong>Signal:</strong> ${badgeEl.options[badgeEl.selectedIndex].text}`);
+  if (cashFlowEl.value) lines.push(`<strong>Cash Flow:</strong> Positive cash flow only`);
+
+  document.getElementById('alert-filters-summary').innerHTML = lines.join('<br>');
+  document.getElementById('alert-feedback').textContent = '';
+  document.getElementById('alert-feedback').className   = 'alert-feedback';
+
+  document.getElementById('alert-overlay').classList.add('open');
+  document.getElementById('alert-drawer').classList.add('open');
+  setTimeout(() => document.getElementById('alert-email').focus(), 300);
+}
+
+function closeAlertDrawer() {
+  document.getElementById('alert-overlay').classList.remove('open');
+  document.getElementById('alert-drawer').classList.remove('open');
+}
+
+async function submitAlert(e) {
+  e.preventDefault();
+  const email    = document.getElementById('alert-email').value.trim();
+  const label    = document.getElementById('alert-label').value.trim();
+  const btn      = document.getElementById('alert-submit-btn');
+  const feedback = document.getElementById('alert-feedback');
+
+  const filters = {
+    minScore:  Number(document.getElementById('f-score').value) || 75,
+    maxPrice:  document.getElementById('f-price').value ? Number(document.getElementById('f-price').value) : null,
+    city:      document.getElementById('f-city').value  || null,
+    subType:   document.getElementById('f-type').value  || null,
+    badgeType:    document.getElementById('f-badge').value    || null,
+    cashFlowOnly: document.getElementById('f-cashflow').value === 'positive',
+  };
+
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  feedback.className = 'alert-feedback';
+  feedback.textContent = '';
+
+  try {
+    const res = await fetch('/api/deal-radar/alerts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, label: label || 'Deal Alert', filters }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to create alert');
+
+    feedback.className   = 'alert-feedback ok';
+    feedback.textContent = '✓ Alert created! You\'ll get an email when new deals match.';
+    btn.textContent = 'Alert Created';
+    setTimeout(closeAlertDrawer, 2500);
+  } catch (err) {
+    feedback.className   = 'alert-feedback err';
+    feedback.textContent = err.message;
+    btn.disabled = false;
+    btn.textContent = 'Create Alert';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Patch loadDeals to also refresh map pins if map view is active
+// ─────────────────────────────────────────────────────────────────────────────
+const _origLoadDeals = loadDeals;
+// (map refresh is triggered by filter change handler below)
+
+// Re-run map when filters change while in map view
+['f-score','f-price','f-city','f-type','f-badge','f-cashflow'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => {
+    if (currentView === 'map' && mapLoaded) {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(refreshMapPins, 300);
+    }
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Init
+// ─────────────────────────────────────────────────────────────────────────────
+loadDeals(1);
+</script>
+
+</body>
+</html>

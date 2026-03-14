@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- House roof -->
+  <polyline points="10,48 50,10 90,48" stroke="#1a1a18" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- House left wall -->
+  <line x1="18" y1="44" x2="18" y2="78" stroke="#1a1a18" stroke-width="7" stroke-linecap="round"/>
+  <!-- House right wall -->
+  <line x1="82" y1="44" x2="82" y2="78" stroke="#1a1a18" stroke-width="7" stroke-linecap="round"/>
+  <!-- Small window in gable -->
+  <rect x="43" y="22" width="14" height="14" rx="1" stroke="#1a1a18" stroke-width="5.5" stroke-linecap="round"/>
+  <!-- Arched door -->
+  <path d="M38,78 L38,58 Q38,46 50,46 Q62,46 62,58 L62,78" stroke="#1a1a18" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Key shaft -->
+  <line x1="18" y1="78" x2="68" y2="78" stroke="#1a1a18" stroke-width="7" stroke-linecap="round"/>
+  <!-- Key teeth -->
+  <line x1="28" y1="78" x2="28" y2="88" stroke="#1a1a18" stroke-width="6.5" stroke-linecap="round"/>
+  <line x1="38" y1="78" x2="38" y2="85" stroke="#1a1a18" stroke-width="6.5" stroke-linecap="round"/>
+  <!-- Key bow (ring) -->
+  <circle cx="78" cy="78" r="13" stroke="#1a1a18" stroke-width="7"/>
+  <circle cx="78" cy="78" r="6" fill="white"/>
+</svg>
