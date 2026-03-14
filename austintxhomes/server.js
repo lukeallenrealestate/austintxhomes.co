@@ -1,6 +1,7 @@
 // Local dev server for austintxhomes pages
 // Serves static files from /public and proxies /api/* to the idx-search server
 const express = require('express');
+const compression = require('compression');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
 
@@ -25,6 +26,7 @@ const renderNeighborhoodPage = require('./templates/neighborhood');
 const dealEngine  = require('./lib/dealRadar/dealEngine');
 const alertEngine = require('./lib/dealRadar/alertEngine');
 const ADMIN_KEY   = process.env.DEAL_RADAR_ADMIN_KEY || 'austin-admin-2026';
+app.use(compression());
 app.use(express.json());
 
 // Start scheduled alert checks (2-hour interval, first run after 10 min warmup)
@@ -332,7 +334,12 @@ app.get('/neighborhoods/:slug', (req, res) => {
 });
 
 // Serve all static files from /public
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '7d',
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) res.setHeader('Cache-Control', 'public, max-age=3600');
+  }
+}));
 
 // Fallback: serve idx-search static assets (js, css, html used by the /search SPA)
 app.use(express.static(IDX_PUBLIC));
