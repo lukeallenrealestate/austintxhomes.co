@@ -1725,4 +1725,49 @@ module.exports = {
     nearbyNames: ['Buda', 'Sunfield Buda', 'Garlic Creek Buda', 'Kyle']
   },
 
+  'hudson-bend': {
+    slug: 'hudson-bend',
+    name: 'Hudson Bend',
+    mlsSearch: 'Hudson Bend',
+    area: 'Lake Travis',
+    title: 'Homes for Sale in Hudson Bend Austin TX | AustinTXHomes.co',
+    metaDescription: 'Browse homes for sale in Hudson Bend, Austin TX. Waterfront estates, lake access, and a quiet peninsula lifestyle on Lake Travis. Updated daily from MLS. Contact Luke Allen.',
+    h1: 'Homes for Sale in Hudson Bend, Austin TX',
+    tagline: 'Lake Travis living — waterfront estates, boat ramps, and old-Austin calm',
+    medianPrice: '$750K+',
+    priceRange: '$400K – $3M+',
+    homeTypes: 'Waterfront estates, lake-access homes, remodeled cabins, new construction',
+    schools: 'Lake Travis ISD — Lake Travis Elementary, Hudson Bend Middle School, Lake Travis High School',
+    commute: '30–35 min to downtown Austin, 20 min to Apple Campus, 10 min to Bee Cave retail',
+    walkScore: 12,
+    vibe: 'Laid-back lake lifestyle, outdoor recreation, boating culture, quiet peninsular community',
+    tags: ['Waterfront', 'Lake Travis', 'Boating', 'Quiet', 'Outdoor Lifestyle'],
+    intro: [
+      'Hudson Bend is Austin\'s best-kept secret for lake living. Tucked onto a quiet peninsula between Lake Travis and the Colorado River arm just west of Lakeway, this unincorporated Travis County community sits at the intersection of outdoor lifestyle and genuine Austin authenticity — without the resort-town price premium of some Lake Travis communities.',
+      'The neighborhood runs the full spectrum from original mid-century fishing cabins on large lots to fully renovated luxury estates with private boat docks and sweeping lake views. That range creates an unusual real estate market: buyers can enter at $400K in a livable home on a generous lot, or go all the way to $3M+ for a turnkey waterfront estate on the open water.',
+      'What makes Hudson Bend different from newer lake communities is its character. The streets are tree-lined and unhurried, neighbors know each other, and the pace of life reflects the water lifestyle the community is built around. Hudson Bend Middle School sits in the heart of the neighborhood, and Lake Travis ISD — one of the most highly rated school districts in Texas — serves the entire peninsula.'
+    ],
+    highlights: [
+      { icon: '⛵', label: 'Lake Travis Access', text: 'Multiple public boat ramps and marinas within the community, plus private docks on waterfront properties. Lake Travis offers 65 miles of shoreline and is the premier boating lake in the Austin metro — home to sailing regattas, wake sports, and fishing year-round.' },
+      { icon: '🏫', label: 'Lake Travis ISD', text: 'One of the highest-rated school districts in Texas. Lake Travis High School consistently ranks among the top 10% of Texas high schools for academics, athletics, and fine arts. The district draws buyers from across Austin specifically for its schools.' },
+      { icon: '🌳', label: 'Genuine Peninsula Character', text: 'Hudson Bend\'s peninsular geography creates a neighborhood with only one main road in and out — which means low through-traffic, neighborhood quiet, and a genuine sense of community that suburban subdivisions rarely achieve.' },
+      { icon: '💰', label: 'Value vs. Other Lake Travis Communities', text: 'Lakefront and lake-access property in Hudson Bend typically runs 15–25% below comparable properties in the more developed parts of Lakeway or Spicewood. For buyers who want the lake lifestyle without paying a premium for polish, Hudson Bend is the strongest value proposition on Lake Travis.' }
+    ],
+    faqs: [
+      { q: 'What are home prices in Hudson Bend Austin?', a: 'Hudson Bend home prices range from approximately $400K for an interior lot with lake access to $3M+ for a premium waterfront estate on open Lake Travis water. The most active price range is $550K–$1.2M. Waterfront properties command a significant premium over interior lots. Non-waterfront homes on larger lots — many over half an acre — offer excellent value relative to comparable square footage in Austin proper.' },
+      { q: 'Is Hudson Bend a good place to live year-round?', a: 'Absolutely. Hudson Bend began as a vacation and weekend destination, but the majority of residents today are full-time. The peninsula\'s quiet character, Lake Travis ISD schools, and proximity to Bee Cave and Lakeway retail have made it an excellent primary residence choice. The commute to downtown Austin is 30–35 minutes, which is competitive with many Austin suburbs at equivalent home prices.' },
+      { q: 'What schools serve Hudson Bend?', a: 'Hudson Bend is zoned to Lake Travis ISD, one of the top-rated school districts in Texas. Most homes feed into Lake Travis Elementary, Hudson Bend Middle School (which sits directly in the community), and Lake Travis High School. LTISD consistently earns TEA "A" ratings and has an outstanding record for college placement, athletics, and fine arts programs.' },
+      { q: 'Does Hudson Bend have waterfront homes for sale?', a: 'Yes — Hudson Bend has both open-water Lake Travis frontage and protected cove waterfront properties. Open-water frontage commands the highest prices ($1.5M–$3M+). Cove properties with private docks typically run $800K–$1.8M. Interior lots with community lake access (shared boat ramps) are the most affordable entry point into the community ($400K–$750K). The inventory varies significantly — working with a Lake Travis-specialist agent like Luke Allen is essential for navigating what\'s available and correctly pricing lake access rights.' },
+      { q: 'What is the commute from Hudson Bend to Austin?', a: 'Hudson Bend to downtown Austin runs 30–35 minutes under normal conditions via Ranch Road 620 and 2222. To the Apple Campus at the Domain it\'s approximately 20–25 minutes. To the tech corridor along 183 (Dell, Samsung) it\'s 25–30 minutes. The drive is scenic and largely uncongested by Austin standards, particularly outside peak commute hours.' },
+      { q: 'Is Hudson Bend part of the city of Austin?', a: 'Hudson Bend is unincorporated Travis County — it is not within any city limits. This means no city taxes on top of county taxes, which keeps the overall tax burden somewhat lower than properties inside Austin or Lakeway. It does mean city services (trash, utilities) are handled through county or private providers rather than a city. MUD districts cover water and wastewater for most of the peninsula.' }
+    ],
+    buyReasons: [
+      { icon: '⛵', heading: 'Lake Travis Access at a Real Discount', body: 'Lake Travis waterfront and lake-access property in Hudson Bend is priced meaningfully below the developed Lakeway market. You get the same lake — the same water, the same sunsets, the same boat dock — for 15–25% less per square foot. That gap has been consistent for years and reflects Hudson Bend\'s lower name recognition, not lower quality. Buyers who look past the address pay less for the same lifestyle.' },
+      { icon: '🏫', heading: 'Lake Travis ISD Is a Structural Demand Driver', body: 'LTISD\'s "A"-rated schools create year-round buyer demand that doesn\'t soften the way demand does in purely lifestyle-driven lake communities. Families specifically relocate to get their children into Lake Travis High School — which means resale demand in Hudson Bend is supported by more than just lake enthusiasm. That school-driven demand is one of the most durable forces in Austin-area real estate.' },
+      { icon: '🏡', heading: 'Renovation Upside on Established Lots', body: 'Hudson Bend has a significant inventory of 1970s–1990s homes on generous lots — many half an acre or more — that are priced for their land and location rather than their finishes. The spread between an original cabin and a renovated home in Hudson Bend is substantial. For buyers willing to update, the combination of lake access, LTISD schools, and large lots creates renovation economics that are difficult to find elsewhere in the Austin metro.' }
+    ],
+    nearby: ['lakeway-tx', 'steiner-ranch', 'spicewood-tx', 'bee-cave-tx'],
+    nearbyNames: ['Lakeway', 'Steiner Ranch', 'Spicewood', 'Bee Cave']
+  },
+
 };

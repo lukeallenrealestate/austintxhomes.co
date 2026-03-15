@@ -22,6 +22,10 @@ const IDX_PUBLIC = path.join(__dirname, '../idx-search/public');
 const neighborhoods = require('./data/neighborhoods');
 const renderNeighborhoodPage = require('./templates/neighborhood');
 
+// Luxury listing page system (programmatic SEO for $1M+ properties)
+const { renderListingPage, enrichListing, slugifyAddress } = require('./templates/listing');
+const listingDb = require('../idx-search/db/database');
+
 // Deal Radar engine + alert system
 const dealEngine  = require('./lib/dealRadar/dealEngine');
 const alertEngine = require('./lib/dealRadar/alertEngine');
@@ -233,7 +237,7 @@ app.use('/api', createProxyMiddleware({ target: IDX_SERVER, changeOrigin: true }
 app.use('/property', createProxyMiddleware({ target: IDX_SERVER, changeOrigin: true }));
 
 // Homepage route
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public/site/home.html'));
 });
 
@@ -322,6 +326,66 @@ app.get('/buying-home-after-divorce-austin', (_req, res) => res.sendFile(path.jo
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));
 app.get('/deal-radar-admin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar-admin.html')));
 app.get('/deal-radar/:id',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar-detail.html')));
+
+// Sitemap index — points Google to both the static sitemap and the dynamic listing sitemap
+app.get('/sitemap-index.xml', (_req, res) => {
+  res.setHeader('Content-Type', 'application/xml');
+  res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://austintxhomes.co/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString().slice(0, 10)}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://austintxhomes.co/listing-sitemap.xml</loc>
+    <lastmod>${new Date().toISOString().slice(0, 10)}</lastmod>
+  </sitemap>
+</sitemapindex>`);
+});
+
+// ── Programmatic SEO: individual listing pages for $1M+ properties ─────────
+// Slug format: {address-kebab}--{listingKey}  (double-dash before key)
+app.get('/homes/:slug', (req, res) => {
+  try {
+    const slug = req.params.slug;
+    const ddIdx = slug.lastIndexOf('--');
+    const listingKey = ddIdx !== -1 ? slug.slice(ddIdx + 2) : slug;
+    const listing = listingDb.prepare('SELECT * FROM listings WHERE listing_key = ?').get(listingKey);
+    if (!listing) return res.status(404).sendFile(path.join(__dirname, 'public/site/luxury-homes.html'));
+    const enriched = enrichListing(listing, listingDb, neighborhoods);
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.send(renderListingPage(enriched.listing, enriched));
+  } catch (e) {
+    console.error('[listing page]', e.message);
+    res.status(500).send('Error loading listing');
+  }
+});
+
+// Sitemap for all $1M+ listings (active + sold — sold pages have SEO value too)
+app.get('/listing-sitemap.xml', (_req, res) => {
+  try {
+    const rows = listingDb.prepare(
+      `SELECT listing_key, unparsed_address, modification_timestamp
+       FROM listings
+       WHERE list_price >= 1000000 OR close_price >= 1000000
+       ORDER BY modification_timestamp DESC
+       LIMIT 5000`
+    ).all();
+    const urls = rows.map(r => {
+      const addrSlug = slugifyAddress(r.unparsed_address);
+      const slug = `${addrSlug}--${r.listing_key}`;
+      const lastmod = r.modification_timestamp ? r.modification_timestamp.slice(0, 10) : '2026-01-01';
+      return `  <url>\n    <loc>https://austintxhomes.co/homes/${slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`;
+    }).join('\n');
+    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`);
+  } catch (e) {
+    console.error('[listing-sitemap]', e.message);
+    res.status(500).send('Error generating sitemap');
+  }
+});
 
 // Neighborhood deep-dive pages — server-side rendered with unique SEO per neighborhood
 app.get('/neighborhoods/:slug', (req, res) => {
