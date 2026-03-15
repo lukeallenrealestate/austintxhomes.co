@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /deal-radar-admin
 
-Sitemap: https://austintxhomes.co/sitemap.xml
+Sitemap: https://austintxhomes.co/sitemap-index.xml

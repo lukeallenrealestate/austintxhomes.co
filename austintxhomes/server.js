@@ -33,6 +33,15 @@ const ADMIN_KEY   = process.env.DEAL_RADAR_ADMIN_KEY || 'austin-admin-2026';
 app.use(compression());
 app.use(express.json());
 
+// Redirect non-canonical hostnames (e.g. replit.app subdomains) to the real domain
+app.use((req, res, next) => {
+  const host = req.hostname;
+  if (host && host !== 'austintxhomes.co' && host !== 'localhost' && !host.startsWith('127.')) {
+    return res.redirect(301, `https://austintxhomes.co${req.originalUrl}`);
+  }
+  next();
+});
+
 // Start scheduled alert checks (2-hour interval, first run after 10 min warmup)
 alertEngine.startScheduledChecks(dealEngine.getDeals);
 
