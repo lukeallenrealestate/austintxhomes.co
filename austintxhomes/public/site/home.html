@@ -1146,6 +1146,16 @@
 </section>
 
 <!-- FOOTER -->
+<script>
+function makePropertyUrl(l) {
+  const key = l.listing_key || l.mlsKey || l.mlgId || '';
+  if (!key) return '#';
+  const addr = (l.unparsed_address || '').toLowerCase()
+    .replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-');
+  const city = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
+  return addr ? `/property/${addr}-${city}-tx-${key}` : `/property/${key}`;
+}
+</script>
 <script src="/js/footer.js"></script>
 
 <div class="toast" id="toast"></div>
@@ -1215,7 +1225,7 @@ fetch('/api/properties/search?limit=3&status=Active')
         l.living_area && Number(l.living_area).toLocaleString() + ' sqft'
       ].filter(Boolean).join(' · ');
       const img = l.photos?.[0] || l.primary_photo || '';
-      return `<a class="listing-card" href="/property/${l.listing_key}">
+      return `<a class="listing-card" href="${makePropertyUrl(l)}">
         <div class="lc-img">
           ${img ? `<img src="${img}" alt="${addr}" loading="lazy" />` : ''}
           <span class="lc-badge">Active</span>

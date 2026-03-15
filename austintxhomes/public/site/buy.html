@@ -548,6 +548,16 @@
 </div>
 
 <!-- FOOTER -->
+<script>
+function makePropertyUrl(l) {
+  const key = l.listing_key || l.mlsKey || l.mlgId || '';
+  if (!key) return '#';
+  const addr = (l.unparsed_address || '').toLowerCase()
+    .replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-');
+  const city = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
+  return addr ? `/property/${addr}-${city}-tx-${key}` : `/property/${key}`;
+}
+</script>
 <script src="/js/footer.js"></script>
 
 <script>
@@ -581,7 +591,7 @@ async function loadBuyListings() {
       const photo = l.photos && l.photos[0] ? l.photos[0] : '';
       const mlsId = l.listing_key || '';
 
-      return `<a href="/property/${mlsId}" class="listing-card">
+      return `<a href="${makePropertyUrl(l)}" class="listing-card">
         ${photo
           ? `<img src="${photo}" alt="${addr}" class="listing-photo" loading="lazy" />`
           : `<div class="listing-photo-placeholder">🏠</div>`

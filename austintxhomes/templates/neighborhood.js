@@ -395,7 +395,9 @@ module.exports = function renderNeighborhoodPage(n) {
           const baths = l.bathrooms_total || '—';
           const sqft = l.living_area ? Number(l.living_area).toLocaleString() : '—';
           const img = l.photos && l.photos[0] ? l.photos[0] : '';
-          const link = l.listing_key ? '/property/' + l.listing_key : '/search?neighborhood=${encodeURIComponent(n.mlsSearch)}';
+          const addrSlug = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-');
+          const citySlug = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
+          const link = l.listing_key ? (addrSlug ? '/property/' + addrSlug + '-' + citySlug + '-tx-' + l.listing_key : '/property/' + l.listing_key) : '/search?neighborhood=${encodeURIComponent(n.mlsSearch)}';
           return '<a class="listing-card" href="' + link + '">' +
             '<div class="card-img">' + (img ? '<img src="' + img + '" alt="' + addr + '" loading="lazy" />' : '') +
             '<span class="card-badge">For Sale</span></div>' +

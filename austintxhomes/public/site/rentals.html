@@ -524,6 +524,16 @@
   </section>
 
   <!-- FOOTER -->
+<script>
+function makePropertyUrl(l) {
+  const key = l.listing_key || l.mlsKey || l.mlgId || '';
+  if (!key) return '#';
+  const addr = (l.unparsed_address || '').toLowerCase()
+    .replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-');
+  const city = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
+  return addr ? `/property/${addr}-${city}-tx-${key}` : `/property/${key}`;
+}
+</script>
 <script src="/js/footer.js"></script>
 
   <script>
@@ -586,7 +596,7 @@
     function buildCard(l) {
       const a = document.createElement('a');
       a.className = 'listing-card';
-      a.href = l.mlsKey ? `/property/${l.mlsKey}` : '#';
+      a.href = makePropertyUrl(l);
 
       const price = l.listPrice ? `$${Number(l.listPrice).toLocaleString()}` : 'Price N/A';
       const addr = [l.streetAddress, l.city].filter(Boolean).join(', ') || 'Austin, TX';

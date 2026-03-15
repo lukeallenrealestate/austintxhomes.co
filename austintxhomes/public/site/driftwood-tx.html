@@ -534,6 +534,16 @@
   </a>
 </section>
 
+<script>
+function makePropertyUrl(l) {
+  const key = l.listing_key || l.mlsKey || l.mlgId || '';
+  if (!key) return '#';
+  const addr = (l.unparsed_address || '').toLowerCase()
+    .replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-');
+  const city = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
+  return addr ? `/property/${addr}-${city}-tx-${key}` : `/property/${key}`;
+}
+</script>
 <script src="/js/footer.js"></script>
 <script>
 // ── Load Driftwood Listings ──
@@ -560,7 +570,7 @@ async function loadListings() {
       const photoHtml = photo
         ? `<img src="${photo}" alt="${addr}" class="listing-photo" loading="lazy">`
         : `<div class="listing-photo-placeholder"><span>Driftwood Estate</span></div>`;
-      return `<a href="/property.html?id=${key}" class="listing-card">
+      return `<a href="${makePropertyUrl(l)}" class="listing-card">
         ${photoHtml}
         <div class="listing-info">
           <div class="listing-price">${price}</div>

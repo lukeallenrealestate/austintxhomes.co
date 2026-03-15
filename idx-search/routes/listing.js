@@ -18,11 +18,20 @@ function formatPrice(p) {
   return '$' + Number(p).toLocaleString('en-US');
 }
 
-// GET /property/:listingKey
-// Server-side renders the <head> SEO tags for each listing, then the
-// browser JS (property.js) hydrates the rest of the page interactively.
-router.get('/:listingKey', (req, res) => {
-  const { listingKey } = req.params;
+function makePropertySlug(listing_key, unparsed_address, city) {
+  const addrSlug = slugify(unparsed_address || '');
+  const citySlug = slugify(city || 'austin');
+  return addrSlug ? `${addrSlug}-${citySlug}-tx-${listing_key}` : listing_key;
+}
+
+// GET /property/:slug
+// Accepts both old format (ACT222191837) and new address-based format
+// (4101-idalia-dr-austin-tx-ACT222191837). Old format gets 301 redirected.
+router.get('/:slug', (req, res) => {
+  const { slug } = req.params;
+  // Extract listing key: uppercase letters + digits at end of slug
+  const match = slug.match(/([A-Z][A-Z0-9]*\d+)$/);
+  const listingKey = match ? match[1] : slug;
 
   const listing = db.prepare(`
     SELECT listing_key, unparsed_address, city, state_or_province, postal_code,
@@ -65,7 +74,13 @@ router.get('/:listingKey', (req, res) => {
   const remarkExcerpt = truncate(public_remarks, 120);
   const metaDesc = truncate(`${statsPart}. ${remarkExcerpt}`, 158);
 
-  const canonicalUrl = `${SITE_URL}/property/${listingKey}`;
+  const canonicalSlug = makePropertySlug(listing.listing_key, unparsed_address, city);
+  const canonicalUrl = `${SITE_URL}/property/${canonicalSlug}`;
+
+  // 301 redirect old listing-key-only URLs to the canonical address-based URL
+  if (slug !== canonicalSlug) {
+    return res.redirect(301, canonicalUrl);
+  }
 
   // JSON-LD: RealEstateListing
   const schema = {

@@ -578,6 +578,16 @@
   </div>
 </section>
 
+<script>
+function makePropertyUrl(l) {
+  const key = l.listing_key || l.mlsKey || l.mlgId || '';
+  if (!key) return '#';
+  const addr = (l.unparsed_address || '').toLowerCase()
+    .replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-');
+  const city = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
+  return addr ? `/property/${addr}-${city}-tx-${key}` : `/property/${key}`;
+}
+</script>
 <script src="/js/footer.js"></script>
 
 <script>
@@ -614,7 +624,7 @@
       const baths = l.bathrooms_total ? `${l.bathrooms_total} ba` : '';
       const sqft  = l.living_area     ? `${Number(l.living_area).toLocaleString()} sqft` : '';
       const meta  = [beds, baths, sqft].filter(Boolean).join(' · ');
-      return `<a href="/property.html?id=${l.listing_key}" class="listing-card">${photo}<div class="listing-info"><div class="listing-price">${price}</div><div class="listing-addr">${l.unparsed_address || ''}</div><div class="listing-meta">${meta}</div></div></a>`;
+      return `<a href="${makePropertyUrl(l)}" class="listing-card">${photo}<div class="listing-info"><div class="listing-price">${price}</div><div class="listing-addr">${l.unparsed_address || ''}</div><div class="listing-meta">${meta}</div></div></a>`;
     }).join('');
   }
 })();
