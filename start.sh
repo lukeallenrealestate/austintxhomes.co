@@ -67,11 +67,12 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-# Install dependencies up front
-echo "Installing idx-search dependencies..."
-(cd /home/runner/workspace/idx-search && npm install --loglevel=error)
-echo "Installing austintxhomes dependencies..."
-(cd /home/runner/workspace/austintxhomes && npm install --loglevel=error)
+# Install dependencies in parallel to minimize startup time
+echo "Installing dependencies..."
+(cd /home/runner/workspace/idx-search && npm install --loglevel=error) &
+(cd /home/runner/workspace/austintxhomes && npm install --loglevel=error) &
+wait
+echo "Dependencies installed."
 
 # Start idx-search with auto-restart on crash
 idx_watchdog() {
@@ -85,8 +86,8 @@ idx_watchdog() {
 }
 idx_watchdog &
 
-# Give idx-search a head start before the frontend begins proxying
-sleep 6
+# Give idx-search a brief head start before the frontend begins proxying
+sleep 3
 
 # Start austintxhomes frontend on port 3002 (foreground — keeps script alive)
 echo "[austintxhomes] Starting on port 3002..."
