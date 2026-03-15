@@ -78,8 +78,9 @@ router.get('/:slug', (req, res) => {
   const canonicalUrl = `${SITE_URL}/property/${canonicalSlug}`;
 
   // 301 redirect old listing-key-only URLs to the canonical address-based URL
+  // Use root-relative path (not absolute URL) so the redirect works on any host (Replit, prod, etc.)
   if (slug !== canonicalSlug) {
-    return res.redirect(301, canonicalUrl);
+    return res.redirect(301, `/property/${canonicalSlug}`);
   }
 
   // JSON-LD: RealEstateListing
