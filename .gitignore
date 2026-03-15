@@ -4,3 +4,4 @@ node_modules/
 *.jpg
 *.png
 .env
+austintxhomes/data/dealAlerts.json
