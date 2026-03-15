@@ -175,8 +175,28 @@ app.post('/api/admin/sync', async (req, res) => {
   } catch {
     return res.status(401).json({ error: 'Unauthorized' });
   }
-  syncListings(false).catch(console.error);
-  res.json({ message: 'Sync started in background' });
+  const isInitial = req.query.initial === 'true';
+  if (isInitial) {
+    const db = require('./db/database');
+    db.prepare('UPDATE sync_state SET last_sync_timestamp = NULL WHERE id = 1').run();
+    console.log('[SYNC] Admin triggered full initial sync');
+  }
+  syncListings(isInitial).catch(console.error);
+  res.json({ message: `${isInitial ? 'Full initial' : 'Incremental'} sync started in background` });
+});
+
+// Trigger manual photo refresh
+app.post('/api/admin/refresh-photos', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  try {
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+  } catch {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  refreshPhotos().catch(console.error);
+  res.json({ message: 'Photo refresh started in background' });
 });
 
 // SPA fallback
@@ -189,16 +209,19 @@ app.listen(PORT, async () => {
   serverStarted = true;
   console.log(`\n🏠 Austin TX Homes IDX running on port ${PORT}`);
 
-  // Check if DB is empty, do initial sync
+  // Check if DB has enough data; a partial initial sync (<5000 listings) means a prior
+  // startup was interrupted (e.g. by rate-limiting) and we need to restart from scratch.
   const db = require('./db/database');
   const count = db.prepare('SELECT COUNT(*) as n FROM listings').get().n;
-  if (count === 0) {
-    console.log('[SYNC] Database empty — starting initial import (this may take a while)...');
+  if (count < 5000) {
+    console.log(`[SYNC] Only ${count} listings in DB — starting full initial import...`);
+    // Clear sync state so syncListings treats this as a fresh start
+    db.prepare('UPDATE sync_state SET last_sync_timestamp = NULL WHERE id = 1').run();
     syncListings(true).catch(console.error);
   } else {
     console.log(`[SYNC] ${count} listings in DB. Starting incremental sync...`);
     syncListings(false).catch(console.error);
-    // Photo refresh handled by the 45-min cron below; skip on startup to avoid OOM
+    // Photo refresh handled by the cron below; skip on startup to avoid OOM
   }
 });
 
