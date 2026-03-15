@@ -202,18 +202,19 @@ app.listen(PORT, async () => {
   }
 });
 
-// Incremental sync every 15 minutes
-cron.schedule('*/15 * * * *', () => {
+// Incremental sync every 30 minutes (reduced from 15 to ease MLS API load)
+cron.schedule('*/30 * * * *', () => {
   console.log('[SYNC] Scheduled incremental sync...');
   syncListings(false).catch(console.error);
 });
 
-// Bulk photo URL refresh every 45 minutes (CDN tokens expire ~60-70 min after issue)
-cron.schedule('*/45 * * * *', () => {
+// Bulk photo URL refresh every 60 minutes (reduced from 45, CDN tokens expire ~60-70 min after issue)
+// Scheduled at :05 to avoid collision with sync
+cron.schedule('5 * * * *', () => {
   refreshPhotos().catch(console.error);
 });
 
-// Email alerts for saved searches — runs every hour
-cron.schedule('0 * * * *', () => {
+// Email alerts for saved searches — runs every hour at :30 to avoid collisions
+cron.schedule('30 * * * *', () => {
   runAlertJob().catch(console.error);
 });

@@ -149,13 +149,42 @@ const batchUpsert = db.transaction((listings) => {
   return count;
 });
 
-async function fetchPage(url) {
-  const res = await fetch(url, { headers: HEADERS });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`MLS GRID API error ${res.status}: ${text}`);
+// Rate limiter with exponential backoff for 429 errors
+let lastRequestTime = 0;
+const MIN_DELAY_MS = 600; // Keep ~1.6 RPS (well under 2 RPS limit)
+
+async function fetchPage(url, retries = 3) {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    // Enforce minimum delay between requests
+    const elapsed = Date.now() - lastRequestTime;
+    if (elapsed < MIN_DELAY_MS) {
+      await new Promise(r => setTimeout(r, MIN_DELAY_MS - elapsed));
+    }
+    
+    lastRequestTime = Date.now();
+    
+    try {
+      const res = await fetch(url, { headers: HEADERS });
+      
+      if (res.status === 429) {
+        // Rate limited — exponential backoff
+        const backoffMs = Math.pow(2, attempt) * 2000; // 2s, 4s, 8s
+        console.warn(`[API] Rate limited (429). Backing off ${backoffMs}ms (attempt ${attempt + 1}/${retries})`);
+        await new Promise(r => setTimeout(r, backoffMs));
+        continue;
+      }
+      
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`MLS GRID API error ${res.status}: ${text}`);
+      }
+      return res.json();
+    } catch (err) {
+      if (attempt === retries - 1) throw err;
+      console.warn(`[API] Fetch failed: ${err.message}. Retrying...`);
+      await new Promise(r => setTimeout(r, 1000));
+    }
   }
-  return res.json();
 }
 
 async function syncListings(isInitial = false) {
@@ -208,9 +237,7 @@ async function syncListings(isInitial = false) {
       }
 
       url = data['@odata.nextLink'] || null;
-
-      // Small delay to be nice to the API
-      if (url) await new Promise(r => setTimeout(r, 200));
+      // Delay is now enforced in fetchPage via MIN_DELAY_MS rate limiter
 
     } catch (err) {
       console.error(`[SYNC] Error on page ${pageCount}:`, err.message);
@@ -268,13 +295,7 @@ async function refreshPhotos() {
   while (url) {
     pageCount++;
     try {
-      const res = await fetch(url, { headers: HEADERS });
-      if (!res.ok) {
-        const text = await res.text();
-        console.warn(`[PHOTOS] API error ${res.status} on page ${pageCount}: ${text.substring(0,100)}`);
-        break;
-      }
-      const data = await res.json();
+      const data = await fetchPage(url);
       for (const p of (data.value || [])) {
         if (!p.ListingKey || !p.Media?.length) continue;
         const urls = p.Media
@@ -289,8 +310,7 @@ async function refreshPhotos() {
         flushBatch();
         console.log(`[PHOTOS] Page ${pageCount}, refreshed ${totalRefreshed} listings...`);
       }
-      // 700ms between pages keeps us well under 2 RPS limit
-      if (url) await new Promise(r => setTimeout(r, 700));
+      // Rate limiting is handled in fetchPage
     } catch (e) {
       console.error('[PHOTOS] Error:', e.message);
       break;
