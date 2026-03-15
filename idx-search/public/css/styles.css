@@ -1526,22 +1526,29 @@ input, select, textarea { font-family: inherit; }
   .detail-content {
     grid-template-columns: 1fr;
   }
-  .detail-sidebar { order: -1; }
+  .detail-sidebar { order: 2; }
   .contact-card { position: static; }
-  .gallery { height: 280px; }
+  .gallery { height: 260px; }
 
   .listings-grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
 
   .view-controls { padding: 12px 16px; }
   #list-view { padding: 16px; }
-  .filter-bar { padding: 0 12px; }
+  .filter-bar { padding: 0 8px; gap: 6px; }
+  .filter-btn { padding: 5px 10px; font-size: 12px; }
+  .filter-toggle button { padding: 5px 12px; font-size: 12px; }
   .header { padding: 0 16px; }
+  .header-actions { gap: 6px; }
+  .header-actions .btn { padding: 7px 12px; font-size: 13px; }
 }
 
 @media (max-width: 480px) {
   .listings-grid { grid-template-columns: 1fr; }
   .detail-stats { gap: 12px; }
   .detail-stat .value { font-size: 18px; }
+  .header-actions .btn-outline { display: none; }
+  .filter-btn { padding: 5px 9px; font-size: 11px; }
+  .filter-toggle button { padding: 5px 10px; font-size: 11px; }
 }
