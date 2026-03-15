@@ -135,6 +135,7 @@
           <li><a href="/austin-homes-under-1-million">Homes Under $1M in Austin</a></li>
           <li><a href="/austin-homes-big-yard">Austin Homes with Big Yards</a></li>
           <li><a href="/new-construction">New Construction Austin</a></li>
+          <li><a href="/eanes-isd-homes-for-sale">Eanes ISD Homes for Sale</a></li>
           <li><a href="/luxury-homes">Luxury Homes Austin TX</a></li>
           <li><a href="/investment-properties">Investment Properties</a></li>
           <li><a href="/rental-properties-for-sale-austin">Rental Properties Austin</a></li>

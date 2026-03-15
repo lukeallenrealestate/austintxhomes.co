@@ -324,6 +324,7 @@ app.get('/austin-homes-under-750k', (_req, res) => res.sendFile(path.join(__dirn
 app.get('/austin-homes-under-1-million', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-homes-under-1-million.html')));
 app.get('/commercial-real-estate-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/commercial-real-estate-austin.html')));
 app.get('/austin-homes-big-yard', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-homes-big-yard.html')));
+app.get('/eanes-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/eanes-isd-homes-for-sale.html')));
 app.get('/austin-tx-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-tx-realtor.html')));
 app.get('/moving-to-austin-guides', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/moving-to-austin-guides.html')));
 app.get('/employer-relocation-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/employer-relocation-austin.html')));
