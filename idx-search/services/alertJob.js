@@ -63,7 +63,7 @@ async function runAlertJob() {
 
   const searches = db.prepare(`
     SELECT ss.id, ss.name, ss.filters, ss.last_alerted_at,
-           u.email, u.full_name
+           u.email, u.name AS full_name
     FROM saved_searches ss
     JOIN users u ON u.id = ss.user_id
     WHERE ss.alert_enabled = 1 AND u.email IS NOT NULL

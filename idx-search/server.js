@@ -198,8 +198,7 @@ app.listen(PORT, async () => {
   } else {
     console.log(`[SYNC] ${count} listings in DB. Starting incremental sync...`);
     syncListings(false).catch(console.error);
-    // Refresh photo URLs in background (they expire ~60-70 min after CDN token issue)
-    setTimeout(() => refreshPhotos().catch(console.error), 3000);
+    // Photo refresh handled by the 45-min cron below; skip on startup to avoid OOM
   }
 });
 
