@@ -235,10 +235,35 @@ async function refreshPhotos() {
   refreshRunning = true;
   console.log('[PHOTOS] Starting bulk photo URL refresh...');
 
-  const photosByListing = {};
   const filter = `OriginatingSystemName eq '${SYSTEM}' and MlgCanView eq true`;
   let url = `${BASE_URL}/Property?$filter=${encodeURIComponent(filter)}&$expand=Media&$select=ListingKey&$top=500`;
   let pageCount = 0;
+  let totalRefreshed = 0;
+
+  // Prepare DB write helpers (flushed every FLUSH_EVERY pages to limit peak RAM)
+  const FLUSH_EVERY = 10; // ~5000 listings per flush
+  const stmt = db.prepare('UPDATE listings SET photos = ? WHERE listing_key = ?');
+  const batchUpdate = db.transaction((batch) => {
+    for (const [key, urls] of batch) stmt.run(JSON.stringify(urls), key);
+  });
+  let pageBatch = {};
+
+  const flushBatch = () => {
+    const entries = Object.entries(pageBatch);
+    if (!entries.length) return;
+    batchUpdate(entries);
+    // Clear stale disk-cached photo files
+    if (fs.existsSync(PHOTO_CACHE_DIR)) {
+      for (const [key] of entries) {
+        try {
+          const files = fs.readdirSync(PHOTO_CACHE_DIR).filter(f => f.startsWith(key + '-'));
+          for (const f of files) fs.unlinkSync(path.join(PHOTO_CACHE_DIR, f));
+        } catch {}
+      }
+    }
+    totalRefreshed += entries.length;
+    pageBatch = {};
+  };
 
   while (url) {
     pageCount++;
@@ -257,11 +282,12 @@ async function refreshPhotos() {
           .sort((a, b) => (a.Order || 0) - (b.Order || 0))
           .map(m => m.MediaURL)
           .filter(Boolean);
-        if (urls.length) photosByListing[p.ListingKey] = urls;
+        if (urls.length) pageBatch[p.ListingKey] = urls;
       }
       url = data['@odata.nextLink'] || null;
-      if (pageCount % 10 === 0) {
-        console.log(`[PHOTOS] Page ${pageCount}, refreshed ${Object.keys(photosByListing).length} listings...`);
+      if (pageCount % FLUSH_EVERY === 0) {
+        flushBatch();
+        console.log(`[PHOTOS] Page ${pageCount}, refreshed ${totalRefreshed} listings...`);
       }
       // 700ms between pages keeps us well under 2 RPS limit
       if (url) await new Promise(r => setTimeout(r, 700));
@@ -271,34 +297,14 @@ async function refreshPhotos() {
     }
   }
 
-  const entries = Object.entries(photosByListing);
-  if (entries.length === 0) {
+  flushBatch(); // flush any remaining
+  if (totalRefreshed === 0) {
     console.log('[PHOTOS] No photos to refresh.');
     refreshRunning = false;
     return;
   }
 
-  const stmt = db.prepare('UPDATE listings SET photos = ? WHERE listing_key = ?');
-  const batchUpdate = db.transaction((batch) => {
-    for (const [key, urls] of batch) stmt.run(JSON.stringify(urls), key);
-  });
-  for (let i = 0; i < entries.length; i += 1000) {
-    batchUpdate(entries.slice(i, i + 1000));
-  }
-
-  // Clear disk-cached photo files for refreshed listings so stale bytes aren't served
-  if (fs.existsSync(PHOTO_CACHE_DIR)) {
-    let cleared = 0;
-    for (const [key] of entries) {
-      try {
-        const files = fs.readdirSync(PHOTO_CACHE_DIR).filter(f => f.startsWith(key + '-'));
-        for (const f of files) { fs.unlinkSync(path.join(PHOTO_CACHE_DIR, f)); cleared++; }
-      } catch {}
-    }
-    if (cleared > 0) console.log(`[PHOTOS] Cleared ${cleared} stale cache files.`);
-  }
-
-  console.log(`[PHOTOS] Refreshed photos for ${entries.length} listings across ${pageCount} pages.`);
+  console.log(`[PHOTOS] Refreshed photos for ${totalRefreshed} listings across ${pageCount} pages.`);
   refreshRunning = false;
 }
 
