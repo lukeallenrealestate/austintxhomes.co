@@ -188,6 +188,7 @@ If Puppeteer is not installed: `npm install puppeteer` in the austintxhomes dire
 | `/austin-homes-big-yard` | `public/site/austin-homes-big-yard.html` | ✓ |
 | `/austin-buyers-or-sellers-market` | `public/site/austin-buyers-or-sellers-market.html` | ✓ |
 | `/austin-home-prices-falling` | `public/site/austin-home-prices-falling.html` | ✓ |
+| `/sienna-at-the-thompson-austin` | `public/site/sienna-at-the-thompson-austin.html` | ✓ |
 | `/neighborhoods/:slug` | `templates/neighborhood.js` (SSR) | ✓ |
 
 Neighborhood data lives in `data/neighborhoods.js`. New neighborhoods go there, not as static HTML files.

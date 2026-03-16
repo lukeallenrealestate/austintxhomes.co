@@ -45,6 +45,23 @@ app.use((req, res, next) => {
 // Start scheduled alert checks (2-hour interval, first run after 10 min warmup)
 alertEngine.startScheduledChecks(dealEngine.getDeals);
 
+// Monthly scraper — runs on the 1st of each month at 7:00am server time
+const cron = require('node-cron');
+cron.schedule('0 7 1 * *', () => {
+  const { execFile } = require('child_process');
+  const scraperPath = path.join(__dirname, 'scripts/update-sienna-floorplans.js');
+  console.log('[cron] Running Sienna floor plan scraper...');
+  execFile(process.execPath, [scraperPath], { cwd: __dirname }, (err, stdout, stderr) => {
+    siennaCache = null;
+    siennaCacheTime = 0;
+    if (err) {
+      console.error('[cron] Sienna scraper failed:', err.message);
+    } else {
+      console.log('[cron] Sienna scraper complete:', stdout.trim().split('\n').pop());
+    }
+  });
+});
+
 // ── Deal Radar API routes (must come BEFORE the generic /api proxy) ──────────
 
 // GET /api/deal-radar/settings — return current scoring config (admin)
@@ -154,6 +171,26 @@ app.get('/api/deal-radar/:id', async (req, res) => {
 // /search serves the idx-search SPA directly (no localhost redirect)
 app.get('/search', (_req, res) => {
   res.sendFile(path.join(IDX_PUBLIC, 'index.html'));
+});
+
+// Sienna at the Thompson floor plans — reads JSON file, cached 1 hour
+let siennaCache = null;
+let siennaCacheTime = 0;
+
+app.get('/api/sienna-floorplans', (_req, res) => {
+  try {
+    if (siennaCache && (Date.now() - siennaCacheTime) < 3600000) {
+      return res.json(siennaCache);
+    }
+    const filePath = path.join(__dirname, 'data/sienna-floorplans.json');
+    const data = JSON.parse(require('fs').readFileSync(filePath, 'utf8'));
+    siennaCache = data;
+    siennaCacheTime = Date.now();
+    res.json(data);
+  } catch (e) {
+    if (siennaCache) return res.json(siennaCache);
+    res.status(500).json({ error: 'Floor plan data unavailable', plans: [], lastUpdated: null });
+  }
 });
 
 // Market stats endpoint — computed from live MLS data, cached 1 hour
@@ -343,6 +380,7 @@ app.get('/sell-home-during-divorce-austin', (_req, res) => res.sendFile(path.joi
 app.get('/buying-home-after-divorce-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/buying-home-after-divorce-austin.html')));
 app.get('/austin-buyers-or-sellers-market', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-buyers-or-sellers-market.html')));
 app.get('/austin-home-prices-falling', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-home-prices-falling.html')));
+app.get('/sienna-at-the-thompson-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sienna-at-the-thompson-austin.html')));
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));

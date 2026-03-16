@@ -1,0 +1,77 @@
+{
+  "lastUpdated": "2026-03-16T05:29:07.371Z",
+  "property": {
+    "name": "Sienna at the Thompson",
+    "address": "501 Brazos St, Austin TX 78701",
+    "phone": "(512) 900-8000",
+    "website": "https://rentsienna.com"
+  },
+  "summary": {
+    "Studio": {
+      "count": 3,
+      "availableNow": 3,
+      "priceFrom": 2144,
+      "priceTo": 2444
+    },
+    "Jr. 1 Bedroom": {
+      "count": 1,
+      "availableNow": 1,
+      "priceFrom": 2170,
+      "priceTo": 2170
+    }
+  },
+  "plans": [
+    {
+      "unit": "1513",
+      "name": "#1513",
+      "planType": "Studio",
+      "location": "Lofts above The Thompson",
+      "beds": 0,
+      "baths": 1,
+      "sqft": 492,
+      "price": 2144,
+      "priceDisplay": "$2,144/mo",
+      "available": "Available Now",
+      "availableNow": true
+    },
+    {
+      "unit": "1504",
+      "name": "#1504",
+      "planType": "Jr. 1 Bedroom",
+      "location": "Lofts above The Thompson",
+      "beds": 1,
+      "baths": 1,
+      "sqft": 496,
+      "price": 2170,
+      "priceDisplay": "$2,170/mo",
+      "available": "Available Now",
+      "availableNow": true
+    },
+    {
+      "unit": "1507",
+      "name": "#1507",
+      "planType": "Studio",
+      "location": "Lofts above The Thompson",
+      "beds": 0,
+      "baths": 1,
+      "sqft": 466,
+      "price": 2404,
+      "priceDisplay": "$2,404/mo",
+      "available": "Available Now",
+      "availableNow": true
+    },
+    {
+      "unit": "1505",
+      "name": "#1505",
+      "planType": "Studio",
+      "location": "Lofts above The Thompson",
+      "beds": 0,
+      "baths": 1,
+      "sqft": 467,
+      "price": 2444,
+      "priceDisplay": "$2,444/mo",
+      "available": "Available Now",
+      "availableNow": true
+    }
+  ]
+}
