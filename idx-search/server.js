@@ -49,7 +49,15 @@ app.use('/api/admin', require('./routes/admin'));
 
 // Contact form submission
 app.post('/api/contact', async (req, res) => {
-  const { name, email, phone, message, listing, listingKey, listPrice, budget, timeline, neighborhood, source } = req.body;
+  const {
+    name, phone, message, listing, listingKey, listPrice,
+    budget, timeline, neighborhood, source,
+    // commercial form fields
+    company, capital, propertyType, strategy, notes, interestedDeal,
+    contact  // "Phone or Email" field used by commercial form
+  } = req.body;
+  // Accept email OR the generic "contact" field (used by commercial RE form)
+  const email = req.body.email || contact;
   if (!name || !email) return res.status(400).json({ error: 'Name and email required' });
 
   try {
@@ -101,12 +109,17 @@ app.post('/api/contact', async (req, res) => {
                 <strong style="color:#374151;">Phone</strong><br/>
                 <a href="tel:${phone}" style="color:#1877F2;">${phone}</a>
               </td></tr>` : ''}
+              ${row('Company / Fund', company)}
               ${row('Budget', budget)}
+              ${row('Capital to Deploy', capital)}
               ${row('Timeline', timeline)}
               ${row('Neighborhood', neighborhood)}
+              ${row('Property Type', propertyType)}
+              ${row('Investment Strategy', strategy)}
+              ${row('Interested Deal', interestedDeal)}
               <tr><td style="padding:8px 0;">
                 <strong style="color:#374151;">Message</strong><br/>
-                <p style="color:#374151;white-space:pre-wrap;margin:4px 0 0;">${message || '(no message)'}</p>
+                <p style="color:#374151;white-space:pre-wrap;margin:4px 0 0;">${notes || message || '(no message)'}</p>
               </td></tr>
             </table>
             <div style="margin-top:20px;">
