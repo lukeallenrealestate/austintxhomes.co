@@ -178,8 +178,18 @@ app.get('/api/market-stats', async (_req, res) => {
       return res.json(marketStatsCache);
     }
 
-    // Fetch a large sample for accurate stats
-    const data = await fetchJSON(`${IDX_SERVER}/api/properties/search?limit=2000&status=Active&property_type=Residential`);
+    // Austin metro cities (Travis, Williamson, Hays, Bastrop counties — excludes Temple, Killeen, New Braunfels, etc.)
+    const AUSTIN_METRO_CITIES = [
+      'Austin','Round Rock','Georgetown','Cedar Park','Leander','Pflugerville',
+      'Kyle','Buda','San Marcos','Bastrop','Manor','Hutto','Taylor','Del Valle',
+      'Lakeway','Bee Cave','Dripping Springs','Wimberley','Buda','Lockhart',
+      'Elgin','Liberty Hill','Jarrell','Spicewood','Lago Vista','Driftwood',
+      'Manchaca','Bee Cave','Westlake Hills','West Lake Hills','Rollingwood',
+      'Sunset Valley','Jonestown','Volente','Hudson Bend','Briarcliff','Rob Roy'
+    ].join(',');
+
+    // Fetch a large sample for accurate stats (Austin metro only)
+    const data = await fetchJSON(`${IDX_SERVER}/api/properties/search?limit=2000&status=Active&property_type=Residential&city=${encodeURIComponent(AUSTIN_METRO_CITIES)}`);
     const all = (data.listings || []).filter(l => l.list_price > 50000);
     const prices = all.map(l => l.list_price).sort((a, b) => a - b);
     const total  = data.total || all.length;
@@ -331,6 +341,7 @@ app.get('/employer-relocation-austin', (_req, res) => res.sendFile(path.join(__d
 app.get('/divorce-realtor-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/divorce-realtor-austin.html')));
 app.get('/sell-home-during-divorce-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-during-divorce-austin.html')));
 app.get('/buying-home-after-divorce-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/buying-home-after-divorce-austin.html')));
+app.get('/austin-buyers-or-sellers-market', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-buyers-or-sellers-market.html')));
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));
