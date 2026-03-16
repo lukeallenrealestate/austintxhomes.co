@@ -18,10 +18,11 @@ function formatPrice(p) {
   return '$' + Number(p).toLocaleString('en-US');
 }
 
-function makePropertySlug(listing_key, unparsed_address, city) {
+function makePropertySlug(listing_key, unparsed_address, city, postal_code) {
   const addrSlug = slugify(unparsed_address || '');
   const citySlug = slugify(city || 'austin');
-  return addrSlug ? `${addrSlug}-${citySlug}-tx-${listing_key}` : listing_key;
+  const zip = (postal_code || '').replace(/[^0-9]/g, '');
+  return addrSlug ? `${addrSlug}-${citySlug}-tx${zip ? '-' + zip : ''}-${listing_key}` : listing_key;
 }
 
 // GET /property/:slug
@@ -74,7 +75,7 @@ router.get('/:slug', (req, res) => {
   const remarkExcerpt = truncate(public_remarks, 120);
   const metaDesc = truncate(`${statsPart}. ${remarkExcerpt}`, 158);
 
-  const canonicalSlug = makePropertySlug(listing.listing_key, unparsed_address, city);
+  const canonicalSlug = makePropertySlug(listing.listing_key, unparsed_address, city, postal_code);
   const canonicalUrl = `${SITE_URL}/property/${canonicalSlug}`;
 
   // 301 redirect old listing-key-only URLs to the canonical address-based URL

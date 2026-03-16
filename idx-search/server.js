@@ -143,14 +143,22 @@ app.post('/api/contact', async (req, res) => {
 // SEO: Dynamic XML sitemap
 app.get('/sitemap.xml', (req, res) => {
   const db = require('./db/database');
-  const SITE_URL = process.env.SITE_URL || 'https://austintxhomes.co';
+  let SITE_URL = process.env.SITE_URL || 'austintxhomes.co';
+  if (!SITE_URL.startsWith('http')) SITE_URL = 'https://' + SITE_URL;
   const listings = db.prepare(`
-    SELECT listing_key, modification_timestamp
+    SELECT listing_key, unparsed_address, city, postal_code, modification_timestamp
     FROM listings
     WHERE mlg_can_view = 1 AND standard_status = 'Active'
     ORDER BY modification_timestamp DESC
     LIMIT 50000
   `).all();
+
+  function sitemapSlug(listing_key, unparsed_address, city, postal_code) {
+    const addrSlug = (unparsed_address || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const citySlug = (city || 'austin').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const zip = (postal_code || '').replace(/[^0-9]/g, '');
+    return addrSlug ? `${addrSlug}-${citySlug}-tx${zip ? '-' + zip : ''}-${listing_key}` : listing_key;
+  }
 
   const staticPages = [
     { url: '/', priority: '1.0', changefreq: 'daily' },
@@ -168,9 +176,10 @@ app.get('/sitemap.xml', (req, res) => {
     const lastmod = l.modification_timestamp
       ? new Date(l.modification_timestamp).toISOString().split('T')[0]
       : new Date().toISOString().split('T')[0];
+    const slug = sitemapSlug(l.listing_key, l.unparsed_address, l.city, l.postal_code);
     return `
   <url>
-    <loc>${SITE_URL}/property/${l.listing_key}</loc>
+    <loc>${SITE_URL}/property/${slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>

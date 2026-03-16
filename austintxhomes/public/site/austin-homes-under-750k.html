@@ -644,7 +644,8 @@ function makePropertyUrl(l) {
   const addr = (l.unparsed_address || '').toLowerCase()
     .replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-');
   const city = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
-  return addr ? `/property/${addr}-${city}-tx-${key}` : `/property/${key}`;
+  const zip = (l.postal_code || '').replace(/[^0-9]/g, '');
+  return addr ? `/property/${addr}-${city}-tx${zip ? '-' + zip : ''}-${key}` : `/property/${key}`;
 }
 </script>
 <script src="/js/footer.js"></script>
