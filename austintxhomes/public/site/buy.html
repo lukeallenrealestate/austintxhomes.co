@@ -310,7 +310,7 @@
     <div class="hero-form" id="consult">
       <h3>Start Your Home Search</h3>
       <p>Free consultation — no obligation, no pressure.</p>
-      <form action="/api/contact" method="POST">
+      <form id="buy-contact-form" action="/api/contact" method="POST">
         <input type="hidden" name="source" value="buy-page" />
         <div class="form-group">
           <label>Your Name</label>
@@ -354,8 +354,9 @@
           <label>Neighborhood preference</label>
           <input type="text" name="neighborhood" placeholder="East Austin, Mueller, Westlake..." />
         </div>
-        <button type="submit" class="form-submit">Request Free Consultation</button>
+        <button type="submit" class="form-submit" id="buy-submit-btn">Request Free Consultation</button>
         <p class="form-note">Luke Allen · TREC #788149 · Luke@austinmdg.com</p>
+        <p id="buy-form-success" style="display:none;color:#4ade80;text-align:center;margin-top:.75rem;font-size:.9rem;">Thanks! Luke will be in touch within 24 hours.</p>
       </form>
     </div>
   </div>
@@ -614,6 +615,34 @@ async function loadBuyListings() {
 }
 
 loadBuyListings();
+
+// Contact form AJAX intercept
+(function() {
+  const form = document.getElementById('buy-contact-form');
+  if (!form) return;
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('buy-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(form)))
+      });
+      if (res.ok) {
+        form.reset();
+        document.getElementById('buy-form-success').style.display = 'block';
+        btn.textContent = 'Sent!';
+      } else { throw new Error(); }
+    } catch {
+      btn.disabled = false;
+      btn.textContent = 'Request Free Consultation';
+      alert('Something went wrong. Please email Luke@austinmdg.com directly.');
+    }
+  });
+})();
 </script>
 
 </body>

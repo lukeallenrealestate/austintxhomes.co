@@ -34,6 +34,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
@@ -48,11 +49,10 @@ app.use('/api/admin', require('./routes/admin'));
 
 // Contact form submission
 app.post('/api/contact', async (req, res) => {
-  const { name, email, phone, message, listing, listingKey, listPrice } = req.body;
+  const { name, email, phone, message, listing, listingKey, listPrice, budget, timeline, neighborhood, source } = req.body;
   if (!name || !email) return res.status(400).json({ error: 'Name and email required' });
 
   try {
-    const { sendNewListingsAlert } = require('./services/mailer');
     const nodemailer = require('nodemailer');
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -61,28 +61,37 @@ app.post('/api/contact', async (req, res) => {
       auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
     });
 
-    const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+    let rawSiteUrl = process.env.SITE_URL || 'austintxhomes.co';
+    if (!rawSiteUrl.startsWith('http')) rawSiteUrl = 'https://' + rawSiteUrl;
     const price = listPrice ? '$' + Number(listPrice).toLocaleString() : '';
-    const propertyUrl = listingKey ? `${siteUrl}/property/${listingKey}` : siteUrl;
+    const propertyUrl = listingKey ? `${rawSiteUrl}/property/${listingKey}` : rawSiteUrl;
+    const subject = listing
+      ? `New inquiry: ${listing}${price ? ' — ' + price : ''}`
+      : `New lead from Austin TX Homes${source ? ' (' + source + ')' : ''}`;
+
+    const row = (label, value) => value
+      ? `<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;"><strong style="color:#374151;">${label}</strong><br/><span style="color:#374151;">${value}</span></td></tr>`
+      : '';
 
     await transporter.sendMail({
       from: `"Austin TX Homes" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      to: process.env.ADMIN_EMAIL || process.env.EMAIL_FROM || process.env.EMAIL_USER,
       replyTo: `"${name}" <${email}>`,
-      subject: `New inquiry: ${listing}`,
+      subject,
       html: `
         <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:560px;margin:0 auto;background:#fff;">
           <div style="background:#1877F2;padding:20px 28px;">
             <h2 style="color:#fff;margin:0;font-size:20px;">New Contact Form Submission</h2>
+            ${source ? `<p style="color:#c7d9ff;margin:6px 0 0;font-size:13px;">Source: ${source}</p>` : ''}
           </div>
           <div style="padding:24px 28px;">
             <table width="100%" cellpadding="0" cellspacing="0">
-              <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;">
+              ${listing ? `<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;">
                 <strong style="color:#374151;">Property</strong><br/>
                 <a href="${propertyUrl}" style="color:#1877F2;">${listing}${price ? ' — ' + price : ''}</a>
-              </td></tr>
+              </td></tr>` : ''}
               <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;">
-                <strong style="color:#374151;">Name</strong><br/>${name}
+                <strong style="color:#374151;">Name</strong><br/><span style="color:#374151;">${name}</span>
               </td></tr>
               <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;">
                 <strong style="color:#374151;">Email</strong><br/>
@@ -92,19 +101,25 @@ app.post('/api/contact', async (req, res) => {
                 <strong style="color:#374151;">Phone</strong><br/>
                 <a href="tel:${phone}" style="color:#1877F2;">${phone}</a>
               </td></tr>` : ''}
+              ${row('Budget', budget)}
+              ${row('Timeline', timeline)}
+              ${row('Neighborhood', neighborhood)}
               <tr><td style="padding:8px 0;">
                 <strong style="color:#374151;">Message</strong><br/>
                 <p style="color:#374151;white-space:pre-wrap;margin:4px 0 0;">${message || '(no message)'}</p>
               </td></tr>
             </table>
             <div style="margin-top:20px;">
-              <a href="${propertyUrl}" style="display:inline-block;padding:10px 20px;background:#1877F2;color:#fff;border-radius:6px;text-decoration:none;font-size:14px;">View Property</a>
-              <a href="mailto:${email}" style="display:inline-block;margin-left:10px;padding:10px 20px;background:#f3f4f6;color:#374151;border-radius:6px;text-decoration:none;font-size:14px;">Reply to ${name}</a>
+              ${listing ? `<a href="${propertyUrl}" style="display:inline-block;padding:10px 20px;background:#1877F2;color:#fff;border-radius:6px;text-decoration:none;font-size:14px;">View Property</a>` : ''}
+              <a href="mailto:${email}" style="display:inline-block;${listing ? 'margin-left:10px;' : ''}padding:10px 20px;background:#f3f4f6;color:#374151;border-radius:6px;text-decoration:none;font-size:14px;">Reply to ${name}</a>
             </div>
           </div>
         </div>`
     });
 
+    // If this was a plain HTML form submit, redirect back with success flag
+    const isHtmlForm = req.headers['content-type']?.includes('application/x-www-form-urlencoded');
+    if (isHtmlForm) return res.redirect(303, (req.headers.referer || '/') + '?submitted=1');
     res.json({ ok: true });
   } catch (err) {
     console.error('[CONTACT]', err.message);

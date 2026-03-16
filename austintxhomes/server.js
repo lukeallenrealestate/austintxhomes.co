@@ -60,7 +60,6 @@ const dealEngine  = require('./lib/dealRadar/dealEngine');
 const alertEngine = require('./lib/dealRadar/alertEngine');
 const ADMIN_KEY   = process.env.DEAL_RADAR_ADMIN_KEY || 'austin-admin-2026';
 app.use(compression());
-app.use(express.json());
 
 // Redirect non-canonical hostnames (e.g. replit.app subdomains) to the real domain
 app.use((req, res, next) => {
@@ -127,7 +126,7 @@ app.get('/api/deal-radar/settings', (req, res) => {
 });
 
 // POST /api/deal-radar/settings — save scoring config and clear cache (admin)
-app.post('/api/deal-radar/settings', (req, res) => {
+app.post('/api/deal-radar/settings', express.json(), (req, res) => {
   if (req.headers['x-admin-key'] !== ADMIN_KEY) return res.status(401).json({ error: 'Unauthorized' });
   try {
     dealEngine.saveSettings(req.body);
@@ -185,7 +184,7 @@ app.get('/api/deal-radar/pins', async (req, res) => {
 });
 
 // POST /api/deal-radar/alerts — create a new alert
-app.post('/api/deal-radar/alerts', async (req, res) => {
+app.post('/api/deal-radar/alerts', express.json(), async (req, res) => {
   try {
     const { email, label, filters } = req.body;
     if (!email || !filters) return res.status(400).json({ error: 'email and filters required' });
