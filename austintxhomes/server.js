@@ -342,6 +342,7 @@ app.get('/divorce-realtor-austin', (_req, res) => res.sendFile(path.join(__dirna
 app.get('/sell-home-during-divorce-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-during-divorce-austin.html')));
 app.get('/buying-home-after-divorce-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/buying-home-after-divorce-austin.html')));
 app.get('/austin-buyers-or-sellers-market', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-buyers-or-sellers-market.html')));
+app.get('/austin-home-prices-falling', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-home-prices-falling.html')));
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));

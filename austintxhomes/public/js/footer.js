@@ -172,6 +172,7 @@
         <ul class="sf-links">
           <li><a href="/market-report">Market Report ${year} <span class="sf-badge">Live</span></a></li>
           <li><a href="/austin-buyers-or-sellers-market">Buyer's or Seller's Market? <span class="sf-badge">Live</span></a></li>
+          <li><a href="/austin-home-prices-falling">Are Austin Prices Falling?</a></li>
           <li><a href="/moving-to-austin">Moving to Austin Guide</a></li>
           <li><a href="/cost-of-living">Austin Cost of Living ${year}</a></li>
           <li><a href="/first-time-buyers">First-Time Buyer Guide</a></li>
