@@ -137,7 +137,11 @@
     /* ── Hero ── */
     .hero {
       background: var(--ink);
-      background-image: radial-gradient(ellipse 70% 50% at 50% 40%, rgba(184,147,90,0.18) 0%, transparent 70%);
+      background-image:
+        linear-gradient(to bottom, rgba(15,14,13,0.72) 0%, rgba(15,14,13,0.60) 50%, rgba(15,14,13,0.78) 100%),
+        url('/images/eanes-isd-map.png');
+      background-size: cover;
+      background-position: center center;
       padding: 100px 24px 80px;
       text-align: center;
       color: #fff;
