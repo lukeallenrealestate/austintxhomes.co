@@ -189,6 +189,20 @@ If Puppeteer is not installed: `npm install puppeteer` in the austintxhomes dire
 | `/austin-buyers-or-sellers-market` | `public/site/austin-buyers-or-sellers-market.html` | ✓ |
 | `/austin-home-prices-falling` | `public/site/austin-home-prices-falling.html` | ✓ |
 | `/sienna-at-the-thompson-austin` | `public/site/sienna-at-the-thompson-austin.html` | ✓ |
+| `/texas-residency-ut-austin-in-state-tuition` | `public/site/texas-residency-ut-austin-in-state-tuition.html` | ✓ |
+| `/austin-isd-homes-for-sale` | `public/site/austin-isd-homes-for-sale.html` | ✓ |
+| `/leander-isd-homes-for-sale` | `public/site/leander-isd-homes-for-sale.html` | ✓ |
+| `/round-rock-isd-homes-for-sale` | `public/site/round-rock-isd-homes-for-sale.html` | ✓ |
+| `/lake-travis-isd-homes-for-sale` | `public/site/lake-travis-isd-homes-for-sale.html` | ✓ |
+| `/hays-isd-homes-for-sale` | `public/site/hays-isd-homes-for-sale.html` | ✓ |
+| `/pflugerville-isd-homes-for-sale` | `public/site/pflugerville-isd-homes-for-sale.html` | ✓ |
+| `/best-realtor-eanes-isd` | `public/site/best-realtor-eanes-isd.html` | ✓ |
+| `/best-realtor-austin-isd` | `public/site/best-realtor-austin-isd.html` | ✓ |
+| `/best-realtor-leander-isd` | `public/site/best-realtor-leander-isd.html` | ✓ |
+| `/best-realtor-round-rock-isd` | `public/site/best-realtor-round-rock-isd.html` | ✓ |
+| `/best-realtor-lake-travis-isd` | `public/site/best-realtor-lake-travis-isd.html` | ✓ |
+| `/best-realtor-hays-isd` | `public/site/best-realtor-hays-isd.html` | ✓ |
+| `/best-realtor-pflugerville-isd` | `public/site/best-realtor-pflugerville-isd.html` | ✓ |
 | `/neighborhoods/:slug` | `templates/neighborhood.js` (SSR) | ✓ |
 
 Neighborhood data lives in `data/neighborhoods.js`. New neighborhoods go there, not as static HTML files.

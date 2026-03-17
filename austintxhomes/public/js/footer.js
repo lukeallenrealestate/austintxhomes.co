@@ -148,6 +148,17 @@
           <li><a href="/deal-radar">Deal Radar <span class="sf-badge">New</span></a></li>
         </ul>
 
+        <div class="sf-col-subhead">School Districts</div>
+        <ul class="sf-links">
+          <li><a href="/eanes-isd-homes-for-sale">Eanes ISD Homes</a></li>
+          <li><a href="/austin-isd-homes-for-sale">Austin ISD Homes</a></li>
+          <li><a href="/leander-isd-homes-for-sale">Leander ISD Homes</a></li>
+          <li><a href="/round-rock-isd-homes-for-sale">Round Rock ISD Homes</a></li>
+          <li><a href="/lake-travis-isd-homes-for-sale">Lake Travis ISD Homes</a></li>
+          <li><a href="/hays-isd-homes-for-sale">Hays CISD Homes</a></li>
+          <li><a href="/pflugerville-isd-homes-for-sale">Pflugerville ISD Homes</a></li>
+        </ul>
+
         <div class="sf-col-subhead">Divorce Real Estate</div>
         <ul class="sf-links">
           <li><a href="/divorce-realtor-austin">Divorce Realtor Austin</a></li>
@@ -174,6 +185,7 @@
           <li><a href="/market-report">Market Report ${year} <span class="sf-badge">Live</span></a></li>
           <li><a href="/austin-buyers-or-sellers-market">Buyer's or Seller's Market? <span class="sf-badge">Live</span></a></li>
           <li><a href="/austin-home-prices-falling">Are Austin Prices Falling?</a></li>
+          <li><a href="/texas-residency-ut-austin-in-state-tuition">UT Austin In-State Tuition Guide</a></li>
           <li><a href="/moving-to-austin">Moving to Austin Guide</a></li>
           <li><a href="/cost-of-living">Austin Cost of Living ${year}</a></li>
           <li><a href="/first-time-buyers">First-Time Buyer Guide</a></li>

@@ -381,6 +381,20 @@ app.get('/buying-home-after-divorce-austin', (_req, res) => res.sendFile(path.jo
 app.get('/austin-buyers-or-sellers-market', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-buyers-or-sellers-market.html')));
 app.get('/austin-home-prices-falling', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-home-prices-falling.html')));
 app.get('/sienna-at-the-thompson-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sienna-at-the-thompson-austin.html')));
+app.get('/texas-residency-ut-austin-in-state-tuition', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/texas-residency-ut-austin-in-state-tuition.html')));
+app.get('/austin-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-isd-homes-for-sale.html')));
+app.get('/leander-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/leander-isd-homes-for-sale.html')));
+app.get('/round-rock-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/round-rock-isd-homes-for-sale.html')));
+app.get('/lake-travis-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/lake-travis-isd-homes-for-sale.html')));
+app.get('/hays-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/hays-isd-homes-for-sale.html')));
+app.get('/pflugerville-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/pflugerville-isd-homes-for-sale.html')));
+app.get('/best-realtor-eanes-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-eanes-isd.html')));
+app.get('/best-realtor-austin-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-austin-isd.html')));
+app.get('/best-realtor-leander-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-leander-isd.html')));
+app.get('/best-realtor-round-rock-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-round-rock-isd.html')));
+app.get('/best-realtor-lake-travis-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-lake-travis-isd.html')));
+app.get('/best-realtor-hays-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-hays-isd.html')));
+app.get('/best-realtor-pflugerville-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-pflugerville-isd.html')));
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));
