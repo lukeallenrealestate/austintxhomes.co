@@ -396,6 +396,7 @@ app.get('/best-realtor-lake-travis-isd', (_req, res) => res.sendFile(path.join(_
 app.get('/best-realtor-hays-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-hays-isd.html')));
 app.get('/best-realtor-pflugerville-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-pflugerville-isd.html')));
 app.get('/best-realtor-78704-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78704-austin.html')));
+app.get('/best-realtor-78702-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78702-austin.html')));
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));
