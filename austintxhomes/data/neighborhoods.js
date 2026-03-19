@@ -350,7 +350,7 @@ module.exports = {
   'westlake-hills': {
     slug: 'westlake-hills',
     name: 'Westlake Hills',
-    mlsSearch: 'Westlake Hills',
+    mlsSearch: 'West Lake Hills',
     area: 'West Austin',
     title: 'Homes for Sale in Westlake Hills Austin TX | AustinTXHomes.co',
     metaDescription: 'Browse luxury homes for sale in Westlake Hills, TX. Top-rated Eanes ISD, hill country views, and 10 minutes to downtown Austin. Premium Austin real estate updated daily from MLS.',
