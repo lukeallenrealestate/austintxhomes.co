@@ -397,6 +397,15 @@ app.get('/best-realtor-hays-isd', (_req, res) => res.sendFile(path.join(__dirnam
 app.get('/best-realtor-pflugerville-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-pflugerville-isd.html')));
 app.get('/best-realtor-78704-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78704-austin.html')));
 app.get('/best-realtor-78702-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78702-austin.html')));
+app.get('/best-realtor-78703-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78703-austin.html')));
+app.get('/best-realtor-78722-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78722-austin.html')));
+app.get('/best-realtor-78754-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78754-austin.html')));
+app.get('/best-realtor-78731-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78731-austin.html')));
+app.get('/tarrytown-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-realtor.html')));
+app.get('/tarrytown-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-homes-for-sale.html')));
+app.get('/tarrytown-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-market-report.html')));
+app.get('/living-in-tarrytown-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-tarrytown-austin.html')));
+app.get('/sell-home-tarrytown-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-tarrytown-austin.html')));
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));

@@ -205,6 +205,15 @@ If Puppeteer is not installed: `npm install puppeteer` in the austintxhomes dire
 | `/best-realtor-pflugerville-isd` | `public/site/best-realtor-pflugerville-isd.html` | ✓ |
 | `/best-realtor-78704-austin` | `public/site/best-realtor-78704-austin.html` | ✓ |
 | `/best-realtor-78702-austin` | `public/site/best-realtor-78702-austin.html` | ✓ |
+| `/best-realtor-78703-austin` | `public/site/best-realtor-78703-austin.html` | ✓ |
+| `/best-realtor-78722-austin` | `public/site/best-realtor-78722-austin.html` | ✓ |
+| `/best-realtor-78754-austin` | `public/site/best-realtor-78754-austin.html` | ✓ |
+| `/best-realtor-78731-austin` | `public/site/best-realtor-78731-austin.html` | ✓ |
+| `/tarrytown-realtor` | `public/site/tarrytown-realtor.html` | ✓ |
+| `/tarrytown-homes-for-sale` | `public/site/tarrytown-homes-for-sale.html` | ✓ |
+| `/tarrytown-market-report` | `public/site/tarrytown-market-report.html` | ✓ |
+| `/living-in-tarrytown-austin` | `public/site/living-in-tarrytown-austin.html` | ✓ |
+| `/sell-home-tarrytown-austin` | `public/site/sell-home-tarrytown-austin.html` | ✓ |
 | `/neighborhoods/:slug` | `templates/neighborhood.js` (SSR) | ✓ |
 
 Neighborhood data lives in `data/neighborhoods.js`. New neighborhoods go there, not as static HTML files.

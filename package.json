@@ -4,5 +4,8 @@
   "private": true,
   "scripts": {
     "start": "bash start.sh"
+  },
+  "dependencies": {
+    "puppeteer": "^24.39.1"
   }
 }
