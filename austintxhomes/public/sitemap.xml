@@ -1476,6 +1476,38 @@
     <lastmod>2026-03-20</lastmod>
   </url>
 
+  <!-- Mueller neighborhood pages -->
+  <url>
+    <loc>https://austintxhomes.co/mueller-realtor</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+  <url>
+    <loc>https://austintxhomes.co/mueller-homes-for-sale</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+  <url>
+    <loc>https://austintxhomes.co/mueller-market-report</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+  <url>
+    <loc>https://austintxhomes.co/living-in-mueller-austin</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+  <url>
+    <loc>https://austintxhomes.co/sell-home-mueller-austin</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+
   <url>
     <loc>https://austintxhomes.co/blog</loc>
     <changefreq>weekly</changefreq>

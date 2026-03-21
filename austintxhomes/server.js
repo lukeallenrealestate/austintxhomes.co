@@ -438,6 +438,11 @@ app.get('/hyde-park-homes-for-sale', (_req, res) => res.sendFile(path.join(__dir
 app.get('/hyde-park-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/hyde-park-market-report.html')));
 app.get('/living-in-hyde-park-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-hyde-park-austin.html')));
 app.get('/sell-home-hyde-park-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-hyde-park-austin.html')));
+app.get('/mueller-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/mueller-realtor.html')));
+app.get('/mueller-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/mueller-homes-for-sale.html')));
+app.get('/mueller-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/mueller-market-report.html')));
+app.get('/living-in-mueller-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-mueller-austin.html')));
+app.get('/sell-home-mueller-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-mueller-austin.html')));
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));

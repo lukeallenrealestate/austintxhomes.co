@@ -234,13 +234,12 @@
       <div>
         <div class="sf-col-head">Neighborhoods</div>
         <ul class="sf-links">
+          <li><a href="/neighborhoods/mueller">Mueller</a></li>
           <li><a href="/neighborhoods/hyde-park">Hyde Park</a></li>
           <li><a href="/neighborhoods/crestview">Crestview</a></li>
           <li><a href="/neighborhoods/brentwood">Brentwood</a></li>
           <li><a href="/neighborhoods/tarrytown">Tarrytown</a></li>
-          <li><a href="/neighborhoods/hyde-park">Hyde Park</a></li>
           <li><a href="/neighborhoods/east-austin">East Austin</a></li>
-          <li><a href="/neighborhoods/mueller">Mueller</a></li>
           <li><a href="/neighborhoods/bouldin-creek">Bouldin Creek</a></li>
           <li><a href="/neighborhoods/clarksville">Clarksville</a></li>
           <li><a href="/neighborhoods/south-congress">South Congress</a></li>
