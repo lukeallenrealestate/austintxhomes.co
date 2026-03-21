@@ -46,6 +46,49 @@ module.exports = {
     nearbyNames: ['Clarksville', 'Rosedale', 'Old Enfield', 'Bryker Woods']
   },
 
+  'zilker': {
+    slug: 'zilker',
+    name: 'Zilker',
+    mlsSearch: 'Zilker',
+    area: 'South Austin',
+    title: 'Homes for Sale in Zilker Austin TX | MLS Listings | Luke Allen',
+    metaDescription: 'Browse homes for sale in Zilker, Austin TX. Barton Springs access, Zilker Park, Lady Bird Lake trail, and some of Austin\'s best outdoor living. Updated daily from MLS.',
+    h1: 'Homes for Sale in Zilker, Austin TX',
+    tagline: 'Barton Springs. Zilker Park. Austin\'s outdoor living capital.',
+    medianPrice: '$950K+',
+    priceRange: '$600K – $3M+',
+    homeTypes: 'Mid-century ranches, renovated bungalows, new custom construction, teardowns',
+    schools: 'Austin ISD — Zilker Elementary, O. Henry Middle, Austin High School',
+    commute: '5–10 min to downtown Austin, 20 min to Domain',
+    walkScore: 72,
+    vibe: 'Outdoor lifestyle, dog-friendly, Barton Springs crowd, young professionals and families',
+    tags: ['Barton Springs', 'Zilker Park', 'Outdoor Living', 'South Austin', 'Lady Bird Lake'],
+    intro: [
+      'Zilker is Austin\'s outdoor living capital — a neighborhood defined by Barton Springs Pool, 351 acres of Zilker Park, and direct access to the Barton Creek Greenbelt and Lady Bird Lake hike-and-bike trail. It\'s where Austin\'s outdoor culture is most concentrated, and it attracts buyers who prioritize lifestyle as much as real estate.',
+      'The housing stock is a mix of 1950s–70s ranch homes — many still with original character — and increasingly, new custom construction replacing the teardown lots that make up a growing share of the market. Entry-level Zilker (smaller older homes, some needing updates) starts around $600K. Renovated homes and new builds run $1M–$3M+.',
+      'The neighborhood draws a loyal buyer profile: people who want to walk to Barton Springs on a Tuesday morning, run the Lady Bird Lake trail before work, and hear live music from their backyard during ACL. Once people find Zilker, they rarely look anywhere else in Austin.'
+    ],
+    highlights: [
+      { icon: '🏊', label: 'Barton Springs Pool', text: 'Austin\'s iconic spring-fed swimming pool — 68°F year-round, free for residents, a short walk from most Zilker addresses. The defining amenity of the neighborhood.' },
+      { icon: '🌳', label: 'Zilker Park', text: '351 acres of parkland on the south shore of Lady Bird Lake. Kite Festival, ACL Music Festival, Austin City Limits taping — all happen here. In Zilker, you live next door to all of it.' },
+      { icon: '🚴', label: 'Trail Access', text: 'Direct access to the 10-mile Lady Bird Lake hike-and-bike trail and the Barton Creek Greenbelt — 12+ miles of natural swimming holes and hiking. Austin\'s best outdoor infrastructure, right out your door.' },
+      { icon: '📍', label: 'Location', text: '5 minutes to downtown, 2 minutes to SoCo, walking distance to some of Austin\'s best restaurants. Zilker has the location of Central Austin without the price of Tarrytown or Clarksville.' }
+    ],
+    faqs: [
+      { q: 'What is the average home price in Zilker Austin?', a: 'Zilker home prices range from approximately $600K for smaller, original ranch homes to $3M+ for new custom construction. The median sale price for the neighborhood hovers around $950K–$1.1M depending on the market cycle. Renovated mid-century homes in good condition typically sell in the $900K–$1.6M range.' },
+      { q: 'Is Zilker walkable?', a: 'Zilker has a walk score around 72 — most residents walk to Barton Springs, Zilker Park, and nearby restaurants regularly, but grocery shopping typically requires a car. The neighborhood is very bikeable, with the Lady Bird Lake trail providing car-free access to downtown and East Austin.' },
+      { q: 'What schools serve Zilker Austin?', a: 'Zilker is zoned to Austin ISD — Zilker Elementary, O. Henry Middle School, and Austin High School. Zilker Elementary is a well-regarded neighborhood school with strong parent involvement and a dedicated local community.' },
+      { q: 'How competitive is the Zilker real estate market?', a: 'Well-priced, renovated homes in Zilker routinely generate multiple offers and sell quickly — often within the first two weeks. The most desirable properties (good condition, close to Barton Springs, large lots) can see competitive bidding. Teardown lots are also actively sought by custom builders. Working with an agent who knows Zilker well is essential.' }
+    ],
+    buyReasons: [
+      { icon: '🏊', heading: 'Barton Springs Is Irreplaceable', body: 'You cannot replicate proximity to Barton Springs Pool anywhere else in Austin. The spring-fed pool is a year-round amenity that defines the Zilker lifestyle — and that draws buyers who are willing to pay a premium. It\'s not a trend; it\'s been Austin\'s most beloved outdoor spot for over 100 years.' },
+      { icon: '🌳', heading: 'Outdoor Infrastructure Nobody Else Has', body: 'Zilker Park, the Barton Creek Greenbelt, and Lady Bird Lake trail all converge at Zilker. This is Austin\'s outdoor infrastructure at its most concentrated. For buyers who want to run, bike, swim, paddle, and hike without getting in a car, there is no better neighborhood in Austin.' },
+      { icon: '📈', heading: 'Proven Long-Term Value', body: 'Zilker has consistently held and grown value through Austin\'s market cycles. The neighborhood\'s combination of location, outdoor amenities, and limited supply keeps demand structural. Buyers who\'ve owned in Zilker for 10+ years have seen remarkable appreciation — and the fundamentals that drive it haven\'t changed.' }
+    ],
+    nearby: ['bouldin-creek', 'travis-heights', 'barton-hills', 'south-congress'],
+    nearbyNames: ['Bouldin Creek', 'Travis Heights', 'Barton Hills', 'South Congress']
+  },
+
   'hyde-park': {
     slug: 'hyde-park',
     name: 'Hyde Park',
