@@ -209,6 +209,11 @@ If Puppeteer is not installed: `npm install puppeteer` in the austintxhomes dire
 | `/best-realtor-78722-austin` | `public/site/best-realtor-78722-austin.html` | ✓ |
 | `/best-realtor-78754-austin` | `public/site/best-realtor-78754-austin.html` | ✓ |
 | `/best-realtor-78731-austin` | `public/site/best-realtor-78731-austin.html` | ✓ |
+| `/crestview-realtor` | `public/site/crestview-realtor.html` | ✓ |
+| `/crestview-homes-for-sale` | `public/site/crestview-homes-for-sale.html` | ✓ |
+| `/crestview-market-report` | `public/site/crestview-market-report.html` | ✓ |
+| `/living-in-crestview-austin` | `public/site/living-in-crestview-austin.html` | ✓ |
+| `/sell-home-crestview-austin` | `public/site/sell-home-crestview-austin.html` | ✓ |
 | `/brentwood-realtor` | `public/site/brentwood-realtor.html` | ✓ |
 | `/brentwood-homes-for-sale` | `public/site/brentwood-homes-for-sale.html` | ✓ |
 | `/brentwood-market-report` | `public/site/brentwood-market-report.html` | ✓ |

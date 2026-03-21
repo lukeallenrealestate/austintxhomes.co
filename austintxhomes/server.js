@@ -428,6 +428,11 @@ app.get('/brentwood-realtor', (_req, res) => res.sendFile(path.join(__dirname, '
 app.get('/brentwood-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/brentwood-market-report.html')));
 app.get('/living-in-brentwood-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-brentwood-austin.html')));
 app.get('/sell-home-brentwood-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-brentwood-austin.html')));
+app.get('/crestview-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/crestview-realtor.html')));
+app.get('/crestview-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/crestview-homes-for-sale.html')));
+app.get('/crestview-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/crestview-market-report.html')));
+app.get('/living-in-crestview-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-crestview-austin.html')));
+app.get('/sell-home-crestview-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-crestview-austin.html')));
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));
