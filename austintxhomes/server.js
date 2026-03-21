@@ -21,6 +21,8 @@ const IDX_PUBLIC = path.join(__dirname, '../idx-search/public');
 // Neighborhood page system
 const neighborhoods = require('./data/neighborhoods');
 const renderNeighborhoodPage = require('./templates/neighborhood');
+const renderNeighborhoodHomesPage = require('./templates/neighborhood-homes');
+const renderNeighborhoodRealtorPage = require('./templates/neighborhood-realtor');
 
 // Luxury listing page system (programmatic SEO for $1M+ properties)
 const { renderListingPage, enrichListing, slugifyAddress } = require('./templates/listing');
@@ -473,6 +475,20 @@ app.get('/listing-sitemap.xml', (_req, res) => {
 });
 
 // Neighborhood deep-dive pages — server-side rendered with unique SEO per neighborhood
+app.get('/neighborhoods/:slug/homes-for-sale', (req, res) => {
+  const nbhd = neighborhoods[req.params.slug];
+  if (!nbhd) return res.status(404).sendFile(path.join(__dirname, 'public/site/neighborhoods.html'));
+  res.setHeader('Content-Type', 'text/html');
+  res.send(renderNeighborhoodHomesPage(nbhd));
+});
+
+app.get('/neighborhoods/:slug/best-realtor', (req, res) => {
+  const nbhd = neighborhoods[req.params.slug];
+  if (!nbhd) return res.status(404).sendFile(path.join(__dirname, 'public/site/neighborhoods.html'));
+  res.setHeader('Content-Type', 'text/html');
+  res.send(renderNeighborhoodRealtorPage(nbhd));
+});
+
 app.get('/neighborhoods/:slug', (req, res) => {
   const nbhd = neighborhoods[req.params.slug];
   if (!nbhd) {
