@@ -433,6 +433,11 @@ app.get('/crestview-homes-for-sale', (_req, res) => res.sendFile(path.join(__dir
 app.get('/crestview-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/crestview-market-report.html')));
 app.get('/living-in-crestview-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-crestview-austin.html')));
 app.get('/sell-home-crestview-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-crestview-austin.html')));
+app.get('/hyde-park-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/hyde-park-realtor.html')));
+app.get('/hyde-park-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/hyde-park-homes-for-sale.html')));
+app.get('/hyde-park-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/hyde-park-market-report.html')));
+app.get('/living-in-hyde-park-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-hyde-park-austin.html')));
+app.get('/sell-home-hyde-park-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-hyde-park-austin.html')));
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));

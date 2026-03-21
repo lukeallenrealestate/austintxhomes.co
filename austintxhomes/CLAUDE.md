@@ -209,6 +209,11 @@ If Puppeteer is not installed: `npm install puppeteer` in the austintxhomes dire
 | `/best-realtor-78722-austin` | `public/site/best-realtor-78722-austin.html` | ✓ |
 | `/best-realtor-78754-austin` | `public/site/best-realtor-78754-austin.html` | ✓ |
 | `/best-realtor-78731-austin` | `public/site/best-realtor-78731-austin.html` | ✓ |
+| `/hyde-park-realtor` | `public/site/hyde-park-realtor.html` | ✓ |
+| `/hyde-park-homes-for-sale` | `public/site/hyde-park-homes-for-sale.html` | ✓ |
+| `/hyde-park-market-report` | `public/site/hyde-park-market-report.html` | ✓ |
+| `/living-in-hyde-park-austin` | `public/site/living-in-hyde-park-austin.html` | ✓ |
+| `/sell-home-hyde-park-austin` | `public/site/sell-home-hyde-park-austin.html` | ✓ |
 | `/crestview-realtor` | `public/site/crestview-realtor.html` | ✓ |
 | `/crestview-homes-for-sale` | `public/site/crestview-homes-for-sale.html` | ✓ |
 | `/crestview-market-report` | `public/site/crestview-market-report.html` | ✓ |
