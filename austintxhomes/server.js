@@ -409,15 +409,20 @@ app.get('/best-realtor-78722-austin', (_req, res) => res.sendFile(path.join(__di
 app.get('/best-realtor-78754-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78754-austin.html')));
 app.get('/best-realtor-78731-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78731-austin.html')));
 app.get('/zilker-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/zilker-homes-for-sale.html')));
+app.get('/allandale-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/allandale-homes-for-sale.html')));
 app.get('/tarrytown-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-realtor.html')));
 app.get('/tarrytown-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-homes-for-sale.html')));
 app.get('/tarrytown-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-market-report.html')));
 app.get('/living-in-tarrytown-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-tarrytown-austin.html')));
 app.get('/sell-home-tarrytown-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-tarrytown-austin.html')));
+app.get('/living-in-allandale-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-allandale-austin.html')));
+app.get('/sell-home-allandale-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-allandale-austin.html')));
 app.get('/zilker-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/zilker-realtor.html')));
 app.get('/zilker-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/zilker-market-report.html')));
 app.get('/living-in-zilker-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-zilker-austin.html')));
 app.get('/sell-home-zilker-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-zilker-austin.html')));
+app.get('/allandale-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/allandale-realtor.html')));
+app.get('/allandale-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/allandale-market-report.html')));
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));

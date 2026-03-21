@@ -89,6 +89,49 @@ module.exports = {
     nearbyNames: ['Bouldin Creek', 'Travis Heights', 'Barton Hills', 'South Congress']
   },
 
+  'allandale': {
+    slug: 'allandale',
+    name: 'Allandale',
+    mlsSearch: 'Allandale',
+    area: 'North Central Austin',
+    title: 'Homes for Sale in Allandale Austin TX | MLS Listings | Luke Allen',
+    metaDescription: 'Browse homes for sale in Allandale, Austin TX. Established mid-century neighborhood near Burnet Road, Shoal Creek, and top-rated Austin ISD schools. Updated daily from MLS.',
+    h1: 'Homes for Sale in Allandale, Austin TX',
+    tagline: 'North Central Austin\'s most established family neighborhood.',
+    medianPrice: '$750K+',
+    priceRange: '$550K – $1.6M+',
+    homeTypes: 'Mid-century brick ranch homes, renovated bungalows, new custom construction',
+    schools: 'Austin ISD — Gullett Elementary, Lamar Middle School, McCallum High School',
+    commute: '15–20 min to downtown Austin, 15 min to Domain',
+    walkScore: 63,
+    vibe: 'Established, family-friendly, dog culture, Burnet Road dining, active neighborhood community',
+    tags: ['Mid-Century', 'North Central Austin', 'Burnet Road', 'Family Friendly', 'Established'],
+    intro: [
+      'Allandale is North Central Austin\'s original family neighborhood — platted in the 1950s and shaped by decades of homeowners who chose it for its tree-lined streets, strong schools, and community identity. Bounded roughly by 45th Street to the south, Koenig Lane to the north, MoPac to the west, and Burnet Road to the east, it occupies one of Austin\'s most convenient locations.',
+      'The housing stock is predominantly 1950s–60s brick ranch homes — modest footprints on generous lots, many with mature live oaks that took 60 years to grow. Renovated Allandale homes command significant premiums, while original-condition homes represent some of the last attainable entry points in North Central Austin. New custom construction is an increasing presence as teardown economics make sense at these lot values.',
+      'The Burnet Road corridor on Allandale\'s eastern edge has transformed into one of Austin\'s best restaurant and bar streets — referred to by locals as "the South Congress of North Austin." Combined with Shoal Creek greenbelt access, top-rated schools, and one of Austin\'s most active neighborhood associations, Allandale is the kind of neighborhood where people move once and stay for decades.'
+    ],
+    highlights: [
+      { icon: '🍽️', label: 'Burnet Road Corridor', text: 'Allandale\'s eastern edge is lined with some of Austin\'s best independent restaurants, coffee shops, and bars. Uchi, Violet Crown Cinema, Foreign & Domestic, Epoch Coffee — all within walking distance of many Allandale addresses.' },
+      { icon: '🌳', label: 'Mature Tree Canopy', text: 'Sixty years of live oak growth creates a canopy that makes Allandale feel noticeably cooler and quieter than newer Austin neighborhoods. The trees are a defining asset — and an Austin Heritage Tree protection means they\'re here to stay.' },
+      { icon: '🏫', label: 'McCallum High School', text: 'McCallum is one of Austin ISD\'s most respected high schools — known for its Fine Arts Academy (one of the top performing arts magnet programs in Texas) and strong academics. It\'s a major draw for families with high school-age children.' },
+      { icon: '🚶', label: 'Walkable Errands', text: 'Allandale residents walk to coffee, restaurants, a hardware store, and neighborhood shops on a regular basis. It\'s not a walk-everywhere neighborhood, but the Burnet Road corridor makes daily errands genuinely walkable from the eastern half of the neighborhood.' }
+    ],
+    faqs: [
+      { q: 'What is the average home price in Allandale Austin?', a: 'Allandale home prices range from approximately $550K for smaller, original ranch homes needing updates to $1.6M+ for fully renovated or new custom construction homes on larger lots. The neighborhood median typically sits around $750K–$850K. Well-renovated homes with updated systems and preserved character consistently sell above median.' },
+      { q: 'What schools serve Allandale Austin?', a: 'Allandale is zoned to Austin ISD. Most addresses feed into Gullett Elementary, Lamar Middle School, and McCallum High School. Some western Allandale addresses may feed into Doss Elementary instead of Gullett — always verify your specific address. McCallum\'s Fine Arts Academy is one of Austin ISD\'s most sought-after magnet programs.' },
+      { q: 'Is Allandale a good neighborhood in Austin?', a: 'Allandale consistently ranks among Austin\'s most desirable established neighborhoods. It combines North Central location (15 min to downtown, 15 min to the Domain), top-rated schools, mature tree canopy, and the Burnet Road dining corridor. Long-term homeowners rarely leave voluntarily — demand is structural and turnover is low.' },
+      { q: 'How competitive is the Allandale real estate market?', a: 'Well-priced Allandale homes — particularly renovated mid-century homes in good condition — sell quickly and often receive multiple offers. The most competitive segment is $650K–$950K where move-up buyer demand is strong. Above $1M, buyers have more time to evaluate. Original-condition homes priced appropriately move in 2–4 weeks.' }
+    ],
+    buyReasons: [
+      { icon: '🌳', heading: 'The Trees Take Decades to Grow', body: 'Allandale\'s live oak canopy is irreplaceable. You cannot plant these trees in a new subdivision and wait — it takes 60+ years for them to reach the scale that defines Allandale\'s streets. Buyers who value mature trees, shade, and the feeling of an established neighborhood will find nothing comparable in newer Austin developments at any price.' },
+      { icon: '🏫', heading: 'McCallum Fine Arts Academy', body: 'For families with children pursuing performing arts, visual arts, or dance, McCallum\'s Fine Arts Academy is one of the best opportunities in Texas public education. The program draws families specifically to Allandale — which creates consistent, year-round demand that stabilizes property values regardless of the broader market cycle.' },
+      { icon: '📍', heading: 'The Location Math Is Hard to Beat', body: 'Allandale sits at the intersection of two major employment corridors: downtown Austin (15–20 min) and the Domain/North Austin tech corridor (15 min). Families where one parent commutes downtown and another works at a Domain-area tech company consistently land in Allandale for exactly this reason. That dual-commuter demand keeps the neighborhood\'s buyer pool exceptionally deep.' }
+    ],
+    nearby: ['crestview', 'brentwood', 'rosedale', 'hyde-park'],
+    nearbyNames: ['Crestview', 'Brentwood', 'Rosedale', 'Hyde Park']
+  },
+
   'hyde-park': {
     slug: 'hyde-park',
     name: 'Hyde Park',
