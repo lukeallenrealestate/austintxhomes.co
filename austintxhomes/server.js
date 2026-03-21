@@ -24,6 +24,11 @@ const renderNeighborhoodPage = require('./templates/neighborhood');
 const renderNeighborhoodHomesPage = require('./templates/neighborhood-homes');
 const renderNeighborhoodRealtorPage = require('./templates/neighborhood-realtor');
 
+// Blog system
+const renderBlogPost = require('./templates/blog-post');
+const renderBlogIndex = require('./templates/blog-index');
+let blogPosts = require('./data/blog-posts');
+
 // Luxury listing page system (programmatic SEO for $1M+ properties)
 const { renderListingPage, enrichListing, slugifyAddress } = require('./templates/listing');
 const listingDb = require('../idx-search/db/database');
@@ -472,6 +477,29 @@ app.get('/listing-sitemap.xml', (_req, res) => {
     console.error('[listing-sitemap]', e.message);
     res.status(500).send('Error generating sitemap');
   }
+});
+
+// Blog routes — SSR from data/blog-posts.js
+app.get('/blog', (req, res) => {
+  // Reload posts on each request in dev so edits are reflected without restart
+  try { delete require.cache[require.resolve('./data/blog-posts')]; blogPosts = require('./data/blog-posts'); } catch(e) {}
+  const category = req.query.category || null;
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const perPage = 12;
+  const published = blogPosts.filter(p => p.published !== false);
+  const filtered = category ? published.filter(p => p.category === category) : published;
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const pagePosts = filtered.slice((page - 1) * perPage, page * perPage);
+  res.setHeader('Content-Type', 'text/html');
+  res.send(renderBlogIndex(pagePosts, { category, page, totalPages }));
+});
+
+app.get('/blog/:slug', (req, res) => {
+  try { delete require.cache[require.resolve('./data/blog-posts')]; blogPosts = require('./data/blog-posts'); } catch(e) {}
+  const post = blogPosts.find(p => p.slug === req.params.slug && p.published !== false);
+  if (!post) return res.status(404).sendFile(path.join(__dirname, 'public/site/404.html'), () => res.status(404).send('Post not found'));
+  res.setHeader('Content-Type', 'text/html');
+  res.send(renderBlogPost(post));
 });
 
 // Neighborhood deep-dive pages — server-side rendered with unique SEO per neighborhood
