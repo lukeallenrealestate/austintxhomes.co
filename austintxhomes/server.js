@@ -410,6 +410,7 @@ app.get('/best-realtor-78754-austin', (_req, res) => res.sendFile(path.join(__di
 app.get('/best-realtor-78731-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78731-austin.html')));
 app.get('/zilker-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/zilker-homes-for-sale.html')));
 app.get('/allandale-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/allandale-homes-for-sale.html')));
+app.get('/brentwood-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/brentwood-homes-for-sale.html')));
 app.get('/tarrytown-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-realtor.html')));
 app.get('/tarrytown-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-homes-for-sale.html')));
 app.get('/tarrytown-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-market-report.html')));
@@ -423,6 +424,10 @@ app.get('/living-in-zilker-austin', (_req, res) => res.sendFile(path.join(__dirn
 app.get('/sell-home-zilker-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-zilker-austin.html')));
 app.get('/allandale-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/allandale-realtor.html')));
 app.get('/allandale-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/allandale-market-report.html')));
+app.get('/brentwood-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/brentwood-realtor.html')));
+app.get('/brentwood-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/brentwood-market-report.html')));
+app.get('/living-in-brentwood-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-brentwood-austin.html')));
+app.get('/sell-home-brentwood-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-brentwood-austin.html')));
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));

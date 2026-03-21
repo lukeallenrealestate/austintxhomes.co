@@ -209,6 +209,11 @@ If Puppeteer is not installed: `npm install puppeteer` in the austintxhomes dire
 | `/best-realtor-78722-austin` | `public/site/best-realtor-78722-austin.html` | ✓ |
 | `/best-realtor-78754-austin` | `public/site/best-realtor-78754-austin.html` | ✓ |
 | `/best-realtor-78731-austin` | `public/site/best-realtor-78731-austin.html` | ✓ |
+| `/brentwood-realtor` | `public/site/brentwood-realtor.html` | ✓ |
+| `/brentwood-homes-for-sale` | `public/site/brentwood-homes-for-sale.html` | ✓ |
+| `/brentwood-market-report` | `public/site/brentwood-market-report.html` | ✓ |
+| `/living-in-brentwood-austin` | `public/site/living-in-brentwood-austin.html` | ✓ |
+| `/sell-home-brentwood-austin` | `public/site/sell-home-brentwood-austin.html` | ✓ |
 | `/tarrytown-realtor` | `public/site/tarrytown-realtor.html` | ✓ |
 | `/tarrytown-homes-for-sale` | `public/site/tarrytown-homes-for-sale.html` | ✓ |
 | `/tarrytown-market-report` | `public/site/tarrytown-market-report.html` | ✓ |

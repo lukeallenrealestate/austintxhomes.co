@@ -132,6 +132,49 @@ module.exports = {
     nearbyNames: ['Crestview', 'Brentwood', 'Rosedale', 'Hyde Park']
   },
 
+  'brentwood': {
+    slug: 'brentwood',
+    name: 'Brentwood',
+    mlsSearch: 'Brentwood',
+    area: 'North Central Austin',
+    title: 'Homes for Sale in Brentwood Austin TX | MLS Listings | Luke Allen',
+    metaDescription: 'Browse homes for sale in Brentwood, Austin TX. Walkable to Burnet Road, Brentwood Elementary, Shipe Park pool — one of North Central Austin\'s most livable neighborhoods. Updated daily.',
+    h1: 'Homes for Sale in Brentwood, Austin TX',
+    tagline: 'North Central Austin\'s most walkable established neighborhood.',
+    medianPrice: '$725K+',
+    priceRange: '$550K – $1.5M+',
+    homeTypes: 'Mid-century bungalows, craftsman cottages, renovated ranches, new custom construction',
+    schools: 'Austin ISD — Brentwood Elementary, Lamar Middle School, McCallum High School',
+    commute: '15–20 min to downtown Austin, 12 min to Domain',
+    walkScore: 78,
+    vibe: 'Walkable, young professional and family mix, dog-friendly, Burnet Road steps away, Shipe Park community',
+    tags: ['Walkable', 'North Central Austin', 'Burnet Road', 'Brentwood Elementary', 'Shipe Park'],
+    intro: [
+      'Brentwood is North Central Austin\'s most walkable established neighborhood — a tight-knit community of 1950s–60s bungalows and ranch homes sitting directly on the Burnet Road corridor, with Shipe Park and its beloved neighborhood pool at the center. It\'s where longtime Austin residents and arriving professionals alike land when they want established character, walkable errands, and a real neighborhood identity.',
+      'The housing stock ranges from original mid-century cottages (modest square footage on good lots) to fully renovated statement homes to new custom construction replacing teardown ranches. The result is significant price variation on the same street — which creates opportunities for buyers willing to assess condition honestly and sellers who understand what their specific home is worth.',
+      'Brentwood\'s eastern boundary is Burnet Road — not a distant walk but an actual edge. Most Brentwood addresses can walk to Uchi, Foreign & Domestic, Epoch Coffee, or Brentwood Social House in under 10 minutes. This walkability distinguishes Brentwood from Allandale (where Burnet Road is a drive for western addresses) and makes it one of the few established North Central neighborhoods where car-free daily life is genuinely achievable.'
+    ],
+    highlights: [
+      { icon: '🚶', label: 'Walk to Burnet Road', text: 'Most Brentwood addresses are within a 5–10 minute walk of the Burnet Road dining and entertainment corridor — Uchi, Foreign & Domestic, Epoch Coffee, and more. This immediate walkability sets Brentwood apart from neighboring Allandale.' },
+      { icon: '🏊', label: 'Shipe Park & Pool', text: 'Shipe Park is Brentwood\'s community anchor — a neighborhood park with a city pool, tennis courts, and playground that serves as the de facto gathering place for Brentwood families. The pool is a genuine neighborhood institution.' },
+      { icon: '🏡', label: 'Character Homes', text: 'Brentwood\'s mid-century bungalows and craftsman cottages have the kind of architectural character that new construction can\'t replicate. Original hardwood floors, front porches, mature trees — and the lot sizes to accommodate modern life.' },
+      { icon: '🏫', label: 'Brentwood Elementary', text: 'Brentwood Elementary is one of Austin ISD\'s most beloved neighborhood schools — consistently strong academics, an extraordinarily active parent community, and genuinely walkable from most Brentwood addresses. It\'s a primary reason families choose the neighborhood.' }
+    ],
+    faqs: [
+      { q: 'What is the average home price in Brentwood Austin?', a: 'Brentwood home prices range from approximately $550K for smaller original cottages to $1.5M+ for fully renovated or new custom construction homes. The neighborhood median sits around $725K–$800K. Renovated bungalows with updated kitchens and baths in the 1,400–1,800 sqft range typically sell in the $800K–$1.1M range.' },
+      { q: 'What schools serve Brentwood Austin?', a: 'Brentwood is zoned to Austin ISD — Brentwood Elementary, Lamar Middle School, and McCallum High School. Brentwood Elementary is one of Austin ISD\'s most sought-after neighborhood elementary schools with exceptional parent involvement and walkability from most Brentwood addresses. McCallum\'s Fine Arts Academy is a major draw for families with high school-age students.' },
+      { q: 'Is Brentwood walkable?', a: 'Brentwood is one of North Central Austin\'s most walkable neighborhoods — walk score around 78. The Burnet Road corridor on the eastern edge puts restaurants, coffee, bars, and shops within a genuine 5–10 minute walk for most addresses. Shipe Park and Brentwood Elementary are also walkable from most of the neighborhood.' },
+      { q: 'How does Brentwood compare to Allandale?', a: 'Brentwood and Allandale are adjacent North Central neighborhoods with similar character but key differences. Brentwood is more walkable to Burnet Road (it\'s the eastern border, not a drive away), has Brentwood Elementary vs Gullett, doesn\'t have the MoPac noise issue that affects western Allandale, and has a slightly younger demographic. Prices are comparable — Brentwood may run slightly higher per sqft for equivalent homes due to walkability premium.' }
+    ],
+    buyReasons: [
+      { icon: '🚶', heading: 'The Walkability Is Real', body: 'Brentwood\'s Walk Score of 78 isn\'t a technicality — it reflects the reality that most Brentwood residents genuinely walk to coffee, dinner, and neighborhood errands. In a city as car-dependent as Austin, this is genuinely rare in an established residential neighborhood. Buyers who discover Brentwood\'s walkability rarely consider anywhere else.' },
+      { icon: '🏫', heading: 'Brentwood Elementary Is a Community Asset', body: 'Brentwood Elementary\'s parent community is one of the most engaged in Austin ISD. This translates to school events that double as neighborhood social gatherings, strong academic outcomes, and a school that actually builds neighborhood identity. For families, this is not just a good school — it\'s a reason to buy in Brentwood specifically.' },
+      { icon: '📈', heading: 'Established Neighborhood, Proven Trajectory', body: 'Brentwood has appreciated steadily through multiple market cycles. The combination of Burnet Road walkability, excellent elementary school, Shipe Park, and proximity to both downtown and the Domain creates structural demand that doesn\'t disappear with rate moves. Buyers who bought Brentwood 10 years ago have seen exceptional returns — and the fundamentals haven\'t changed.' }
+    ],
+    nearby: ['allandale', 'crestview', 'hyde-park', 'north-loop'],
+    nearbyNames: ['Allandale', 'Crestview', 'Hyde Park', 'North Loop']
+  },
+
   'hyde-park': {
     slug: 'hyde-park',
     name: 'Hyde Park',
