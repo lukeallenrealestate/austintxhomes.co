@@ -209,6 +209,11 @@ If Puppeteer is not installed: `npm install puppeteer` in the austintxhomes dire
 | `/best-realtor-78722-austin` | `public/site/best-realtor-78722-austin.html` | ✓ |
 | `/best-realtor-78754-austin` | `public/site/best-realtor-78754-austin.html` | ✓ |
 | `/best-realtor-78731-austin` | `public/site/best-realtor-78731-austin.html` | ✓ |
+| `/east-austin-realtor` | `public/site/east-austin-realtor.html` | ✓ |
+| `/east-austin-homes-for-sale` | `public/site/east-austin-homes-for-sale.html` | ✓ |
+| `/east-austin-market-report` | `public/site/east-austin-market-report.html` | ✓ |
+| `/living-in-east-austin` | `public/site/living-in-east-austin.html` | ✓ |
+| `/sell-home-east-austin` | `public/site/sell-home-east-austin.html` | ✓ |
 | `/mueller-realtor` | `public/site/mueller-realtor.html` | ✓ |
 | `/mueller-homes-for-sale` | `public/site/mueller-homes-for-sale.html` | ✓ |
 | `/mueller-market-report` | `public/site/mueller-market-report.html` | ✓ |
