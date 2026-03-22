@@ -448,6 +448,7 @@ app.get('/east-austin-homes-for-sale', (_req, res) => res.sendFile(path.join(__d
 app.get('/east-austin-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/east-austin-market-report.html')));
 app.get('/living-in-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-east-austin.html')));
 app.get('/sell-home-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-east-austin.html')));
+app.get('/homes-for-sale-near-tesla-gigafactory', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-tesla-gigafactory.html')));
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));

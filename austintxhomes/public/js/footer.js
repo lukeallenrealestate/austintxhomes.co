@@ -216,6 +216,7 @@
           <li><a href="/apple-austin-relocation">Apple</a></li>
           <li><a href="/google-austin-relocation">Google</a></li>
           <li><a href="/tesla-austin-relocation">Tesla</a></li>
+          <li><a href="/homes-for-sale-near-tesla-gigafactory">Homes Near Tesla Gigafactory</a></li>
           <li><a href="/oracle-austin-relocation">Oracle</a></li>
           <li><a href="/dell-austin-relocation">Dell</a></li>
           <li><a href="/samsung-austin-relocation">Samsung</a></li>
