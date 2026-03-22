@@ -432,11 +432,6 @@
         <option value="price_asc">Price Low &rarr; High</option>
         <option value="price_desc">Price High &rarr; Low</option>
       </select>
-      <select class="sort-select" id="area-select">
-        <option value="78617">Area: Del Valle (78617)</option>
-        <option value="78744">SE Austin (78744)</option>
-        <option value="78653">Manor (78653)</option>
-      </select>
       <select class="sort-select" id="beds-select">
         <option value="">Min Beds: Any &#9660;</option>
         <option value="2">2+ bd</option>
@@ -689,12 +684,36 @@
 <script src="/js/footer.js"></script>
 
 <script>
+// Tesla Giga Texas — 1 Tesla Rd, Austin TX 78725
+const TESLA_LAT = 30.2214;
+const TESLA_LNG = -97.6230;
+const RADIUS_MILES = 3;
+const PAGE_SIZE = 12;
+
+// 3-mile bounding box (pre-filter at SQL level before Haversine)
+const LAT_DELTA = RADIUS_MILES / 69;
+const LNG_DELTA = RADIUS_MILES / (69 * Math.cos(TESLA_LAT * Math.PI / 180));
+const BBOX = {
+  north: TESLA_LAT + LAT_DELTA,
+  south: TESLA_LAT - LAT_DELTA,
+  east:  TESLA_LNG + LNG_DELTA,
+  west:  TESLA_LNG - LNG_DELTA
+};
+
+function haversineMiles(lat1, lng1, lat2, lng2) {
+  const R = 3958.8;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
 let currentPage = 1;
 let totalPages = 1;
 let currentSort = 'newest';
-let currentZip = '78617';
 let currentBeds = '';
 let currentMaxPrice = '';
+let allListings = [];   // all radius-filtered results, cached after first load
 
 const grid = document.getElementById('listings-grid');
 const countEl = document.getElementById('result-count');
@@ -704,46 +723,68 @@ async function fetchListings(page) {
   grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--mid)">Loading listings near Giga Texas\u2026</div>';
   if (page > 1) document.getElementById('listings').scrollIntoView({behavior:'smooth',block:'start'});
 
-  const params = new URLSearchParams({
-    postalCode: currentZip,
-    sortBy: currentSort,
-    page: page,
-    minPrice: '75000',
-    limit: 12
-  });
-  if (currentBeds) params.set('minBeds', currentBeds);
-  if (currentMaxPrice) params.set('maxPrice', currentMaxPrice);
+  // Only re-fetch from server when sort changes (cache is sort-dependent)
+  if (!allListings.length) {
+    const params = new URLSearchParams({
+      north: BBOX.north, south: BBOX.south,
+      east: BBOX.east,   west: BBOX.west,
+      sortBy: currentSort,
+      forRent: 'false',
+      minPrice: '75000',
+      limit: 500
+    });
 
-  try {
-    const res = await fetch('/api/properties/search?' + params);
-    const data = await res.json();
-    const listings = data.listings || data.properties || [];
-    const total = data.total || data.totalCount || listings.length;
-    totalPages = Math.ceil(total / 12) || 1;
-    if (countEl) countEl.textContent = total;
-    renderListings(listings);
-    renderPagination();
-  } catch(e) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--mid)">Unable to load listings. <a href="/search?postalCode=' + currentZip + '" style="color:var(--gold)">Search area listings \u2192</a></div>';
+    try {
+      const res = await fetch('/api/properties/search?' + params);
+      const data = await res.json();
+      const raw = data.listings || data.properties || [];
+      // Filter to strict 3-mile radius and exclude rentals (property_type check)
+      allListings = raw.filter(l =>
+        l.latitude && l.longitude &&
+        haversineMiles(TESLA_LAT, TESLA_LNG, l.latitude, l.longitude) <= RADIUS_MILES &&
+        !(l.property_type || '').toLowerCase().includes('lease')
+      );
+    } catch(e) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--mid)">Unable to load listings. <a href="/search" style="color:var(--gold)">Search all Austin listings \u2192</a></div>';
+      return;
+    }
   }
+
+  // Apply client-side filters
+  let filtered = allListings;
+  if (currentBeds) filtered = filtered.filter(l => (l.bedrooms_total || 0) >= Number(currentBeds));
+  if (currentMaxPrice) filtered = filtered.filter(l => (l.list_price || 0) <= Number(currentMaxPrice));
+
+  // Client-side sort (allListings already sorted by server default; re-sort if needed)
+  if (currentSort === 'price_asc') filtered = [...filtered].sort((a,b) => (a.list_price||0)-(b.list_price||0));
+  else if (currentSort === 'price_desc') filtered = [...filtered].sort((a,b) => (b.list_price||0)-(a.list_price||0));
+
+  const total = filtered.length;
+  totalPages = Math.ceil(total / PAGE_SIZE) || 1;
+  if (countEl) countEl.textContent = total;
+
+  const offset = (currentPage - 1) * PAGE_SIZE;
+  renderListings(filtered.slice(offset, offset + PAGE_SIZE));
+  renderPagination();
 }
 
 function renderListings(listings) {
   if (!listings.length) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--mid)">No listings found in this area matching your filters.<br><a href="#contact" style="color:var(--gold)">Contact Luke Allen for off-market options \u2192</a></div>';
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--mid)">No listings match your filters within 3 miles of Giga Texas.<br><a href="#contact" style="color:var(--gold)">Contact Luke Allen for off-market options \u2192</a></div>';
     return;
   }
   grid.innerHTML = listings.map(l => {
     const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : 'Price N/A';
-    const addr = l.unparsed_address || 'Del Valle / Austin TX';
+    const addr = l.unparsed_address || 'Near Tesla Giga Texas, Austin TX';
     const beds = l.bedrooms_total || '\u2014';
     const baths = l.bathrooms_total || '\u2014';
     const sqft = l.living_area ? Number(l.living_area).toLocaleString() : '\u2014';
     const img = l.photos && l.photos[0] ? l.photos[0] : '';
     const addrSlug = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g,'').trim().replace(/\s+/g,'-');
     const citySlug = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g,'-');
-    const link = l.listing_key ? (addrSlug ? '/property/'+addrSlug+'-'+citySlug+'-tx-'+l.listing_key : '/property/'+l.listing_key) : '/search?postalCode='+currentZip;
+    const link = l.listing_key ? (addrSlug ? '/property/'+addrSlug+'-'+citySlug+'-tx-'+l.listing_key : '/property/'+l.listing_key) : '/search';
     const isNew = l.list_date && (Date.now() - new Date(l.list_date).getTime()) < 7*24*60*60*1000;
+    const dist = (l.latitude && l.longitude) ? haversineMiles(TESLA_LAT, TESLA_LNG, l.latitude, l.longitude) : null;
     return '<a class="listing-card" href="'+link+'">' +
       '<div class="card-img">' +
       (img ? '<img src="'+img+'" alt="'+addr+'" loading="lazy"/>' : '<div class="card-img-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>') +
@@ -761,7 +802,7 @@ function renderListings(listings) {
 function renderPagination() {
   const el = document.getElementById('pagination');
   if (!el || totalPages <= 1) { if(el) el.innerHTML=''; return; }
-  let html = '<button class="page-btn"'+(currentPage===1?' disabled':'')+' onclick="fetchListings('+(currentPage-1)+')">&#8592; Prev</button>';
+  let html = '<button class="page-btn"'+(currentPage===1?' disabled':'')+' onclick="goPage('+(currentPage-1)+')">&#8592; Prev</button>';
   const pages = [];
   if (totalPages <= 7) { for(let i=1;i<=totalPages;i++) pages.push(i); }
   else {
@@ -773,14 +814,18 @@ function renderPagination() {
   }
   pages.forEach(p => {
     if(p==='...') html+='<span class="page-ellipsis">\u2026</span>';
-    else html+='<button class="page-btn'+(p===currentPage?' active':'')+'" onclick="fetchListings('+p+')">'+p+'</button>';
+    else html+='<button class="page-btn'+(p===currentPage?' active':'')+'" onclick="goPage('+p+')">'+p+'</button>';
   });
-  html+='<button class="page-btn"'+(currentPage===totalPages?' disabled':'')+' onclick="fetchListings('+(currentPage+1)+')">Next &#8594;</button>';
+  html+='<button class="page-btn"'+(currentPage===totalPages?' disabled':'')+' onclick="goPage('+(currentPage+1)+')">Next &#8594;</button>';
   el.innerHTML=html;
 }
 
-document.getElementById('sort-select').addEventListener('change',e=>{currentSort=e.target.value;fetchListings(1);});
-document.getElementById('area-select').addEventListener('change',e=>{currentZip=e.target.value;fetchListings(1);});
+function goPage(p) { fetchListings(p); }
+
+// When sort changes, clear cache so we re-fetch in the right order
+document.getElementById('sort-select').addEventListener('change',e=>{
+  currentSort=e.target.value; allListings=[]; fetchListings(1);
+});
 document.getElementById('beds-select').addEventListener('change',e=>{currentBeds=e.target.value;fetchListings(1);});
 document.getElementById('maxprice-select').addEventListener('change',e=>{currentMaxPrice=e.target.value;fetchListings(1);});
 
