@@ -18,6 +18,15 @@
     #site-nav { min-height: 64px; }
     a { text-decoration: none; color: inherit; }
 
+    /* ── HERO VIDEO ── */
+    .hero-video {
+      width: 100%; height: 320px; background: #1a1918;
+      position: relative; overflow: hidden;
+    }
+    .hero-video video {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+
     /* ── BREADCRUMB ── */
     .breadcrumb {
       background: #fff; border-bottom: 1px solid #e8e2d8;
@@ -239,6 +248,13 @@
     <span>/</span>
     <span id="bc-address">Property Analysis</span>
   </div>
+</div>
+
+<!-- Hero Video -->
+<div class="hero-video">
+  <video autoplay muted loop playsinline>
+    <source src="/videos/hero-video.mp4" type="video/mp4" />
+  </video>
 </div>
 
 <!-- Main content (populated by JS) -->
