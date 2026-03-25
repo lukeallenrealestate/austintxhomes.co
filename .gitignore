@@ -3,5 +3,7 @@ node_modules/
 *.webp
 *.jpg
 *.png
+!austintxhomes/public/favicon.png
+!austintxhomes/public/favicon.svg
 .env
 austintxhomes/data/dealAlerts.json
