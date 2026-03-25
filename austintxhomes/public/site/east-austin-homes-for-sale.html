@@ -760,7 +760,7 @@ async function fetchListings(page) {
   if (page > 1) document.getElementById('listings').scrollIntoView({behavior:'smooth',block:'start'});
 
   const params = new URLSearchParams({
-    neighborhood: 'East+Austin',
+    zip: '78702',
     sortBy: currentSort,
     page: page,
     minPrice: currentMinPrice || '75000',
@@ -781,7 +781,7 @@ async function fetchListings(page) {
   } catch(e) {
     try {
       const fallback = new URLSearchParams({
-        postalCode: '78702',
+        zip: '78702',
         sortBy: currentSort,
         page: page,
         minPrice: currentMinPrice || '75000',

@@ -707,17 +707,9 @@
     }
 
     try {
-      // Try neighborhoods param first
-      let res = await fetch('/api/properties/search?city=Austin&neighborhoods=Tarrytown&minPrice=75000&sortBy=' + currentSort + '&page=' + page);
+      let res = await fetch('/api/properties/search?zip=78703&minPrice=75000&sortBy=' + currentSort + '&page=' + page);
       let data = await res.json();
       let listings = data.listings || [];
-
-      // Fallback to 78703 zip code if no results
-      if (listings.length === 0 && page === 1) {
-        res = await fetch('/api/properties/search?city=Austin&postalCode=78703&minPrice=75000&sortBy=' + currentSort + '&page=' + page);
-        data = await res.json();
-        listings = data.listings || [];
-      }
 
       totalListings = data.total || 0;
 

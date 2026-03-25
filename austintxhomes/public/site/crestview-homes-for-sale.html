@@ -781,7 +781,7 @@ async function fetchListings(page) {
   if (page > 1) document.getElementById('listings').scrollIntoView({behavior:'smooth',block:'start'});
 
   const params = new URLSearchParams({
-    neighborhood: 'Crestview',
+    zip: '78757',
     sortBy: currentSort,
     page: page,
     minPrice: currentMinPrice || '75000',
@@ -802,7 +802,7 @@ async function fetchListings(page) {
   } catch(e) {
     try {
       const fallback = new URLSearchParams({
-        postalCode: '78757',
+        zip: '78757',
         sortBy: currentSort,
         page: page,
         minPrice: currentMinPrice || '75000',
