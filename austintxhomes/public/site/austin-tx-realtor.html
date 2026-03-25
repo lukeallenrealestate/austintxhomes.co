@@ -548,6 +548,20 @@
       .form-card { padding: 28px 20px; }
       .trust-badges { gap: 8px; }
     }
+
+    .hero-inner { display: flex !important; align-items: center; gap: 56px; text-align: left !important; max-width: 1160px !important; }
+    .hero-text { flex: 1; min-width: 0; }
+    .hero-text .hero-eyebrow,
+    .hero-text .hero-ctas,
+    .hero-text .hero-pills,
+    .hero-text .hero-anchors { text-align: left; justify-content: flex-start; }
+    .hero-photo { flex-shrink: 0; width: 280px; }
+    .hero-photo img { width: 100%; border-radius: 10px; border: 2px solid rgba(184,147,90,.4); display: block; box-shadow: 0 16px 48px rgba(0,0,0,.5); }
+    @media (max-width: 860px) {
+      .hero-inner { flex-direction: column-reverse !important; gap: 32px; text-align: center !important; }
+      .hero-photo { width: 180px; }
+      .hero-text .hero-ctas, .hero-text .hero-pills, .hero-text .hero-anchors { justify-content: center; }
+    }
   </style>
 </head>
 <body>
@@ -557,17 +571,22 @@
 <!-- ── HERO ── -->
 <section class="hero">
   <div class="hero-inner">
-    <p class="hero-eyebrow">Austin TX · Licensed Real Estate Agent · TREC #788149</p>
-    <h1>Your Austin TX<br><em>Realtor</em></h1>
-    <p class="hero-sub">Buyer representation. Home sales. Investment properties. Serving greater Austin with local expertise and zero pressure.</p>
-    <div class="hero-pills">
-      <span class="hero-pill gold">5.0 ★ Google Reviews</span>
-      <span class="hero-pill">TREC Licensed #788149</span>
-      <span class="hero-pill">Greater Austin</span>
+    <div class="hero-text">
+      <p class="hero-eyebrow">Austin TX · Licensed Real Estate Agent · TREC #788149</p>
+      <h1>Your Austin TX<br><em>Realtor</em></h1>
+      <p class="hero-sub">Buyer representation. Home sales. Investment properties. Serving greater Austin with local expertise and zero pressure.</p>
+      <div class="hero-pills">
+        <span class="hero-pill gold">5.0 ★ Google Reviews</span>
+        <span class="hero-pill">TREC Licensed #788149</span>
+        <span class="hero-pill">Greater Austin</span>
+      </div>
+      <div class="hero-ctas">
+        <a href="/buy" class="btn-gold">Find Your Home →</a>
+        <a href="/sell" class="btn-outline">Sell with Luke →</a>
+      </div>
     </div>
-    <div class="hero-ctas">
-      <a href="/buy" class="btn-gold">Find Your Home →</a>
-      <a href="/sell" class="btn-outline">Sell with Luke →</a>
+    <div class="hero-photo">
+      <img src="/images/luke-allen-headshot.jpg" alt="Luke Allen — Austin TX Realtor" />
     </div>
   </div>
 </section>

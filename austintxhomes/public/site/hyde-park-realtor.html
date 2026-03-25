@@ -308,6 +308,20 @@
       .form-card { padding: 28px 20px; }
       .stats-grid { grid-template-columns: 1fr; }
     }
+
+    .hero-inner { display: flex !important; align-items: center; gap: 56px; text-align: left !important; max-width: 1160px !important; }
+    .hero-text { flex: 1; min-width: 0; }
+    .hero-text .hero-eyebrow,
+    .hero-text .hero-ctas,
+    .hero-text .hero-pills,
+    .hero-text .hero-anchors { text-align: left; justify-content: flex-start; }
+    .hero-photo { flex-shrink: 0; width: 280px; }
+    .hero-photo img { width: 100%; border-radius: 10px; border: 2px solid rgba(184,147,90,.4); display: block; box-shadow: 0 16px 48px rgba(0,0,0,.5); }
+    @media (max-width: 860px) {
+      .hero-inner { flex-direction: column-reverse !important; gap: 32px; text-align: center !important; }
+      .hero-photo { width: 180px; }
+      .hero-text .hero-ctas, .hero-text .hero-pills, .hero-text .hero-anchors { justify-content: center; }
+    }
   </style>
 </head>
 <body>
@@ -317,17 +331,22 @@
 <!-- ── HERO ── -->
 <section class="hero">
   <div class="hero-inner">
-    <p class="hero-eyebrow">Hyde Park Austin &middot; Walk Score 85 &middot; Est. 1890s</p>
-    <h1>Luke Allen<br><em>Hyde Park Realtor</em></h1>
-    <p class="hero-sub">Luke Allen is the go-to Hyde Park realtor in Austin TX. Whether you are buying a century-old Craftsman bungalow steps from UT Austin or selling in Austin&rsquo;s most historically protected neighborhood, Luke Allen brings deep local knowledge, honest pricing, and a 5.0 Google rating to every Hyde Park transaction.</p>
-    <div class="hero-pills">
-      <span class="hero-pill gold">5.0 &#9733; Google Rating</span>
-      <span class="hero-pill">TREC #788149</span>
-      <span class="hero-pill">Est. 1890s</span>
+    <div class="hero-text">
+      <p class="hero-eyebrow">Hyde Park Austin &middot; Walk Score 85 &middot; Est. 1890s</p>
+      <h1>Luke Allen<br><em>Hyde Park Realtor</em></h1>
+      <p class="hero-sub">Luke Allen is the go-to Hyde Park realtor in Austin TX. Whether you are buying a century-old Craftsman bungalow steps from UT Austin or selling in Austin&rsquo;s most historically protected neighborhood, Luke Allen brings deep local knowledge, honest pricing, and a 5.0 Google rating to every Hyde Park transaction.</p>
+      <div class="hero-pills">
+        <span class="hero-pill gold">5.0 &#9733; Google Rating</span>
+        <span class="hero-pill">TREC #788149</span>
+        <span class="hero-pill">Est. 1890s</span>
+      </div>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn-gold">Talk to Luke Allen &rarr;</a>
+        <a href="/hyde-park-homes-for-sale" class="btn-outline">Browse Hyde Park Listings</a>
+      </div>
     </div>
-    <div class="hero-ctas">
-      <a href="#contact" class="btn-gold">Talk to Luke Allen &rarr;</a>
-      <a href="/hyde-park-homes-for-sale" class="btn-outline">Browse Hyde Park Listings</a>
+    <div class="hero-photo">
+      <img src="/images/luke-allen-headshot.jpg" alt="Luke Allen — Austin TX Realtor" />
     </div>
   </div>
 </section>

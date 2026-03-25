@@ -856,6 +856,20 @@
       .form-grid { grid-template-columns: 1fr; }
       .inline-cta-strip { flex-direction: column; align-items: flex-start; }
     }
+
+    .hero-inner { display: flex !important; align-items: center; gap: 56px; text-align: left !important; max-width: 1160px !important; }
+    .hero-text { flex: 1; min-width: 0; }
+    .hero-text .hero-eyebrow,
+    .hero-text .hero-ctas,
+    .hero-text .hero-pills,
+    .hero-text .hero-anchors { text-align: left; justify-content: flex-start; }
+    .hero-photo { flex-shrink: 0; width: 280px; }
+    .hero-photo img { width: 100%; border-radius: 10px; border: 2px solid rgba(184,147,90,.4); display: block; box-shadow: 0 16px 48px rgba(0,0,0,.5); }
+    @media (max-width: 860px) {
+      .hero-inner { flex-direction: column-reverse !important; gap: 32px; text-align: center !important; }
+      .hero-photo { width: 180px; }
+      .hero-text .hero-ctas, .hero-text .hero-pills, .hero-text .hero-anchors { justify-content: center; }
+    }
   </style>
 </head>
 <body>
@@ -910,23 +924,28 @@
   </svg>
 
   <div class="hero-inner">
-    <p class="hero-eyebrow">Austin TX · Divorce Real Estate Specialist · TREC #788149</p>
-    <h1>Austin's<br><em>Divorce Realtor</em></h1>
-    <p class="hero-lead">Texas is a community property state. The marital home belongs to both of you — and both of you need to come out right. Whether you're selling together, one spouse is buying out the other, or the court has ordered the sale, I handle Austin divorce real estate with the discretion and competence the situation demands.</p>
-    <div class="hero-pills">
-      <span class="hero-pill">Sell the Marital Home</span>
-      <span class="hero-pill">Spouse Buyouts</span>
-      <span class="hero-pill">Court-Ordered Sales</span>
-      <span class="hero-pill">Buy Your Next Home</span>
+    <div class="hero-text">
+      <p class="hero-eyebrow">Austin TX · Divorce Real Estate Specialist · TREC #788149</p>
+      <h1>Austin's<br><em>Divorce Realtor</em></h1>
+      <p class="hero-lead">Texas is a community property state. The marital home belongs to both of you — and both of you need to come out right. Whether you're selling together, one spouse is buying out the other, or the court has ordered the sale, I handle Austin divorce real estate with the discretion and competence the situation demands.</p>
+      <div class="hero-pills">
+        <span class="hero-pill">Sell the Marital Home</span>
+        <span class="hero-pill">Spouse Buyouts</span>
+        <span class="hero-pill">Court-Ordered Sales</span>
+        <span class="hero-pill">Buy Your Next Home</span>
+      </div>
+      <nav class="hero-anchors">
+        <a href="#situations">Situations</a>
+        <a href="#texas-law">Texas Law</a>
+        <a href="#process">Process</a>
+        <a href="#services">Services</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
+      </nav>
     </div>
-    <nav class="hero-anchors">
-      <a href="#situations">Situations</a>
-      <a href="#texas-law">Texas Law</a>
-      <a href="#process">Process</a>
-      <a href="#services">Services</a>
-      <a href="#faq">FAQ</a>
-      <a href="#contact">Contact</a>
-    </nav>
+    <div class="hero-photo">
+      <img src="/images/luke-allen-headshot.jpg" alt="Luke Allen — Austin TX Realtor" />
+    </div>
   </div>
 </section>
 

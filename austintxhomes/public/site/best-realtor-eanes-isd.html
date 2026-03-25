@@ -368,6 +368,20 @@
       font-weight: 600;
       color: var(--mid);
     }
+
+    .hero-wrap { display: flex; align-items: center; gap: 56px; max-width: 1100px; margin: 0 auto; text-align: left; }
+    .hero-text { flex: 1; min-width: 0; }
+    .hero-text .hero-eyebrow,
+    .hero-text .hero-stats,
+    .hero-text .hero-ctas { text-align: left; justify-content: flex-start; }
+    .hero-text .hero-sub { margin: 0 0 32px; }
+    .hero-photo { flex-shrink: 0; width: 280px; }
+    .hero-photo img { width: 100%; border-radius: 10px; border: 2px solid rgba(184,147,90,.4); display: block; box-shadow: 0 16px 48px rgba(0,0,0,.5); }
+    @media (max-width: 860px) {
+      .hero-wrap { flex-direction: column-reverse; gap: 32px; text-align: center; }
+      .hero-photo { width: 180px; }
+      .hero-text .hero-stats, .hero-text .hero-ctas { justify-content: center; }
+    }
   </style>
 </head>
 <body>
@@ -376,19 +390,26 @@
 <!-- HERO -->
 <div style="margin-top:64px;">
   <div class="hero">
-    <p class="hero-eyebrow">Eanes ISD · Trusted Realtor</p>
-    <h1>The Most Trusted Realtor<br>in <em>Eanes ISD</em></h1>
-    <p class="hero-sub">Luke Allen knows the Westlake Hills and Eanes ISD market at the street level — school zones, pricing pockets, and what makes each neighborhood unique. Trusted by families who need honest guidance, not a sales pitch.</p>
-    <div class="hero-stats">
-      <span class="hero-stat">5.0 ★ Google Reviews</span>
-      <span class="hero-stat">TREC #788149</span>
-      <span class="hero-stat">Licensed Texas Realtor</span>
-      <span class="hero-stat">Eanes ISD Expert</span>
+  <div class="hero-wrap">
+    <div class="hero-text">
+      <p class="hero-eyebrow">Eanes ISD · Trusted Realtor</p>
+      <h1>The Most Trusted Realtor<br>in <em>Eanes ISD</em></h1>
+      <p class="hero-sub">Luke Allen knows the Westlake Hills and Eanes ISD market at the street level — school zones, pricing pockets, and what makes each neighborhood unique. Trusted by families who need honest guidance, not a sales pitch.</p>
+      <div class="hero-stats">
+        <span class="hero-stat">5.0 ★ Google Reviews</span>
+        <span class="hero-stat">TREC #788149</span>
+        <span class="hero-stat">Licensed Texas Realtor</span>
+        <span class="hero-stat">Eanes ISD Expert</span>
+      </div>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn-gold">Talk to Luke →</a>
+        <a href="/eanes-isd-homes-for-sale" class="btn-outline-light">Browse Eanes ISD Listings</a>
+      </div>
     </div>
-    <div class="hero-ctas">
-      <a href="#contact" class="btn-gold">Talk to Luke →</a>
-      <a href="/eanes-isd-homes-for-sale" class="btn-outline-light">Browse Eanes ISD Listings</a>
+      <div class="hero-photo">
+      <img src="/images/luke-allen-headshot.jpg" alt="Luke Allen — Austin TX Realtor" />
     </div>
+  </div>
   </div>
 </div>
 

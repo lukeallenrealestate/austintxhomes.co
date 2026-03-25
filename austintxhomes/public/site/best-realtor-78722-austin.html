@@ -268,6 +268,20 @@
       .stats-grid { grid-template-columns: 1fr; }
       .nbhd-grid { grid-template-columns: 1fr; }
     }
+
+    .hero-inner { display: flex !important; align-items: center; gap: 56px; text-align: left !important; max-width: 1160px !important; }
+    .hero-text { flex: 1; min-width: 0; }
+    .hero-text .hero-eyebrow,
+    .hero-text .hero-ctas,
+    .hero-text .hero-pills,
+    .hero-text .hero-anchors { text-align: left; justify-content: flex-start; }
+    .hero-photo { flex-shrink: 0; width: 280px; }
+    .hero-photo img { width: 100%; border-radius: 10px; border: 2px solid rgba(184,147,90,.4); display: block; box-shadow: 0 16px 48px rgba(0,0,0,.5); }
+    @media (max-width: 860px) {
+      .hero-inner { flex-direction: column-reverse !important; gap: 32px; text-align: center !important; }
+      .hero-photo { width: 180px; }
+      .hero-text .hero-ctas, .hero-text .hero-pills, .hero-text .hero-anchors { justify-content: center; }
+    }
   </style>
 </head>
 <body>
@@ -277,18 +291,23 @@
 <!-- ── HERO ── -->
 <section class="hero">
   <div class="hero-inner">
-    <p class="hero-eyebrow">Luke Allen · Best Realtor in 78722 Austin TX</p>
-    <h1>Best Realtor in<br><em>78722 Austin TX</em></h1>
-    <p class="hero-sub">Luke Allen is the top-rated realtor in Austin's 78722 zip code — Cherrywood, French Place, University Hills, Delwood, and the Manor Road corridor. 5.0 Google stars. Personal service. Deep central-east Austin knowledge.</p>
-    <div class="hero-pills">
-      <span class="hero-pill gold">5.0 ★ Google Reviews</span>
-      <span class="hero-pill">TREC Licensed #788149</span>
-      <span class="hero-pill">78722 Specialist</span>
-      <span class="hero-pill">Central-East Austin</span>
+    <div class="hero-text">
+      <p class="hero-eyebrow">Luke Allen · Best Realtor in 78722 Austin TX</p>
+      <h1>Best Realtor in<br><em>78722 Austin TX</em></h1>
+      <p class="hero-sub">Luke Allen is the top-rated realtor in Austin's 78722 zip code — Cherrywood, French Place, University Hills, Delwood, and the Manor Road corridor. 5.0 Google stars. Personal service. Deep central-east Austin knowledge.</p>
+      <div class="hero-pills">
+        <span class="hero-pill gold">5.0 ★ Google Reviews</span>
+        <span class="hero-pill">TREC Licensed #788149</span>
+        <span class="hero-pill">78722 Specialist</span>
+        <span class="hero-pill">Central-East Austin</span>
+      </div>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn-gold">Talk to Luke Allen →</a>
+        <a href="/buy" class="btn-outline">Browse 78722 Listings</a>
+      </div>
     </div>
-    <div class="hero-ctas">
-      <a href="#contact" class="btn-gold">Talk to Luke Allen →</a>
-      <a href="/buy" class="btn-outline">Browse 78722 Listings</a>
+    <div class="hero-photo">
+      <img src="/images/luke-allen-headshot.jpg" alt="Luke Allen — Austin TX Realtor" />
     </div>
   </div>
 </section>
