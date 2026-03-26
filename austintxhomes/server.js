@@ -106,6 +106,18 @@ cron.schedule('0 7 1 * *', () => {
   });
 });
 
+// ── Weekly report manual trigger (must come BEFORE the generic /api proxy) ───
+app.post('/api/weekly-report/generate', async (req, res) => {
+  if (req.headers['x-admin-key'] !== ADMIN_KEY) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const post = await generateWeeklyReport(weeklyReports);
+    if (!post) return res.status(503).json({ error: 'No MLS data available — is the idx-search server running?' });
+    res.json({ ok: true, slug: post.slug, url: `https://austintxhomes.co/blog/${post.slug}` });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ── Deal Radar API routes (must come BEFORE the generic /api proxy) ──────────
 
 // GET /api/deal-radar/settings — return current scoring config (admin)
@@ -487,18 +499,6 @@ app.get('/living-in-east-austin', (_req, res) => res.sendFile(path.join(__dirnam
 app.get('/sell-home-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-east-austin.html')));
 app.get('/homes-for-sale-near-tesla-gigafactory', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-tesla-gigafactory.html')));
 app.get('/fix-and-flip-calculator-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/fix-and-flip-calculator-austin.html')));
-
-// Manual trigger for weekly report (admin-only, requires admin key)
-app.post('/api/weekly-report/generate', async (req, res) => {
-  if (req.headers['x-admin-key'] !== ADMIN_KEY) return res.status(401).json({ error: 'Unauthorized' });
-  try {
-    const post = await generateWeeklyReport(weeklyReports);
-    if (!post) return res.status(503).json({ error: 'No MLS data available — is the idx-search server running?' });
-    res.json({ ok: true, slug: post.slug, url: `https://austintxhomes.co/blog/${post.slug}` });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));
