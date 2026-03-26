@@ -12,7 +12,7 @@
   const css = `
     #site-nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-      height: 40px; background: rgba(15,15,14,.95); backdrop-filter: blur(12px);
+      height: 80px; background: rgba(15,15,14,.95); backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(184,147,90,.18);
       display: flex; align-items: center; justify-content: space-between; padding: 0 2rem;
       font-family: 'Inter', system-ui, sans-serif;
