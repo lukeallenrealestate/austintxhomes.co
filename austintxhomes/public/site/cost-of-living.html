@@ -8,8 +8,8 @@
   <link rel="canonical" href="https://austintxhomes.co/cost-of-living" />
   <link rel="icon" href="/favicon.png" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Austin TX Cost of Living 2026 | Luke Allen, Realtor2 />
-  <meta property="og:description" content="Complete Austin TX cost of living guide for 2026 — median home prices, rent, food, transportation, utilities, and how Austin compares to Denver, Seattle, and Chicago. Updated monthly." />
+  <meta property="og:title" content="Austin TX Cost of Living | Luke Allen, Realtor" />
+  <meta property="og:description" content="Complete Austin TX cost of living guide for — median home prices, rent, food, transportation, utilities, and how Austin compares to Denver, Seattle, and Chicago. Updated monthly." />
   <meta property="og:url" content="https://austintxhomes.co/cost-of-living" />
   <meta property="og:image" content="https://austintxhomes.co/images/luke-allen.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -21,7 +21,7 @@
   {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": "Austin TX Cost of Living 2026",
+    "headline": "Austin TX Cost of Living",
     "datePublished": "2026-01-01",
     "dateModified": "2026-03-01",
     "author": {
@@ -36,7 +36,7 @@
       "url": "https://austintxhomes.co",
       "telephone": "+12547182567"
     },
-    "description": "Complete Austin TX cost of living guide for 2026 — median home prices, rent, food, transportation, utilities, and how Austin compares to Denver, Seattle, and Chicago.",
+    "description": "Complete Austin TX cost of living guide for — median home prices, rent, food, transportation, utilities, and how Austin compares to Denver, Seattle, and Chicago.",
     "url": "https://austintxhomes.co/cost-of-living"
   }
   </script>
@@ -93,7 +93,6 @@
   }
   </script>
 
-
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -126,14 +125,41 @@
     }
     body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.6; }
 
-    /* HERO */
+    /* ── HERO ── */
     .hero {
       margin-top: 64px;
       background: var(--ink);
-      background-image: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,.13) 0%, transparent 70%);
       padding: 80px 2rem 72px;
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
+
+    /* Video layer — sits behind everything */
+    .hero video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.4s ease;
+      z-index: 0;
+    }
+    .hero video.ready { opacity: 1; }
+
+    /* Dark + gold-glow overlay on top of video */
+    .hero::before {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,.13) 0%, transparent 70%),
+        linear-gradient(135deg, rgba(15,15,14,.88) 0%, rgba(26,20,16,.82) 50%, rgba(15,15,14,.88) 100%);
+    }
+
+    /* All hero text content floats above overlay */
+    .hero-content-wrap {
+      position: relative;
+      z-index: 2;
+    }
+
     .hero-eyebrow {
       font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
       color: var(--gold); margin-bottom: 20px;
@@ -331,21 +357,27 @@
 
 <!-- HERO -->
 <section class="hero">
-  <p class="hero-eyebrow">Austin TX Living Costs</p>
-  <h1>Cost of Living in<br><em>Austin, Texas</em></h1>
-  <p class="hero-sub">A complete breakdown of what it actually costs to live in Austin in 2026 — housing, food, transportation, utilities, and how Austin stacks up against the cities people are moving here from.</p>
-  <div class="hero-pills">
-    <span class="hero-pill">No State Income Tax</span>
-    <span class="hero-pill">7–10% Below National Peak</span>
+  <!-- Background video — same source as /buy page -->
+  <video id="col-hv" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
+
+  <!-- All content sits above the video + overlay -->
+  <div class="hero-content-wrap">
+    <p class="hero-eyebrow">Austin TX Living Costs</p>
+    <h1>Cost of Living in<br><em>Austin, Texas</em></h1>
+    <p class="hero-sub">A complete breakdown of what it actually costs to live in Austin in 2026 — housing, food, transportation, utilities, and how Austin stacks up against the cities people are moving here from.</p>
+    <div class="hero-pills">
+      <span class="hero-pill">No State Income Tax</span>
+      <span class="hero-pill">7–10% Below National Peak</span>
+    </div>
+    <nav class="hero-anchors">
+      <a href="#housing">Housing</a>
+      <a href="#rent-vs-buy">Rent vs Buy</a>
+      <a href="#comparison">City Comparison</a>
+      <a href="#taxes">Taxes</a>
+      <a href="#neighborhoods">Neighborhoods</a>
+      <a href="#faq">FAQ</a>
+    </nav>
   </div>
-  <nav class="hero-anchors">
-    <a href="#housing">Housing</a>
-    <a href="#rent-vs-buy">Rent vs Buy</a>
-    <a href="#comparison">City Comparison</a>
-    <a href="#taxes">Taxes</a>
-    <a href="#neighborhoods">Neighborhoods</a>
-    <a href="#faq">FAQ</a>
-  </nav>
 </section>
 
 <!-- STATS BAR -->
@@ -755,7 +787,14 @@
 <script src="/js/footer.js"></script>
 
 <script>
-  // Smooth scroll for anchor links
+  // ── Hero video fade-in (same pattern as /buy page) ──
+  const colVid = document.getElementById('col-hv');
+  if (colVid) {
+    if (colVid.readyState >= 3) colVid.classList.add('ready');
+    else colVid.addEventListener('canplay', () => colVid.classList.add('ready'), { once: true });
+  }
+
+  // ── Smooth scroll for anchor links ──
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       const target = document.querySelector(a.getAttribute('href'));
@@ -766,7 +805,7 @@
     });
   });
 
-  // Contact form
+  // ── Contact form ──
   document.getElementById('col-contact-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(this));
