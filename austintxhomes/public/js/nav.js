@@ -12,11 +12,16 @@
   const css = `
     #site-nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-      height: 80px; background: rgba(15,15,14,.95); backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(184,147,90,.18);
+      height: 80px; background: transparent; backdrop-filter: none;
+      border-bottom: none;
       display: flex; align-items: center; justify-content: space-between; padding: 0 2rem;
       font-family: 'Inter', system-ui, sans-serif;
       box-sizing: border-box;
+      transition: background .3s, border-color .3s, backdrop-filter .3s;
+    }
+    #site-nav.scrolled {
+      background: rgba(15,15,14,.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(184,147,90,.18);
     }
     #site-nav * { box-sizing: border-box; }
     #site-nav .sn-logo {
@@ -106,5 +111,17 @@
 
   // Prepend as first child of body so it renders before page content
   document.body.insertBefore(nav, document.body.firstChild);
+
+  // ─── SCROLL HANDLER ──────────────────────────────────────────
+  // Solidify nav once user scrolls past the hero (40px threshold)
+  function onScroll() {
+    if (window.scrollY > 40) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll(); // run once on load (handles page refreshed mid-scroll)
 
 })();
