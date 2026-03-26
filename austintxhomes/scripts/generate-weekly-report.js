@@ -63,29 +63,36 @@ function getISOWeek(d = new Date()) {
   return Math.ceil((d - start) / 604800000) + 1;
 }
 
-// ── Mortgage Rate (FRED API) ───────────────────────────────────────────────────
-async function fetchMortgageRate() {
-  const key = process.env.FRED_API_KEY;
-  if (!key) return null;
+// ── Mortgage Rate (Freddie Mac PMMS scrape) ────────────────────────────────────
+// Parses the meta description from https://www.freddiemac.com/pmms which always
+// contains the current week's rate and the year-ago rate in plain text.
+// Week-over-week change is tracked by storing the previous rate in weekly-reports.json.
+async function fetchMortgageRate(prevRate = null) {
   try {
-    const url = `https://api.stlouisfed.org/fred/series/observations?series_id=MORTGAGE30US&api_key=${key}&sort_order=desc&limit=5&file_type=json`;
-    const resp = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    const resp = await fetch('https://www.freddiemac.com/pmms', {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AustinTXHomes market report bot)' },
+      signal: AbortSignal.timeout(10000),
+    });
     if (!resp.ok) return null;
-    const data = await resp.json();
-    const obs  = (data.observations || []).filter(o => o.value !== '.');
-    if (!obs.length) return null;
-    const cur  = parseFloat(obs[0].value);
-    const prev = obs.length > 1 ? parseFloat(obs[1].value) : null;
-    // Year-ago: look for obs ~52 rows back (FRED weekly), try index 51
-    const yago = obs.length > 51 ? parseFloat(obs[51].value) : null;
-    return {
-      current:  cur,
-      prev,
-      change:   prev != null ? parseFloat((cur - prev).toFixed(2)) : null,
-      yoyChange: yago != null ? parseFloat((cur - yago).toFixed(0)) * -10 : null, // bps
-      date:     obs[0].date,
-    };
-  } catch (_) { return null; }
+    const html = await resp.text();
+
+    // "Mortgage rates this week averaged 6.38%."
+    const curMatch  = html.match(/this week averaged\s+([\d.]+)%/i);
+    // "last year when they averaged 6.65%"
+    const yagoMatch = html.match(/last year when they averaged\s+([\d.]+)%/i);
+
+    if (!curMatch) return null;
+
+    const current  = parseFloat(curMatch[1]);
+    const yearAgo  = yagoMatch ? parseFloat(yagoMatch[1]) : null;
+    const wowChange = prevRate != null ? parseFloat((current - prevRate).toFixed(2)) : null;
+    const yoyBps    = yearAgo  != null ? Math.round((current - yearAgo) * 100) : null;
+
+    return { current, yearAgo, wowChange, yoyBps };
+  } catch (e) {
+    console.warn('[WeeklyReport] Freddie Mac rate fetch failed:', e.message);
+    return null;
+  }
 }
 
 // ── Fetch MLS Market Data ─────────────────────────────────────────────────────
@@ -314,7 +321,7 @@ function generateGbpBlurb(data, rate, weekLabel) {
     : `${absorption === 'seller' ? "seller's" : absorption === 'buyer' ? "buyer's" : 'balanced'} market`;
 
   const rateSection = rate
-    ? `Mortgage Rates: 30-yr fixed at ${rate.current.toFixed(2)}% (${rate.change != null ? (rate.change > 0 ? '+' : '') + rate.change.toFixed(2) + '% wk/wk' : 'unchanged'})${rate.yoyChange != null ? `. ${Math.abs(rate.yoyChange)} bps ${rate.yoyChange < 0 ? 'lower' : 'higher'} YoY` : ''}.`
+    ? `Mortgage Rates: 30-yr fixed at ${rate.current.toFixed(2)}% (${rate.wowChange != null ? (rate.wowChange > 0 ? '+' : '') + rate.wowChange.toFixed(2) + '% wk/wk' : 'source: Freddie Mac PMMS'})${rate.yoyBps != null ? `. ${Math.abs(rate.yoyBps)} bps ${rate.yoyBps < 0 ? 'lower' : 'higher'} YoY` : ''}.`
     : '';
 
   const hotLine = hotCities.slice(0, 3)
@@ -403,7 +410,7 @@ function generateBlogPost(data, rate, angle, weekLabel, dateFmt, slug) {
     </tr>`).join('');
 
   const rateBlock = rate ? `
-<div class="data-highlight"><span class="stat">${rate.current.toFixed(2)}%</span><span class="stat-label">30-Yr Fixed Rate</span></div>` : '';
+<div class="data-highlight"><span class="stat">${rate.current.toFixed(2)}%</span><span class="stat-label">30-Yr Fixed (Freddie Mac PMMS)</span></div>` : '';
 
   const titles = [
     `Austin Real Estate Market Report — ${weekLabel}`,
@@ -441,7 +448,7 @@ function generateBlogPost(data, rate, angle, weekLabel, dateFmt, slug) {
     saleToListPct != null ? ['Avg Sale-to-List', saleToListPct.toFixed(1) + '%'] : null,
     ['New This Week', newThisWeek + ' listings'],
     pendingCount ? ['Pending/UC', fmtNum(pendingCount)] : null,
-    rate ? ['30-Yr Fixed Rate', rate.current.toFixed(2) + '%'] : null,
+    rate ? ['30-Yr Fixed (PMMS)', rate.current.toFixed(2) + '%'] : null,
   ].filter(Boolean).map(([label, val]) => `
     <div style="background:#faf8f4;border:1px solid #e5dfd4;border-radius:6px;padding:1rem;text-align:center">
       <div style="font-size:1.4rem;font-family:'Cormorant Garamond',Georgia,serif;color:#b8935a;font-weight:600">${val}</div>
@@ -497,9 +504,14 @@ function generateBlogPost(data, rate, angle, weekLabel, dateFmt, slug) {
   <a href="/about#contact" style="display:inline-block;background:#b8935a;color:#fff;padding:.8rem 2rem;border-radius:4px;text-decoration:none;font-size:.9rem;font-weight:500">Schedule a Free Consultation →</a>
 </div>`;
 
-  const rateContext = rate ? `
+  const rateContext = rate ? (() => {
+    const loanAmt  = medianPrice * 0.8;
+    const mo       = rate.current / 100 / 12;
+    const payment  = Math.round(loanAmt * mo / (1 - Math.pow(1 + mo, -360)));
+    return `
 <h2>Mortgage Rate Context — ${weekLabel}</h2>
-<p>The 30-year fixed mortgage rate is currently at <strong>${rate.current.toFixed(2)}%</strong>${rate.change != null ? ` (${rate.change > 0 ? '+' : ''}${rate.change.toFixed(2)}% from last week)` : ''}. ${rate.yoyChange != null ? `Rates are ${Math.abs(rate.yoyChange)} basis points ${rate.yoyChange < 0 ? 'lower' : 'higher'} than one year ago.` : ''} At ${fmt(medianPrice)} with 20% down, a buyer financing ${fmt(medianPrice * 0.8)} at ${rate.current.toFixed(2)}% carries a principal and interest payment of roughly ${fmt(medianPrice * 0.8 * (rate.current/100/12) / (1 - Math.pow(1 + rate.current/100/12, -360)))}/month.</p>` : '';
+<p>The 30-year fixed mortgage rate is <strong>${rate.current.toFixed(2)}%</strong> this week per Freddie Mac's Primary Mortgage Market Survey${rate.wowChange != null ? ` (${rate.wowChange > 0 ? '+' : ''}${rate.wowChange.toFixed(2)}% from last week)` : ''}. ${rate.yoyBps != null ? `Rates are <strong>${Math.abs(rate.yoyBps)} basis points ${rate.yoyBps < 0 ? 'lower' : 'higher'}</strong> than one year ago when they averaged ${rate.yearAgo ? rate.yearAgo.toFixed(2) + '%' : 'higher'}.` : ''} At Austin's median list price of ${fmt(medianPrice)} with 20% down, a buyer financing ${fmt(loanAmt)} at ${rate.current.toFixed(2)}% carries a principal and interest payment of approximately <strong>${fmt(payment)}/month</strong>.</p>`;
+  })() : '';
 
   const content = `
 ${heroVideo}
@@ -536,14 +548,15 @@ ${internalLinks}`;
 
   return {
     slug,
-    title:        titles[angle],
-    date:         isoDate(),
-    dateFormatted: dateFmt,
-    category:     'Market Update',
-    excerpt:      excerpts[angle],
-    readTime:     '7 min read',
-    tags:         ['Austin Real Estate', 'Market Report', 'Austin TX', 'MLS Data', weekLabel],
-    published:    true,
+    title:          titles[angle],
+    date:           isoDate(),
+    dateFormatted:  dateFmt,
+    category:       'Market Update',
+    excerpt:        excerpts[angle],
+    readTime:       '7 min read',
+    tags:           ['Austin Real Estate', 'Market Report', 'Austin TX', 'MLS Data', weekLabel],
+    published:      true,
+    mortgageRate:   rate ? rate.current : null, // stored for next week's wow diff
     content,
   };
 }
@@ -610,15 +623,20 @@ module.exports = async function generateWeeklyReport(weeklyReportsRef = []) {
 
   console.log(`[WeeklyReport] Generating — ${wLabel} (angle ${angle})`);
 
-  const [data, rate] = await Promise.all([fetchMarketData(), fetchMortgageRate()]);
+  // Pull previous rate from most recent stored report for week-over-week diff
+  const prevRate = weeklyReportsRef.length > 0 && weeklyReportsRef[0].mortgageRate
+    ? weeklyReportsRef[0].mortgageRate
+    : null;
+
+  const [data, rate] = await Promise.all([fetchMarketData(), fetchMortgageRate(prevRate)]);
 
   if (!data) {
     console.warn('[WeeklyReport] No MLS data — aborting');
     return null;
   }
 
-  if (rate)  console.log(`[WeeklyReport] Mortgage rate: ${rate.current}%`);
-  else       console.log(`[WeeklyReport] No FRED key set — mortgage rates omitted (add FRED_API_KEY to .env)`);
+  if (rate) console.log(`[WeeklyReport] Freddie Mac rate: ${rate.current}% (wow: ${rate.wowChange != null ? rate.wowChange : 'N/A'}, yoy: ${rate.yoyBps != null ? rate.yoyBps + 'bps' : 'N/A'})`);
+  else      console.log(`[WeeklyReport] Freddie Mac fetch failed — mortgage rates omitted from this report`);
 
   console.log(`[WeeklyReport] MLS: ${data.totalActive} active, median ${fmt(data.medianPrice)}, ${data.avgDom} DOM`);
 
