@@ -47,6 +47,25 @@ app.use('/api/favorites', require('./routes/favorites'));
 app.use('/api/searches', require('./routes/searches'));
 app.use('/api/admin', require('./routes/admin'));
 
+// /api/listings is an alias for /api/properties/search that normalises
+// the param names used by the marketing-site pages:
+//   offset  → page  (offset/limit + 1)
+//   sort    → sortBy
+//   q       → keyword
+app.get('/api/listings', (req, res) => {
+  const q = { ...req.query };
+  if (q.offset !== undefined && q.limit) {
+    q.page = Math.max(1, Math.floor(Number(q.offset) / Number(q.limit)) + 1);
+    delete q.offset;
+  }
+  if (q.sort && !q.sortBy) { q.sortBy = q.sort; delete q.sort; }
+  if (q.q && !q.keyword)   { q.keyword = q.q;   delete q.q;   }
+  req.url = '/search?' + new URLSearchParams(q).toString();
+  require('./routes/properties')(req, res, (err) => {
+    if (err) res.status(500).json({ error: err.message });
+  });
+});
+
 // Contact form submission
 app.post('/api/contact', async (req, res) => {
   const {

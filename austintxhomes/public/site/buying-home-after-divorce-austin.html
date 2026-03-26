@@ -11,12 +11,11 @@
   <meta name="geo.region" content="US-TX">
   <meta name="geo.placename" content="Austin, Texas">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Buying a Home After Divorce Austin TX | Luke Allen, Realtor2>
+  <meta property="og:title" content="Buying a Home After Divorce Austin TX | Luke Allen, Realtor">
   <meta property="og:description" content="How to buy a home after divorce in Austin — qualifying for a mortgage solo, what lenders need from your decree, Austin neighborhoods for a fresh start. Free buyer representation.">
   <meta property="og:url" content="https://austintxhomes.co/buying-home-after-divorce-austin">
   <meta property="og:image" content="https://austintxhomes.co/images/og-buying-home-after-divorce-austin.jpg">
   <meta name="twitter:card" content="summary_large_image" />
-
 
   <script type="application/ld+json">
   {
@@ -110,7 +109,7 @@
 
     .hero { background: var(--ink); padding: 140px 2rem 100px; margin-top: 64px; position: relative; overflow: hidden; }
     .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,0.11) 0%, transparent 70%); }
-    .hero-inner { max-width: var(--w); margin: 0 auto; position: relative; z-index: 1; }
+    .hero-inner { max-width: var(--w); margin: 0 auto; position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 420px; gap: 4rem; align-items: start; }
     .hero-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; }
     .hero h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(2.6rem, 6vw, 4.5rem); font-weight: 300; line-height: 1.08; color: #fff; margin-bottom: 1.75rem; max-width: 680px; }
     .hero h1 em { font-style: italic; color: var(--gold-lt); }
@@ -209,6 +208,7 @@
     @media (max-width: 640px) { .agent-strip-inner { grid-template-columns: 1fr; } .agent-strip-photo { width: 130px; height: 155px; } }
 
     @media (max-width: 960px) {
+      .hero-inner { grid-template-columns: 1fr; }
       .mortgage-grid { grid-template-columns: 1fr; }
       .nbhd-grid { grid-template-columns: 1fr 1fr; }
       .cta-inner { grid-template-columns: 1fr; gap: 2.5rem; }
@@ -228,10 +228,63 @@
 
 <section class="hero">
   <div class="hero-inner">
-    <p class="hero-breadcrumb"><a href="/divorce-realtor-austin">Divorce Real Estate Austin</a> <span>›</span> Buying After Divorce</p>
-    <p class="hero-eyebrow">Austin TX · Buying a Home After Divorce · Free Buyer Representation</p>
-    <h1>Buying a Home<br><em>After Divorce in Austin</em></h1>
-    <p class="hero-lead">Your next chapter starts with a home that's yours. Qualifying post-divorce, navigating a single income, figuring out which Austin neighborhood fits your new life — this guide covers everything. Free buyer representation, confidential, no obligation.</p>
+    <!-- Left column: copy -->
+    <div class="hero-copy">
+      <p class="hero-breadcrumb"><a href="/divorce-realtor-austin">Divorce Real Estate Austin</a> <span>›</span> Buying After Divorce</p>
+      <p class="hero-eyebrow">Austin TX · Buying a Home After Divorce · Free Buyer Representation</p>
+      <h1>Buying a Home<br><em>After Divorce in Austin</em></h1>
+      <p class="hero-lead">Your next chapter starts with a home that's yours. Qualifying post-divorce, navigating a single income, figuring out which Austin neighborhood fits your new life — this guide covers everything. Free buyer representation, confidential, no obligation.</p>
+    </div>
+
+    <!-- Right column: hero form -->
+    <div class="cta-form-wrap" style="margin-top: 0;">
+      <div class="cta-form-title">Find Your Next Austin Home</div>
+      <div class="cta-form-sub">Free buyer representation · Confidential · No obligation</div>
+      <form id="buy-divorce-form-hero">
+        <div class="form-field">
+          <input type="text" name="name" placeholder="Your Name" required>
+        </div>
+        <div class="form-field">
+          <input type="text" name="contact" placeholder="Phone or Email" required>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <select name="budget">
+              <option value="" disabled selected>Budget Range</option>
+              <option>Under $450K</option>
+              <option>$450K–$650K</option>
+              <option>$650K–$900K</option>
+              <option>$900K–$1.3M</option>
+              <option>$1.3M+</option>
+              <option>Still figuring it out</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <select name="family">
+              <option value="" disabled selected>Family Situation</option>
+              <option>Just me</option>
+              <option>Me + kids</option>
+              <option>Me + new partner</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-field">
+          <input type="text" name="priorities" placeholder="School district, walkability, commute…">
+        </div>
+        <div class="form-field">
+          <select name="timeline">
+            <option value="" disabled selected>Timeline</option>
+            <option>Divorce not final yet — planning ahead</option>
+            <option>Ready now — decree is final</option>
+            <option>1–3 months</option>
+            <option>3–6 months</option>
+            <option>Flexible — just exploring</option>
+          </select>
+        </div>
+        <button type="submit" class="form-btn">Start My Home Search</button>
+      </form>
+    </div>
   </div>
 </section>
 
@@ -589,6 +642,8 @@
       if (!isOpen) item.classList.add('open');
     });
   });
+
+  // Bottom CTA form
   const form = document.getElementById('buy-divorce-form');
   if (form) {
     form.addEventListener('submit', async e => {
@@ -601,6 +656,24 @@
         const res = await fetch('/api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
         if (res.ok) {
           form.closest('.cta-form-wrap').innerHTML = '<p class="form-success">I\'ll be in touch within a few hours. Your search starts here.</p>';
+        } else { btn.disabled = false; btn.textContent = 'Start My Home Search'; }
+      } catch { btn.disabled = false; btn.textContent = 'Start My Home Search'; }
+    });
+  }
+
+  // Hero form
+  const heroForm = document.getElementById('buy-divorce-form-hero');
+  if (heroForm) {
+    heroForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = heroForm.querySelector('.form-btn');
+      btn.disabled = true; btn.textContent = 'Sending…';
+      const data = Object.fromEntries(new FormData(heroForm).entries());
+      data.source = 'buying-home-after-divorce-austin-hero';
+      try {
+        const res = await fetch('/api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+        if (res.ok) {
+          heroForm.closest('.cta-form-wrap').innerHTML = '<p class="form-success">I\'ll be in touch within a few hours. Your search starts here.</p>';
         } else { btn.disabled = false; btn.textContent = 'Start My Home Search'; }
       } catch { btn.disabled = false; btn.textContent = 'Start My Home Search'; }
     });

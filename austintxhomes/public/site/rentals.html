@@ -601,13 +601,13 @@ function makePropertyUrl(l) {
       a.className = 'listing-card';
       a.href = makePropertyUrl(l);
 
-      const price = l.listPrice ? `$${Number(l.listPrice).toLocaleString()}` : 'Price N/A';
-      const addr = [l.streetAddress, l.city].filter(Boolean).join(', ') || 'Austin, TX';
-      const beds = l.bedroomsTotal || l.beds || '—';
-      const baths = l.bathroomsTotal || l.baths || '—';
-      const sqft = l.livingArea ? Number(l.livingArea).toLocaleString() : '—';
-      const isNew = l.daysOnMarket != null && l.daysOnMarket <= 3;
-      const imgSrc = (l.media && l.media[0]) ? l.media[0] : '';
+      const price = (l.list_price || l.listPrice) ? `$${Number(l.list_price || l.listPrice).toLocaleString()}` : 'Price N/A';
+      const addr = [l.unparsed_address || l.streetAddress, l.city].filter(Boolean).join(', ') || 'Austin, TX';
+      const beds = l.bedrooms_total || l.bedroomsTotal || l.beds || '—';
+      const baths = l.bathrooms_total || l.bathroomsTotal || l.baths || '—';
+      const sqft = (l.living_area || l.livingArea) ? Number(l.living_area || l.livingArea).toLocaleString() : '—';
+      const isNew = (l.days_on_market ?? l.daysOnMarket) != null && (l.days_on_market ?? l.daysOnMarket) <= 3;
+      const imgSrc = (l.photos && l.photos[0]) ? l.photos[0] : (l.media && l.media[0]) ? l.media[0] : '';
 
       a.innerHTML = `
         <div class="card-img">
@@ -627,7 +627,7 @@ function makePropertyUrl(l) {
     }
 
     function updateStats(listings) {
-      const prices = listings.map(l => Number(l.listPrice)).filter(p => p > 0);
+      const prices = listings.map(l => Number(l.list_price || l.listPrice)).filter(p => p > 0);
       document.getElementById('total-rentals').textContent = totalResults > 0 ? totalResults : '—';
       if (prices.length) {
         const avg = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
