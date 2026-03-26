@@ -4,6 +4,19 @@ const express = require('express');
 const compression = require('compression');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
+const fs = require('fs');
+
+// Load email credentials from idx-search .env if present
+try {
+  const envPath = path.join(__dirname, '../idx-search/.env');
+  if (fs.existsSync(envPath)) {
+    const lines = fs.readFileSync(envPath, 'utf8').split('\n');
+    lines.forEach(line => {
+      const m = line.match(/^([A-Z_]+)=(.+)$/);
+      if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
+    });
+  }
+} catch (_) {}
 
 // Prevent unhandled errors from crashing the server
 process.on('uncaughtException', (err) => {
@@ -29,6 +42,15 @@ const renderBlogPost = require('./templates/blog-post');
 const renderBlogIndex = require('./templates/blog-index');
 let blogPosts = require('./data/blog-posts');
 
+// Weekly generated market reports (prepended to blog feed)
+const WEEKLY_REPORTS_FILE = path.join(__dirname, 'data/weekly-reports.json');
+let weeklyReports = [];
+try { weeklyReports = JSON.parse(fs.readFileSync(WEEKLY_REPORTS_FILE, 'utf8')); } catch (_) {}
+const allBlogPosts = () => [...weeklyReports, ...blogPosts];
+
+// Weekly report generator
+const generateWeeklyReport = require('./scripts/generate-weekly-report');
+
 // Luxury listing page system (programmatic SEO for $1M+ properties)
 const { renderListingPage, enrichListing, slugifyAddress } = require('./templates/listing');
 const listingDb = require('../idx-search/db/database');
@@ -52,8 +74,23 @@ app.use((req, res, next) => {
 // Start scheduled alert checks (2-hour interval, first run after 10 min warmup)
 alertEngine.startScheduledChecks(dealEngine.getDeals);
 
-// Monthly scraper — runs on the 1st of each month at 7:00am server time
 const cron = require('node-cron');
+
+// Weekly market report — every Monday at 9:00am CDT (14:00 UTC)
+// Generates GBP blurb + full blog post from live MLS data, emails to Luke
+cron.schedule('0 14 * * 1', async () => {
+  console.log('[WeeklyReport] Starting Monday morning report generation...');
+  try {
+    const post = await generateWeeklyReport(weeklyReports);
+    if (post) {
+      console.log(`[WeeklyReport] Done — published /blog/${post.slug}`);
+    }
+  } catch (e) {
+    console.error('[WeeklyReport] Cron failed:', e.message);
+  }
+});
+
+// Monthly scraper — runs on the 1st of each month at 7:00am server time
 cron.schedule('0 7 1 * *', () => {
   const { execFile } = require('child_process');
   const scraperPath = path.join(__dirname, 'scripts/update-sienna-floorplans.js');
@@ -449,6 +486,19 @@ app.get('/east-austin-market-report', (_req, res) => res.sendFile(path.join(__di
 app.get('/living-in-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-east-austin.html')));
 app.get('/sell-home-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-east-austin.html')));
 app.get('/homes-for-sale-near-tesla-gigafactory', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-tesla-gigafactory.html')));
+app.get('/fix-and-flip-calculator-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/fix-and-flip-calculator-austin.html')));
+
+// Manual trigger for weekly report (admin-only, requires admin key)
+app.post('/api/weekly-report/generate', async (req, res) => {
+  if (req.headers['x-admin-key'] !== ADMIN_KEY) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const post = await generateWeeklyReport(weeklyReports);
+    if (!post) return res.status(503).json({ error: 'No MLS data available — is the idx-search server running?' });
+    res.json({ ok: true, slug: post.slug, url: `https://austintxhomes.co/blog/${post.slug}` });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));
@@ -515,14 +565,14 @@ app.get('/listing-sitemap.xml', (_req, res) => {
   }
 });
 
-// Blog routes — SSR from data/blog-posts.js
+// Blog routes — SSR from data/blog-posts.js + weekly-reports.json
 app.get('/blog', (req, res) => {
-  // Reload posts on each request in dev so edits are reflected without restart
+  // Reload static posts on each request in dev so edits are reflected without restart
   try { delete require.cache[require.resolve('./data/blog-posts')]; blogPosts = require('./data/blog-posts'); } catch(e) {}
   const category = req.query.category || null;
   const page = Math.max(1, parseInt(req.query.page) || 1);
   const perPage = 12;
-  const published = blogPosts.filter(p => p.published !== false);
+  const published = allBlogPosts().filter(p => p.published !== false);
   const filtered = category ? published.filter(p => p.category === category) : published;
   const totalPages = Math.ceil(filtered.length / perPage);
   const pagePosts = filtered.slice((page - 1) * perPage, page * perPage);
@@ -532,7 +582,7 @@ app.get('/blog', (req, res) => {
 
 app.get('/blog/:slug', (req, res) => {
   try { delete require.cache[require.resolve('./data/blog-posts')]; blogPosts = require('./data/blog-posts'); } catch(e) {}
-  const post = blogPosts.find(p => p.slug === req.params.slug && p.published !== false);
+  const post = allBlogPosts().find(p => p.slug === req.params.slug && p.published !== false);
   if (!post) return res.status(404).sendFile(path.join(__dirname, 'public/site/404.html'), () => res.status(404).send('Post not found'));
   res.setHeader('Content-Type', 'text/html');
   res.send(renderBlogPost(post));

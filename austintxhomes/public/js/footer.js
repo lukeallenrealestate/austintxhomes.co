@@ -139,6 +139,7 @@
           <li><a href="/eanes-isd-homes-for-sale">Eanes ISD Homes for Sale</a></li>
           <li><a href="/luxury-homes">Luxury Homes Austin TX</a></li>
           <li><a href="/investment-properties">Investment Properties</a></li>
+          <li><a href="/fix-and-flip-calculator-austin">Fix &amp; Flip Calculator</a></li>
           <li><a href="/rental-properties-for-sale-austin">Rental Properties Austin</a></li>
           <li><a href="/austin-tx-realtor">Austin TX Realtor</a></li>
           <li><a href="/commercial-real-estate-austin">Commercial Real Estate</a></li>
