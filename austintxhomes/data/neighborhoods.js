@@ -222,6 +222,7 @@ module.exports = {
     slug: 'east-austin',
     name: 'East Austin',
     mlsSearch: 'East Austin',
+    searchParam: 'zip=78702,78722&forRent=false',
     area: 'East Austin',
     title: 'Homes for Sale in East Austin TX | AustinTXHomes.co',
     metaDescription: 'Browse homes for sale in East Austin TX. Bungalows, new construction, and condos in Austin\'s most vibrant and fastest-appreciating neighborhood. Updated daily from MLS.',

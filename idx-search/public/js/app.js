@@ -90,16 +90,33 @@ function restoreSearchState() {
 function applyUrlParams() {
   const params = new URLSearchParams(window.location.search);
   const neighborhood = params.get('neighborhood');
+  const zip = params.get('zip');
+  const city = params.get('city');
   const q = params.get('q');
   const minPrice = params.get('minPrice');
   const subType = params.get('subType');
   const newConstruction = params.get('newConstruction');
   const forRent = params.get('forRent');
 
-  if (neighborhood) {
+  if (zip) {
+    currentFilters.zip = zip;
+    delete currentFilters.neighborhood;
+    delete currentFilters.city;
+    const input = document.getElementById('location-search');
+    if (input) input.value = zip.split(',')[0];
+    zoomMapToFilter();
+  } else if (city) {
+    currentFilters.city = city;
+    delete currentFilters.neighborhood;
+    delete currentFilters.zip;
+    const input = document.getElementById('location-search');
+    if (input) input.value = city;
+    zoomMapToFilter();
+  } else if (neighborhood) {
     currentFilters.neighborhood = neighborhood;
     const input = document.getElementById('location-search');
     if (input) input.value = neighborhood;
+    zoomMapToFilter();
   }
   if (q) {
     const input = document.getElementById('location-search');
@@ -125,6 +142,11 @@ function applyUrlParams() {
     currentFilters.forRent = 'true';
     document.querySelectorAll('.filter-toggle button').forEach(b => {
       b.classList.toggle('active', b.dataset.type === 'rent');
+    });
+  } else if (forRent === 'false') {
+    currentFilters.forRent = 'false';
+    document.querySelectorAll('.filter-toggle button').forEach(b => {
+      b.classList.toggle('active', b.dataset.type === 'sale');
     });
   }
 }

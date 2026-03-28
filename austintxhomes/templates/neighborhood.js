@@ -234,7 +234,7 @@ module.exports = function renderNeighborhoodPage(n) {
         <p class="hero-tagline">${n.tagline}</p>
         <div class="hero-tags">${n.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
         <div class="hero-actions">
-          <a href="/search?neighborhood=${encodeURIComponent(n.mlsSearch)}" class="btn-gold">Search ${n.name} Listings</a>
+          <a href="${n.searchParam ? '/search?' + n.searchParam : '/search?neighborhood=' + encodeURIComponent(n.mlsSearch)}" class="btn-gold">Search ${n.name} Listings</a>
           <a href="#about" class="btn-outline">Neighborhood Guide</a>
         </div>
       </div>
@@ -281,7 +281,7 @@ module.exports = function renderNeighborhoodPage(n) {
       <div class="listings-grid" id="listings-grid">
         <div class="listings-loading">Loading listings…</div>
       </div>
-      <a href="/search?neighborhood=${encodeURIComponent(n.mlsSearch)}" target="_blank" rel="noopener" class="view-all">View all ${n.name} listings in search →</a>
+      <a href="${n.searchParam ? '/search?' + n.searchParam : '/search?neighborhood=' + encodeURIComponent(n.mlsSearch)}" target="_blank" rel="noopener" class="view-all">View all ${n.name} listings in search →</a>
     </div>
   </section>
 
@@ -375,7 +375,7 @@ module.exports = function renderNeighborhoodPage(n) {
     (async function() {
       const grid = document.getElementById('listings-grid');
       try {
-        const res = await fetch('/api/properties/search?neighborhood=${encodeURIComponent(n.mlsSearch)}&limit=6&status=Active');
+        const res = await fetch('/api/properties/search?${n.searchParam ? n.searchParam + '&' : 'neighborhood=' + encodeURIComponent(n.mlsSearch) + '&'}limit=6&status=Active');
         if (!res.ok) throw new Error();
         const data = await res.json();
         const listings = data.listings || [];
@@ -397,7 +397,7 @@ module.exports = function renderNeighborhoodPage(n) {
           const img = l.photos && l.photos[0] ? l.photos[0] : '';
           const addrSlug = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-');
           const citySlug = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
-          const link = l.listing_key ? (addrSlug ? '/property/' + addrSlug + '-' + citySlug + '-tx-' + l.listing_key : '/property/' + l.listing_key) : '/search?neighborhood=${encodeURIComponent(n.mlsSearch)}';
+          const link = l.listing_key ? (addrSlug ? '/property/' + addrSlug + '-' + citySlug + '-tx-' + l.listing_key : '/property/' + l.listing_key) : '${n.searchParam ? '/search?' + n.searchParam : '/search?neighborhood=' + encodeURIComponent(n.mlsSearch)}';
           return '<a class="listing-card" href="' + link + '">' +
             '<div class="card-img">' + (img ? '<img src="' + img + '" alt="' + addr + '" loading="lazy" />' : '') +
             '<span class="card-badge">For Sale</span></div>' +
@@ -407,7 +407,7 @@ module.exports = function renderNeighborhoodPage(n) {
             '</div></a>';
         }).join('');
       } catch {
-        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;color:var(--mid);font-size:14px">Unable to load listings. <a href="/search?neighborhood=${encodeURIComponent(n.mlsSearch)}" style="color:var(--gold)">Search ${n.name} listings →</a></p>';
+        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;color:var(--mid);font-size:14px">Unable to load listings. <a href="${n.searchParam ? '/search?' + n.searchParam : '/search?neighborhood=' + encodeURIComponent(n.mlsSearch)}" style="color:var(--gold)">Search ${n.name} listings →</a></p>';
       }
     })();
 

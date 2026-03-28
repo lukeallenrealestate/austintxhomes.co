@@ -798,7 +798,7 @@ async function fetchListings(page) {
       renderListings(listings2);
       renderPagination();
     } catch(e2) {
-      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--mid)">Unable to load listings. <a href="/search?neighborhood=East+Austin" style="color:var(--gold)">Search East Austin \u2192</a></div>';
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--mid)">Unable to load listings. <a href="/search?zip=78702,78722&forRent=false" style="color:var(--gold)">Search East Austin \u2192</a></div>';
     }
   }
 }
@@ -817,7 +817,7 @@ function renderListings(listings) {
     const img = l.photos && l.photos[0] ? l.photos[0] : '';
     const addrSlug = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g,'').trim().replace(/\s+/g,'-');
     const citySlug = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g,'-');
-    const link = l.listing_key ? (addrSlug ? '/property/'+addrSlug+'-'+citySlug+'-tx-'+l.listing_key : '/property/'+l.listing_key) : '/search?neighborhood=East+Austin';
+    const link = l.listing_key ? (addrSlug ? '/property/'+addrSlug+'-'+citySlug+'-tx-'+l.listing_key : '/property/'+l.listing_key) : '/search?zip=78702,78722&forRent=false';
     const isNew = l.list_date && (Date.now() - new Date(l.list_date).getTime()) < 7*24*60*60*1000;
     return '<a class="listing-card" href="'+link+'">' +
       '<div class="card-img">' +
