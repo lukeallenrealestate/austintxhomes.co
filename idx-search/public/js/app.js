@@ -639,7 +639,7 @@ function hideAutocomplete() {
   if (d) d.style.display = 'none';
 }
 
-function selectAutocomplete(type, value, listingKey) {
+async function selectAutocomplete(type, value, listingKey) {
   document.getElementById('location-search').value = value;
   hideAutocomplete();
 
@@ -662,8 +662,21 @@ function selectAutocomplete(type, value, listingKey) {
 
   if (type === 'city') currentFilters.city = value;
   else if (type === 'zip') currentFilters.zip = value;
-  else if (type === 'neighborhood') currentFilters.neighborhood = value;
   else if (type === 'school') currentFilters.schoolDistrict = value;
+  else if (type === 'neighborhood') {
+    // Try to fetch a real boundary polygon from OpenStreetMap
+    const geometry = await fetchNeighborhoodPolygon(value);
+    if (geometry && drawNeighborhoodPolygon(geometry)) {
+      // Polygon is stored in currentFilters — load results via existing pipeline
+      currentPage = 1;
+      loadListings();
+      loadMapPins();
+      loadMapCards();
+      return;
+    }
+    // Fallback: filter by subdivision_name
+    currentFilters.neighborhood = value;
+  }
 
   currentPage = 1;
   applyFilters();
@@ -678,6 +691,59 @@ function highlightMatch(text, q) {
 
 function escapeHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ---- Neighborhood boundary polygon (OpenStreetMap / Nominatim) ----
+async function fetchNeighborhoodPolygon(name) {
+  try {
+    const res = await fetch('/api/properties/neighborhood-boundary?q=' + encodeURIComponent(name));
+    return await res.json(); // GeoJSON Polygon/MultiPolygon or null
+  } catch { return null; }
+}
+
+function drawNeighborhoodPolygon(geometry) {
+  if (!geometry || !googleMap) return false;
+
+  // Handle MultiPolygon — use the largest outer ring
+  let coords;
+  if (geometry.type === 'MultiPolygon') {
+    coords = geometry.coordinates.reduce((best, poly) =>
+      poly[0].length > best.length ? poly[0] : best, []);
+  } else {
+    coords = geometry.coordinates[0]; // outer ring
+  }
+  if (!coords || coords.length < 3) return false;
+
+  // GeoJSON is [lng, lat]; Google Maps needs {lat, lng}
+  const path = coords.map(([lng, lat]) => ({ lat, lng }));
+
+  // Clear existing polygon without triggering a reload
+  if (drawnPolygon) { drawnPolygon.setMap(null); drawnPolygon = null; }
+  delete currentFilters.polygon;
+  delete currentFilters.north; delete currentFilters.south;
+  delete currentFilters.east;  delete currentFilters.west;
+
+  drawnPolygon = new google.maps.Polygon({
+    paths: path,
+    strokeColor: '#b8935a',
+    strokeOpacity: 0.9,
+    strokeWeight: 2,
+    fillColor: '#b8935a',
+    fillOpacity: 0.08,
+    map: googleMap
+  });
+  document.getElementById('clear-draw-btn').style.display = 'flex';
+
+  const bounds = new google.maps.LatLngBounds();
+  path.forEach(p => bounds.extend(p));
+  currentFilters.north   = bounds.getNorthEast().lat();
+  currentFilters.south   = bounds.getSouthWest().lat();
+  currentFilters.east    = bounds.getNorthEast().lng();
+  currentFilters.west    = bounds.getSouthWest().lng();
+  currentFilters.polygon = JSON.stringify(path);
+
+  googleMap.fitBounds(bounds, 40);
+  return true;
 }
 
 // Zoom map to fit all pins matching the current location filter (city/zip/neighborhood)

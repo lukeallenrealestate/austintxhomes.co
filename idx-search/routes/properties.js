@@ -327,6 +327,27 @@ router.get('/autocomplete', (req, res) => {
   res.json([...addresses, ...cities, ...zips, ...hoods, ...schools].filter(r => r.value));
 });
 
+// GET /api/properties/neighborhood-boundary — proxy Nominatim for GeoJSON polygon
+router.get('/neighborhood-boundary', async (req, res) => {
+  const q = (req.query.q || '').trim();
+  if (!q) return res.json(null);
+  try {
+    const url = 'https://nominatim.openstreetmap.org/search?' +
+      'q=' + encodeURIComponent(q + ' Austin TX') +
+      '&format=geojson&polygon_geojson=1&limit=3';
+    const r = await fetch(url, {
+      headers: { 'User-Agent': 'austintxhomes.co/1.0 (Luke@austinmdg.com)' }
+    });
+    const data = await r.json();
+    const feature = data.features?.find(f =>
+      f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon'
+    );
+    res.json(feature?.geometry || null);
+  } catch (e) {
+    res.json(null);
+  }
+});
+
 // GET /api/properties/sync-status
 router.get('/sync-status', (req, res) => {
   const state = db.prepare('SELECT * FROM sync_state WHERE id = 1').get();
