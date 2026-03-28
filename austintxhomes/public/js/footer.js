@@ -148,6 +148,8 @@
           <li><a href="/condos">Austin Condos for Sale</a></li>
           <li><a href="/condos-for-sale-in-the-austonian">Austonian Condos for Sale</a></li>
           <li><a href="/condos-for-rent-in-the-austonian">Austonian Condos for Rent</a></li>
+          <li><a href="/condos-for-sale-in-the-modern">The Modern Condos for Sale</a></li>
+          <li><a href="/condos-for-rent-in-the-modern">The Modern Condos for Rent</a></li>
           <li><a href="/deal-radar">Deal Radar <span class="sf-badge">New</span></a></li>
         </ul>
 
