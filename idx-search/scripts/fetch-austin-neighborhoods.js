@@ -26,28 +26,45 @@ const NAME_ALIASES = {
 // Replace coordinates with geojson.io-drawn polygons for more accurate outlines.
 // Format: GeoJSON Polygon (coordinates[0] = outer ring, [lng, lat] pairs, closed)
 const MANUAL_OVERRIDES = {
+  // Tarrytown: Colorado River (west, irregular), MoPac (east), W 35th (north), W 6th (south)
   tarrytown: {
     type: 'Polygon',
     coordinates: [[
-      [-97.775, 30.293], [-97.755, 30.293],
-      [-97.755, 30.320], [-97.775, 30.320],
-      [-97.775, 30.293]
+      [-97.756, 30.319],  // NE — MoPac at W 35th
+      [-97.763, 30.319],  // N edge going west
+      [-97.771, 30.316],  // Mayfield Park north, river bank
+      [-97.775, 30.308],  // river curves SW past Mayfield
+      [-97.778, 30.298],  // river continues south (Redbud Isle area)
+      [-97.778, 30.288],  // river bank mid
+      [-97.776, 30.278],  // river bank lower
+      [-97.773, 30.272],  // SW — river meets W 6th area
+      [-97.756, 30.272],  // SE — MoPac at W 6th
+      [-97.756, 30.319]   // back to NE (closed)
     ]]
   },
+  // Travis Heights: Lady Bird Lake south shore (north, curved), I-35 (east), S Congress (west), ~Oltorf (south)
   'travis heights': {
     type: 'Polygon',
     coordinates: [[
-      [-97.751, 30.244], [-97.730, 30.244],
-      [-97.730, 30.260], [-97.751, 30.260],
-      [-97.751, 30.244]
+      [-97.752, 30.253],  // NW — Congress at Riverside
+      [-97.748, 30.256],  // N — lake shore curves NE
+      [-97.742, 30.257],  // N — lake shore continues
+      [-97.736, 30.256],  // N — lake shore east
+      [-97.731, 30.253],  // NE — near I-35 at Riverside
+      [-97.730, 30.237],  // SE — I-35 south to ~Oltorf
+      [-97.752, 30.237],  // SW — S Congress at ~Oltorf
+      [-97.752, 30.253]   // back to NW (closed)
     ]]
   },
+  // Clarksville: Enfield Rd (north), W Lynn St (east), W 5th St (south), MoPac (west)
   clarksville: {
     type: 'Polygon',
     coordinates: [[
-      [-97.771, 30.274], [-97.753, 30.274],
-      [-97.753, 30.290], [-97.771, 30.290],
-      [-97.771, 30.274]
+      [-97.769, 30.284],  // NW — MoPac at Enfield
+      [-97.757, 30.284],  // NE — Lynn St at Enfield
+      [-97.757, 30.271],  // SE — Lynn St at W 5th
+      [-97.769, 30.271],  // SW — MoPac at W 5th
+      [-97.769, 30.284]   // back to NW (closed)
     ]]
   }
 };
