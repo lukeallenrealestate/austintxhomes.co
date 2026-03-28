@@ -154,6 +154,20 @@ async function main() {
 
   console.log(`  Got ${Object.keys(overrides).length} polygons from city data`);
 
+  // Merge Zillow neighborhood polygons (highest priority — overwrites ArcGIS where overlap exists)
+  const zillowPath = path.join(__dirname, '../data/zillow-neighborhoods.json');
+  try {
+    const zillowData = JSON.parse(fs.readFileSync(zillowPath, 'utf8'));
+    let zCount = 0;
+    for (const [key, geom] of Object.entries(zillowData)) {
+      overrides[key] = geom;
+      zCount++;
+    }
+    console.log(`  Merged ${zCount} polygons from Zillow data`);
+  } catch (_) {
+    console.log('  No Zillow data file found, skipping');
+  }
+
   // Add alias mappings
   for (const [alias, canonical] of Object.entries(NAME_ALIASES)) {
     if (overrides[canonical] && !overrides[alias]) {
