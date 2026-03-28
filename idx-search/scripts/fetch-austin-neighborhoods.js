@@ -19,7 +19,9 @@ const ARCGIS_URL =
 
 // City dataset uses "CENTRAL EAST AUSTIN" — map common search terms to it
 const NAME_ALIASES = {
-  'east austin': 'central east austin',
+  'east austin':    'central east austin',
+  'pecan springs':  'pecan springs-springdale',
+  'west austin':    'old west austin',
 };
 
 // Neighborhoods the city dataset doesn't have — approximate bounding rectangles.
@@ -65,6 +67,62 @@ const MANUAL_OVERRIDES = {
       [-97.757, 30.271],  // SE — Lynn St at W 5th
       [-97.769, 30.271],  // SW — MoPac at W 5th
       [-97.769, 30.284]   // back to NW (closed)
+    ]]
+  },
+  // South Congress (SoCo): Lady Bird Lake/Barton Springs (north), Ben White/US-290 (south),
+  // S Congress Ave corridor (east), S Lamar Blvd (west)
+  'south congress': {
+    type: 'Polygon',
+    coordinates: [[
+      [-97.800, 30.265],  // NW — S Lamar at Barton Springs Rd
+      [-97.748, 30.265],  // NE — S Congress at Barton Springs/Congress Bridge
+      [-97.748, 30.170],  // SE — S Congress near Ben White/US-290
+      [-97.800, 30.170],  // SW — S Lamar near Ben White/US-290
+      [-97.800, 30.265]   // back to NW (closed)
+    ]]
+  },
+  // Cherrywood: Manor Rd (north), Airport Blvd (east), MLK/38th (south), near I-35 (west)
+  cherrywood: {
+    type: 'Polygon',
+    coordinates: [[
+      [-97.726, 30.305],  // NW — near I-35 at Manor Rd
+      [-97.703, 30.305],  // NE — Airport Blvd at Manor Rd
+      [-97.703, 30.282],  // SE — Airport Blvd at MLK/38th
+      [-97.726, 30.282],  // SW — near I-35 at MLK/38th
+      [-97.726, 30.305]   // back to NW (closed)
+    ]]
+  },
+  // Rainey Street Historic District: Cesar Chavez (north), Red River St (east), river (south), Bowie St (west)
+  'rainey street': {
+    type: 'Polygon',
+    coordinates: [[
+      [-97.747, 30.263],  // NW — Bowie St at Cesar Chavez
+      [-97.733, 30.263],  // NE — Red River at Cesar Chavez
+      [-97.733, 30.253],  // SE — Red River near river
+      [-97.747, 30.253],  // SW — Bowie near river
+      [-97.747, 30.263]   // back to NW (closed)
+    ]]
+  },
+  // The Domain: Research Blvd/Stonelake area (north), Metric Blvd (east), Braker Ln (south), Burnet Rd (west)
+  'the domain': {
+    type: 'Polygon',
+    coordinates: [[
+      [-97.742, 30.412],  // NW — Burnet Rd at Research Blvd
+      [-97.708, 30.412],  // NE — Metric Blvd north
+      [-97.708, 30.388],  // SE — Metric Blvd at Braker Ln
+      [-97.742, 30.388],  // SW — Burnet Rd at Braker Ln
+      [-97.742, 30.412]   // back to NW (closed)
+    ]]
+  },
+  // domain (alias without "the")
+  domain: {
+    type: 'Polygon',
+    coordinates: [[
+      [-97.742, 30.412],
+      [-97.708, 30.412],
+      [-97.708, 30.388],
+      [-97.742, 30.388],
+      [-97.742, 30.412]
     ]]
   }
 };
