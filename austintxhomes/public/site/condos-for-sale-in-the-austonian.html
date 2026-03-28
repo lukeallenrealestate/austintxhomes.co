@@ -157,14 +157,15 @@
     .hero-pill svg { width: 13px; height: 13px; stroke: var(--gold); fill: none; stroke-width: 2; stroke-linecap: round; }
     .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
     .btn-gold {
-      display: inline-flex; align-items: center; gap: 8px;
+      display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
       background: var(--gold); color: #fff; font-size: .78rem; font-weight: 600;
       text-transform: uppercase; letter-spacing: .1em; padding: 14px 28px;
       border-radius: var(--r); transition: background .2s, transform .2s;
     }
     .btn-gold:hover { background: var(--gold-lt); color: #fff; transform: translateY(-1px); }
+    .btn-gold svg, .btn-ghost svg { width: 15px; height: 15px; flex-shrink: 0; }
     .btn-ghost {
-      display: inline-flex; align-items: center; gap: 8px;
+      display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
       background: transparent; color: rgba(255,255,255,.8);
       border: 1px solid rgba(255,255,255,.28); font-size: .78rem; font-weight: 500;
       text-transform: uppercase; letter-spacing: .08em; padding: 14px 28px;
@@ -785,7 +786,7 @@
       const grid = document.getElementById('listings-grid');
       try {
         const params = new URLSearchParams({
-          keyword: '200 Congress',
+          keyword: 'Congress Ave',
           minPrice: 75000,
           sortBy: 'price_asc',
           limit: 100,
@@ -794,7 +795,7 @@
         const res = await fetch('/api/properties/search?' + params);
         const data = await res.json();
         allListings = (data.listings || []).filter(l =>
-          (l.unparsed_address || '').toLowerCase().includes('200 congress')
+          (l.unparsed_address || '').toLowerCase().replace(/\s+/g,' ').includes('200 congress')
         );
         updateCounts();
         applyFilter(activeBeds);

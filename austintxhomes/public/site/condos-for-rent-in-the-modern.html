@@ -101,9 +101,10 @@
     .hero-pill { display: inline-flex; align-items: center; gap: 7px; background: rgba(184,147,90,.14); border: 1px solid rgba(184,147,90,.28); color: rgba(255,255,255,.85); font-size: .74rem; font-weight: 500; letter-spacing: .06em; padding: 7px 14px; border-radius: 100px; }
     .hero-pill svg { width: 13px; height: 13px; stroke: var(--gold); fill: none; stroke-width: 2; stroke-linecap: round; }
     .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn-gold { display: inline-flex; align-items: center; gap: 8px; background: var(--gold); color: #fff; font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; padding: 14px 28px; border-radius: var(--r); transition: background .2s, transform .2s; }
+    .btn-gold { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; background: var(--gold); color: #fff; font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; padding: 14px 28px; border-radius: var(--r); transition: background .2s, transform .2s; }
     .btn-gold:hover { background: var(--gold-lt); color: #fff; transform: translateY(-1px); }
-    .btn-ghost { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.28); font-size: .78rem; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; padding: 14px 28px; border-radius: var(--r); transition: all .2s; }
+    .btn-gold svg, .btn-ghost svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .btn-ghost { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; background: transparent; color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.28); font-size: .78rem; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; padding: 14px 28px; border-radius: var(--r); transition: all .2s; }
     .btn-ghost:hover { border-color: rgba(255,255,255,.6); color: #fff; }
 
     .container { max-width: var(--w); margin: 0 auto; padding: 0 2rem; }
@@ -406,10 +407,10 @@
 
     async function loadListings() {
       try {
-        const params = new URLSearchParams({ keyword: '610 Davis', forRent: true, sortBy: 'price_asc', limit: 100, page: 1 });
+        const params = new URLSearchParams({ keyword: 'Davis St', forRent: true, sortBy: 'price_asc', limit: 100, page: 1 });
         const res = await fetch('/api/properties/search?' + params);
         const data = await res.json();
-        allListings = (data.listings || []).filter(l => (l.unparsed_address || '').toLowerCase().includes('610 davis') || (l.unparsed_address || '').toLowerCase().includes('davis st'));
+        allListings = (data.listings || []).filter(l => (l.unparsed_address || '').toLowerCase().replace(/\s+/g,' ').includes('610 davis st'));
         updateCounts(); applyFilter(activeBeds);
       } catch (e) {
         document.getElementById('listings-grid').innerHTML = '<div class="no-listings"><h3>Unable to Load Listings</h3><p>We couldn\'t reach the MLS at this moment. Please <a href="#contact">contact Luke</a> for current rental listings at the Modern.</p></div>';
