@@ -16,6 +16,22 @@ try {
   );
 } catch (_) {} // file absent → Nominatim fallback still works
 
+// All columns except raw_data (MLS raw JSON, never displayed, ~5–50 KB per row)
+const SEARCH_COLUMNS = [
+  'listing_key','listing_id','standard_status','property_type','property_sub_type',
+  'list_price','bedrooms_total','bathrooms_total','bathrooms_full','bathrooms_half',
+  'living_area','lot_size_acres','lot_size_sqft','year_built','garage_spaces',
+  'unparsed_address','street_number','street_name','unit_number','city',
+  'state_or_province','postal_code','county','subdivision_name',
+  'latitude','longitude','public_remarks',
+  'list_agent_full_name','list_agent_direct_phone','list_agent_email','list_office_name',
+  'elementary_school','middle_school','high_school','school_district',
+  'days_on_market','listing_contract_date','close_date','close_price',
+  'modification_timestamp','mlg_can_view','photos',
+  'pool_features','waterfront_yn','new_construction_yn','stories','parking_total',
+  'association_fee','association_fee_frequency','tax_annual_amount'
+].join(', ');
+
 function resolvePhotos(photos, listingKey) {
   if (!photos || !photos.length) return [];
   return photos.map((_, idx) => `/api/properties/photos/${listingKey}/${idx}`);
@@ -175,7 +191,7 @@ router.get('/search', (req, res) => {
     let rows;
     if (hasPolygon && polygonArr.length > 2) {
       // Get all within bounds (already constrained by bbox above), then filter by polygon
-      rows = db.prepare(`SELECT * FROM listings WHERE ${where} ORDER BY ${orderBy}`).all(values);
+      rows = db.prepare(`SELECT ${SEARCH_COLUMNS} FROM listings WHERE ${where} ORDER BY ${orderBy}`).all(values);
       rows = rows.filter(r => pointInPolygon(r.latitude, r.longitude, polygonArr));
       total = rows.length;
       // Manual pagination
@@ -183,7 +199,7 @@ router.get('/search', (req, res) => {
       rows = rows.slice(offset, offset + Number(limit));
     } else {
       const offset = (Number(page) - 1) * Number(limit);
-      rows = db.prepare(`SELECT * FROM listings WHERE ${where} ORDER BY ${orderBy} LIMIT ? OFFSET ?`)
+      rows = db.prepare(`SELECT ${SEARCH_COLUMNS} FROM listings WHERE ${where} ORDER BY ${orderBy} LIMIT ? OFFSET ?`)
         .all([...values, Number(limit), offset]);
     }
 

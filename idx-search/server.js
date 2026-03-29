@@ -32,6 +32,7 @@ fs.mkdirSync(path.join(__dirname, 'cache', 'photos'), { recursive: true });
 
 const app = express();
 
+app.use(require('compression')());
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));

@@ -15,6 +15,7 @@ let infoWindow = null;
 let mapPins = [];
 let searchDebounce = null;
 let autocompleteDebounce = null;
+let mapIdleTimer = null;
 let gmapsLoaded = false;
 let pendingMapZoom = false;
 
@@ -324,31 +325,30 @@ function initMap() {
     mapMarkers.forEach(m => m.setIcon(markerIcon(m._pin, zoom)));
   });
 
-  // Update on map pan/zoom
+  // Update on map pan/zoom (debounced 300ms to avoid request storms)
   googleMap.addListener('idle', () => {
-    if (!drawnPolygon) {
-      const bounds = googleMap.getBounds();
-      if (!bounds) return;
-      const ne = bounds.getNorthEast();
-      const sw = bounds.getSouthWest();
-      currentFilters.north = ne.lat();
-      currentFilters.south = sw.lat();
-      currentFilters.east = ne.lng();
-      currentFilters.west = sw.lng();
-      delete currentFilters.polygon;
-      loadMapPins();
-      loadMapCards();
-    }
+    clearTimeout(mapIdleTimer);
+    mapIdleTimer = setTimeout(() => {
+      if (!drawnPolygon) {
+        const bounds = googleMap.getBounds();
+        if (!bounds) return;
+        const ne = bounds.getNorthEast();
+        const sw = bounds.getSouthWest();
+        currentFilters.north = ne.lat();
+        currentFilters.south = sw.lat();
+        currentFilters.east = ne.lng();
+        currentFilters.west = sw.lng();
+        delete currentFilters.polygon;
+        loadMapPins();
+        loadMapCards();
+      }
+    }, 300);
   });
 
-  if (currentView === 'map') {
-    if (pendingMapZoom) {
-      zoomMapToFilter();
-    } else {
-      loadMapPins();
-      loadMapCards();
-    }
+  if (currentView === 'map' && pendingMapZoom) {
+    zoomMapToFilter();
   }
+  // idle event fires automatically after map creation and handles initial pin/card load
 }
 
 // ---- Filters ----
@@ -436,10 +436,11 @@ function applyFilters() {
 
   if (currentView === 'list') {
     loadListings();
-  } else {
+  } else if (gmapsLoaded) {
     loadMapPins();
     loadMapCards();
   }
+  // else map view: idle event fires after initMap() and loads with correct viewport bounds
 }
 
 function updateFilterButtons() {
