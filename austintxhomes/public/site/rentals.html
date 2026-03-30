@@ -79,11 +79,19 @@
       margin-top: 64px; background: var(--ink);
       padding: 96px 32px 80px; position: relative; overflow: hidden;
     }
+    .hero video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+    }
+    .hero video.ready { opacity: 1; }
     .hero::before {
       content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 70% 50%, rgba(184,147,90,.12) 0%, transparent 60%);
+      background: linear-gradient(135deg, rgba(15,15,14,.82) 0%, rgba(26,20,16,.75) 50%, rgba(15,15,14,.82) 100%);
+      z-index: 1;
     }
-    .hero-inner { max-width: var(--w); margin: 0 auto; position: relative; }
+    .hero-inner { max-width: var(--w); margin: 0 auto; position: relative; z-index: 2; }
     .hero-eyebrow {
       font-size: 11px; letter-spacing: .15em; text-transform: uppercase;
       color: var(--gold); margin-bottom: 20px;
@@ -287,6 +295,7 @@
 
   <!-- HERO -->
   <section class="hero">
+    <video id="rentals-hv" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
     <div class="hero-inner">
       <p class="hero-eyebrow">Austin TX Rentals</p>
       <h1>Find Your Next<br><em>Austin Home</em></h1>
@@ -538,6 +547,15 @@ function makePropertyUrl(l) {
 }
 </script>
 <script src="/js/footer.js"></script>
+
+<script>
+// Hero video fade-in
+const rentalsVid = document.getElementById('rentals-hv');
+if (rentalsVid) {
+  if (rentalsVid.readyState >= 3) rentalsVid.classList.add('ready');
+  else rentalsVid.addEventListener('canplay', () => rentalsVid.classList.add('ready'), { once: true });
+}
+</script>
 
   <script>
     // ── State ──
