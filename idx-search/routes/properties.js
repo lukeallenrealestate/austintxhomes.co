@@ -394,6 +394,7 @@ router.get('/photos/:listingKey/:idx', async (req, res) => {
 
   // Serve from disk cache if available
   if (fs.existsSync(cacheFile)) {
+    res.set('Cache-Control', 'public, max-age=86400');
     return res.sendFile(cacheFile);
   }
 

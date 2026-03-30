@@ -436,11 +436,10 @@ function applyFilters() {
 
   if (currentView === 'list') {
     loadListings();
-  } else if (gmapsLoaded) {
+  } else {
     loadMapPins();
     loadMapCards();
   }
-  // else map view: idle event fires after initMap() and loads with correct viewport bounds
 }
 
 function updateFilterButtons() {
