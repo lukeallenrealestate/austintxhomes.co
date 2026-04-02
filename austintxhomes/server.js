@@ -75,6 +75,17 @@ alertEngine.startScheduledChecks(dealEngine.getDeals);
 
 const cron = require('node-cron');
 
+// ── Cash Flow Subscribers ─────────────────────────────────────────────────────
+const CASH_FLOW_SUBS_FILE = path.join(__dirname, 'data/cash-flow-subscribers.json');
+
+function loadCashFlowSubs() {
+  try { return JSON.parse(fs.readFileSync(CASH_FLOW_SUBS_FILE, 'utf8')); } catch { return []; }
+}
+function saveCashFlowSubs(subs) {
+  fs.mkdirSync(path.dirname(CASH_FLOW_SUBS_FILE), { recursive: true });
+  fs.writeFileSync(CASH_FLOW_SUBS_FILE, JSON.stringify(subs, null, 2));
+}
+
 // Weekly market report — every Monday at 9:00am CDT (14:00 UTC)
 // Generates GBP blurb + full blog post from live MLS data, emails to Luke
 cron.schedule('0 14 * * 1', async () => {
@@ -86,6 +97,47 @@ cron.schedule('0 14 * * 1', async () => {
     }
   } catch (e) {
     console.error('[WeeklyReport] Cron failed:', e.message);
+  }
+});
+
+// Daily cash flow alert — 8:30am CDT (13:30 UTC)
+cron.schedule('30 13 * * *', async () => {
+  const subs = loadCashFlowSubs();
+  if (!subs.length) return;
+  try {
+    const r = await fetch(`${IDX_SERVER}/api/properties/cash-flowing`);
+    const data = await r.json();
+    if (!data.listings?.length) return;
+    const top10 = data.listings.slice(0, 10);
+    const listingsHtml = top10.map(l => `
+      <tr>
+        <td style="padding:12px 0;border-bottom:1px solid #eee">
+          <strong>${l.unparsed_address}</strong><br>
+          <span style="color:#888">$${l.list_price.toLocaleString()} · ${l.bedrooms_total}bd/${l.bathrooms_total}ba</span><br>
+          Monthly mortgage: $${l.monthlyMortgage.toLocaleString()}<br>
+          <span style="color:#2a7a2a;font-weight:600">Best nearby rent (${l.compCount} comps): $${l.bestNearbyRent.toLocaleString()}/mo · Cash flow: +$${l.cashFlowMargin.toLocaleString()}/mo</span>
+        </td>
+      </tr>`).join('');
+    for (const sub of subs) {
+      if (!process.env.SENDGRID_API_KEY) break;
+      await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: [{ email: sub.email }],
+          from: { email: process.env.EMAIL_FROM || 'luke@austintxhomes.co', name: 'Luke Allen · AustinTXHomes' },
+          subject: `${data.count} Cash-Flowing Properties in Austin Today`,
+          html: `<h2>Today's Cash-Flowing Austin Properties</h2>
+                 <p>Properties where nearby rents exceed your estimated mortgage payment (20% down, ${data.mortgageRate}% rate).</p>
+                 <table style="width:100%;font-family:sans-serif;font-size:14px">${listingsHtml}</table>
+                 <p><a href="https://austintxhomes.co/cash-flowing-properties-austin">View all ${data.count} properties →</a></p>
+                 <p style="font-size:11px;color:#aaa"><a href="https://austintxhomes.co/cash-flow-unsubscribe/${sub.id}">Unsubscribe</a></p>`
+        })
+      });
+    }
+    console.log(`[CashFlow] Emailed ${subs.length} subscribers (${data.count} properties)`);
+  } catch (e) {
+    console.error('[CashFlow] Daily email failed:', e.message);
   }
 });
 
@@ -103,6 +155,24 @@ cron.schedule('0 7 1 * *', () => {
       console.log('[cron] Sienna scraper complete:', stdout.trim().split('\n').pop());
     }
   });
+});
+
+// ── Cash Flow Subscriber API (must come BEFORE the generic /api proxy) ───────
+app.post('/api/cash-flow/subscribe', express.json(), (req, res) => {
+  const { email } = req.body;
+  if (!email || !email.includes('@')) return res.status(400).json({ error: 'Valid email required' });
+  const subs = loadCashFlowSubs();
+  if (subs.find(s => s.email === email.toLowerCase())) return res.json({ ok: true, already: true });
+  const id = Math.random().toString(36).slice(2);
+  subs.push({ id, email: email.toLowerCase(), createdAt: new Date().toISOString() });
+  saveCashFlowSubs(subs);
+  res.json({ ok: true, id });
+});
+
+app.delete('/api/cash-flow/subscribe/:id', (req, res) => {
+  const subs = loadCashFlowSubs().filter(s => s.id !== req.params.id);
+  saveCashFlowSubs(subs);
+  res.json({ ok: true });
 });
 
 // ── Weekly report manual trigger (must come BEFORE the generic /api proxy) ───
@@ -383,6 +453,7 @@ app.get('/1031-exchange-austin', (_req, res) => res.sendFile(path.join(__dirname
 app.get('/brrrr-method-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/brrrr-method-austin.html')));
 app.get('/homes-with-pool-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-with-pool-austin.html')));
 app.get('/rental-properties-for-sale-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/rental-properties-for-sale-austin.html')));
+app.get('/cash-flowing-properties-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/cash-flowing-properties-austin.html')));
 app.get('/buy',           (_req, res) => res.sendFile(path.join(__dirname, 'public/site/buy.html')));
 app.get('/rentals',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/rentals.html')));
 app.get('/neighborhoods',     (_req, res) => res.sendFile(path.join(__dirname, 'public/site/neighborhoods.html')));
@@ -502,6 +573,13 @@ app.get('/living-in-east-austin', (_req, res) => res.sendFile(path.join(__dirnam
 app.get('/sell-home-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-east-austin.html')));
 app.get('/homes-for-sale-near-tesla-gigafactory', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-tesla-gigafactory.html')));
 app.get('/fix-and-flip-calculator-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/fix-and-flip-calculator-austin.html')));
+
+// Cash flow unsubscribe (GET so email links work directly)
+app.get('/cash-flow-unsubscribe/:id', (req, res) => {
+  const subs = loadCashFlowSubs().filter(s => s.id !== req.params.id);
+  saveCashFlowSubs(subs);
+  res.send('<p style="font-family:sans-serif;padding:40px">You have been unsubscribed. <a href="/">Return home</a></p>');
+});
 
 // Deal Radar pages
 app.get('/deal-radar',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar.html')));

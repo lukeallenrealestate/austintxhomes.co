@@ -379,6 +379,154 @@ router.get('/neighborhood-boundary', async (req, res) => {
   }
 });
 
+// GET /api/properties/cash-flowing — active Austin listings whose PITI < best nearby closed lease rent
+let cashFlowCache = null;
+let cashFlowCacheTime = 0;
+
+function haversineDistanceMiles(lat1, lng1, lat2, lng2) {
+  const R = 3959;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+router.get('/cash-flowing', (req, res) => {
+  try {
+    // 30-minute in-memory cache
+    if (cashFlowCache && Date.now() - cashFlowCacheTime < 30 * 60 * 1000) {
+      return res.json(cashFlowCache);
+    }
+
+    const annualRate = parseFloat(process.env.MORTGAGE_RATE || '7.0') / 100;
+    const monthlyRate = annualRate / 12;
+    const n = 360;
+
+    // 1. Active for-sale (non-lease) listings in Austin
+    const forSale = db.prepare(`
+      SELECT listing_key, list_price, tax_annual_amount, association_fee,
+             association_fee_frequency, latitude, longitude,
+             unparsed_address, city, bedrooms_total, bathrooms_total,
+             living_area, photos, days_on_market, listing_contract_date,
+             subdivision_name, property_type, property_sub_type, year_built
+      FROM listings
+      WHERE mlg_can_view = 1
+        AND standard_status = 'Active'
+        AND property_type NOT LIKE '%Lease%'
+        AND property_type NOT LIKE '%Rental%'
+        AND city LIKE 'Austin%'
+        AND list_price > 0
+        AND latitude IS NOT NULL AND longitude IS NOT NULL
+      ORDER BY listing_contract_date DESC
+      LIMIT 1000
+    `).all();
+
+    // 2. Closed leases in last 180 days
+    const leases = db.prepare(`
+      SELECT latitude, longitude, close_price, close_date, bedrooms_total
+      FROM listings
+      WHERE (property_type LIKE '%Lease%' OR property_type LIKE '%Rental%')
+        AND standard_status = 'Closed'
+        AND close_date >= date('now', '-180 days')
+        AND close_price > 0
+        AND latitude IS NOT NULL AND longitude IS NOT NULL
+    `).all();
+
+    const results = [];
+    const LAT_DELTA = 0.0145; // ~1 mile at Austin latitude
+    const LNG_DELTA = 0.0167;
+
+    for (const listing of forSale) {
+      const price = listing.list_price;
+
+      // P&I (20% down, 30yr fixed)
+      const loan = price * 0.80;
+      const pi = monthlyRate === 0
+        ? Math.round(loan / n)
+        : Math.round(loan * (monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1));
+
+      // Tax — MLS data preferred, fall back to 1.75% Austin estimate
+      const tax = (listing.tax_annual_amount && listing.tax_annual_amount > 100)
+        ? Math.round(listing.tax_annual_amount / 12)
+        : Math.round(price * 0.0175 / 12);
+
+      // Insurance fixed at $1,000/yr
+      const insurance = 83;
+
+      // HOA — normalise to monthly
+      let hoa = 0;
+      if (listing.association_fee > 0) {
+        const freq = (listing.association_fee_frequency || 'Monthly').toLowerCase();
+        if (freq.includes('annual') || freq.includes('year')) hoa = Math.round(listing.association_fee / 12);
+        else if (freq.includes('quarter')) hoa = Math.round(listing.association_fee / 3);
+        else hoa = Math.round(listing.association_fee);
+      }
+
+      const monthlyMortgage = pi + tax + insurance + hoa;
+      const lat = listing.latitude, lng = listing.longitude;
+      const subjectBeds = listing.bedrooms_total;
+
+      // Collect comps: bbox pre-filter → ±1 bedroom → Haversine ≤ 1 mile
+      const nearbyRents = [];
+      for (const lease of leases) {
+        if (Math.abs(lease.latitude - lat) > LAT_DELTA) continue;
+        if (Math.abs(lease.longitude - lng) > LNG_DELTA) continue;
+        if (subjectBeds != null && lease.bedrooms_total != null) {
+          if (Math.abs(lease.bedrooms_total - subjectBeds) > 1) continue;
+        } else if (lease.bedrooms_total == null) {
+          continue;
+        }
+        const dist = haversineDistanceMiles(lat, lng, lease.latitude, lease.longitude);
+        if (dist <= 1.0) {
+          nearbyRents.push({ rent: lease.close_price, closedDate: lease.close_date, dist: Math.round(dist * 10) / 10 });
+        }
+      }
+
+      if (!nearbyRents.length) continue;
+
+      // Best nearby rent
+      let bestLease = nearbyRents[0];
+      for (const comp of nearbyRents) {
+        if (comp.rent > bestLease.rent) bestLease = comp;
+      }
+      const bestNearbyRent = bestLease.rent;
+
+      if (bestNearbyRent > monthlyMortgage) {
+        const photos = tryParse(listing.photos, []);
+        results.push({
+          ...listing,
+          photos: resolvePhotos(photos, listing.listing_key),
+          monthlyMortgage,
+          breakdown: { pi, tax, insurance, hoa },
+          bestNearbyRent,
+          cashFlowMargin: bestNearbyRent - monthlyMortgage,
+          compCount: nearbyRents.length,
+          bestLease,
+          mortgageRate: (annualRate * 100).toFixed(1)
+        });
+      }
+    }
+
+    results.sort((a, b) => b.cashFlowMargin - a.cashFlowMargin);
+
+    const response = {
+      count: results.length,
+      mortgageRate: (annualRate * 100).toFixed(1),
+      generatedAt: new Date().toISOString(),
+      listings: results
+    };
+
+    cashFlowCache = response;
+    cashFlowCacheTime = Date.now();
+    res.json(response);
+
+  } catch (err) {
+    console.error('[CASH-FLOW]', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/properties/sync-status
 router.get('/sync-status', (req, res) => {
   const state = db.prepare('SELECT * FROM sync_state WHERE id = 1').get();
