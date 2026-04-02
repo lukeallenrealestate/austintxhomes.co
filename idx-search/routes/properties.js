@@ -380,6 +380,70 @@ router.get('/neighborhood-boundary', async (req, res) => {
 });
 
 // GET /api/properties/cash-flowing — active Austin listings whose PITI < best nearby closed lease rent
+
+// Live 30-yr fixed rate — fetched from MortgageNewsDaily, cached 4 hours
+let liveRateCache = null;
+let liveRateCacheTime = 0;
+
+async function fetchLiveMortgageRate() {
+  // Return cached value if fresh (< 4 hours)
+  if (liveRateCache && Date.now() - liveRateCacheTime < 4 * 60 * 60 * 1000) {
+    return liveRateCache;
+  }
+  try {
+    const https = require('https');
+    const html = await new Promise((resolve, reject) => {
+      const req = https.get('https://www.mortgagenewsdaily.com/mortgage-rates/30-year-fixed', {
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AustinTXHomes/1.0)' }
+      }, (r) => {
+        let body = '';
+        r.on('data', c => body += c);
+        r.on('end', () => resolve(body));
+      });
+      req.on('error', reject);
+      req.setTimeout(8000, () => { req.destroy(); reject(new Error('timeout')); });
+    });
+    // Primary: data-default-thirty attribute
+    const m = html.match(/data-default-thirty="([0-9.]+)"/);
+    if (m) {
+      const rate = parseFloat(m[1]);
+      if (rate > 2 && rate < 20) {
+        liveRateCache = rate;
+        liveRateCacheTime = Date.now();
+        console.log(`[CashFlow] Live mortgage rate: ${rate}%`);
+        return rate;
+      }
+    }
+    // Fallback: embed chart JSON (chartSeries[0].data last entry)
+    const chart = await new Promise((resolve, reject) => {
+      const req = https.get('https://www.mortgagenewsdaily.com/charts/embed/mnd-mtg-rates-30', {
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AustinTXHomes/1.0)' }
+      }, (r) => {
+        let body = '';
+        r.on('data', c => body += c);
+        r.on('end', () => resolve(body));
+      });
+      req.on('error', reject);
+      req.setTimeout(8000, () => { req.destroy(); reject(new Error('timeout')); });
+    });
+    const jm = chart.match(/"data"\s*:\s*(\[[\s\S]+?\])\s*[,}]/);
+    if (jm) {
+      const arr = JSON.parse(jm[1]);
+      const last = arr[arr.length - 1];
+      if (last && last.v > 2 && last.v < 20) {
+        liveRateCache = last.v;
+        liveRateCacheTime = Date.now();
+        console.log(`[CashFlow] Live mortgage rate (fallback): ${last.v}%`);
+        return last.v;
+      }
+    }
+  } catch (e) {
+    console.warn('[CashFlow] Rate fetch failed, using fallback:', e.message);
+  }
+  // Final fallback: env var or 7.0
+  return parseFloat(process.env.MORTGAGE_RATE || '7.0');
+}
+
 let cashFlowCache = null;
 let cashFlowCacheTime = 0;
 
@@ -392,14 +456,15 @@ function haversineDistanceMiles(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-router.get('/cash-flowing', (req, res) => {
+router.get('/cash-flowing', async (req, res) => {
   try {
     // 30-minute in-memory cache
     if (cashFlowCache && Date.now() - cashFlowCacheTime < 30 * 60 * 1000) {
       return res.json(cashFlowCache);
     }
 
-    const annualRate = parseFloat(process.env.MORTGAGE_RATE || '7.0') / 100;
+    const ratePercent = await fetchLiveMortgageRate();
+    const annualRate = ratePercent / 100;
     const monthlyRate = annualRate / 12;
     const n = 360;
 
