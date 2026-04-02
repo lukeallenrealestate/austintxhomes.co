@@ -50,6 +50,10 @@ function pointInPolygon(lat, lng, polygon) {
   return inside;
 }
 
+// Count cache: key → { total, ts } — avoids repeated COUNT(*) on page 2+
+const countCache = new Map();
+const COUNT_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 // GET /api/properties/search
 router.get('/search', (req, res) => {
   try {
@@ -177,9 +181,16 @@ router.get('/search', (req, res) => {
 
     const where = conditions.join(' AND ');
 
-    // Get total count
-    const countRow = db.prepare(`SELECT COUNT(*) as total FROM listings WHERE ${where}`).get(values);
-    let total = countRow.total;
+    // Get total count (cached for 5 min so page 2+ requests skip the COUNT(*))
+    const countKey = where + JSON.stringify(values);
+    let total;
+    const cached = countCache.get(countKey);
+    if (cached && Date.now() - cached.ts < COUNT_CACHE_TTL) {
+      total = cached.total;
+    } else {
+      total = db.prepare(`SELECT COUNT(*) as total FROM listings WHERE ${where}`).get(values).total;
+      countCache.set(countKey, { total, ts: Date.now() });
+    }
 
     // If polygon search, we need all results in bounds then filter — skip SQL pagination
     const hasPolygon = polygon && polygon !== '[]';
@@ -301,7 +312,7 @@ router.get('/map-pins', (req, res) => {
       SELECT listing_key, list_price, latitude, longitude, standard_status,
              bedrooms_total, bathrooms_total, living_area, unparsed_address,
              city, postal_code, photos
-      FROM listings WHERE ${where} LIMIT 2000
+      FROM listings WHERE ${where} LIMIT 5000
     `).all(values);
 
     if (polygon && polygon !== '[]') {

@@ -87,6 +87,32 @@ function restoreSearchState() {
   }
 }
 
+// ---- Sync current filters → URL (makes searches shareable/bookmarkable) ----
+function syncUrlFromFilters() {
+  const params = new URLSearchParams();
+  const f = currentFilters;
+  if (f.neighborhood) params.set('neighborhood', f.neighborhood);
+  if (f.zip)          params.set('zip', f.zip);
+  if (f.city)         params.set('city', f.city);
+  if (f.keyword)      params.set('q', f.keyword);
+  if (f.minPrice)     params.set('minPrice', f.minPrice);
+  if (f.maxPrice)     params.set('maxPrice', f.maxPrice);
+  if (f.minBeds)      params.set('minBeds', f.minBeds);
+  if (f.minBaths)     params.set('minBaths', f.minBaths);
+  if (f.subType)      params.set('subType', f.subType);
+  if (f.minSqft)      params.set('minSqft', f.minSqft);
+  if (f.maxSqft)      params.set('maxSqft', f.maxSqft);
+  if (f.minYear)      params.set('minYear', f.minYear);
+  if (f.maxYear)      params.set('maxYear', f.maxYear);
+  if (f.schoolDistrict) params.set('schoolDistrict', f.schoolDistrict);
+  if (f.pool === 'true')            params.set('pool', 'true');
+  if (f.waterfront === 'true')      params.set('waterfront', 'true');
+  if (f.newConstruction === 'true') params.set('newConstruction', 'true');
+  if (f.forRent)      params.set('forRent', f.forRent);
+  const qs = params.toString();
+  history.replaceState(null, '', qs ? '?' + qs : window.location.pathname);
+}
+
 // ---- URL param pre-filtering (e.g. /?neighborhood=Barton+Hills from homepage links) ----
 function applyUrlParams() {
   const params = new URLSearchParams(window.location.search);
@@ -95,7 +121,17 @@ function applyUrlParams() {
   const city = params.get('city');
   const q = params.get('q');
   const minPrice = params.get('minPrice');
+  const maxPrice = params.get('maxPrice');
+  const minBeds = params.get('minBeds');
+  const minBaths = params.get('minBaths');
   const subType = params.get('subType');
+  const minSqft = params.get('minSqft');
+  const maxSqft = params.get('maxSqft');
+  const minYear = params.get('minYear');
+  const maxYear = params.get('maxYear');
+  const schoolDistrict = params.get('schoolDistrict');
+  const pool = params.get('pool');
+  const waterfront = params.get('waterfront');
   const newConstruction = params.get('newConstruction');
   const forRent = params.get('forRent');
 
@@ -123,10 +159,15 @@ function applyUrlParams() {
     const input = document.getElementById('location-search');
     if (input) input.value = q;
   }
-  if (minPrice) {
-    currentFilters.minPrice = minPrice;
-    const el = document.getElementById('min-price');
-    if (el) el.value = minPrice;
+  if (minPrice) { currentFilters.minPrice = minPrice; const el = document.getElementById('min-price'); if (el) el.value = minPrice; }
+  if (maxPrice) { currentFilters.maxPrice = maxPrice; const el = document.getElementById('max-price'); if (el) el.value = maxPrice; }
+  if (minBeds) {
+    currentFilters.minBeds = minBeds;
+    document.querySelectorAll('#beds-pills .pill').forEach(p => p.classList.toggle('active', p.dataset.val === minBeds));
+  }
+  if (minBaths) {
+    currentFilters.minBaths = minBaths;
+    document.querySelectorAll('#baths-pills .pill').forEach(p => p.classList.toggle('active', p.dataset.val === minBaths));
   }
   if (subType) {
     currentFilters.subType = subType;
@@ -134,8 +175,15 @@ function applyUrlParams() {
       cb.checked = subType.split(',').includes(cb.value);
     });
   }
+  if (minSqft) { currentFilters.minSqft = minSqft; const el = document.getElementById('min-sqft'); if (el) el.value = minSqft; }
+  if (maxSqft) { currentFilters.maxSqft = maxSqft; const el = document.getElementById('max-sqft'); if (el) el.value = maxSqft; }
+  if (minYear) { currentFilters.minYear = minYear; const el = document.getElementById('min-year'); if (el) el.value = minYear; }
+  if (maxYear) { currentFilters.maxYear = maxYear; const el = document.getElementById('max-year'); if (el) el.value = maxYear; }
+  if (schoolDistrict) { currentFilters.schoolDistrict = schoolDistrict; const el = document.getElementById('school-filter'); if (el) el.value = schoolDistrict; }
+  if (pool === 'true') { currentFilters.pool = 'true'; const el = document.getElementById('pool-filter'); if (el) el.checked = true; }
+  if (waterfront === 'true') { currentFilters.waterfront = 'true'; const el = document.getElementById('waterfront-filter'); if (el) el.checked = true; }
   if (newConstruction === 'true') {
-    currentFilters.newConstruction = true;
+    currentFilters.newConstruction = 'true';
     const el = document.getElementById('new-construction-filter');
     if (el) el.checked = true;
   }
@@ -433,6 +481,7 @@ function applyFilters() {
 
   updateFilterButtons();
   saveSearchState();
+  syncUrlFromFilters();
 
   if (currentView === 'list') {
     loadListings();
@@ -558,6 +607,17 @@ function setupAutocomplete() {
 
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
+      const dropdown = document.getElementById('autocomplete-dropdown');
+      const dropdownVisible = dropdown && dropdown.style.display !== 'none' && lastAutocompleteItems.length;
+      // If autocomplete is showing, select its top result (same as clicking it)
+      if (dropdownVisible) {
+        e.preventDefault();
+        // Sort by AC_ORDER to find the top-priority item
+        const sorted = [...lastAutocompleteItems].sort((a, b) => AC_ORDER.indexOf(a.type) - AC_ORDER.indexOf(b.type));
+        const top = sorted[0];
+        selectAutocomplete(top.type, top.value, top.listing_key);
+        return;
+      }
       hideAutocomplete();
       const q = input.value.trim();
       if (q) {
@@ -584,10 +644,13 @@ function setupAutocomplete() {
   });
 }
 
+let lastAutocompleteItems = [];
+
 async function fetchAutocomplete(q) {
   try {
     const res = await fetch(`/api/properties/autocomplete?q=${encodeURIComponent(q)}`);
     const items = await res.json();
+    lastAutocompleteItems = items;
     showAutocomplete(items, q);
   } catch {}
 }
@@ -637,6 +700,7 @@ function showAutocomplete(items, q) {
 function hideAutocomplete() {
   const d = document.getElementById('autocomplete-dropdown');
   if (d) d.style.display = 'none';
+  lastAutocompleteItems = [];
 }
 
 async function selectAutocomplete(type, value, listingKey) {
@@ -932,14 +996,10 @@ function renderMapMarkers(pins) {
     mapMarkers.push(marker);
   });
 
-  // Cluster markers
-  if (window.markerClusterer && typeof markerClusterer?.MarkerClusterer !== 'undefined') {
-    // Clusterer loaded
-  }
-  // Use native clusterer if available
-  if (window.MarkerClusterer) {
-    if (markerClusterer) markerClusterer.clearMarkers();
-    markerClusterer = new window.MarkerClusterer({ map: googleMap, markers: mapMarkers });
+  // Cluster markers — library exports to window.markerClusterer.MarkerClusterer (lowercase namespace)
+  if (window.markerClusterer?.MarkerClusterer) {
+    if (markerClusterer) { markerClusterer.clearMarkers(); markerClusterer = null; }
+    markerClusterer = new window.markerClusterer.MarkerClusterer({ map: googleMap, markers: mapMarkers });
   }
 }
 

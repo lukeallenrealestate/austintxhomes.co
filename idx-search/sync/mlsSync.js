@@ -279,15 +279,6 @@ async function refreshPhotos() {
     const entries = Object.entries(pageBatch);
     if (!entries.length) return;
     batchUpdate(entries);
-    // Clear stale disk-cached photo files
-    if (fs.existsSync(PHOTO_CACHE_DIR)) {
-      for (const [key] of entries) {
-        try {
-          const files = fs.readdirSync(PHOTO_CACHE_DIR).filter(f => f.startsWith(key + '-'));
-          for (const f of files) fs.unlinkSync(path.join(PHOTO_CACHE_DIR, f));
-        } catch {}
-      }
-    }
     totalRefreshed += entries.length;
     pageBatch = {};
   };

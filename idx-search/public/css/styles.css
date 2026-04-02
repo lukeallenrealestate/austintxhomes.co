@@ -232,6 +232,14 @@ input, select, textarea { font-family: inherit; }
   scrollbar-width: none;
 }
 .filter-bar::-webkit-scrollbar { display: none; }
+@media (max-width: 640px) {
+  .filter-bar {
+    padding: 0 12px;
+    /* Fade-out on right edge to hint at scrollable content */
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 48px), transparent 100%);
+    mask-image: linear-gradient(to right, black calc(100% - 48px), transparent 100%);
+  }
+}
 
 .filter-toggle {
   display: flex;
@@ -329,6 +337,9 @@ input, select, textarea { font-family: inherit; }
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  background: none;
+  font-family: inherit;
+  line-height: inherit;
 }
 .pill.active, .pill:hover { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
 

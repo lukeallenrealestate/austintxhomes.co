@@ -37,6 +37,12 @@
   }
   </script>
 
+  <!-- Preconnect for Google Maps and MarkerClusterer CDN — reduces cold-load delay -->
+  <link rel="preconnect" href="https://maps.googleapis.com" />
+  <link rel="preconnect" href="https://maps.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="dns-prefetch" href="https://maps.googleapis.com" />
+  <link rel="dns-prefetch" href="https://maps.gstatic.com" />
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
@@ -133,11 +139,11 @@
 <div id="beds-dropdown" class="filter-dropdown">
   <h4>Bedrooms (min)</h4>
   <div class="bed-bath-pills" id="beds-pills">
-    <span class="pill" data-val="1">1+</span>
-    <span class="pill" data-val="2">2+</span>
-    <span class="pill" data-val="3">3+</span>
-    <span class="pill" data-val="4">4+</span>
-    <span class="pill" data-val="5">5+</span>
+    <button type="button" class="pill" data-val="1">1+</button>
+    <button type="button" class="pill" data-val="2">2+</button>
+    <button type="button" class="pill" data-val="3">3+</button>
+    <button type="button" class="pill" data-val="4">4+</button>
+    <button type="button" class="pill" data-val="5">5+</button>
   </div>
   <div class="dropdown-actions">
     <button class="btn btn-text" onclick="clearFilter('beds')">Clear</button>
@@ -147,10 +153,10 @@
 <div id="baths-dropdown" class="filter-dropdown">
   <h4>Bathrooms (min)</h4>
   <div class="bed-bath-pills" id="baths-pills">
-    <span class="pill" data-val="1">1+</span>
-    <span class="pill" data-val="2">2+</span>
-    <span class="pill" data-val="3">3+</span>
-    <span class="pill" data-val="4">4+</span>
+    <button type="button" class="pill" data-val="1">1+</button>
+    <button type="button" class="pill" data-val="2">2+</button>
+    <button type="button" class="pill" data-val="3">3+</button>
+    <button type="button" class="pill" data-val="4">4+</button>
   </div>
   <div class="dropdown-actions">
     <button class="btn btn-text" onclick="clearFilter('baths')">Clear</button>
