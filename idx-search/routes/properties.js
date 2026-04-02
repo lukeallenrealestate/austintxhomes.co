@@ -441,7 +441,7 @@ async function fetchLiveMortgageRate() {
     console.warn('[CashFlow] Rate fetch failed, using fallback:', e.message);
   }
   // Final fallback: env var or 7.0
-  return parseFloat(process.env.MORTGAGE_RATE || '7.0');
+  return parseFloat(process.env.MORTGAGE_RATE || '6.0');
 }
 
 let cashFlowCache = null;
