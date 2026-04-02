@@ -149,6 +149,17 @@ const batchUpsert = db.transaction((listings) => {
   return count;
 });
 
+// For closed lease comps — always insert regardless of mlg_can_view (they're comps, not display listings)
+const batchUpsertLeaseComps = db.transaction((listings) => {
+  let count = 0;
+  for (const listing of listings) {
+    listing.mlg_can_view = 0; // don't show in search results
+    upsertListing.run(listing);
+    count++;
+  }
+  return count;
+});
+
 // Rate limiter with exponential backoff for 429 errors
 let lastRequestTime = 0;
 const MIN_DELAY_MS = 600; // Keep ~1.6 RPS (well under 2 RPS limit)
@@ -319,4 +330,54 @@ async function refreshPhotos() {
   refreshRunning = false;
 }
 
-module.exports = { syncListings, refreshPhotos };
+// Sync closed Residential Lease records for cash-flow comp lookups.
+// Runs WITHOUT MlgCanView filter — closed leases often have MlgCanView=false but we need them as comps.
+async function syncClosedLeases() {
+  if (!TOKEN) {
+    console.warn('[LEASE-SYNC] No MLSGRID_ACCESS_TOKEN set — skipping');
+    return;
+  }
+
+  // Fetch leases closed in the last 180 days, using ModificationTimestamp as proxy
+  // (leases get a new ModificationTimestamp when they close, so this captures recent closings)
+  // MLS GRID only allows filtering by: MlgCanView, ModificationTimestamp, OriginatingSystemName, StandardStatus, ListingId, PropertyType
+  const cutoff = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000);
+  const cutoffTs = cutoff.toISOString(); // full ISO timestamp
+
+  const filterParts = [
+    `OriginatingSystemName eq '${SYSTEM}'`,
+    `PropertyType eq 'Residential Lease'`,
+    `StandardStatus eq 'Closed'`,
+    `ModificationTimestamp gt ${cutoffTs}`
+  ];
+  const filter = encodeURIComponent(filterParts.join(' and '));
+  let url = `${BASE_URL}/Property?$filter=${filter}&$top=1000`;
+
+  let totalSynced = 0;
+  let pageCount = 0;
+
+  console.log(`[LEASE-SYNC] Fetching closed leases since ${cutoffTs}...`);
+
+  while (url) {
+    try {
+      pageCount++;
+      console.log(`[LEASE-SYNC] Page ${pageCount}...`);
+      const data = await fetchPage(url);
+      const records = data.value || [];
+      if (!records.length) break;
+
+      const mapped = records.map(mapListing);
+      const saved = batchUpsertLeaseComps(mapped);
+      totalSynced += saved;
+
+      url = data['@odata.nextLink'] || null;
+    } catch (err) {
+      console.error(`[LEASE-SYNC] Error on page ${pageCount}:`, err.message);
+      break;
+    }
+  }
+
+  console.log(`[LEASE-SYNC] Done. Synced ${totalSynced} closed lease comps (${pageCount} pages).`);
+}
+
+module.exports = { syncListings, refreshPhotos, syncClosedLeases };

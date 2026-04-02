@@ -36,7 +36,7 @@ const IDX_SERVER = `http://localhost:${PORT}`; // self-reference for internal HT
 const IDX_PUBLIC = path.join(__dirname, '../idx-search/public');
 
 // MLS sync + alert engine (merged — now runs in this process)
-const { syncListings, refreshPhotos } = require('../idx-search/sync/mlsSync');
+const { syncListings, refreshPhotos, syncClosedLeases } = require('../idx-search/sync/mlsSync');
 const { runAlertJob } = require('../idx-search/services/alertJob');
 // Ensure idx-search photo cache directory exists
 fs.mkdirSync(path.join(__dirname, '../idx-search/cache/photos'), { recursive: true });
@@ -157,6 +157,12 @@ cron.schedule('30 13 * * *', async () => {
 cron.schedule('*/30 * * * *', () => {
   console.log('[SYNC] Scheduled incremental sync...');
   syncListings(false).catch(console.error);
+});
+
+// Closed lease comp sync — daily at 2:00am CDT (7:00 UTC) to keep cash-flow data fresh
+cron.schedule('0 7 * * *', () => {
+  console.log('[LEASE-SYNC] Daily closed lease comp sync...');
+  syncClosedLeases().catch(console.error);
 });
 
 // Bulk photo URL refresh every 60 minutes at :05
@@ -439,6 +445,15 @@ app.get('/api/market-stats', async (_req, res) => {
     if (marketStatsCache) return res.json(marketStatsCache);
     res.json({ totalActive: 0, medianPrice: 0, avgPrice: 0, avgDom: 0, error: true });
   }
+});
+
+// Manual trigger for closed lease comp sync (admin only)
+app.post('/api/admin/sync-lease-comps', (req, res) => {
+  const key = req.headers['x-admin-key'] || req.query.key;
+  if (key !== ADMIN_KEY) return res.status(403).json({ error: 'Forbidden' });
+  syncClosedLeases()
+    .then(() => res.json({ ok: true, message: 'Closed lease sync started' }))
+    .catch(e => res.status(500).json({ error: e.message }));
 });
 
 // ── idx-search routes (merged — no longer proxied) ───────────────────────────
@@ -801,5 +816,16 @@ app.listen(PORT, () => {
   } else {
     console.log(`[SYNC] ${count} listings in DB. Starting incremental sync...`);
     syncListings(false).catch(console.error);
+  }
+
+  // Sync closed lease comps for cash-flow algorithm (runs after main sync)
+  const closedLeaseCount = idxDb.prepare(
+    `SELECT COUNT(*) as n FROM listings WHERE (property_type LIKE '%Lease%') AND standard_status = 'Closed'`
+  ).get().n;
+  if (closedLeaseCount === 0) {
+    console.log('[LEASE-SYNC] No closed lease comps found — running initial closed lease sync...');
+    syncClosedLeases().catch(console.error);
+  } else {
+    console.log(`[LEASE-SYNC] ${closedLeaseCount} closed lease comps in DB.`);
   }
 });

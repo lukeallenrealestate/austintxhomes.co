@@ -514,15 +514,18 @@ router.get('/cash-flowing', async (req, res) => {
       LIMIT 1000
     `).all();
 
-    // 2. Closed leases in last 180 days
+    // 2. Closed leases — use close_price if available, fall back to list_price
+    // (ACTRIS MLS often omits ClosePrice for lease records; ListPrice is the agreed rent)
     const leases = db.prepare(`
-      SELECT latitude, longitude, close_price, close_date, bedrooms_total
+      SELECT latitude, longitude,
+             COALESCE(close_price, list_price) AS comp_rent,
+             close_date, bedrooms_total
       FROM listings
       WHERE (property_type LIKE '%Lease%' OR property_type LIKE '%Rental%')
         AND standard_status = 'Closed'
-        AND close_date >= date('now', '-180 days')
-        AND close_price > 0
+        AND COALESCE(close_price, list_price) > 0
         AND latitude IS NOT NULL AND longitude IS NOT NULL
+        AND synced_at >= date('now', '-180 days')
     `).all();
 
     const results = [];
@@ -571,7 +574,7 @@ router.get('/cash-flowing', async (req, res) => {
         }
         const dist = haversineDistanceMiles(lat, lng, lease.latitude, lease.longitude);
         if (dist <= 1.0) {
-          nearbyRents.push({ rent: lease.close_price, closedDate: lease.close_date, dist: Math.round(dist * 10) / 10 });
+          nearbyRents.push({ rent: lease.comp_rent, closedDate: lease.close_date, dist: Math.round(dist * 10) / 10 });
         }
       }
 
