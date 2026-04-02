@@ -38,8 +38,10 @@ const IDX_PUBLIC = path.join(__dirname, '../idx-search/public');
 // MLS sync + alert engine (merged — now runs in this process)
 const { syncListings, refreshPhotos, syncClosedLeases } = require('../idx-search/sync/mlsSync');
 const { runAlertJob } = require('../idx-search/services/alertJob');
+const r2Service = require('../idx-search/services/r2');
 // Ensure idx-search photo cache directory exists
-fs.mkdirSync(path.join(__dirname, '../idx-search/cache/photos'), { recursive: true });
+const PHOTO_CACHE_DIR = path.join(__dirname, '../idx-search/cache/photos');
+fs.mkdirSync(PHOTO_CACHE_DIR, { recursive: true });
 
 // Neighborhood page system
 const neighborhoods = require('./data/neighborhoods');
@@ -778,6 +780,38 @@ app.use(express.static(IDX_PUBLIC, {
   }
 }));
 
+// Bulk upload disk-cached photos to R2 — runs once on startup to migrate existing cache
+// Processes up to 200 files per boot so it doesn't slow startup
+async function bulkUploadDiskCacheToR2() {
+  if (!r2Service.isEnabled()) return;
+  let files;
+  try { files = fs.readdirSync(PHOTO_CACHE_DIR).filter(f => f.endsWith('.jpg')); }
+  catch { return; }
+  if (!files.length) return;
+
+  console.log(`[R2] Bulk upload: ${files.length} disk-cached photos to migrate`);
+  let uploaded = 0, skipped = 0;
+  const LIMIT = 200;
+
+  for (const file of files.slice(0, LIMIT)) {
+    // filename format: {listingKey}-{idx}.jpg
+    const m = file.match(/^(.+)-(\d+)\.jpg$/);
+    if (!m) continue;
+    const [, listingKey, idxStr] = m;
+    const photoIdx = parseInt(idxStr);
+    try {
+      const buffer = fs.readFileSync(path.join(PHOTO_CACHE_DIR, file));
+      await r2Service.uploadPhoto(listingKey, photoIdx, buffer, 'image/jpeg');
+      uploaded++;
+    } catch (e) {
+      skipped++;
+    }
+    // Small delay to avoid hammering R2 API
+    await new Promise(r => setTimeout(r, 50));
+  }
+  console.log(`[R2] Bulk upload done: ${uploaded} uploaded, ${skipped} skipped`);
+}
+
 // Fallback: any /site/*.html request
 app.get('/site/:page', (req, res) => {
   const file = path.join(__dirname, 'public/site', req.params.page);
@@ -816,6 +850,11 @@ app.listen(PORT, () => {
   } else {
     console.log(`[SYNC] ${count} listings in DB. Starting incremental sync...`);
     syncListings(false).catch(console.error);
+  }
+
+  // Drain disk photo cache to R2 (background — uploads ~100 cached files per boot)
+  if (r2Service.isEnabled()) {
+    setTimeout(() => bulkUploadDiskCacheToR2().catch(console.error), 5000);
   }
 
   // Sync closed lease comps for cash-flow algorithm (runs after main sync)

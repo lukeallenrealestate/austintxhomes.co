@@ -184,7 +184,8 @@ statements.forEach(sql => wasmDb.run(sql));
 
 // Migrations — add columns that may not exist in older DBs
 const migrations = [
-  `ALTER TABLE saved_searches ADD COLUMN last_alerted_at DATETIME`
+  `ALTER TABLE saved_searches ADD COLUMN last_alerted_at DATETIME`,
+  `ALTER TABLE listings ADD COLUMN photos_r2 TEXT`
 ];
 migrations.forEach(sql => { try { wasmDb.run(sql); } catch {} });
 

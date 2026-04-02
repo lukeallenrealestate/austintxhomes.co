@@ -27,14 +27,18 @@ const SEARCH_COLUMNS = [
   'list_agent_full_name','list_agent_direct_phone','list_agent_email','list_office_name',
   'elementary_school','middle_school','high_school','school_district',
   'days_on_market','listing_contract_date','close_date','close_price',
-  'modification_timestamp','mlg_can_view','photos',
+  'modification_timestamp','mlg_can_view','photos','photos_r2',
   'pool_features','waterfront_yn','new_construction_yn','stories','parking_total',
   'association_fee','association_fee_frequency','tax_annual_amount'
 ].join(', ');
 
-function resolvePhotos(photos, listingKey) {
+// Return R2 URLs where available (direct Cloudflare edge), else fall back to local proxy
+function resolvePhotos(photos, listingKey, r2Photos) {
   if (!photos || !photos.length) return [];
-  return photos.map((_, idx) => `/api/properties/photos/${listingKey}/${idx}`);
+  return photos.map((_, idx) => {
+    if (r2Photos && r2Photos[idx]) return r2Photos[idx];
+    return `/api/properties/photos/${listingKey}/${idx}`;
+  });
 }
 
 // Point-in-polygon (ray casting)
@@ -216,7 +220,8 @@ router.get('/search', (req, res) => {
 
     rows = rows.map(r => {
       const photos = tryParse(r.photos, []);
-      return { ...r, photos: resolvePhotos(photos, r.listing_key) };
+      const r2Photos = tryParse(r.photos_r2, []);
+      return { ...r, photos: resolvePhotos(photos, r.listing_key, r2Photos) };
     });
 
     res.json({
@@ -311,7 +316,7 @@ router.get('/map-pins', (req, res) => {
     let pins = db.prepare(`
       SELECT listing_key, list_price, latitude, longitude, standard_status,
              bedrooms_total, bathrooms_total, living_area, unparsed_address,
-             city, postal_code, photos
+             city, postal_code, photos, photos_r2
       FROM listings WHERE ${where} LIMIT 5000
     `).all(values);
 
@@ -326,7 +331,8 @@ router.get('/map-pins', (req, res) => {
 
     res.json(pins.map(p => {
       const photos = tryParse(p.photos, []);
-      return { ...p, photos: resolvePhotos(photos, p.listing_key) };
+      const r2Photos = tryParse(p.photos_r2, []);
+      return { ...p, photos: resolvePhotos(photos, p.listing_key, r2Photos) };
     }));
   } catch (err) {
     console.error('[MAP-PINS]', err);
@@ -500,7 +506,7 @@ router.get('/cash-flowing', async (req, res) => {
       SELECT listing_key, list_price, tax_annual_amount, association_fee,
              association_fee_frequency, latitude, longitude,
              unparsed_address, city, bedrooms_total, bathrooms_total,
-             living_area, photos, days_on_market, listing_contract_date,
+             living_area, photos, photos_r2, days_on_market, listing_contract_date,
              subdivision_name, property_type, property_sub_type, year_built
       FROM listings
       WHERE mlg_can_view = 1
@@ -589,9 +595,10 @@ router.get('/cash-flowing', async (req, res) => {
 
       if (bestNearbyRent > monthlyMortgage) {
         const photos = tryParse(listing.photos, []);
+        const r2Photos = tryParse(listing.photos_r2, []);
         results.push({
           ...listing,
-          photos: resolvePhotos(photos, listing.listing_key),
+          photos: resolvePhotos(photos, listing.listing_key, r2Photos),
           monthlyMortgage,
           breakdown: { pi, tax, insurance, hoa },
           bestNearbyRent,
@@ -628,38 +635,76 @@ router.get('/sync-status', (req, res) => {
   res.json({ ...state, active_listings: count.total });
 });
 
-// GET /api/properties/photos/:listingKey/:idx — serve from disk cache, fetch from CDN on miss
+const r2Service = require('../services/r2');
+
+// GET /api/properties/photos/:listingKey/:idx
+// Tier 1: disk cache (instant)
+// Tier 2: R2 redirect (fast — Cloudflare edge, if configured)
+// Tier 3: MLS CDN fetch with streaming + async disk write + background R2 upload
 router.get('/photos/:listingKey/:idx', async (req, res) => {
   const { listingKey, idx } = req.params;
   const photoIdx = parseInt(idx) || 0;
   const cacheFile = path.join(PHOTO_CACHE_DIR, `${listingKey}-${photoIdx}.jpg`);
 
-  // Serve from disk cache if available
+  // Tier 1: disk cache
   if (fs.existsSync(cacheFile)) {
     res.set('Cache-Control', 'public, max-age=86400');
     return res.sendFile(cacheFile);
   }
 
-  // Look up CDN URL from DB
-  const dbRow = db.prepare('SELECT photos FROM listings WHERE listing_key = ?').get(listingKey);
+  // Look up both CDN URL and R2 URL from DB in one query
+  const dbRow = db.prepare('SELECT photos, photos_r2 FROM listings WHERE listing_key = ?').get(listingKey);
   if (!dbRow) return res.status(404).end();
 
+  // Tier 2: R2 redirect — browser fetches directly from Cloudflare edge
+  const r2Photos = tryParse(dbRow.photos_r2, []);
+  if (r2Photos[photoIdx]) {
+    res.set('Cache-Control', 'public, max-age=86400');
+    return res.redirect(302, r2Photos[photoIdx]);
+  }
+
+  // Tier 3: fetch from MLS CDN with 10s timeout, stream to browser
   const urls = tryParse(dbRow.photos, []);
   const photoUrl = urls[photoIdx];
   if (!photoUrl) return res.status(404).end();
 
-  // Fetch from CDN, cache to disk, serve
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10000);
+
   try {
-    const cdnRes = await fetch(photoUrl);
+    const cdnRes = await fetch(photoUrl, { signal: controller.signal });
+    clearTimeout(timer);
     if (!cdnRes.ok) return res.status(cdnRes.status).end();
-    const buffer = await cdnRes.buffer();
-    fs.writeFileSync(cacheFile, buffer);
-    res.set('Content-Type', cdnRes.headers.get('content-type') || 'image/jpeg');
+
+    const contentType = cdnRes.headers.get('content-type') || 'image/jpeg';
+    res.set('Content-Type', contentType);
     res.set('Cache-Control', 'public, max-age=86400');
-    res.send(buffer);
+
+    // Stream to browser while collecting chunks for disk/R2
+    const chunks = [];
+    cdnRes.body.on('data', chunk => { chunks.push(chunk); res.write(chunk); });
+    cdnRes.body.on('end', () => {
+      res.end();
+      const buffer = Buffer.concat(chunks);
+      // Async disk write (non-blocking)
+      fs.promises.writeFile(cacheFile, buffer).catch(() => {});
+      // Background R2 upload — next request will redirect to Cloudflare edge
+      if (r2Service.isEnabled()) {
+        r2Service.uploadPhoto(listingKey, photoIdx, buffer, contentType)
+          .catch(e => console.warn('[R2]', listingKey, photoIdx, e.message));
+      }
+    });
+    cdnRes.body.on('error', () => { if (!res.writableEnded) res.end(); });
+
   } catch (e) {
-    console.error('[PHOTO CACHE]', listingKey, photoIdx, e.message);
-    res.status(502).end();
+    clearTimeout(timer);
+    if (e.name === 'AbortError') {
+      console.warn('[PHOTO] CDN timeout:', listingKey, photoIdx);
+      if (!res.headersSent) res.status(504).end();
+    } else {
+      console.error('[PHOTO]', listingKey, photoIdx, e.message);
+      if (!res.headersSent) res.status(502).end();
+    }
   }
 });
 
@@ -669,7 +714,8 @@ router.get('/:listingKey', (req, res) => {
     const row = db.prepare('SELECT * FROM listings WHERE listing_key = ?').get(req.params.listingKey);
     if (!row) return res.status(404).json({ error: 'Not found' });
     const photos = tryParse(row.photos, []);
-    row.photos = resolvePhotos(photos, row.listing_key);
+    const r2Photos = tryParse(row.photos_r2, []);
+    row.photos = resolvePhotos(photos, row.listing_key, r2Photos);
     res.json(row);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -704,7 +750,8 @@ router.get('/:listingKey/similar', (req, res) => {
 
     res.json(similar.map(r => {
       const photos = tryParse(r.photos, []);
-      return { ...r, photos: resolvePhotos(photos, r.listing_key) };
+      const r2Photos = tryParse(r.photos_r2, []);
+      return { ...r, photos: resolvePhotos(photos, r.listing_key, r2Photos) };
     }));
   } catch (err) {
     res.status(500).json({ error: err.message });
