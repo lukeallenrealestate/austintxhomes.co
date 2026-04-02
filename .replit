@@ -2,9 +2,6 @@ run = "bash start.sh"
 modules = ["nodejs-20"]
 
 [[ports]]
-localPort = 3000
-
-[[ports]]
 localPort = 3002
 externalPort = 80
 

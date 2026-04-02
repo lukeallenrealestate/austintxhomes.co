@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
 const { requireAdmin } = require('../middleware/authMiddleware');
+const { syncListings, refreshPhotos } = require('../sync/mlsSync');
 
 // All admin routes require admin role
 router.use(requireAdmin);
@@ -72,6 +73,23 @@ router.get('/activity', (req, res) => {
   `).all();
 
   res.json({ newUsers, recentFavorites });
+});
+
+// POST /api/admin/sync
+router.post('/sync', async (req, res) => {
+  const isInitial = req.query.initial === 'true';
+  if (isInitial) {
+    db.prepare('UPDATE sync_state SET last_sync_timestamp = NULL WHERE id = 1').run();
+    console.log('[SYNC] Admin triggered full initial sync');
+  }
+  syncListings(isInitial).catch(console.error);
+  res.json({ message: `${isInitial ? 'Full initial' : 'Incremental'} sync started in background` });
+});
+
+// POST /api/admin/refresh-photos
+router.post('/refresh-photos', async (_req, res) => {
+  refreshPhotos().catch(console.error);
+  res.json({ message: 'Photo refresh started in background' });
 });
 
 function tryParse(str, fallback) {

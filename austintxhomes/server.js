@@ -1,8 +1,7 @@
 // Local dev server for austintxhomes pages
-// Serves static files from /public and proxies /api/* to the idx-search server
+// Serves static files from /public and all idx-search routes (merged — no proxy)
 const express = require('express');
 const compression = require('compression');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
 const fs = require('fs');
 
@@ -28,8 +27,14 @@ process.on('unhandledRejection', (reason) => {
 
 const app = express();
 const PORT = process.env.PORT || 3002;
-const IDX_SERVER = 'http://localhost:3000'; // idx-search backend
+const IDX_SERVER = `http://localhost:${PORT}`; // self-reference for internal HTTP calls
 const IDX_PUBLIC = path.join(__dirname, '../idx-search/public');
+
+// MLS sync + alert engine (merged — now runs in this process)
+const { syncListings, refreshPhotos } = require('../idx-search/sync/mlsSync');
+const { runAlertJob } = require('../idx-search/services/alertJob');
+// Ensure idx-search photo cache directory exists
+fs.mkdirSync(path.join(__dirname, '../idx-search/cache/photos'), { recursive: true });
 
 // Neighborhood page system
 const neighborhoods = require('./data/neighborhoods');
@@ -60,6 +65,8 @@ const dealEngine  = require('./lib/dealRadar/dealEngine');
 const alertEngine = require('./lib/dealRadar/alertEngine');
 const ADMIN_KEY   = process.env.DEAL_RADAR_ADMIN_KEY || 'austin-admin-2026';
 app.use(compression());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
 // Redirect non-canonical hostnames (e.g. replit.app subdomains) to the real domain
 app.use((req, res, next) => {
@@ -139,6 +146,22 @@ cron.schedule('30 13 * * *', async () => {
   } catch (e) {
     console.error('[CashFlow] Daily email failed:', e.message);
   }
+});
+
+// MLS incremental sync every 30 minutes
+cron.schedule('*/30 * * * *', () => {
+  console.log('[SYNC] Scheduled incremental sync...');
+  syncListings(false).catch(console.error);
+});
+
+// Bulk photo URL refresh every 60 minutes at :05
+cron.schedule('5 * * * *', () => {
+  refreshPhotos().catch(console.error);
+});
+
+// Email alerts for saved searches — every hour at :30
+cron.schedule('30 * * * *', () => {
+  runAlertJob().catch(console.error);
 });
 
 // Monthly scraper — runs on the 1st of each month at 7:00am server time
@@ -413,9 +436,34 @@ app.get('/api/market-stats', async (_req, res) => {
   }
 });
 
-// Proxy all other /api/* calls and /property to the idx-search server
-app.use('/api', createProxyMiddleware({ target: IDX_SERVER, changeOrigin: true }));
-app.use('/property', createProxyMiddleware({ target: IDX_SERVER, changeOrigin: true }));
+// ── idx-search routes (merged — no longer proxied) ───────────────────────────
+app.use('/api/properties', require('../idx-search/routes/properties'));
+app.use('/property',       require('../idx-search/routes/listing'));
+app.use('/api/auth',       require('../idx-search/routes/auth'));
+app.use('/api/favorites',  require('../idx-search/routes/favorites'));
+app.use('/api/searches',   require('../idx-search/routes/searches'));
+app.use('/api/admin',      require('../idx-search/routes/admin'));
+app.use('/api/contact',    require('../idx-search/routes/contact'));
+
+// /api/listings — alias for /api/properties/search used by marketing-site pages
+app.get('/api/listings', (req, res) => {
+  const q = { ...req.query };
+  if (q.offset !== undefined && q.limit) {
+    q.page = Math.max(1, Math.floor(Number(q.offset) / Number(q.limit)) + 1);
+    delete q.offset;
+  }
+  if (q.sort && !q.sortBy) { q.sortBy = q.sort; delete q.sort; }
+  if (q.q && !q.keyword)   { q.keyword = q.q;   delete q.q;   }
+  req.url = '/search?' + new URLSearchParams(q).toString();
+  require('../idx-search/routes/properties')(req, res, (err) => {
+    if (err) res.status(500).json({ error: err.message });
+  });
+});
+
+// /api/config — frontend config (Google Maps key etc.)
+app.get('/api/config', (_req, res) => {
+  res.json({ googleMapsKey: process.env.GOOGLE_MAPS_API_KEY || '', siteName: 'Austin TX Homes' });
+});
 
 // Homepage route
 app.get('/', (_req, res) => {
@@ -713,6 +761,18 @@ app.get('/site/:page', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`austintxhomes dev server running at http://localhost:${PORT}`);
+  console.log(`\n🏠 Austin TX Homes running on port ${PORT}`);
   console.log(`Neighborhood pages: ${Object.keys(neighborhoods).length} neighborhoods loaded`);
+
+  // MLS sync startup check
+  const idxDb = require('../idx-search/db/database');
+  const count = idxDb.prepare('SELECT COUNT(*) as n FROM listings').get().n;
+  if (count < 5000) {
+    console.log(`[SYNC] Only ${count} listings — starting full initial import...`);
+    idxDb.prepare('UPDATE sync_state SET last_sync_timestamp = NULL WHERE id = 1').run();
+    syncListings(true).catch(console.error);
+  } else {
+    console.log(`[SYNC] ${count} listings in DB. Starting incremental sync...`);
+    syncListings(false).catch(console.error);
+  }
 });
