@@ -849,7 +849,11 @@ app.listen(PORT, () => {
     syncListings(true).catch(console.error);
   } else {
     console.log(`[SYNC] ${count} listings in DB. Starting incremental sync...`);
-    syncListings(false).catch(console.error);
+    syncListings(false).then(() => {
+      // Refresh photo URLs right after sync so signed CDN links are fresh
+      console.log('[PHOTOS] Refreshing photo URLs after startup sync...');
+      refreshPhotos().catch(console.error);
+    }).catch(console.error);
   }
 
   // Drain disk photo cache to R2 (background — uploads ~100 cached files per boot)
