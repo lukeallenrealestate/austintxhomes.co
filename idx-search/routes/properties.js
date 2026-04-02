@@ -680,7 +680,12 @@ router.get('/photos/:listingKey/:idx', async (req, res) => {
   try {
     const cdnRes = await fetch(photoUrl, { signal: controller.signal });
     clearTimeout(timer);
-    if (!cdnRes.ok) return res.status(cdnRes.status).end();
+    if (!cdnRes.ok) {
+      // Don't cache failures — browser should retry on next page load
+      // (CDN returns 400/403 when signed URLs expire; refreshPhotos() fixes them hourly)
+      res.set('Cache-Control', 'no-cache');
+      return res.status(404).end();
+    }
 
     const contentType = cdnRes.headers.get('content-type') || 'image/jpeg';
     // Buffer response — node-fetch v2 body can be null on some edge responses

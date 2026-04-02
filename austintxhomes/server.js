@@ -1,9 +1,27 @@
 // Local dev server for austintxhomes pages
 // Serves static files from /public and all idx-search routes (merged — no proxy)
-const express = require('express');
-const compression = require('compression');
+const http = require('http');
 const path = require('path');
 const fs = require('fs');
+const PORT = process.env.PORT || 3002;
+
+// ── Phase 1: Open port IMMEDIATELY ──────────────────────────────────
+// Replit kills the process if the port isn't open within 60 seconds.
+// Heavy modules (WASM SQLite, templates, etc.) take 30+ seconds to load,
+// so we open a bare HTTP server first and swap Express in once ready.
+let _expressApp = null;
+const _server = http.createServer((req, res) => {
+  if (_expressApp) return _expressApp(req, res);
+  res.writeHead(200, { 'Content-Type': 'text/html', 'Retry-After': '5' });
+  res.end('<!DOCTYPE html><html><head><meta http-equiv="refresh" content="3"><style>body{font-family:Inter,sans-serif;text-align:center;padding:80px;color:#1a1918}h2{color:#b8935a}</style></head><body><h2>Loading Austin TX Homes...</h2><p>The server is starting up. This page will refresh automatically.</p></body></html>');
+});
+_server.listen(PORT, () => {
+  console.log(`[server] Port ${PORT} open — loading application...`);
+});
+
+// ── Phase 2: Load heavy modules ─────────────────────────────────────
+const express = require('express');
+const compression = require('compression');
 
 // Load email credentials from idx-search .env if present
 try {
@@ -31,7 +49,6 @@ process.on('unhandledRejection', (reason) => {
 });
 
 const app = express();
-const PORT = process.env.PORT || 3002;
 const IDX_SERVER = `http://localhost:${PORT}`; // self-reference for internal HTTP calls
 const IDX_PUBLIC = path.join(__dirname, '../idx-search/public');
 
@@ -820,55 +837,53 @@ app.get('/site/:page', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`\n[server] Austin TX Homes running on port ${PORT}`);
-  console.log(`Neighborhood pages: ${Object.keys(neighborhoods).length} neighborhoods loaded`);
+// ── Phase 3: Swap Express into the HTTP server ─────────────────────
+_expressApp = app;
+console.log(`Neighborhood pages: ${Object.keys(neighborhoods).length} neighborhoods loaded`);
+console.log(`[server] Austin TX Homes running on port ${PORT}`);
 
-  // Build performance index after port is open — runs synchronously but deferred
-  // so Replit health check sees port 3002 before the index creation starts
-  setTimeout(() => {
-    try {
-      const idxDbForIndex = require('../idx-search/db/database');
-      idxDbForIndex.prepare(
-        `CREATE INDEX IF NOT EXISTS idx_listings_active_coords
-         ON listings(standard_status, mlg_can_view, listing_contract_date)
-         WHERE latitude IS NOT NULL AND longitude IS NOT NULL`
-      ).run();
-      console.log('[DB] idx_listings_active_coords ready');
-    } catch (e) {
-      console.warn('[DB] Index creation skipped:', e.message);
-    }
-  }, 500);
-
-  // MLS sync startup check
-  const idxDb = require('../idx-search/db/database');
-  const count = idxDb.prepare('SELECT COUNT(*) as n FROM listings').get().n;
-  if (count < 5000) {
-    console.log(`[SYNC] Only ${count} listings — starting full initial import...`);
-    idxDb.prepare('UPDATE sync_state SET last_sync_timestamp = NULL WHERE id = 1').run();
-    syncListings(true).catch(console.error);
-  } else {
-    console.log(`[SYNC] ${count} listings in DB. Starting incremental sync...`);
-    syncListings(false).then(() => {
-      // Refresh photo URLs right after sync so signed CDN links are fresh
-      console.log('[PHOTOS] Refreshing photo URLs after startup sync...');
-      refreshPhotos().catch(console.error);
-    }).catch(console.error);
+// Build performance index (deferred so it doesn't block requests)
+setTimeout(() => {
+  try {
+    const idxDbForIndex = require('../idx-search/db/database');
+    idxDbForIndex.prepare(
+      `CREATE INDEX IF NOT EXISTS idx_listings_active_coords
+       ON listings(standard_status, mlg_can_view, listing_contract_date)
+       WHERE latitude IS NOT NULL AND longitude IS NOT NULL`
+    ).run();
+    console.log('[DB] idx_listings_active_coords ready');
+  } catch (e) {
+    console.warn('[DB] Index creation skipped:', e.message);
   }
+}, 500);
 
-  // Drain disk photo cache to R2 (background — uploads ~100 cached files per boot)
-  if (r2Service.isEnabled()) {
-    setTimeout(() => bulkUploadDiskCacheToR2().catch(console.error), 5000);
-  }
+// MLS sync startup check
+const idxDb = require('../idx-search/db/database');
+const count = idxDb.prepare('SELECT COUNT(*) as n FROM listings').get().n;
+if (count < 5000) {
+  console.log(`[SYNC] Only ${count} listings — starting full initial import...`);
+  idxDb.prepare('UPDATE sync_state SET last_sync_timestamp = NULL WHERE id = 1').run();
+  syncListings(true).catch(console.error);
+} else {
+  console.log(`[SYNC] ${count} listings in DB. Starting incremental sync...`);
+  syncListings(false).then(() => {
+    console.log('[PHOTOS] Refreshing photo URLs after startup sync...');
+    refreshPhotos().catch(console.error);
+  }).catch(console.error);
+}
 
-  // Sync closed lease comps for cash-flow algorithm (runs after main sync)
-  const closedLeaseCount = idxDb.prepare(
-    `SELECT COUNT(*) as n FROM listings WHERE (property_type LIKE '%Lease%') AND standard_status = 'Closed'`
-  ).get().n;
-  if (closedLeaseCount === 0) {
-    console.log('[LEASE-SYNC] No closed lease comps found — running initial closed lease sync...');
-    syncClosedLeases().catch(console.error);
-  } else {
-    console.log(`[LEASE-SYNC] ${closedLeaseCount} closed lease comps in DB.`);
-  }
-});
+// Drain disk photo cache to R2 (background — uploads ~100 cached files per boot)
+if (r2Service.isEnabled()) {
+  setTimeout(() => bulkUploadDiskCacheToR2().catch(console.error), 5000);
+}
+
+// Sync closed lease comps for cash-flow algorithm (runs after main sync)
+const closedLeaseCount = idxDb.prepare(
+  `SELECT COUNT(*) as n FROM listings WHERE (property_type LIKE '%Lease%') AND standard_status = 'Closed'`
+).get().n;
+if (closedLeaseCount === 0) {
+  console.log('[LEASE-SYNC] No closed lease comps found — running initial closed lease sync...');
+  syncClosedLeases().catch(console.error);
+} else {
+  console.log(`[LEASE-SYNC] ${closedLeaseCount} closed lease comps in DB.`);
+}
