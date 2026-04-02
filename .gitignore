@@ -4,6 +4,8 @@ node_modules/
 *.jpg
 *.png
 !austintxhomes/public/favicon.png
+!austintxhomes/public/favicon-48.png
+!austintxhomes/public/favicon-96.png
 !austintxhomes/public/favicon.svg
 .env
 austintxhomes/data/dealAlerts.json
