@@ -657,15 +657,21 @@ router.get('/photos/:listingKey/:idx', async (req, res) => {
   if (!dbRow) return res.status(404).end();
 
   // Tier 2: R2 redirect — browser fetches directly from Cloudflare edge
-  const r2Photos = tryParse(dbRow.photos_r2, []) || [];
-  if (r2Photos[photoIdx]) {
-    res.set('Cache-Control', 'public, max-age=86400');
-    return res.redirect(302, r2Photos[photoIdx]);
-  }
+  try {
+    const r2List = dbRow.photos_r2 ? JSON.parse(dbRow.photos_r2) : null;
+    const r2Url = Array.isArray(r2List) ? r2List[photoIdx] : null;
+    if (r2Url) {
+      res.set('Cache-Control', 'public, max-age=86400');
+      return res.redirect(302, r2Url);
+    }
+  } catch (_) {}
 
-  // Tier 3: fetch from MLS CDN with 10s timeout, stream to browser
-  const urls = tryParse(dbRow.photos, []);
-  const photoUrl = urls[photoIdx];
+  // Tier 3: fetch from MLS CDN with 10s timeout, buffer and serve
+  let photoUrl;
+  try {
+    const urlList = dbRow.photos ? JSON.parse(dbRow.photos) : null;
+    photoUrl = Array.isArray(urlList) ? urlList[photoIdx] : null;
+  } catch (_) {}
   if (!photoUrl) return res.status(404).end();
 
   const controller = new AbortController();
@@ -677,24 +683,20 @@ router.get('/photos/:listingKey/:idx', async (req, res) => {
     if (!cdnRes.ok) return res.status(cdnRes.status).end();
 
     const contentType = cdnRes.headers.get('content-type') || 'image/jpeg';
+    // Buffer response — node-fetch v2 body can be null on some edge responses
+    const buffer = await cdnRes.buffer();
+    if (!buffer || !buffer.length) return res.status(502).end();
+
     res.set('Content-Type', contentType);
     res.set('Cache-Control', 'public, max-age=86400');
+    res.send(buffer);
 
-    // Stream to browser while collecting chunks for disk/R2
-    const chunks = [];
-    cdnRes.body.on('data', chunk => { chunks.push(chunk); res.write(chunk); });
-    cdnRes.body.on('end', () => {
-      res.end();
-      const buffer = Buffer.concat(chunks);
-      // Async disk write (non-blocking)
-      fs.promises.writeFile(cacheFile, buffer).catch(() => {});
-      // Background R2 upload — next request will redirect to Cloudflare edge
-      if (r2Service.isEnabled()) {
-        r2Service.uploadPhoto(listingKey, photoIdx, buffer, contentType)
-          .catch(e => console.warn('[R2]', listingKey, photoIdx, e.message));
-      }
-    });
-    cdnRes.body.on('error', () => { if (!res.writableEnded) res.end(); });
+    // Background: write to disk + upload to R2
+    fs.promises.writeFile(cacheFile, buffer).catch(() => {});
+    if (r2Service.isEnabled()) {
+      r2Service.uploadPhoto(listingKey, photoIdx, buffer, contentType)
+        .catch(e => console.warn('[R2]', listingKey, photoIdx, e.message));
+    }
 
   } catch (e) {
     clearTimeout(timer);
