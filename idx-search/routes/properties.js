@@ -657,7 +657,7 @@ router.get('/photos/:listingKey/:idx', async (req, res) => {
   if (!dbRow) return res.status(404).end();
 
   // Tier 2: R2 redirect — browser fetches directly from Cloudflare edge
-  const r2Photos = tryParse(dbRow.photos_r2, []);
+  const r2Photos = tryParse(dbRow.photos_r2, []) || [];
   if (r2Photos[photoIdx]) {
     res.set('Cache-Control', 'public, max-age=86400');
     return res.redirect(302, r2Photos[photoIdx]);
