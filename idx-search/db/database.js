@@ -144,8 +144,6 @@ const statements = [
   `CREATE INDEX IF NOT EXISTS idx_listings_modified ON listings(modification_timestamp)`,
   `CREATE INDEX IF NOT EXISTS idx_listings_subdiv ON listings(subdivision_name)`,
   `CREATE INDEX IF NOT EXISTS idx_listings_active_date ON listings(standard_status, mlg_can_view, listing_contract_date)`,
-  // Partial index for the common active-with-coords COUNT(*) — covers rows with lat/lng so count is index-only
-  `CREATE INDEX IF NOT EXISTS idx_listings_active_coords ON listings(standard_status, mlg_can_view, listing_contract_date) WHERE latitude IS NOT NULL AND longitude IS NOT NULL`,
   `CREATE TABLE IF NOT EXISTS sync_state (
     id INTEGER PRIMARY KEY CHECK (id = 1),
     last_sync_timestamp TEXT,

@@ -19,7 +19,12 @@ try {
 
 // Prevent unhandled errors from crashing the server
 process.on('uncaughtException', (err) => {
-  console.error('[MAIN] Uncaught exception (server kept alive):', err.message);
+  console.error('[MAIN] Uncaught exception:', err.message);
+  // Exit immediately on port conflicts so the process manager can restart cleanly
+  if (err.code === 'EADDRINUSE') {
+    console.error('[MAIN] Port in use — exiting for clean restart');
+    process.exit(1);
+  }
 });
 process.on('unhandledRejection', (reason) => {
   console.error('[MAIN] Unhandled promise rejection (server kept alive):', reason);
@@ -767,8 +772,24 @@ app.get('/site/:page', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`\n🏠 Austin TX Homes running on port ${PORT}`);
+  console.log(`\n[server] Austin TX Homes running on port ${PORT}`);
   console.log(`Neighborhood pages: ${Object.keys(neighborhoods).length} neighborhoods loaded`);
+
+  // Build performance index after port is open — runs synchronously but deferred
+  // so Replit health check sees port 3002 before the index creation starts
+  setTimeout(() => {
+    try {
+      const idxDbForIndex = require('../idx-search/db/database');
+      idxDbForIndex.prepare(
+        `CREATE INDEX IF NOT EXISTS idx_listings_active_coords
+         ON listings(standard_status, mlg_can_view, listing_contract_date)
+         WHERE latitude IS NOT NULL AND longitude IS NOT NULL`
+      ).run();
+      console.log('[DB] idx_listings_active_coords ready');
+    } catch (e) {
+      console.warn('[DB] Index creation skipped:', e.message);
+    }
+  }, 500);
 
   // MLS sync startup check
   const idxDb = require('../idx-search/db/database');
