@@ -334,10 +334,18 @@ router.get('/map-pins', (req, res) => {
   }
 });
 
+// Autocomplete cache — key: normalized query, value: { results, ts }
+const acCache = new Map();
+const AC_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
 // GET /api/properties/autocomplete?q=
 router.get('/autocomplete', (req, res) => {
   const q = (req.query.q || '').trim();
   if (q.length < 2) return res.json([]);
+
+  const qKey = q.toLowerCase();
+  const hit = acCache.get(qKey);
+  if (hit && Date.now() - hit.ts < AC_CACHE_TTL) return res.json(hit.results);
 
   // Split into individual words so "2505 thornton" matches "2505  Thornton Rd" (double spaces in MLS data)
   const words = q.split(/\s+/).filter(w => w.length > 0);
@@ -360,7 +368,9 @@ router.get('/autocomplete', (req, res) => {
   const hoods = db.prepare(`SELECT DISTINCT subdivision_name as value, 'neighborhood' as type FROM listings WHERE subdivision_name LIKE ? AND subdivision_name != '' AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 3`).all(like);
   const schools = db.prepare(`SELECT DISTINCT school_district as value, 'school' as type FROM listings WHERE school_district LIKE ? AND school_district != '' AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 2`).all(like);
 
-  res.json([...addresses, ...cities, ...zips, ...hoods, ...schools].filter(r => r.value));
+  const results = [...addresses, ...cities, ...zips, ...hoods, ...schools].filter(r => r.value);
+  acCache.set(qKey, { results, ts: Date.now() });
+  res.json(results);
 });
 
 // GET /api/properties/neighborhood-boundary — local overrides first, then Nominatim

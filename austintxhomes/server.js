@@ -750,7 +750,13 @@ app.use(express.static(path.join(__dirname, 'public'), {
 }));
 
 // Fallback: serve idx-search static assets (js, css, html used by the /search SPA)
-app.use(express.static(IDX_PUBLIC));
+// JS/CSS get a 1-hour cache (ETag still allows conditional revalidation)
+app.use(express.static(IDX_PUBLIC, {
+  maxAge: '1h',
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+  }
+}));
 
 // Fallback: any /site/*.html request
 app.get('/site/:page', (req, res) => {

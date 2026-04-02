@@ -231,10 +231,15 @@ async function loadGoogleMaps() {
   script.defer = true;
   document.head.appendChild(script);
 
-  // Marker Clusterer
+  // Marker Clusterer — self-hosted to eliminate CDN latency and 302 redirect
   const clusterScript = document.createElement('script');
-  clusterScript.src = 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js';
-  clusterScript.async = true;
+  clusterScript.src = '/js/markerclusterer.min.js';
+  clusterScript.onload = () => {
+    // Re-cluster if map pins are already rendered (cluster script loaded after initMap)
+    if (window.googleMap && mapMarkers.length && !markerClusterer && window.markerClusterer?.MarkerClusterer) {
+      markerClusterer = new window.markerClusterer.MarkerClusterer({ map: window.googleMap, markers: mapMarkers });
+    }
+  };
   document.head.appendChild(clusterScript);
 }
 
