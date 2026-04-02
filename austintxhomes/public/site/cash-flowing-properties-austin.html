@@ -360,12 +360,83 @@
     }
     .btn-cta:hover { background: var(--gold-lt); }
 
+    /* Rate calculator widget */
+    .rate-calc {
+      margin-top: 36px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(184,147,90,0.3);
+      border-radius: 8px;
+      padding: 14px 18px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .rate-calc-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      white-space: nowrap;
+    }
+    .rate-input-wrap {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(184,147,90,0.4);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .rate-input-wrap input[type=number] {
+      width: 64px;
+      padding: 8px 10px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: 'Cormorant Garamond', serif;
+      text-align: center;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .rate-input-wrap input[type=number]::-webkit-outer-spin-button,
+    .rate-input-wrap input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .rate-input-wrap .pct-symbol {
+      padding: 0 10px 0 4px;
+      color: var(--gold-lt);
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .btn-search-rate {
+      padding: 9px 20px;
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-search-rate:hover { background: var(--gold-lt); }
+    .btn-search-rate:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-search-rate svg { flex-shrink: 0; }
+
     @media (max-width: 640px) {
       .how-steps { flex-direction: column; gap: 20px; }
       .how-step:not(:last-child)::after { content: '↓'; right: auto; top: auto; bottom: -14px; left: 50%; transform: translateX(-50%); }
       .grid { grid-template-columns: 1fr; }
       .signup-form { flex-direction: column; }
       .hero-stats { gap: 24px; }
+      .rate-calc { gap: 8px; padding: 12px 14px; }
     }
   </style>
 
@@ -475,13 +546,25 @@
         <span class="hero-stat-label">Properties Found</span>
       </div>
       <div class="hero-stat">
-        <span class="hero-stat-val" id="hero-rate">7.0%</span>
+        <span class="hero-stat-val" id="hero-rate">—</span>
         <span class="hero-stat-label">Rate Used</span>
       </div>
       <div class="hero-stat">
         <span class="hero-stat-val">20%</span>
         <span class="hero-stat-label">Down Assumed</span>
       </div>
+    </div>
+
+    <div class="rate-calc">
+      <span class="rate-calc-label">Try a different rate:</span>
+      <div class="rate-input-wrap">
+        <input type="number" id="rate-input" min="1" max="20" step="0.1" placeholder="6.5" />
+        <span class="pct-symbol">%</span>
+      </div>
+      <button class="btn-search-rate" id="search-btn" onclick="searchWithRate()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Find Properties
+      </button>
     </div>
   </div>
 </section>
@@ -609,15 +692,35 @@
 <script>
   let allListings = [];
 
-  async function loadListings() {
+  function showGridLoading() {
+    document.getElementById('property-grid').style.display = 'none';
+    document.getElementById('grid-state').style.display = '';
+    document.getElementById('grid-state').innerHTML = `
+      <div class="state-box">
+        <div class="spinner"></div>
+        <p>Calculating with new rate…</p>
+      </div>`;
+    document.getElementById('result-count').textContent = 'Loading…';
+  }
+
+  async function loadListings(rate) {
+    const url = rate ? `/api/properties/cash-flowing?rate=${encodeURIComponent(rate)}` : '/api/properties/cash-flowing';
     try {
-      const res = await fetch('/api/properties/cash-flowing');
+      const res = await fetch(url);
       const data = await res.json();
+
+      // Populate the rate input with whatever rate was used
+      if (data.mortgageRate) {
+        document.getElementById('rate-input').value = data.mortgageRate;
+        document.getElementById('hero-rate').textContent = data.mortgageRate + '%';
+      }
+
       if (!data.listings || !data.listings.length) {
+        document.getElementById('grid-state').style.display = '';
         document.getElementById('grid-state').innerHTML = `
           <div class="state-box">
-            <h3>No Cash-Flowing Properties Found</h3>
-            <p>No properties currently meet the criteria. Check back tomorrow as new listings arrive daily.<br>Subscribe below to get notified when they appear.</p>
+            <h3>No Cash-Flowing Properties at ${data.mortgageRate}%</h3>
+            <p>No properties meet the criteria at this rate. Try a lower rate, or subscribe below to get notified when new opportunities appear.</p>
           </div>`;
         document.getElementById('result-count').textContent = '0 properties found';
         document.getElementById('hero-count').textContent = '0';
@@ -626,15 +729,30 @@
 
       allListings = data.listings;
       document.getElementById('hero-count').textContent = data.count;
-      document.getElementById('hero-rate').textContent = data.mortgageRate + '%';
       sortAndRender();
     } catch (e) {
+      document.getElementById('grid-state').style.display = '';
       document.getElementById('grid-state').innerHTML = `
         <div class="state-box">
           <h3>Unable to Load Properties</h3>
           <p>There was an error fetching the data. Please try refreshing the page.</p>
         </div>`;
+    } finally {
+      const btn = document.getElementById('search-btn');
+      if (btn) { btn.disabled = false; btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Find Properties`; }
     }
+  }
+
+  function searchWithRate() {
+    const input = document.getElementById('rate-input');
+    let rate = parseFloat(input.value);
+    if (isNaN(rate) || rate < 1) { rate = 1; input.value = '1.0'; }
+    if (rate > 20) { rate = 20; input.value = '20.0'; }
+    const btn = document.getElementById('search-btn');
+    btn.disabled = true;
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 0.8s linear infinite"><circle cx="11" cy="11" r="8" opacity="0.3"/><path d="M11 3a8 8 0 0 1 8 8"/></svg> Searching…`;
+    showGridLoading();
+    loadListings(rate.toFixed(1));
   }
 
   function sortAndRender() {
@@ -746,6 +864,13 @@
   function toggleFaq(el) {
     el.closest('.faq-item').classList.toggle('open');
   }
+
+  // Allow pressing Enter in the rate input to trigger search
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('rate-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') searchWithRate();
+    });
+  });
 
   loadListings();
 </script>

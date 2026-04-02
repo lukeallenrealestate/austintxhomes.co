@@ -465,8 +465,9 @@ async function fetchLiveMortgageRate() {
   return parseFloat(process.env.MORTGAGE_RATE || '6.0');
 }
 
-let cashFlowCache = null;
-let cashFlowCacheTime = 0;
+// Cache per rate key: 'live' or '6.50', '7.00', etc.
+const cashFlowCacheMap = new Map();
+const CF_CACHE_TTL = 30 * 60 * 1000;
 
 function haversineDistanceMiles(lat1, lng1, lat2, lng2) {
   const R = 3959;
@@ -479,12 +480,17 @@ function haversineDistanceMiles(lat1, lng1, lat2, lng2) {
 
 router.get('/cash-flowing', async (req, res) => {
   try {
-    // 30-minute in-memory cache
-    if (cashFlowCache && Date.now() - cashFlowCacheTime < 30 * 60 * 1000) {
-      return res.json(cashFlowCache);
+    // Optional custom rate from query param (e.g. ?rate=6.5)
+    const customRate = parseFloat(req.query.rate);
+    const useCustomRate = !isNaN(customRate) && customRate >= 1 && customRate <= 20;
+    const cacheKey = useCustomRate ? customRate.toFixed(2) : 'live';
+
+    const cached = cashFlowCacheMap.get(cacheKey);
+    if (cached && Date.now() - cached.ts < CF_CACHE_TTL) {
+      return res.json(cached.data);
     }
 
-    const ratePercent = await fetchLiveMortgageRate();
+    const ratePercent = useCustomRate ? customRate : await fetchLiveMortgageRate();
     const annualRate = ratePercent / 100;
     const monthlyRate = annualRate / 12;
     const n = 360;
@@ -603,8 +609,7 @@ router.get('/cash-flowing', async (req, res) => {
       listings: results
     };
 
-    cashFlowCache = response;
-    cashFlowCacheTime = Date.now();
+    cashFlowCacheMap.set(cacheKey, { data: response, ts: Date.now() });
     res.json(response);
 
   } catch (err) {
