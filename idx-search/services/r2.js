@@ -7,50 +7,66 @@
 //   R2_ACCESS_KEY_ID    R2 API token access key
 //   R2_SECRET_ACCESS_KEY R2 API token secret key
 //   R2_BUCKET           Bucket name (default: austintxhomes-photos)
-//   R2_PUBLIC_URL       Public base URL (e.g. https://photos.austintxhomes.co)
+//   R2_PUBLIC_URL       Public base URL (e.g. https://pub-xxx.r2.dev)
 
-const { S3Client, PutObjectCommand, HeadObjectCommand } = require('@aws-sdk/client-s3');
+// @aws-sdk/client-s3 is large (~30s to load on Replit).
+// We lazy-require it on first use so the port opens immediately at startup.
+
 const db = require('../db/database');
 
-let r2 = null;
 const BUCKET = process.env.R2_BUCKET || 'austintxhomes-photos';
 const PUBLIC_URL = (process.env.R2_PUBLIC_URL || '').replace(/\/$/, '');
 
-if (process.env.R2_ACCOUNT_ID && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY) {
-  r2 = new S3Client({
-    region: 'auto',
-    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-    credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-    },
-  });
-  console.log('[R2] Cloudflare R2 photo storage enabled →', PUBLIC_URL || '(no public URL set)');
-} else {
-  console.log('[R2] R2 env vars not set — photo CDN disabled, using local proxy only');
+let _r2 = null;       // S3Client instance, created on first use
+let _ready = false;   // true once we've tried to init (even if disabled)
+
+function getClient() {
+  if (_ready) return _r2;
+  _ready = true;
+
+  if (!process.env.R2_ACCOUNT_ID || !process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY || !PUBLIC_URL) {
+    console.log('[R2] R2 env vars not set — photo CDN disabled, using local proxy only');
+    return null;
+  }
+
+  try {
+    const { S3Client } = require('@aws-sdk/client-s3');
+    _r2 = new S3Client({
+      region: 'auto',
+      endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID,
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+      },
+    });
+    console.log('[R2] Cloudflare R2 photo storage enabled →', PUBLIC_URL);
+  } catch (e) {
+    console.error('[R2] Failed to init S3Client:', e.message);
+  }
+  return _r2;
 }
 
-function isEnabled() { return r2 !== null && PUBLIC_URL !== ''; }
+function isEnabled() {
+  return getClient() !== null && PUBLIC_URL !== '';
+}
 
 function photoKey(listingKey, photoIdx) {
   return `photos/${listingKey}/${photoIdx}.jpg`;
 }
 
-function publicUrl(listingKey, photoIdx) {
-  return `${PUBLIC_URL}/${photoKey(listingKey, photoIdx)}`;
-}
-
 // Upload a buffer to R2 and record the public URL in the DB
 async function uploadPhoto(listingKey, photoIdx, buffer, contentType) {
-  if (!isEnabled()) return null;
+  const client = getClient();
+  if (!client) return null;
 
+  const { PutObjectCommand } = require('@aws-sdk/client-s3');
   const key = photoKey(listingKey, photoIdx);
-  await r2.send(new PutObjectCommand({
+  await client.send(new PutObjectCommand({
     Bucket: BUCKET,
     Key: key,
     Body: buffer,
     ContentType: contentType || 'image/jpeg',
-    CacheControl: 'public, max-age=31536000, immutable', // 1 year — photos don't change
+    CacheControl: 'public, max-age=31536000, immutable',
   }));
 
   const url = `${PUBLIC_URL}/${key}`;
@@ -58,29 +74,22 @@ async function uploadPhoto(listingKey, photoIdx, buffer, contentType) {
   return url;
 }
 
-// Check if an object already exists in R2 (avoids re-uploading)
-async function existsInR2(listingKey, photoIdx) {
-  if (!isEnabled()) return false;
-  try {
-    await r2.send(new HeadObjectCommand({ Bucket: BUCKET, Key: photoKey(listingKey, photoIdx) }));
-    return true;
-  } catch { return false; }
-}
-
 // Write the R2 public URL for a single photo index into the DB
 function saveR2Url(listingKey, photoIdx, url) {
-  const row = db.prepare('SELECT photos_r2, photos FROM listings WHERE listing_key = ?').get(listingKey);
-  if (!row) return;
-  const r2Photos = tryParse(row.photos_r2, []);
-  const totalPhotos = tryParse(row.photos, []).length;
-  while (r2Photos.length < totalPhotos) r2Photos.push(null);
-  r2Photos[photoIdx] = url;
-  db.prepare('UPDATE listings SET photos_r2 = ? WHERE listing_key = ?')
-    .run(JSON.stringify(r2Photos), listingKey);
+  try {
+    const row = db.prepare('SELECT photos_r2, photos FROM listings WHERE listing_key = ?').get(listingKey);
+    if (!row) return;
+    let r2Photos = [];
+    try { r2Photos = JSON.parse(row.photos_r2) || []; } catch {}
+    if (!Array.isArray(r2Photos)) r2Photos = [];
+    const totalPhotos = (() => { try { return (JSON.parse(row.photos) || []).length; } catch { return 0; } })();
+    while (r2Photos.length < totalPhotos) r2Photos.push(null);
+    r2Photos[photoIdx] = url;
+    db.prepare('UPDATE listings SET photos_r2 = ? WHERE listing_key = ?')
+      .run(JSON.stringify(r2Photos), listingKey);
+  } catch (e) {
+    console.warn('[R2] saveR2Url failed:', e.message);
+  }
 }
 
-function tryParse(str, fallback) {
-  try { return JSON.parse(str) || fallback; } catch { return fallback; }
-}
-
-module.exports = { isEnabled, uploadPhoto, existsInR2, publicUrl, saveR2Url };
+module.exports = { isEnabled, uploadPhoto, saveR2Url };
