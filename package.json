@@ -6,7 +6,7 @@
     "start": "bash start.sh"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.0.0",
+    "@aws-sdk/client-s3": "^3.1022.0",
     "puppeteer": "^24.39.1"
   }
 }

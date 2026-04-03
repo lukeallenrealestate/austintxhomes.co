@@ -289,8 +289,12 @@ async function refreshPhotos() {
   const flushBatch = () => {
     const entries = Object.entries(pageBatch);
     if (!entries.length) return;
-    batchUpdate(entries);
-    totalRefreshed += entries.length;
+    try {
+      batchUpdate(entries);
+      totalRefreshed += entries.length;
+    } catch (e) {
+      console.error(`[PHOTOS] Batch write failed (${entries.length} listings):`, e.message);
+    }
     pageBatch = {};
   };
 

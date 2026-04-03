@@ -531,7 +531,7 @@ router.get('/cash-flowing', async (req, res) => {
         AND standard_status = 'Closed'
         AND COALESCE(close_price, list_price) > 0
         AND latitude IS NOT NULL AND longitude IS NOT NULL
-        AND synced_at >= date('now', '-180 days')
+        AND close_date >= date('now', '-180 days')
     `).all();
 
     const results = [];
@@ -766,7 +766,10 @@ router.get('/:listingKey/similar', (req, res) => {
 });
 
 function tryParse(str, fallback) {
-  try { return JSON.parse(str); } catch { return fallback; }
+  try {
+    const v = JSON.parse(str);
+    return Array.isArray(fallback) ? (Array.isArray(v) ? v : fallback) : v;
+  } catch { return fallback; }
 }
 
 module.exports = router;
