@@ -1585,7 +1585,7 @@ input, select, textarea { font-family: inherit; }
     padding: 0 10px;
     gap: 6px;
     height: 52px;
-    --filter-h: 52px;
+    top: 56px; /* match header height at this breakpoint */
     -webkit-mask-image: none;
     mask-image: none;
   }
@@ -1797,7 +1797,7 @@ input, select, textarea { font-family: inherit; }
   /* --- Filter bar: edge-to-edge scrollable pills --- */
   .filter-bar {
     height: 48px;
-    --filter-h: 48px;
+    top: 52px; /* match header height at this breakpoint */
     padding: 0 8px;
     gap: 6px;
     -webkit-mask-image: none;
@@ -2241,7 +2241,7 @@ input, select, textarea { font-family: inherit; }
   /* --- Filter bar: ultra compact --- */
   .filter-bar {
     height: 44px;
-    --filter-h: 44px;
+    top: 48px; /* match header height at this breakpoint */
     padding: 0 6px;
     gap: 4px;
   }

@@ -210,6 +210,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyFilters();
   setupPillListeners();
 
+  // Init mobile map FAB visibility
+  const fab = document.getElementById('mobile-map-fab');
+  if (fab) fab.style.display = (currentView === 'list' && window.innerWidth <= 640) ? 'flex' : 'none';
+
   // Close dropdowns on outside click
   document.addEventListener('click', e => {
     if (!e.target.closest('.filter-dropdown') && !e.target.closest('.filter-btn')) {
@@ -541,7 +545,11 @@ function toggleDropdown(id, btn) {
 }
 
 function closeAllDropdowns() {
-  document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.filter-dropdown').forEach(d => {
+    d.classList.remove('open');
+    d.style.left = '';
+    d.style.top = '';
+  });
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-open'));
 }
 
