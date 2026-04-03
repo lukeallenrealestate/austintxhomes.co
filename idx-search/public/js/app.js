@@ -1110,6 +1110,10 @@ function switchView(view) {
   document.getElementById('list-view-btn').classList.toggle('active', view === 'list');
   document.getElementById('map-view-btn').classList.toggle('active', view === 'map');
 
+  // Show/hide floating map FAB on mobile
+  const fab = document.getElementById('mobile-map-fab');
+  if (fab) fab.style.display = (view === 'list' && window.innerWidth <= 640) ? 'flex' : 'none';
+
   if (view === 'map') {
     document.getElementById('map-view').style.display = 'flex';
     document.getElementById('map-view').style.position = 'relative';

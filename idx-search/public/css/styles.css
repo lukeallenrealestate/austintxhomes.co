@@ -1516,9 +1516,168 @@ input, select, textarea { font-family: inherit; }
   #map-cards-list { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 768px) {
-  .header-search { display: none; }
+/* ============ MOBILE RESPONSIVE — Zillow-style ============ */
 
+/* --- Floating Map FAB (visible in list view on mobile) --- */
+.mobile-map-fab {
+  display: none; /* shown via media query */
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 80;
+  background: var(--blue);
+  color: var(--white);
+  border: none;
+  border-radius: 28px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.mobile-map-fab:active {
+  transform: translateX(-50%) scale(0.96);
+}
+.mobile-map-fab svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ============ 768px — Tablet / Small Desktop ============ */
+@media (max-width: 768px) {
+
+  /* --- Header: compact, search full-width, shrink actions --- */
+  .header {
+    padding: 0 12px;
+    height: 56px;
+    gap: 10px;
+    --header-h: 56px;
+  }
+  .header-logo img {
+    height: 32px;
+  }
+  .header-search {
+    flex: 1;
+    max-width: none;
+    min-width: 0;
+  }
+  .header-search input {
+    padding: 9px 40px 9px 14px;
+    font-size: 14px;
+    border-radius: 22px;
+  }
+  .header-actions {
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .header-actions .btn {
+    padding: 7px 10px;
+    font-size: 12px;
+    gap: 4px;
+  }
+
+  /* --- Filter bar: compact scrollable pills --- */
+  .filter-bar {
+    padding: 0 10px;
+    gap: 6px;
+    height: 52px;
+    --filter-h: 52px;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .filter-toggle button {
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+  .filter-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    gap: 4px;
+    min-height: 36px;
+  }
+  .filter-divider {
+    height: 20px;
+  }
+
+  /* --- Filter dropdowns: full-width bottom sheets --- */
+  .filter-dropdown {
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    bottom: 0;
+    position: fixed;
+    border-radius: 16px 16px 0 0;
+    max-height: 70vh;
+    overflow-y: auto;
+    min-width: unset;
+    width: 100%;
+    padding: 24px 20px 32px;
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
+    z-index: 200;
+  }
+  .filter-dropdown::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+
+  /* --- View controls: compact sticky bar --- */
+  .view-controls {
+    padding: 10px 12px;
+    gap: 8px;
+    top: calc(56px + 52px); /* header-h + filter-h on mobile */
+  }
+  .results-count {
+    font-size: 13px;
+  }
+  .sort-select {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+  .view-toggle button {
+    padding: 5px 10px;
+    font-size: 12px;
+    gap: 4px;
+  }
+
+  /* --- Main layout: account for smaller header/filter --- */
+  .main {
+    padding-top: calc(56px + 52px);
+  }
+
+  /* --- List view: single column, reduced padding --- */
+  #list-view {
+    padding: 12px;
+  }
+  .listings-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* --- Property cards: larger images, bolder price --- */
+  .property-card {
+    border-radius: var(--radius);
+  }
+  .card-image {
+    height: 200px;
+  }
+  .card-body {
+    padding: 14px;
+  }
+  .card-price {
+    font-size: 22px;
+    font-weight: 800;
+  }
+
+  /* --- Map view: stacked layout --- */
   #map-view {
     flex-direction: column;
     height: auto;
@@ -1533,33 +1692,726 @@ input, select, textarea { font-family: inherit; }
     width: 100%;
     max-height: 50vh;
   }
+  #map-cards-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
 
+  /* --- Pagination: compact --- */
+  .pagination {
+    padding: 24px 12px;
+    gap: 3px;
+  }
+  .page-btn {
+    min-width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+  .page-btn.page-nav {
+    padding: 0 10px;
+    font-size: 13px;
+  }
+
+  /* --- Property detail: single column --- */
   .detail-content {
     grid-template-columns: 1fr;
+    padding: 24px 16px;
+    gap: 24px;
   }
-  .detail-sidebar { order: 2; }
-  .contact-card { position: static; }
-  .gallery { height: 260px; }
-
-  .listings-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  .detail-sidebar {
+    order: 2;
+  }
+  .contact-card {
+    position: static;
   }
 
-  .view-controls { padding: 12px 16px; }
-  #list-view { padding: 16px; }
-  .filter-bar { padding: 0 8px; gap: 6px; }
-  .filter-btn { padding: 5px 10px; font-size: 12px; }
-  .filter-toggle button { padding: 5px 12px; font-size: 12px; }
-  .header { padding: 0 16px; }
-  .header-actions { gap: 6px; }
-  .header-actions .btn { padding: 7px 12px; font-size: 13px; }
+  /* --- Gallery: shorter on tablet --- */
+  .gallery-grid {
+    height: 350px;
+    grid-template-rows: 174px 174px;
+  }
+  .gallery-single {
+    grid-template-rows: 350px;
+  }
+
+  /* --- Admin / Account: responsive tables --- */
+  .admin-layout,
+  .account-layout {
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: calc(56px + 24px);
+  }
+  .users-table th,
+  .users-table td {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  /* --- Modal: tighter padding --- */
+  .modal {
+    padding: 24px 20px;
+  }
 }
 
+/* ============ 640px — Large Phone ============ */
+@media (max-width: 640px) {
+
+  /* --- Header: hide logo, search takes full width --- */
+  .header {
+    height: 52px;
+    --header-h: 52px;
+    padding: 0 10px;
+    gap: 8px;
+  }
+  .header-logo {
+    display: none;
+  }
+  .header-search {
+    flex: 1;
+    max-width: none;
+  }
+  .header-search input {
+    padding: 10px 40px 10px 14px;
+    font-size: 15px;
+    border-radius: 24px;
+    background: var(--bg);
+    border-width: 1px;
+  }
+  .header-actions .btn {
+    padding: 6px 8px;
+    font-size: 0; /* hide text */
+    gap: 0;
+  }
+  .header-actions .btn svg {
+    width: 20px;
+    height: 20px;
+  }
+  /* Keep icon visible when text is hidden */
+  .header-actions .btn {
+    min-width: 36px;
+    min-height: 36px;
+    justify-content: center;
+  }
+
+  /* --- Filter bar: edge-to-edge scrollable pills --- */
+  .filter-bar {
+    height: 48px;
+    --filter-h: 48px;
+    padding: 0 8px;
+    gap: 6px;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .filter-toggle {
+    border-radius: 20px;
+  }
+  .filter-toggle button {
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+  .filter-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 20px;
+    min-height: 34px;
+  }
+
+  /* --- Main: adjust top padding --- */
+  .main {
+    padding-top: calc(52px + 48px);
+  }
+  .view-controls {
+    top: calc(52px + 48px);
+    padding: 8px 10px;
+  }
+
+  /* --- List view: tighter, full-width cards --- */
+  #list-view {
+    padding: 8px 0;
+  }
+  .listings-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 0;
+  }
+  .property-card {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
+    border-bottom: 1px solid var(--border);
+    border-top: none;
+  }
+  .property-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  .card-image {
+    height: 240px;
+    border-radius: 0;
+  }
+  .card-body {
+    padding: 12px 14px;
+  }
+  .card-price {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+  .card-beds {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .card-address {
+    font-size: 14px;
+  }
+  .card-tags {
+    margin-top: 8px;
+  }
+  .card-tag {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  /* --- Heart button: larger touch target --- */
+  .heart-btn {
+    width: 40px;
+    height: 40px;
+  }
+  .heart-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* --- Map view: full-screen map with bottom sheet --- */
+  #map-view {
+    display: flex;
+    flex-direction: column-reverse;
+    height: calc(100vh - 52px - 48px);
+    height: calc(100dvh - 52px - 48px);
+    position: relative;
+    overflow: hidden;
+  }
+  #map-container {
+    position: absolute;
+    inset: 0;
+    left: 0;
+    z-index: 1;
+    height: 100%;
+  }
+  .map-sidebar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    width: 100%;
+    max-height: 55vh;
+    min-height: 80px;
+    z-index: 10;
+    border-right: none;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+    background: var(--white);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transition: max-height 0.3s ease;
+  }
+  .map-sidebar-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: var(--white);
+    padding: 8px 16px 8px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  .map-sidebar-header::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: #d1d5db;
+    border-radius: 2px;
+    margin: 0 auto 8px;
+  }
+  #map-cards-list {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 0;
+  }
+  #map-cards-list .property-card {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
+    border-bottom: 1px solid var(--border);
+  }
+  #map-cards-list .card-image,
+  #map-cards-list .card-img-wrap {
+    height: 180px;
+  }
+
+  /* --- Map tools: repositioned for mobile --- */
+  .map-tools {
+    top: 10px;
+    right: 10px;
+  }
+  .map-tool-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  /* --- Floating map button in list view --- */
+  .mobile-map-fab {
+    display: flex;
+  }
+
+  /* --- View toggle: more prominent on mobile --- */
+  .view-toggle {
+    border-radius: 20px;
+  }
+  .view-toggle button {
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .view-toggle button.active {
+    border-radius: 0;
+  }
+
+  /* --- Pagination: phone-friendly --- */
+  .pagination {
+    padding: 20px 8px;
+    gap: 2px;
+  }
+  .page-btn {
+    min-width: 38px;
+    height: 38px;
+    font-size: 14px;
+    border-radius: 50%;
+  }
+  .page-btn.page-nav {
+    border-radius: 20px;
+    padding: 0 14px;
+  }
+  .page-ellipsis {
+    min-width: 28px;
+  }
+
+  /* --- Property detail: full-width gallery, sticky contact bar --- */
+  .detail-header {
+    padding-top: 52px;
+  }
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 250px;
+    height: 250px;
+  }
+  .gallery-single {
+    grid-template-rows: 250px;
+  }
+  .gallery-main {
+    grid-row: auto;
+  }
+  .gallery-thumbs-grid {
+    display: none;
+  }
+  .gallery-show-all {
+    bottom: 12px;
+    right: 12px;
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 20px;
+  }
+
+  .detail-content {
+    padding: 20px 14px;
+    gap: 20px;
+  }
+  .detail-price {
+    font-size: 28px;
+  }
+  .detail-address {
+    font-size: 15px;
+  }
+  .detail-stats {
+    gap: 12px;
+    padding: 16px 0;
+    margin: 16px 0;
+  }
+  .detail-stat .value {
+    font-size: 20px;
+  }
+  .detail-stat .label {
+    font-size: 11px;
+  }
+  .detail-facts {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .fact-item {
+    padding: 10px;
+  }
+
+  /* --- Contact card: sticky bottom bar on detail page --- */
+  .detail-sidebar {
+    order: 2;
+  }
+  .contact-card {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+    z-index: 90;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .contact-card .price-big {
+    font-size: 20px;
+    margin-bottom: 0;
+    flex: 1;
+    min-width: 0;
+  }
+  .contact-card .est-payment {
+    display: none;
+  }
+  .contact-form {
+    display: none;
+  }
+  .contact-card .btn-primary {
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 24px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .contact-card .agent-info {
+    display: none;
+  }
+  /* Add bottom padding to detail-main so content isn't hidden behind sticky bar */
+  .detail-main {
+    padding-bottom: 90px;
+  }
+
+  /* --- Similar listings grid: single column --- */
+  .similar-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* --- Photo modal: optimized for mobile --- */
+  .photo-modal-inner {
+    max-width: 100vw;
+  }
+  .photo-modal-inner img {
+    max-width: 100vw;
+    max-height: 75vh;
+    border-radius: 0;
+  }
+  .photo-modal-prev,
+  .photo-modal-next {
+    width: 40px;
+    height: 52px;
+    font-size: 24px;
+  }
+  .photo-modal-prev { left: 8px; }
+  .photo-modal-next { right: 8px; }
+  .photo-modal-close {
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  /* --- Modal: full-width on phones --- */
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal {
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+    padding: 24px 20px 32px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  /* --- Save search toast: wider on mobile --- */
+  .save-search-bar {
+    left: 12px;
+    right: 12px;
+    transform: translateX(0) translateY(80px);
+    border-radius: 16px;
+    justify-content: center;
+  }
+  .save-search-bar.visible {
+    transform: translateX(0) translateY(0);
+  }
+
+  /* --- Toast: full width on mobile --- */
+  .toast {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  /* --- Account / Admin pages: mobile-friendly --- */
+  .account-layout,
+  .admin-layout {
+    padding: 12px 10px;
+    padding-top: calc(52px + 20px);
+  }
+  .account-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .account-tabs::-webkit-scrollbar { display: none; }
+  .account-tab {
+    padding: 10px 14px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .favorites-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .saved-search-item {
+    padding: 14px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .admin-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .stat-card {
+    padding: 14px;
+  }
+  .stat-card .stat-num {
+    font-size: 24px;
+  }
+
+  /* --- Loading/Empty: tighter padding --- */
+  .loading {
+    padding: 48px 16px;
+  }
+  .empty-state {
+    padding: 48px 16px;
+  }
+}
+
+/* ============ 480px — Small Phone ============ */
 @media (max-width: 480px) {
-  .listings-grid { grid-template-columns: 1fr; }
-  .detail-stats { gap: 12px; }
-  .detail-stat .value { font-size: 18px; }
-  .header-actions .btn-outline { display: none; }
-  .filter-btn { padding: 5px 9px; font-size: 11px; }
-  .filter-toggle button { padding: 5px 10px; font-size: 11px; }
+
+  /* --- Header: extra compact --- */
+  .header {
+    height: 48px;
+    --header-h: 48px;
+    padding: 0 8px;
+    gap: 6px;
+  }
+  .header-search input {
+    padding: 8px 36px 8px 12px;
+    font-size: 14px;
+  }
+  .header-actions .btn-outline {
+    display: none;
+  }
+  .header-actions .btn {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 4px 6px;
+  }
+
+  /* --- Filter bar: ultra compact --- */
+  .filter-bar {
+    height: 44px;
+    --filter-h: 44px;
+    padding: 0 6px;
+    gap: 4px;
+  }
+  .filter-toggle button {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+  .filter-btn {
+    padding: 5px 10px;
+    font-size: 11px;
+    min-height: 32px;
+  }
+  .filter-divider {
+    display: none;
+  }
+
+  /* --- Main: adjust for smaller header --- */
+  .main {
+    padding-top: calc(48px + 44px);
+  }
+  .view-controls {
+    top: calc(48px + 44px);
+    padding: 6px 8px;
+  }
+  .results-count {
+    font-size: 12px;
+  }
+  .sort-select {
+    padding: 4px 6px;
+    font-size: 11px;
+    max-width: 110px;
+  }
+  .view-toggle button {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  /* --- List view: edge-to-edge --- */
+  #list-view {
+    padding: 4px 0;
+  }
+  .listings-grid {
+    gap: 4px;
+  }
+  .card-image {
+    height: 220px;
+  }
+  .card-body {
+    padding: 10px 12px;
+  }
+  .card-price {
+    font-size: 22px;
+  }
+  .card-beds {
+    font-size: 13px;
+    gap: 8px;
+  }
+  .card-address {
+    font-size: 13px;
+  }
+
+  /* --- Map view: full viewport --- */
+  #map-view {
+    height: calc(100vh - 48px - 44px);
+    height: calc(100dvh - 48px - 44px);
+  }
+  .map-sidebar {
+    max-height: 50vh;
+  }
+
+  /* --- Property detail: tighter --- */
+  .detail-header {
+    padding-top: 48px;
+  }
+  .gallery-grid {
+    height: 220px;
+    grid-template-rows: 220px;
+  }
+  .gallery-single {
+    grid-template-rows: 220px;
+  }
+  .detail-content {
+    padding: 16px 10px;
+    gap: 16px;
+  }
+  .detail-price {
+    font-size: 24px;
+  }
+  .detail-address {
+    font-size: 14px;
+  }
+  .detail-stats {
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 12px 0;
+    margin: 12px 0;
+  }
+  .detail-stat .value {
+    font-size: 18px;
+  }
+  .detail-stat .label {
+    font-size: 10px;
+  }
+  .detail-facts {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .detail-section h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .detail-description {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* --- Contact sticky bar: even more compact --- */
+  .contact-card {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  .contact-card .price-big {
+    font-size: 18px;
+  }
+  .contact-card .btn-primary {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  .detail-main {
+    padding-bottom: 80px;
+  }
+
+  /* --- Pagination: compact circles --- */
+  .pagination {
+    padding: 16px 6px;
+  }
+  .page-btn {
+    min-width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+  .page-btn.page-nav {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  /* --- Floating map button: smaller --- */
+  .mobile-map-fab {
+    bottom: 20px;
+    padding: 10px 20px;
+    font-size: 13px;
+    border-radius: 24px;
+  }
+
+  /* --- Admin: single column stats --- */
+  .admin-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .stat-card .stat-num {
+    font-size: 22px;
+  }
+
+  /* --- Autocomplete: full width, tighter --- */
+  .autocomplete-dropdown {
+    border-radius: 0 0 12px 12px;
+    max-height: 60vh;
+  }
+  .autocomplete-item {
+    padding: 10px 12px;
+    min-height: 44px;
+  }
 }
