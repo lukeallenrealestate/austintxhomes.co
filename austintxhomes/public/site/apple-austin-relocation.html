@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" href="/favicon.ico" sizes="any" />
-  <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
-  <link rel="apple-touch-icon" href="/favicon-96.png" />
+  <link rel="icon" href="/favicon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Apple Austin Relocation Guide | Luke Allen, Realtor</title>
   <meta name="description" content="Moving to Austin for Apple? Complete relocation guide for Apple campus employees — best neighborhoods by commute, housing costs, schools, and Texas tax savings. Local Realtor Luke Allen.">
@@ -13,15 +11,12 @@
   <meta name="geo.region" content="US-TX">
   <meta name="geo.placename" content="Austin, Texas">
 
-  <!-- Open Graph -->
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Apple Austin Relocation Guide | Luke Allen, Realtor2>
+  <meta property="og:title" content="Apple Austin Relocation Guide | Luke Allen, Realtor">
   <meta property="og:description" content="Moving to Austin for Apple? Complete relocation guide for Apple campus employees — best neighborhoods by commute, housing costs, schools, and Texas tax savings. Local Realtor Luke Allen.">
   <meta property="og:url" content="https://austintxhomes.co/apple-austin-relocation">
   <meta property="og:image" content="https://austintxhomes.co/images/og-apple-relocation.jpg">
   <meta name="twitter:card" content="summary_large_image" />
-
-  <!-- Fonts -->
 
   <script type="application/ld+json">
   {
@@ -45,7 +40,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Schema Markup -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -163,7 +157,6 @@
     }
 
     html { scroll-behavior: smooth; }
-
     body {
       font-family: 'Inter', system-ui, sans-serif;
       color: var(--text);
@@ -180,14 +173,36 @@
       margin-top: 64px;
       text-align: center;
     }
+
+    /* Video layer */
+    .hero video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.4s ease;
+      z-index: 0;
+    }
+    .hero video.ready { opacity: 1; }
+
+    /* Dark + gold-glow overlay on top of video */
     .hero::before {
       content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,.18) 0%, transparent 70%);
+      position: absolute; inset: 0; z-index: 1;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,.18) 0%, transparent 70%),
+        linear-gradient(135deg, rgba(15,15,14,.88) 0%, rgba(26,20,16,.82) 50%, rgba(15,15,14,.88) 100%);
       pointer-events: none;
     }
-    .hero-inner { position: relative; max-width: 760px; margin: 0 auto; }
+
+    /* All hero text floats above video + overlay */
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
     .eyebrow {
       font-family: 'Inter', sans-serif;
       font-size: 11px;
@@ -206,10 +221,7 @@
       margin-bottom: 1.5rem;
       letter-spacing: -.01em;
     }
-    .hero h1 em {
-      font-style: italic;
-      color: var(--gold-lt);
-    }
+    .hero h1 em { font-style: italic; color: var(--gold-lt); }
     .hero p {
       font-size: 1.05rem;
       line-height: 1.75;
@@ -282,10 +294,7 @@
       margin-bottom: 2rem;
       letter-spacing: -.01em;
     }
-    h2 em {
-      font-style: italic;
-      color: var(--gold);
-    }
+    h2 em { font-style: italic; color: var(--gold); }
 
     /* ── LOCATION CALLOUT ── */
     .location-section { background: var(--warm); }
@@ -384,10 +393,7 @@
       margin-bottom: 1rem;
       line-height: 1.5;
     }
-    .nbhd-card ul {
-      list-style: none;
-      margin-bottom: 1.25rem;
-    }
+    .nbhd-card ul { list-style: none; margin-bottom: 1.25rem; }
     .nbhd-card ul li {
       font-size: .865rem;
       line-height: 1.6;
@@ -397,11 +403,7 @@
       padding-left: 1rem;
       position: relative;
     }
-    .nbhd-card ul li::before {
-      content: '–';
-      position: absolute; left: 0;
-      color: var(--gold);
-    }
+    .nbhd-card ul li::before { content: '–'; position: absolute; left: 0; color: var(--gold); }
     .nbhd-card ul li:last-child { border-bottom: none; }
     .nbhd-link {
       font-size: 12px;
@@ -425,14 +427,8 @@
       gap: 4rem;
       align-items: start;
     }
-    .cost-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .875rem;
-    }
-    .cost-table thead tr {
-      border-bottom: 2px solid var(--border);
-    }
+    .cost-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    .cost-table thead tr { border-bottom: 2px solid var(--border); }
     .cost-table th {
       text-align: left;
       padding: .6rem .75rem;
@@ -451,17 +447,8 @@
     .cost-table td:first-child { font-weight: 500; }
     .cost-table td:not(:first-child) { color: var(--mid); font-size: .82rem; }
     .cost-table tr:last-child td { border-bottom: none; }
-    .housing-copy p {
-      font-size: .95rem;
-      line-height: 1.8;
-      color: var(--mid);
-      margin-bottom: 1.25rem;
-    }
-    .housing-copy a {
-      color: var(--gold);
-      text-decoration: none;
-      font-weight: 500;
-    }
+    .housing-copy p { font-size: .95rem; line-height: 1.8; color: var(--mid); margin-bottom: 1.25rem; }
+    .housing-copy a { color: var(--gold); text-decoration: none; font-weight: 500; }
     .housing-copy a:hover { text-decoration: underline; }
 
     /* ── RENT VS BUY ── */
@@ -472,11 +459,7 @@
       gap: 1.5rem;
       margin-top: 2.5rem;
     }
-    .rvb-card {
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 2rem;
-    }
+    .rvb-card { border: 1px solid var(--border); border-radius: var(--r); padding: 2rem; }
     .rvb-card-title {
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-size: 1.4rem;
@@ -494,9 +477,7 @@
       color: var(--gold);
       margin: 1rem 0 .5rem;
     }
-    .rvb-card ul {
-      list-style: none;
-    }
+    .rvb-card ul { list-style: none; }
     .rvb-card ul li {
       font-size: .875rem;
       line-height: 1.6;
@@ -505,11 +486,7 @@
       padding-left: 1rem;
       position: relative;
     }
-    .rvb-card ul li::before {
-      content: '–';
-      position: absolute; left: 0;
-      color: var(--gold);
-    }
+    .rvb-card ul li::before { content: '–'; position: absolute; left: 0; color: var(--gold); }
     .rvb-best {
       margin-top: 1rem;
       padding: .75rem 1rem;
@@ -553,17 +530,8 @@
       color: var(--ink);
       margin-bottom: .35rem;
     }
-    .school-area {
-      font-size: 11px;
-      color: var(--light);
-      letter-spacing: .06em;
-      margin-bottom: 1rem;
-    }
-    .school-card p {
-      font-size: .83rem;
-      line-height: 1.65;
-      color: var(--mid);
-    }
+    .school-area { font-size: 11px; color: var(--light); letter-spacing: .06em; margin-bottom: 1rem; }
+    .school-card p { font-size: .83rem; line-height: 1.65; color: var(--mid); }
 
     /* ── TAXES ── */
     .taxes-section { background: var(--bg); }
@@ -573,16 +541,8 @@
       gap: 1.5rem;
       margin-top: 2.5rem;
     }
-    .tax-card {
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 2rem;
-    }
-    .tax-icon {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      display: block;
-    }
+    .tax-card { border: 1px solid var(--border); border-radius: var(--r); padding: 2rem; }
+    .tax-icon { font-size: 1.5rem; margin-bottom: 1rem; display: block; }
     .tax-card h3 {
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-size: 1.25rem;
@@ -590,11 +550,7 @@
       color: var(--ink);
       margin-bottom: .75rem;
     }
-    .tax-card p {
-      font-size: .875rem;
-      line-height: 1.75;
-      color: var(--mid);
-    }
+    .tax-card p { font-size: .875rem; line-height: 1.75; color: var(--mid); }
 
     /* ── CHECKLIST ── */
     .checklist-section { background: var(--warm); }
@@ -642,11 +598,7 @@
       gap: 1.5rem;
       margin-top: 2.5rem;
     }
-    .faq-item {
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 1.75rem;
-    }
+    .faq-item { border: 1px solid var(--border); border-radius: var(--r); padding: 1.75rem; }
     .faq-q {
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-size: 1.1rem;
@@ -655,22 +607,13 @@
       margin-bottom: .75rem;
       line-height: 1.35;
     }
-    .faq-a {
-      font-size: .875rem;
-      line-height: 1.75;
-      color: var(--mid);
-    }
+    .faq-a { font-size: .875rem; line-height: 1.75; color: var(--mid); }
 
     /* ── CTA ── */
-    .cta-section {
-      background: var(--ink);
-      position: relative;
-      overflow: hidden;
-    }
+    .cta-section { background: var(--ink); position: relative; overflow: hidden; }
     .cta-section::before {
       content: '';
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background: radial-gradient(ellipse 60% 70% at 20% 50%, rgba(184,147,90,.12) 0%, transparent 65%);
       pointer-events: none;
     }
@@ -681,16 +624,9 @@
       align-items: center;
       position: relative;
     }
-    .cta-copy h2 {
-      color: #fff;
-    }
+    .cta-copy h2 { color: #fff; }
     .cta-copy h2 em { color: var(--gold-lt); }
-    .cta-copy p {
-      font-size: .95rem;
-      line-height: 1.8;
-      color: rgba(255,255,255,.6);
-      margin-bottom: 1rem;
-    }
+    .cta-copy p { font-size: .95rem; line-height: 1.8; color: rgba(255,255,255,.6); margin-bottom: 1rem; }
 
     /* ── FORM ── */
     .contact-form-wrap {
@@ -706,20 +642,9 @@
       color: #fff;
       margin-bottom: .35rem;
     }
-    .form-sub {
-      font-size: .8rem;
-      color: rgba(255,255,255,.4);
-      margin-bottom: 1.5rem;
-      letter-spacing: .03em;
-    }
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: .75rem;
-    }
-    .form-group {
-      margin-bottom: .75rem;
-    }
+    .form-sub { font-size: .8rem; color: rgba(255,255,255,.4); margin-bottom: 1.5rem; letter-spacing: .03em; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .form-group { margin-bottom: .75rem; }
     .form-group.full { grid-column: 1 / -1; }
     .form-group label {
       display: block;
@@ -753,10 +678,8 @@
       cursor: pointer;
     }
     .form-group select option { background: #1a1918; color: #fff; }
-    .form-group input::placeholder,
-    .form-group textarea::placeholder { color: rgba(255,255,255,.25); }
-    .form-group input:focus,
-    .form-group select:focus { border-color: rgba(184,147,90,.5); }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255,255,255,.25); }
+    .form-group input:focus, .form-group select:focus { border-color: rgba(184,147,90,.5); }
     .form-submit {
       width: 100%;
       background: var(--gold);
@@ -815,6 +738,10 @@
 
 <!-- ── HERO ── -->
 <section class="hero">
+  <!-- Background video — same source as /buy and /cost-of-living -->
+  <video id="apple-hv" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
+
+  <!-- All content floats above video + overlay via hero-inner z-index:2 -->
   <div class="hero-inner">
     <p class="eyebrow">Apple Austin Campus · Employee Relocation</p>
     <h1>Moving to Austin<br><em>for Apple?</em></h1>
@@ -995,36 +922,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Domain / Arboretum</td>
-              <td>$400K–$700K</td>
-              <td>$1,600–$2,400</td>
-            </tr>
-            <tr>
-              <td>Great Hills / Balcones</td>
-              <td>$500K–$850K</td>
-              <td>$1,900–$2,700</td>
-            </tr>
-            <tr>
-              <td>Cedar Park</td>
-              <td>$380K–$580K</td>
-              <td>$1,400–$1,900</td>
-            </tr>
-            <tr>
-              <td>Leander</td>
-              <td>$340K–$520K</td>
-              <td>$1,250–$1,700</td>
-            </tr>
-            <tr>
-              <td>Lakeway / Bee Cave</td>
-              <td>$550K–$1.1M</td>
-              <td>$2,200–$3,500</td>
-            </tr>
-            <tr>
-              <td>Central Austin / Zilker</td>
-              <td>$650K–$1.2M</td>
-              <td>$2,000–$3,200</td>
-            </tr>
+            <tr><td>Domain / Arboretum</td><td>$400K–$700K</td><td>$1,600–$2,400</td></tr>
+            <tr><td>Great Hills / Balcones</td><td>$500K–$850K</td><td>$1,900–$2,700</td></tr>
+            <tr><td>Cedar Park</td><td>$380K–$580K</td><td>$1,400–$1,900</td></tr>
+            <tr><td>Leander</td><td>$340K–$520K</td><td>$1,250–$1,700</td></tr>
+            <tr><td>Lakeway / Bee Cave</td><td>$550K–$1.1M</td><td>$2,200–$3,500</td></tr>
+            <tr><td>Central Austin / Zilker</td><td>$650K–$1.2M</td><td>$2,000–$3,200</td></tr>
           </tbody>
         </table>
       </div>
@@ -1264,7 +1167,14 @@
 
 <script src="/js/footer.js"></script>
 <script>
-  // Smooth scroll for anchor links
+  // ── Hero video fade-in ──
+  const appleVid = document.getElementById('apple-hv');
+  if (appleVid) {
+    if (appleVid.readyState >= 3) appleVid.classList.add('ready');
+    else appleVid.addEventListener('canplay', () => appleVid.classList.add('ready'), { once: true });
+  }
+
+  // ── Smooth scroll ──
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       const target = document.querySelector(a.getAttribute('href'));
@@ -1275,7 +1185,7 @@
     });
   });
 
-  // Contact form
+  // ── Contact form ──
   document.getElementById('apple-contact-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = this.querySelector('.form-submit');
