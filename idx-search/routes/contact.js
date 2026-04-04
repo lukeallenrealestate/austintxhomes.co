@@ -25,6 +25,9 @@ router.post('/', async (req, res) => {
     if (!rawSiteUrl.startsWith('http')) rawSiteUrl = 'https://' + rawSiteUrl;
     const price = listPrice ? '$' + Number(listPrice).toLocaleString() : '';
     const propertyUrl = listingKey ? `${rawSiteUrl}/property/${listingKey}` : rawSiteUrl;
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_FROM || process.env.EMAIL_USER;
+    const fromAddress = `"Austin TX Homes" <${process.env.EMAIL_USER}>`;
+
     const subject = listing
       ? `New inquiry: ${listing}${price ? ' — ' + price : ''}`
       : `New lead from Austin TX Homes${source ? ' (' + source + ')' : ''}`;
@@ -33,9 +36,10 @@ router.post('/', async (req, res) => {
       ? `<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;"><strong style="color:#374151;">${label}</strong><br/><span style="color:#374151;">${value}</span></td></tr>`
       : '';
 
-    await transporter.sendMail({
-      from: `"Austin TX Homes" <${process.env.EMAIL_USER}>`,
-      to: process.env.ADMIN_EMAIL || process.env.EMAIL_FROM || process.env.EMAIL_USER,
+    // ── Email 1: Lead notification to Luke ──────────────────────────────────
+    const leadEmailPromise = transporter.sendMail({
+      from: fromAddress,
+      to: adminEmail,
       replyTo: `"${name}" <${email}>`,
       subject,
       html: `
@@ -81,6 +85,54 @@ router.post('/', async (req, res) => {
           </div>
         </div>`
     });
+
+    // ── Email 2: Confirmation to the person who submitted ───────────────────
+    const firstName = name.split(' ')[0];
+    const confirmSubject = listing
+      ? `Got your question about ${listing} — I'll be in touch soon`
+      : `Thanks for reaching out, ${firstName} — I'll be in touch soon`;
+
+    const confirmEmailPromise = transporter.sendMail({
+      from: fromAddress,
+      to: `"${name}" <${email}>`,
+      replyTo: adminEmail,
+      subject: confirmSubject,
+      html: `
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:560px;margin:0 auto;background:#fff;">
+          <div style="background:#1877F2;padding:20px 28px;">
+            <h2 style="color:#fff;margin:0;font-size:20px;">Austin TX Homes</h2>
+            <p style="color:#c7d9ff;margin:6px 0 0;font-size:13px;">luke@austinmdg.com · (512) 710-0455</p>
+          </div>
+          <div style="padding:28px;">
+            <p style="color:#374151;font-size:16px;margin:0 0 16px;">Hi ${firstName},</p>
+            <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 16px;">
+              Thanks for reaching out${listing ? ` about <strong>${listing}</strong>` : ''}! I received your message and will follow up with you shortly — usually within a few hours during business hours.
+            </p>
+            ${(notes || message) ? `
+            <div style="background:#f9fafb;border-left:3px solid #1877F2;padding:14px 18px;margin:20px 0;border-radius:0 6px 6px 0;">
+              <p style="color:#6b7280;font-size:12px;margin:0 0 6px;text-transform:uppercase;letter-spacing:0.05em;">Your message</p>
+              <p style="color:#374151;font-size:14px;white-space:pre-wrap;margin:0;">${notes || message}</p>
+            </div>` : ''}
+            <p style="color:#374151;font-size:15px;line-height:1.6;margin:16px 0;">
+              In the meantime, feel free to browse listings at <a href="${rawSiteUrl}" style="color:#1877F2;text-decoration:none;">austintxhomes.co</a> or call/text me directly.
+            </p>
+            <p style="color:#374151;font-size:15px;margin:24px 0 4px;">Talk soon,</p>
+            <p style="color:#374151;font-size:15px;font-weight:600;margin:0;">Luke Allen</p>
+            <p style="color:#6b7280;font-size:13px;margin:4px 0 0;">Austin TX Homes · Realtor</p>
+            <p style="color:#6b7280;font-size:13px;margin:2px 0 0;">
+              <a href="tel:5127100455" style="color:#1877F2;text-decoration:none;">(512) 710-0455</a> ·
+              <a href="mailto:luke@austinmdg.com" style="color:#1877F2;text-decoration:none;">luke@austinmdg.com</a>
+            </p>
+            <hr style="border:none;border-top:1px solid #f3f4f6;margin:24px 0;" />
+            <p style="color:#9ca3af;font-size:12px;margin:0;">
+              You're receiving this because you submitted a contact form at <a href="${rawSiteUrl}" style="color:#9ca3af;">austintxhomes.co</a>.
+            </p>
+          </div>
+        </div>`
+    });
+
+    // Send both emails in parallel
+    await Promise.all([leadEmailPromise, confirmEmailPromise]);
 
     const isHtmlForm = req.headers['content-type']?.includes('application/x-www-form-urlencoded');
     if (isHtmlForm) return res.redirect(303, (req.headers.referer || '/') + '?submitted=1');
