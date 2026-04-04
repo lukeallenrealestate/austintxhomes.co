@@ -214,6 +214,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fab = document.getElementById('mobile-map-fab');
   if (fab) fab.style.display = (currentView === 'list' && window.innerWidth <= 640) ? 'flex' : 'none';
 
+  // Make map bottom sheet draggable on mobile
+  setupDraggableSheet('.map-sidebar', '.map-sidebar-header');
+
   // Close dropdowns on outside click
   document.addEventListener('click', e => {
     if (!e.target.closest('.filter-dropdown') && !e.target.closest('.filter-btn')) {
@@ -551,6 +554,60 @@ function closeAllDropdowns() {
     d.style.top = '';
   });
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-open'));
+}
+
+// ---- Draggable bottom sheet (mobile only) ----
+// Tap the handle to toggle expanded/collapsed, drag down to collapse, drag up to expand.
+function setupDraggableSheet(sheetSelector, handleSelector) {
+  if (window.innerWidth > 640) return;
+  const sheet = document.querySelector(sheetSelector);
+  const handle = document.querySelector(handleSelector);
+  if (!sheet || !handle) return;
+
+  let startY = 0;
+  let currentDelta = 0;
+  let dragging = false;
+  let moved = false;
+
+  const onStart = (y) => {
+    dragging = true;
+    moved = false;
+    startY = y;
+    currentDelta = 0;
+    sheet.style.transition = 'none';
+  };
+  const onMove = (y) => {
+    if (!dragging) return;
+    currentDelta = y - startY;
+    if (Math.abs(currentDelta) > 4) moved = true;
+    // Only allow downward drag from expanded, upward drag from collapsed
+    const isCollapsed = sheet.classList.contains('collapsed');
+    if (!isCollapsed && currentDelta < 0) return; // don't drag above expanded
+    if (isCollapsed && currentDelta > 0) return;  // don't drag below collapsed
+    sheet.style.transform = isCollapsed
+      ? `translateY(calc(100% - 48px + ${currentDelta}px))`
+      : `translateY(${Math.max(0, currentDelta)}px)`;
+  };
+  const onEnd = () => {
+    if (!dragging) return;
+    dragging = false;
+    sheet.style.transition = '';
+    sheet.style.transform = '';
+    if (!moved) {
+      // Treat as tap — toggle
+      sheet.classList.toggle('collapsed');
+    } else {
+      // Snap based on drag distance
+      const isCollapsed = sheet.classList.contains('collapsed');
+      if (!isCollapsed && currentDelta > 80) sheet.classList.add('collapsed');
+      else if (isCollapsed && currentDelta < -80) sheet.classList.remove('collapsed');
+    }
+  };
+
+  handle.addEventListener('touchstart', e => onStart(e.touches[0].clientY), { passive: true });
+  handle.addEventListener('touchmove',  e => onMove(e.touches[0].clientY),  { passive: true });
+  handle.addEventListener('touchend',   onEnd);
+  handle.addEventListener('touchcancel', onEnd);
 }
 
 function clearPriceFilter() {

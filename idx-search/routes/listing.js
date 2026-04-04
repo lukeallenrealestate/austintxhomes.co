@@ -235,8 +235,10 @@ router.get('/:slug', (req, res) => {
 
     <div class="detail-sidebar">
       <div class="contact-card">
+        <div class="mobile-sheet-handle"></div>
         <div class="price-big" id="sidebar-price"></div>
         <div class="est-payment" id="sidebar-payment"></div>
+        <a href="tel:+12547182567" class="btn btn-primary mobile-contact-btn">Contact Luke</a>
         <form class="contact-form" onsubmit="submitContact(event)">
           <input type="text" name="name" placeholder="Your name" required />
           <input type="email" name="email" placeholder="Your email" required />

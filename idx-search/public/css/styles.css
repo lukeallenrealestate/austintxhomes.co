@@ -1518,6 +1518,10 @@ input, select, textarea { font-family: inherit; }
 
 /* ============ MOBILE RESPONSIVE — Zillow-style ============ */
 
+/* Mobile-only elements hidden on desktop */
+.mobile-sheet-handle { display: none; }
+.mobile-contact-btn { display: none; }
+
 /* --- Floating Map FAB (visible in list view on mobile) --- */
 .mobile-map-fab {
   display: none; /* shown via media query */
@@ -1916,8 +1920,18 @@ input, select, textarea { font-family: inherit; }
     background: var(--white);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    transition: max-height 0.3s ease;
+    transition: transform 0.25s ease;
+    will-change: transform;
   }
+  .map-sidebar.collapsed {
+    transform: translateY(calc(100% - 48px));
+  }
+  .map-sidebar-header {
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+  .map-sidebar-header:active { cursor: grabbing; }
   .map-sidebar-header {
     position: sticky;
     top: 0;
@@ -2069,11 +2083,42 @@ input, select, textarea { font-family: inherit; }
     border-radius: 16px 16px 0 0;
     box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
     z-index: 90;
-    padding: 14px 16px;
+    padding: 18px 16px 14px;
     display: flex;
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
+    background: var(--white);
+    touch-action: none;
+    transition: transform 0.25s ease;
+    will-change: transform;
+  }
+  .contact-card.collapsed {
+    transform: translateY(calc(100% - 56px));
+  }
+  .mobile-sheet-handle {
+    display: block;
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: #d1d5db;
+    border-radius: 2px;
+    cursor: grab;
+  }
+  .mobile-sheet-handle:active { cursor: grabbing; }
+  .contact-card .mobile-contact-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 22px;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 24px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .contact-card .price-big {
     font-size: 20px;

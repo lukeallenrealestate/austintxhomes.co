@@ -9,7 +9,50 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await loadListing(listingKey);
   loadGoogleMaps();
+
+  // Make contact card draggable on mobile
+  setupDraggableSheet('.contact-card', '.mobile-sheet-handle');
 });
+
+// Draggable bottom sheet — tap or drag handle to toggle expanded/collapsed
+function setupDraggableSheet(sheetSelector, handleSelector) {
+  if (window.innerWidth > 640) return;
+  const sheet = document.querySelector(sheetSelector);
+  const handle = document.querySelector(handleSelector);
+  if (!sheet || !handle) return;
+
+  let startY = 0, currentDelta = 0, dragging = false, moved = false;
+
+  const onStart = (y) => { dragging = true; moved = false; startY = y; currentDelta = 0; sheet.style.transition = 'none'; };
+  const onMove = (y) => {
+    if (!dragging) return;
+    currentDelta = y - startY;
+    if (Math.abs(currentDelta) > 4) moved = true;
+    const isCollapsed = sheet.classList.contains('collapsed');
+    if (!isCollapsed && currentDelta < 0) return;
+    if (isCollapsed && currentDelta > 0) return;
+    sheet.style.transform = isCollapsed
+      ? `translateY(calc(100% - 56px + ${currentDelta}px))`
+      : `translateY(${Math.max(0, currentDelta)}px)`;
+  };
+  const onEnd = () => {
+    if (!dragging) return;
+    dragging = false;
+    sheet.style.transition = '';
+    sheet.style.transform = '';
+    if (!moved) sheet.classList.toggle('collapsed');
+    else {
+      const isCollapsed = sheet.classList.contains('collapsed');
+      if (!isCollapsed && currentDelta > 60) sheet.classList.add('collapsed');
+      else if (isCollapsed && currentDelta < -60) sheet.classList.remove('collapsed');
+    }
+  };
+
+  handle.addEventListener('touchstart', e => onStart(e.touches[0].clientY), { passive: true });
+  handle.addEventListener('touchmove',  e => onMove(e.touches[0].clientY),  { passive: true });
+  handle.addEventListener('touchend',   onEnd);
+  handle.addEventListener('touchcancel', onEnd);
+}
 
 async function loadListing(listingKey) {
   try {
