@@ -169,10 +169,59 @@
     /* ── HERO ── */
     .hero {
       background: var(--ink);
-      background-image: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(184,147,90,.18) 0%, transparent 65%);
       padding: 120px 2rem 100px;
-      text-align: center;
       margin-top: 64px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+    }
+    .hero video.ready { opacity: 1; }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(15,15,14,.82) 0%, rgba(26,20,16,.75) 50%, rgba(15,15,14,.82) 100%);
+      z-index: 1;
+    }
+    .hero-inner {
+      position: relative; z-index: 2;
+      max-width: var(--w); margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 380px; gap: 48px; align-items: start;
+    }
+    .hero-left { text-align: left; }
+    .hero-right {}
+    .hero-form {
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px; padding: 28px; text-align: left;
+    }
+    .hero-form h3 {
+      font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #fff; margin-bottom: 4px; font-weight: 400;
+    }
+    .hero-form p { font-size: 12px; color: rgba(255,255,255,.45); margin-bottom: 20px; }
+    .hero-form input, .hero-form select {
+      width: 100%; padding: 10px 14px; margin-bottom: 10px;
+      border: 1px solid rgba(255,255,255,.15); border-radius: var(--r);
+      background: rgba(255,255,255,.08); color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
+    }
+    .hero-form input::placeholder { color: rgba(255,255,255,.3); }
+    .hero-form input:focus, .hero-form select:focus { border-color: var(--gold); }
+    .hero-form select option { background: #1a1918; color: #fff; }
+    .hero-form .btn-submit {
+      width: 100%; background: var(--gold); color: #fff; border: none;
+      padding: 12px; border-radius: var(--r); font-size: 12px;
+      letter-spacing: .1em; text-transform: uppercase; cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: background .2s; margin-top: 4px;
+    }
+    .hero-form .btn-submit:hover { background: var(--gold-lt); }
+    .hero-form-success { text-align: center; padding: 24px 0; color: var(--gold-lt); font-family: 'Cormorant Garamond', serif; font-size: 20px; display: none; }
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 32px; }
+      .hero-left { text-align: center; }
+      .hero-form { max-width: 420px; margin: 0 auto; }
     }
 
     .hero-eyebrow {
@@ -207,15 +256,16 @@
       color: rgba(255,255,255,.58);
       line-height: 1.8;
       max-width: 680px;
-      margin: 0 auto 2.5rem;
+      margin: 0 0 2.5rem;
       font-weight: 300;
       opacity: 0;
       animation: fadeUp .7s .3s ease forwards;
     }
+    @media (max-width: 900px) { .hero-lead { margin: 0 auto 2.5rem; } }
 
     .hero-pills {
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       flex-wrap: wrap;
       gap: .625rem;
       margin-bottom: 2.5rem;
@@ -236,7 +286,7 @@
 
     .hero-anchors {
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       flex-wrap: wrap;
       gap: 1.75rem;
       opacity: 0;
@@ -879,22 +929,53 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-eyebrow">Google Austin · Employee Relocation</div>
-    <h1>Moving to Austin<br><em>for Google?</em></h1>
-    <p class="hero-lead">Welcome to Austin. Google's office is downtown — 500 W 2nd Street, right in the heart of the city. That's a fundamentally different Austin experience than most tech campuses. You can walk to work from Rainey Street. You can bike from Bouldin Creek. You can live in Austin's most iconic neighborhoods and be at your desk in 15 minutes. This guide gives you the honest neighborhood-by-neighborhood breakdown for Google employees in 2026.</p>
-    <div class="hero-pills">
-      <span class="hero-pill">No State Income Tax</span>
-      <span class="hero-pill">Walk-to-Work Options</span>
-      <span class="hero-pill">Free Buyer Representation</span>
+    <video id="google-hv" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-eyebrow">Google Austin · Employee Relocation</div>
+        <h1>Moving to Austin<br><em>for Google?</em></h1>
+        <p class="hero-lead">Google's office is downtown — 500 W 2nd Street, right in the heart of the city. Walk to work from Rainey Street, bike from Bouldin Creek, or live in Austin's most iconic neighborhoods and be at your desk in 15 minutes.</p>
+        <div class="hero-pills">
+          <span class="hero-pill">No State Income Tax</span>
+          <span class="hero-pill">Walk-to-Work Options</span>
+          <span class="hero-pill">Free Buyer Representation</span>
+        </div>
+        <nav class="hero-anchors">
+          <a href="#homes">Homes for Sale</a>
+          <a href="#neighborhoods">Neighborhoods</a>
+          <a href="#housing">Housing Costs</a>
+          <a href="#schools">Schools</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+      </div>
+      <div class="hero-right">
+        <div class="hero-form">
+          <h3>Start Your Home Search</h3>
+          <p>Tell me what you're looking for and I'll send curated options within 24 hours.</p>
+          <form id="hero-contact-form">
+            <input type="hidden" name="source" value="google-relocation-hero" />
+            <input type="text" name="name" placeholder="Your name" required />
+            <input type="text" name="contact" placeholder="Email or phone" required />
+            <select name="budget">
+              <option value="">Budget range</option>
+              <option>$500K–$750K</option>
+              <option>$750K–$1M</option>
+              <option>$1M–$1.5M</option>
+              <option>$1.5M+</option>
+            </select>
+            <select name="timeline">
+              <option value="">When are you moving?</option>
+              <option>Within 30 days</option>
+              <option>1–3 months</option>
+              <option>3–6 months</option>
+              <option>Just exploring</option>
+            </select>
+            <button type="submit" class="btn-submit">Get Started</button>
+          </form>
+          <div class="hero-form-success" id="hero-form-success">Got it — I'll be in touch within a few hours.</div>
+        </div>
+      </div>
     </div>
-    <nav class="hero-anchors">
-      <a href="#location">Location</a>
-      <a href="#neighborhoods">Neighborhoods</a>
-      <a href="#housing">Housing Costs</a>
-      <a href="#schools">Schools</a>
-      <a href="#taxes">Texas Taxes</a>
-      <a href="#faq">FAQ</a>
-    </nav>
   </section>
 
   <!-- LOCATION -->
@@ -1038,6 +1119,40 @@
       </div>
     </div>
   </section>
+
+  <!-- HOMES NEAR GOOGLE DOWNTOWN -->
+  <section style="padding:80px 32px;background:var(--warm);" id="homes">
+    <div style="max-width:var(--w);margin:0 auto;">
+      <div class="eyebrow">Homes for Sale</div>
+      <h2>Near <em>Google Austin</em></h2>
+      <p style="font-size:14px;color:var(--mid);max-width:520px;margin-bottom:40px;">Homes $500K+ within 3 miles of Google's downtown Austin office. Updated daily from MLS.</p>
+      <div id="google-listings-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;"></div>
+      <div id="google-pagination" style="display:flex;justify-content:center;gap:6px;margin-top:36px;"></div>
+      <div style="text-align:center;margin-top:24px;">
+        <a href="/homes-for-sale-near-google-austin" style="color:var(--gold);font-size:13px;letter-spacing:.08em;text-decoration:none;border-bottom:1px solid var(--gold);">View all homes near Google Austin →</a>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .g-card{background:#fff;border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:box-shadow .25s,transform .25s;text-decoration:none;display:flex;flex-direction:column;cursor:pointer}
+    .g-card:hover{box-shadow:0 8px 28px rgba(0,0,0,.08);transform:translateY(-2px)}
+    .g-card-img{position:relative;height:190px;background:var(--cream);overflow:hidden}
+    .g-card-img img{width:100%;height:100%;object-fit:cover;display:block}
+    .g-card-body{padding:16px;flex:1;display:flex;flex-direction:column}
+    .g-card-price{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--ink);margin-bottom:4px}
+    .g-card-addr{font-size:13px;color:var(--mid);margin-bottom:10px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .g-card-stats{display:flex;gap:14px;font-size:12px;color:var(--mid);margin-top:auto;padding-top:12px;border-top:1px solid var(--border)}
+    .g-card-stats strong{color:var(--ink);font-weight:600}
+    .g-card-badge{position:absolute;top:10px;left:10px;background:var(--gold);color:#fff;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:3px}
+    .g-pg-btn{min-width:36px;height:36px;padding:0 10px;border:1px solid var(--border);border-radius:4px;background:#fff;font-size:13px;font-weight:500;color:var(--ink);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+    .g-pg-btn:hover{border-color:var(--gold);color:var(--gold)}
+    .g-pg-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+    .g-pg-btn:disabled{opacity:.35;pointer-events:none}
+    #google-listings-grid .g-loading{grid-column:1/-1;text-align:center;padding:48px;color:var(--mid);font-size:14px}
+    @media(max-width:900px){#google-listings-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:520px){#google-listings-grid{grid-template-columns:1fr}}
+  </style>
 
   <!-- HOUSING COSTS -->
   <section id="housing" class="housing-section">
@@ -1344,7 +1459,85 @@
       });
     });
 
-    // Contact form
+    // Hero video fade-in
+    const gVid = document.getElementById('google-hv');
+    if (gVid) {
+      if (gVid.readyState >= 3) gVid.classList.add('ready');
+      else gVid.addEventListener('canplay', () => gVid.classList.add('ready'), { once: true });
+    }
+
+    // Hero contact form
+    document.getElementById('hero-contact-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(this));
+      try {
+        await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      } catch {}
+      this.style.display = 'none';
+      document.getElementById('hero-form-success').style.display = 'block';
+    });
+
+    // Listings near Google downtown
+    const GOOGLE_BOUNDS = { north: '30.3107', south: '30.2237', east: '-97.6994', west: '-97.7994' };
+    const G_PER_PAGE = 12;
+    let gPage = 1;
+
+    function makePropertyUrl(l) {
+      const key = l.listing_key || '';
+      if (!key) return '#';
+      const addr = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-');
+      const city = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
+      const zip = (l.postal_code || '').replace(/[^0-9]/g, '');
+      return addr ? `/property/${addr}-${city}-tx${zip ? '-' + zip : ''}-${key}` : `/property/${key}`;
+    }
+
+    async function loadGoogleListings(page) {
+      gPage = page;
+      const grid = document.getElementById('google-listings-grid');
+      grid.innerHTML = '<div class="g-loading">Loading homes near Google Austin…</div>';
+      const params = new URLSearchParams({
+        forRent: 'false', north: GOOGLE_BOUNDS.north, south: GOOGLE_BOUNDS.south,
+        east: GOOGLE_BOUNDS.east, west: GOOGLE_BOUNDS.west,
+        minPrice: 500000, sortBy: 'newest', page, limit: G_PER_PAGE
+      });
+      try {
+        const res = await fetch('/api/properties/search?' + params);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const listings = data.listings || [];
+        const totalPages = data.pages || 1;
+        grid.innerHTML = '';
+        if (!listings.length) {
+          grid.innerHTML = '<div class="g-loading">No homes currently listed in this area.</div>';
+          document.getElementById('google-pagination').innerHTML = '';
+          return;
+        }
+        listings.forEach(l => {
+          const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : 'Price N/A';
+          const addr = l.unparsed_address || 'Austin, TX';
+          const cityZip = [l.city, l.postal_code].filter(Boolean).join(', ');
+          const beds = l.bedrooms_total || '—', baths = l.bathrooms_total || '—';
+          const sqft = l.living_area ? Number(l.living_area).toLocaleString() : '—';
+          const photo = (l.photos && l.photos[0]) || '';
+          const isNew = l.days_on_market != null && l.days_on_market <= 3;
+          const card = document.createElement('a');
+          card.className = 'g-card'; card.href = makePropertyUrl(l);
+          card.innerHTML = `<div class="g-card-img">${photo ? `<img src="${photo}" alt="${addr}" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px\\'>No Photo</div>'" />` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px">No Photo</div>'}${isNew ? '<span class="g-card-badge" style="background:#0f0f0e">New</span>' : '<span class="g-card-badge">For Sale</span>'}</div><div class="g-card-body"><div class="g-card-price">${price}</div><div class="g-card-addr">${addr}<br><span style="font-size:12px;color:#999">${cityZip}</span></div><div class="g-card-stats"><span><strong>${beds}</strong> bd</span><span><strong>${baths}</strong> ba</span><span><strong>${sqft}</strong> sqft</span></div></div>`;
+          grid.appendChild(card);
+        });
+        const pag = document.getElementById('google-pagination');
+        if (totalPages <= 1) { pag.innerHTML = ''; return; }
+        let html = `<button class="g-pg-btn" onclick="loadGoogleListings(${page-1})" ${page<=1?'disabled':''}>&lsaquo; Prev</button>`;
+        for (let i = 1; i <= Math.min(totalPages, 7); i++) html += `<button class="g-pg-btn${i===page?' active':''}" onclick="loadGoogleListings(${i})">${i}</button>`;
+        if (totalPages > 7) html += `<span style="color:#999;padding:0 4px">…</span><button class="g-pg-btn" onclick="loadGoogleListings(${totalPages})">${totalPages}</button>`;
+        html += `<button class="g-pg-btn" onclick="loadGoogleListings(${page+1})" ${page>=totalPages?'disabled':''}>Next &rsaquo;</button>`;
+        pag.innerHTML = html;
+        document.getElementById('homes').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch { grid.innerHTML = '<div class="g-loading">Unable to load listings.</div>'; }
+    }
+    loadGoogleListings(1);
+
+    // Bottom contact form
     document.getElementById('google-contact-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const btn = this.querySelector('.btn-submit');
