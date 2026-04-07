@@ -659,6 +659,7 @@ app.get('/east-austin-market-report', (_req, res) => res.sendFile(path.join(__di
 app.get('/living-in-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-east-austin.html')));
 app.get('/sell-home-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-east-austin.html')));
 app.get('/homes-for-sale-near-tesla-gigafactory', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-tesla-gigafactory.html')));
+app.get('/homes-for-sale-near-tesla-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-tesla-austin.html')));
 app.get('/fix-and-flip-calculator-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/fix-and-flip-calculator-austin.html')));
 
 // Cash flow unsubscribe (GET so email links work directly)
