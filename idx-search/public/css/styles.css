@@ -2103,24 +2103,26 @@ input, select, textarea { font-family: inherit; }
     height: 240px !important;
   }
 
-  /* --- Contact card: sticky bottom bar on detail page --- */
+  /* --- Contact card: slim fixed bottom bar on detail page --- */
   .detail-sidebar {
-    order: 2;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    position: fixed !important;
+    bottom: 0; left: 0; right: 0;
+    top: auto !important;
     z-index: 90;
-    height: auto;
-    padding: 0;
-    margin: 0;
+    width: 100%;
+    height: auto !important;
+    max-height: none;
+    padding: 0; margin: 0;
+    overflow: visible;
   }
   .contact-card {
-    position: relative; /* nested inside fixed .detail-sidebar, not double-fixed */
+    position: relative !important;
+    top: auto !important;
+    border: none;
     border-radius: 16px 16px 0 0;
     box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
-    padding: 18px 16px calc(14px + env(safe-area-inset-bottom, 0px));
-    display: flex;
+    padding: 16px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+    display: flex !important;
     align-items: center;
     gap: 12px;
     flex-wrap: nowrap;
@@ -2129,43 +2131,30 @@ input, select, textarea { font-family: inherit; }
   .mobile-sheet-handle {
     display: block;
     position: absolute;
-    top: 6px;
-    left: 50%;
+    top: 6px; left: 50%;
     transform: translateX(-50%);
-    width: 40px;
-    height: 4px;
-    background: #d1d5db;
-    border-radius: 2px;
+    width: 40px; height: 4px;
+    background: #d1d5db; border-radius: 2px;
   }
   .contact-card .mobile-contact-btn {
     display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
     padding: 12px 22px;
-    font-size: 15px;
-    font-weight: 700;
+    font-size: 15px; font-weight: 700;
     border-radius: 24px;
-    white-space: nowrap;
-    flex-shrink: 0;
+    white-space: nowrap; flex-shrink: 0;
   }
   .contact-card .price-big {
-    font-size: 22px;
-    font-weight: 800;
-    margin-bottom: 0;
-    flex: 1;
-    min-width: 0;
+    font-size: 22px; font-weight: 800;
+    margin-bottom: 0 !important;
+    flex: 1; min-width: 0;
     white-space: nowrap;
   }
-  .contact-card .est-payment {
-    display: none;
+  .contact-card .est-payment,
+  .contact-card .contact-form,
+  .contact-card .agent-info,
+  .contact-card #open-house-card {
+    display: none !important;
   }
-  .contact-form {
-    display: none;
-  }
-  .contact-card .agent-info {
-    display: none;
-  }
-  /* Bottom padding so content isn't hidden behind sticky bar */
   .detail-main {
     padding-bottom: 80px;
   }
@@ -2427,18 +2416,15 @@ input, select, textarea { font-family: inherit; }
 
   /* --- Contact sticky bar: even more compact --- */
   .contact-card {
-    padding: 10px 12px;
+    padding: 14px 12px calc(10px + env(safe-area-inset-bottom, 0px));
     gap: 10px;
   }
   .contact-card .price-big {
-    font-size: 18px;
+    font-size: 20px;
   }
-  .contact-card .btn-primary {
-    padding: 10px 20px;
+  .contact-card .mobile-contact-btn {
+    padding: 10px 18px;
     font-size: 14px;
-  }
-  .detail-main {
-    padding-bottom: 80px;
   }
 
   /* --- Pagination: compact circles --- */
