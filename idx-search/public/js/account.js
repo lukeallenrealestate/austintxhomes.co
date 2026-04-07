@@ -151,6 +151,7 @@ async function changePassword() {
 
 function describeFilters(filters) {
   const parts = [];
+  if (filters.forRent === 'true') parts.push('For Rent');
   if (filters.city) parts.push(filters.city);
   if (filters.zip) parts.push('ZIP ' + filters.zip);
   if (filters.neighborhood) parts.push(filters.neighborhood);
@@ -163,6 +164,7 @@ function describeFilters(filters) {
   if (filters.minBaths) parts.push(filters.minBaths + '+ baths');
   if (filters.subType) parts.push(filters.subType);
   if (filters.schoolDistrict) parts.push(filters.schoolDistrict);
+  if (filters.polygon) parts.push('📍 Custom map area');
   return parts.length ? parts.join(' · ') : 'All Austin area homes';
 }
 

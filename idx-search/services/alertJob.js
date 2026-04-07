@@ -1,15 +1,30 @@
 const db = require('../db/database');
 const { sendNewListingsAlert } = require('./mailer');
 
+// Point-in-polygon (ray casting) — same algo as properties.js
+function pointInPolygon(lat, lng, polygon) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].lat, yi = polygon[i].lng;
+    const xj = polygon[j].lat, yj = polygon[j].lng;
+    if (((yi > lng) !== (yj > lng)) && (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi)) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
 function buildFilterConditions(filters) {
-  const conditions = ['mlg_can_view = 1', "standard_status = 'Active'"];
+  const conditions = ['mlg_can_view = 1', "standard_status = 'Active'",
+    'latitude IS NOT NULL', 'longitude IS NOT NULL'];
   const values = [];
 
   const {
     forRent, minPrice, maxPrice, minBeds, minBaths,
     minSqft, maxSqft, minYear, maxYear,
     city, zip, neighborhood, schoolDistrict, keyword,
-    pool, waterfront, newConstruction, propertyType, subType
+    pool, waterfront, newConstruction, propertyType, subType,
+    north, south, east, west
   } = filters;
 
   if (forRent === 'true') {
@@ -33,6 +48,12 @@ function buildFilterConditions(filters) {
   if (maxSqft)  { conditions.push('living_area <= ?'); values.push(Number(maxSqft)); }
   if (minYear)  { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
   if (maxYear)  { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
+
+  // Bounding box (from map view saved searches)
+  if (north && south && east && west) {
+    conditions.push('latitude <= ? AND latitude >= ? AND longitude <= ? AND longitude >= ?');
+    values.push(Number(north), Number(south), Number(east), Number(west));
+  }
 
   if (city) {
     const cities = city.split(',').map(s => s.trim());
@@ -78,30 +99,44 @@ async function runAlertJob() {
 
       // Only listings newer than last alert (or last 24h if never alerted)
       const since = search.last_alerted_at || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-      conditions.push(`listing_contract_date >= ?`);
-      values.push(since.slice(0, 10)); // date portion only
+      conditions.push(`modification_timestamp >= ?`);
+      values.push(since);
 
       const where = conditions.join(' AND ');
-      const listings = db.prepare(`
+      let listings = db.prepare(`
         SELECT listing_key, list_price, unparsed_address, city,
-               bedrooms_total, bathrooms_total, living_area, photos
+               bedrooms_total, bathrooms_total, living_area, photos,
+               latitude, longitude
         FROM listings WHERE ${where}
-        ORDER BY listing_contract_date DESC LIMIT 50
+        ORDER BY modification_timestamp DESC LIMIT 200
       `).all(values);
 
+      // Apply polygon filter if saved search includes a drawn area
+      if (filters.polygon) {
+        try {
+          const poly = typeof filters.polygon === 'string' ? JSON.parse(filters.polygon) : filters.polygon;
+          if (Array.isArray(poly) && poly.length > 2) {
+            listings = listings.filter(l => l.latitude && l.longitude && pointInPolygon(l.latitude, l.longitude, poly));
+          }
+        } catch {}
+      }
+
       if (!listings.length) continue;
+
+      // Cap at 50 for the email
+      const emailListings = listings.slice(0, 50);
 
       await sendNewListingsAlert({
         to: search.email,
         searchName: search.name,
         filters,
-        listings
+        listings: emailListings
       });
 
       db.prepare(`UPDATE saved_searches SET last_alerted_at = ? WHERE id = ?`)
         .run(new Date().toISOString(), search.id);
 
-      console.log(`[ALERTS] Sent ${listings.length} new listing(s) to ${search.email} for "${search.name}"`);
+      console.log(`[ALERTS] Sent ${emailListings.length} new listing(s) to ${search.email} for "${search.name}"`);
     } catch (err) {
       console.error(`[ALERTS] Failed for search ${search.id}:`, err.message);
     }

@@ -37,6 +37,25 @@ router.post('/register', async (req, res) => {
 
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(result.lastInsertRowid);
     res.json({ token: signToken(user), user: safeUser(user) });
+
+    // Notify admin of new signup (fire-and-forget)
+    if (adminEmail && process.env.EMAIL_HOST) {
+      try {
+        const nodemailer = require('nodemailer');
+        const transporter = nodemailer.createTransport({
+          host: process.env.EMAIL_HOST,
+          port: Number(process.env.EMAIL_PORT) || 587,
+          secure: process.env.EMAIL_SECURE === 'true',
+          auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+        });
+        transporter.sendMail({
+          from: `"Austin TX Homes" <${process.env.EMAIL_USER}>`,
+          to: adminEmail,
+          subject: `New signup: ${name}`,
+          html: `<p><strong>${name}</strong> (${email.toLowerCase()}${phone ? ', ' + phone : ''}) just created an account on Austin TX Homes.</p>`
+        }).catch(e => console.warn('[AUTH] Admin notification failed:', e.message));
+      } catch {}
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });

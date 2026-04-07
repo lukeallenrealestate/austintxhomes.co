@@ -25,7 +25,7 @@ async function sendNewListingsAlert({ to, searchName, filters, listings }) {
     const baths = l.bathrooms_total ? `${l.bathrooms_total} ba` : '';
     const sqft = l.living_area ? `${Math.round(l.living_area).toLocaleString()} sqft` : '';
     const detail = [beds, baths, sqft].filter(Boolean).join(' · ');
-    const url = `${siteUrl}/property.html?id=${l.listing_key}`;
+    const url = `${siteUrl}/property/${l.listing_key}`;
     const photo = l.photos ? JSON.parse(l.photos)[0] : null;
 
     return `
