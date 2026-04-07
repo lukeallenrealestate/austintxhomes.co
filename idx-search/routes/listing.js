@@ -151,7 +151,7 @@ router.get('/:slug', (req, res) => {
 <header class="header">
   <a href="/" class="header-logo"><img src="/images/logo.png" alt="Luke Allen | Austin TX Real Estate" /></a>
   <div class="header-actions" style="margin-left:auto;">
-    <a href="/" class="btn btn-ghost">← Back to Search</a>
+    <a href="/search" class="btn btn-ghost">← Back to Search</a>
     <a href="/account.html" id="account-link" class="btn btn-ghost" style="display:none;">My Account</a>
     <a href="/admin.html" id="admin-link" class="btn btn-ghost" style="display:none;">Admin</a>
     <button id="login-btn" class="btn btn-outline">Log In</button>
@@ -249,7 +249,7 @@ router.get('/:slug', (req, res) => {
           </button>
         </form>
         <div class="agent-info">
-          <div class="agent-avatar" style="background:var(--blue);">L</div>
+          <img class="agent-avatar" src="/images/luke-allen.jpg" alt="Luke Allen" style="object-fit:cover;" />
           <div>
             <div class="agent-name">Luke Allen</div>
             <div class="agent-office">Austin Marketing + Development Group</div>
@@ -267,7 +267,7 @@ router.get('/:slug', (req, res) => {
   <div id="detail-error" style="display:none;" class="empty-state">
     <h3>Listing not found</h3>
     <p>This listing may have been removed or is no longer available.</p>
-    <a href="/" class="btn btn-primary">Back to Search</a>
+    <a href="/search" class="btn btn-primary">Back to Search</a>
   </div>
 </div>
 
