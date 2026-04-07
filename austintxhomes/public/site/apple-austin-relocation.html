@@ -817,6 +817,58 @@
   </div>
 </section>
 
+<!-- HOMES NEAR APPLE CAMPUS -->
+<section style="padding:80px 32px;background:var(--warm);" id="homes">
+  <div style="max-width:var(--w);margin:0 auto;">
+    <p style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">Homes for Sale</p>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:8px;">Near <em style="font-style:italic;">Apple Campus</em></h2>
+    <p style="font-size:14px;color:var(--mid);max-width:520px;margin-bottom:40px;">Homes currently listed for sale within 3 miles of Apple's Austin campus at Riata. Updated daily from MLS.</p>
+    <div id="apple-listings-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;"></div>
+    <div id="apple-pagination" style="display:flex;justify-content:center;gap:6px;margin-top:36px;"></div>
+    <div style="text-align:center;margin-top:24px;">
+      <a href="/search?forRent=false&north=30.4559&south=30.3689&east=-97.6761&west=-97.7761" style="color:var(--gold);font-size:13px;letter-spacing:.08em;text-decoration:none;border-bottom:1px solid var(--gold);">View all homes near Apple campus →</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .apple-card {
+    background:#fff; border:1px solid var(--border); border-radius:6px;
+    overflow:hidden; transition:box-shadow .25s, transform .25s;
+    text-decoration:none; display:flex; flex-direction:column; cursor:pointer;
+  }
+  .apple-card:hover { box-shadow:0 8px 28px rgba(0,0,0,.08); transform:translateY(-2px); }
+  .apple-card-img {
+    position:relative; height:190px; background:var(--cream); overflow:hidden;
+  }
+  .apple-card-img img { width:100%; height:100%; object-fit:cover; display:block; }
+  .apple-card-body { padding:16px; flex:1; display:flex; flex-direction:column; }
+  .apple-card-price { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:400; color:var(--ink); margin-bottom:4px; }
+  .apple-card-addr { font-size:13px; color:var(--mid); margin-bottom:10px; line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .apple-card-stats { display:flex; gap:14px; font-size:12px; color:var(--mid); margin-top:auto; padding-top:12px; border-top:1px solid var(--border); }
+  .apple-card-stats strong { color:var(--ink); font-weight:600; }
+  .apple-card-badge {
+    position:absolute; top:10px; left:10px;
+    background:var(--gold); color:#fff;
+    font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+    padding:3px 9px; border-radius:3px;
+  }
+  .apple-pg-btn {
+    min-width:36px; height:36px; padding:0 10px;
+    border:1px solid var(--border); border-radius:var(--r);
+    background:#fff; font-size:13px; font-weight:500; color:var(--ink);
+    cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:center;
+  }
+  .apple-pg-btn:hover { border-color:var(--gold); color:var(--gold); }
+  .apple-pg-btn.active { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .apple-pg-btn:disabled { opacity:.35; pointer-events:none; }
+  #apple-listings-grid .apple-loading {
+    grid-column:1/-1; text-align:center; padding:48px; color:var(--mid); font-size:14px;
+  }
+  @media (max-width:900px) { #apple-listings-grid { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:520px) { #apple-listings-grid { grid-template-columns:1fr; } }
+</style>
+
 <!-- ── NEIGHBORHOODS ── -->
 <section class="nbhd-section" id="neighborhoods">
   <div class="section-inner">
@@ -1164,58 +1216,6 @@
     </div>
   </div>
 </section>
-
-<!-- HOMES NEAR APPLE CAMPUS -->
-<section style="padding:80px 32px;background:var(--warm);" id="homes">
-  <div style="max-width:var(--w);margin:0 auto;">
-    <p style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">Homes for Sale</p>
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:8px;">Near <em style="font-style:italic;">Apple Campus</em></h2>
-    <p style="font-size:14px;color:var(--mid);max-width:520px;margin-bottom:40px;">Homes currently listed for sale within 3 miles of Apple's Austin campus at Riata. Updated daily from MLS.</p>
-    <div id="apple-listings-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;"></div>
-    <div id="apple-pagination" style="display:flex;justify-content:center;gap:6px;margin-top:36px;"></div>
-    <div style="text-align:center;margin-top:24px;">
-      <a href="/search?forRent=false&north=30.4559&south=30.3689&east=-97.6761&west=-97.7761" style="color:var(--gold);font-size:13px;letter-spacing:.08em;text-decoration:none;border-bottom:1px solid var(--gold);">View all homes near Apple campus →</a>
-    </div>
-  </div>
-</section>
-
-<style>
-  .apple-card {
-    background:#fff; border:1px solid var(--border); border-radius:6px;
-    overflow:hidden; transition:box-shadow .25s, transform .25s;
-    text-decoration:none; display:flex; flex-direction:column; cursor:pointer;
-  }
-  .apple-card:hover { box-shadow:0 8px 28px rgba(0,0,0,.08); transform:translateY(-2px); }
-  .apple-card-img {
-    position:relative; height:190px; background:var(--cream); overflow:hidden;
-  }
-  .apple-card-img img { width:100%; height:100%; object-fit:cover; display:block; }
-  .apple-card-body { padding:16px; flex:1; display:flex; flex-direction:column; }
-  .apple-card-price { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:400; color:var(--ink); margin-bottom:4px; }
-  .apple-card-addr { font-size:13px; color:var(--mid); margin-bottom:10px; line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .apple-card-stats { display:flex; gap:14px; font-size:12px; color:var(--mid); margin-top:auto; padding-top:12px; border-top:1px solid var(--border); }
-  .apple-card-stats strong { color:var(--ink); font-weight:600; }
-  .apple-card-badge {
-    position:absolute; top:10px; left:10px;
-    background:var(--gold); color:#fff;
-    font-size:9px; letter-spacing:.1em; text-transform:uppercase;
-    padding:3px 9px; border-radius:3px;
-  }
-  .apple-pg-btn {
-    min-width:36px; height:36px; padding:0 10px;
-    border:1px solid var(--border); border-radius:var(--r);
-    background:#fff; font-size:13px; font-weight:500; color:var(--ink);
-    cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:center;
-  }
-  .apple-pg-btn:hover { border-color:var(--gold); color:var(--gold); }
-  .apple-pg-btn.active { background:var(--ink); color:#fff; border-color:var(--ink); }
-  .apple-pg-btn:disabled { opacity:.35; pointer-events:none; }
-  #apple-listings-grid .apple-loading {
-    grid-column:1/-1; text-align:center; padding:48px; color:var(--mid); font-size:14px;
-  }
-  @media (max-width:900px) { #apple-listings-grid { grid-template-columns:repeat(2,1fr); } }
-  @media (max-width:520px) { #apple-listings-grid { grid-template-columns:1fr; } }
-</style>
 
 <script src="/js/footer.js"></script>
 <script>
