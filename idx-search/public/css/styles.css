@@ -2016,9 +2016,27 @@ input, select, textarea { font-family: inherit; }
     min-width: 28px;
   }
 
+  /* --- Property detail header: restore button text on detail pages --- */
+  /* The search page hides btn text via font-size:0, but detail pages need it visible */
+  .detail-page .header-actions .btn {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+  }
+  .detail-page .header-actions .btn-primary,
+  .detail-page .header-actions .btn-outline {
+    display: none; /* hide login/signup on detail, keep "Back to Search" */
+  }
+
   /* --- Property detail: full-width gallery, sticky contact bar --- */
   .detail-header {
     padding-top: 52px;
+  }
+  .gallery {
+    max-height: 280px;
+    overflow: hidden;
+  }
+  .gallery .loading {
+    height: 250px !important;
   }
   .gallery-grid {
     grid-template-columns: 1fr;
@@ -2045,6 +2063,7 @@ input, select, textarea { font-family: inherit; }
   .detail-content {
     padding: 20px 14px;
     gap: 20px;
+    grid-template-columns: 1fr;
   }
   .detail-price {
     font-size: 28px;
@@ -2052,10 +2071,14 @@ input, select, textarea { font-family: inherit; }
   .detail-address {
     font-size: 15px;
   }
+  .detail-status-row {
+    margin: 6px 0 12px;
+  }
   .detail-stats {
-    gap: 12px;
+    gap: 10px;
     padding: 16px 0;
     margin: 16px 0;
+    flex-wrap: wrap;
   }
   .detail-stat .value {
     font-size: 20px;
@@ -2069,6 +2092,15 @@ input, select, textarea { font-family: inherit; }
   }
   .fact-item {
     padding: 10px;
+  }
+  .detail-section h3 {
+    font-size: 16px;
+  }
+  .detail-description {
+    font-size: 14px;
+  }
+  #detail-map {
+    height: 240px !important;
   }
 
   /* --- Contact card: sticky bottom bar on detail page --- */
@@ -2084,25 +2116,15 @@ input, select, textarea { font-family: inherit; }
     margin: 0;
   }
   .contact-card {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    position: relative; /* nested inside fixed .detail-sidebar, not double-fixed */
     border-radius: 16px 16px 0 0;
     box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
-    z-index: 90;
-    padding: 18px 16px 14px;
+    padding: 18px 16px calc(14px + env(safe-area-inset-bottom, 0px));
     display: flex;
     align-items: center;
     gap: 12px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     background: var(--white);
-    touch-action: none;
-    transition: transform 0.25s ease;
-    will-change: transform;
-  }
-  .contact-card.collapsed {
-    transform: translateY(calc(100% - 56px));
   }
   .mobile-sheet-handle {
     display: block;
@@ -2114,9 +2136,7 @@ input, select, textarea { font-family: inherit; }
     height: 4px;
     background: #d1d5db;
     border-radius: 2px;
-    cursor: grab;
   }
-  .mobile-sheet-handle:active { cursor: grabbing; }
   .contact-card .mobile-contact-btn {
     display: inline-flex !important;
     align-items: center;
@@ -2129,10 +2149,12 @@ input, select, textarea { font-family: inherit; }
     flex-shrink: 0;
   }
   .contact-card .price-big {
-    font-size: 20px;
+    font-size: 22px;
+    font-weight: 800;
     margin-bottom: 0;
     flex: 1;
     min-width: 0;
+    white-space: nowrap;
   }
   .contact-card .est-payment {
     display: none;
@@ -2140,20 +2162,12 @@ input, select, textarea { font-family: inherit; }
   .contact-form {
     display: none;
   }
-  .contact-card .btn-primary {
-    padding: 12px 24px;
-    font-size: 15px;
-    font-weight: 700;
-    border-radius: 24px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
   .contact-card .agent-info {
     display: none;
   }
-  /* Add bottom padding to detail-main so content isn't hidden behind sticky bar */
+  /* Bottom padding so content isn't hidden behind sticky bar */
   .detail-main {
-    padding-bottom: 90px;
+    padding-bottom: 80px;
   }
 
   /* --- Similar listings grid: single column --- */

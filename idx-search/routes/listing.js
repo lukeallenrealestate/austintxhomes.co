@@ -145,7 +145,7 @@ router.get('/:slug', (req, res) => {
 
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
-<body>
+<body class="detail-page">
 
 <!-- HEADER -->
 <header class="header">
