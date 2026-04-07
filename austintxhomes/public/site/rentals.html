@@ -303,82 +303,7 @@
       <h1>Find Your Next<br><em>Austin Home</em></h1>
       <p>Browse apartments, condos, and houses for rent across every Austin neighborhood — updated daily from the MLS. Search free, no signup required.</p>
 
-      <div class="search-card">
-        <form class="search-row" id="rental-search-form">
-          <input class="search-input" type="text" id="rental-location" placeholder="Neighborhood, address, or zip…" />
-          <select class="search-select" id="rental-maxprice">
-            <option value="">Any price</option>
-            <option value="1500">Up to $1,500/mo</option>
-            <option value="2000">Up to $2,000/mo</option>
-            <option value="2500">Up to $2,500/mo</option>
-            <option value="3000">Up to $3,000/mo</option>
-            <option value="4000">Up to $4,000/mo</option>
-            <option value="5000">Up to $5,000/mo</option>
-          </select>
-          <select class="search-select" id="rental-beds">
-            <option value="">Any beds</option>
-            <option value="0">Studio</option>
-            <option value="1">1 bed+</option>
-            <option value="2">2 beds+</option>
-            <option value="3">3 beds+</option>
-            <option value="4">4 beds+</option>
-          </select>
-          <button class="search-btn" type="submit">Search Rentals</button>
-        </form>
-        <div class="search-quick">
-          <span>Popular:</span>
-          <a class="quick-tag" href="#" data-nbhd="South Congress">South Congress</a>
-          <a class="quick-tag" href="#" data-nbhd="East Austin">East Austin</a>
-          <a class="quick-tag" href="#" data-nbhd="Domain">The Domain</a>
-          <a class="quick-tag" href="#" data-nbhd="Mueller">Mueller</a>
-          <a class="quick-tag" href="#" data-nbhd="Hyde Park">Hyde Park</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- STATS BAR -->
-  <div class="stats-bar">
-    <div class="stats-bar-inner">
-      <div class="stat-item">
-        <div class="stat-num" id="total-rentals">—</div>
-        <div class="stat-label">Active Rentals</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num" id="avg-rent">—</div>
-        <div class="stat-label">Avg Monthly Rent</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">Daily</div>
-        <div class="stat-label">MLS Updates</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">$0</div>
-        <div class="stat-label">Cost to Search</div>
-      </div>
-      <span class="stats-bar-note">Data from Austin MLS</span>
-    </div>
-  </div>
-
-  <!-- RENTAL LISTINGS -->
-  <section class="listings-section">
-    <div class="listings-inner">
-      <div class="listings-header">
-        <h2 class="listings-title">Available <em>Now</em></h2>
-        <div class="sort-row">
-          <span class="sort-label">Sort by</span>
-          <select class="sort-select" id="sort-select">
-            <option value="newest">Newest</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="beds-desc">Most Beds</option>
-          </select>
-        </div>
-      </div>
-      <div class="listings-grid" id="rentals-grid">
-        <div class="listings-loading">Loading rentals from MLS…</div>
-      </div>
-      <button class="load-more" id="load-more-btn" style="display:none">Load More Rentals</button>
+      <a href="/search?forRent=true" class="search-btn" style="display:inline-block;padding:16px 36px;font-size:13px;text-decoration:none;">Browse Rental Listings</a>
     </div>
   </section>
 
@@ -537,17 +462,6 @@
   </section>
 
   <!-- FOOTER -->
-<script>
-function makePropertyUrl(l) {
-  const key = l.listing_key || l.mlsKey || l.mlgId || '';
-  if (!key) return '#';
-  const addr = (l.unparsed_address || '').toLowerCase()
-    .replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-');
-  const city = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
-  const zip = (l.postal_code || '').replace(/[^0-9]/g, '');
-  return addr ? `/property/${addr}-${city}-tx${zip ? '-' + zip : ''}-${key}` : `/property/${key}`;
-}
-</script>
 <script src="/js/footer.js"></script>
 
 <script>
@@ -557,139 +471,10 @@ if (rentalsVid) {
   if (rentalsVid.readyState >= 3) rentalsVid.classList.add('ready');
   else rentalsVid.addEventListener('canplay', () => rentalsVid.classList.add('ready'), { once: true });
 }
-</script>
-
-  <script>
-    // ── State ──
-    let currentPage = 0;
-    const PAGE_SIZE = 12;
-    let activeFilters = { q: '', maxPrice: '', beds: '', sort: 'newest' };
-    let totalResults = 0;
-
-    // ── Fetch rentals ──
-    async function fetchRentals(append = false) {
-      const grid = document.getElementById('rentals-grid');
-      if (!append) {
-        grid.innerHTML = '<div class="listings-loading">Loading rentals…</div>';
-        currentPage = 0;
-      }
-
-      const params = new URLSearchParams({
-        forRent: 'true',
-        limit: PAGE_SIZE,
-        offset: currentPage * PAGE_SIZE,
-        sort: activeFilters.sort
-      });
-      if (activeFilters.q) params.set('q', activeFilters.q);
-      if (activeFilters.maxPrice) params.set('maxPrice', activeFilters.maxPrice);
-      if (activeFilters.beds) params.set('minBeds', activeFilters.beds);
-
-      try {
-        const res = await fetch(`/api/listings?${params}`);
-        if (!res.ok) throw new Error('API error');
-        const data = await res.json();
-        const listings = data.listings || data.results || data || [];
-        totalResults = data.total || listings.length;
-
-        if (!append) grid.innerHTML = '';
-
-        if (listings.length === 0 && !append) {
-          grid.innerHTML = `
-            <div class="listings-empty" style="grid-column:1/-1">
-              <p>No rentals found matching your search. Try adjusting your filters or <a href="/about#contact" style="color:var(--gold)">contact Luke</a> for help finding a rental.</p>
-            </div>`;
-          document.getElementById('load-more-btn').style.display = 'none';
-          return;
-        }
-
-        listings.forEach(l => {
-          const card = buildCard(l);
-          grid.appendChild(card);
-        });
-
-        const shown = currentPage * PAGE_SIZE + listings.length;
-        document.getElementById('load-more-btn').style.display = shown < totalResults ? 'block' : 'none';
-        updateStats(listings);
-
-      } catch {
-        if (!append) grid.innerHTML = '<div class="listings-loading">Unable to load listings. Please try again.</div>';
-      }
-    }
-
-    function buildCard(l) {
-      const a = document.createElement('a');
-      a.className = 'listing-card';
-      a.href = makePropertyUrl(l);
-
-      const price = (l.list_price || l.listPrice) ? `$${Number(l.list_price || l.listPrice).toLocaleString()}` : 'Price N/A';
-      const addr = [l.unparsed_address || l.streetAddress, l.city].filter(Boolean).join(', ') || 'Austin, TX';
-      const beds = l.bedrooms_total || l.bedroomsTotal || l.beds || '—';
-      const baths = l.bathrooms_total || l.bathroomsTotal || l.baths || '—';
-      const sqft = (l.living_area || l.livingArea) ? Number(l.living_area || l.livingArea).toLocaleString() : '—';
-      const isNew = (l.days_on_market ?? l.daysOnMarket) != null && (l.days_on_market ?? l.daysOnMarket) <= 3;
-      const imgSrc = (l.photos && l.photos[0]) ? l.photos[0] : (l.media && l.media[0]) ? l.media[0] : '';
-
-      a.innerHTML = `
-        <div class="card-img">
-          ${imgSrc ? `<img src="${imgSrc}" alt="${addr}" loading="lazy" onerror="this.style.display='none'" />` : ''}
-          ${isNew ? '<span class="card-badge new">New</span>' : '<span class="card-badge">For Rent</span>'}
-        </div>
-        <div class="card-body">
-          <div class="card-price">${price}<span>/mo</span></div>
-          <div class="card-address">${addr}</div>
-          <div class="card-details">
-            <span><strong>${beds}</strong> beds</span>
-            <span><strong>${baths}</strong> baths</span>
-            <span><strong>${sqft}</strong> sqft</span>
-          </div>
-        </div>`;
-      return a;
-    }
-
-    function updateStats(listings) {
-      const prices = listings.map(l => Number(l.list_price || l.listPrice)).filter(p => p > 0);
-      document.getElementById('total-rentals').textContent = totalResults > 0 ? totalResults : '—';
-      if (prices.length) {
-        const avg = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
-        document.getElementById('avg-rent').textContent = '$' + avg.toLocaleString();
-      }
-    }
-
-    // ── Search form ──
-    document.getElementById('rental-search-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      activeFilters.q = document.getElementById('rental-location').value.trim();
-      activeFilters.maxPrice = document.getElementById('rental-maxprice').value;
-      activeFilters.beds = document.getElementById('rental-beds').value;
-      fetchRentals(false);
-    });
-
-    // Quick tags
-    document.querySelectorAll('.quick-tag').forEach(tag => {
-      tag.addEventListener('click', e => {
-        e.preventDefault();
-        const nbhd = tag.dataset.nbhd;
-        document.getElementById('rental-location').value = nbhd;
-        activeFilters.q = nbhd;
-        fetchRentals(false);
-        document.getElementById('rentals-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    });
-
-    // Sort
-    document.getElementById('sort-select').addEventListener('change', function() {
-      activeFilters.sort = this.value;
-      fetchRentals(false);
-    });
-
-    // Load more
-    document.getElementById('load-more-btn').addEventListener('click', function() {
-      currentPage++;
-      fetchRentals(true);
-    });
 
     // Owner form
-    document.getElementById('owner-form').addEventListener('submit', async function(e) {
+    const ownerForm = document.getElementById('owner-form');
+    if (ownerForm) ownerForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       const data = Object.fromEntries(new FormData(this));
       data.source = 'rentals-owner';
@@ -704,9 +489,6 @@ if (rentalsVid) {
         alert('Something went wrong. Please call or email directly.');
       }
     });
-
-    // Init
-    fetchRentals(false);
   </script>
 </body>
 </html>
