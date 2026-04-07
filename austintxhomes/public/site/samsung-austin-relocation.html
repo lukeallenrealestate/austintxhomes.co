@@ -801,6 +801,58 @@
   </div>
 </section>
 
+<!-- HOMES NEAR SAMSUNG CAMPUS -->
+<section style="padding:80px 32px;background:var(--warm);" id="homes">
+  <div style="max-width:var(--w);margin:0 auto;">
+    <p style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">Homes for Sale</p>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:8px;">Near <em style="font-style:italic;">Samsung Campus</em></h2>
+    <p style="font-size:14px;color:var(--mid);max-width:520px;margin-bottom:40px;">Homes currently listed for sale within 3 miles of Samsung Austin Semiconductor. Updated daily from MLS.</p>
+    <div id="samsung-listings-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;"></div>
+    <div id="samsung-pagination" style="display:flex;justify-content:center;gap:6px;margin-top:36px;"></div>
+    <div style="text-align:center;margin-top:24px;">
+      <a href="/search?forRent=false&north=30.4902&south=30.4032&east=-97.5543&west=-97.6543" style="color:var(--gold);font-size:13px;letter-spacing:.08em;text-decoration:none;border-bottom:1px solid var(--gold);">View all homes near Samsung campus →</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .samsung-card {
+    background:#fff; border:1px solid var(--border); border-radius:6px;
+    overflow:hidden; transition:box-shadow .25s, transform .25s;
+    text-decoration:none; display:flex; flex-direction:column; cursor:pointer;
+  }
+  .samsung-card:hover { box-shadow:0 8px 28px rgba(0,0,0,.08); transform:translateY(-2px); }
+  .samsung-card-img {
+    position:relative; height:190px; background:var(--cream); overflow:hidden;
+  }
+  .samsung-card-img img { width:100%; height:100%; object-fit:cover; display:block; }
+  .samsung-card-body { padding:16px; flex:1; display:flex; flex-direction:column; }
+  .samsung-card-price { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:400; color:var(--ink); margin-bottom:4px; }
+  .samsung-card-addr { font-size:13px; color:var(--mid); margin-bottom:10px; line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .samsung-card-stats { display:flex; gap:14px; font-size:12px; color:var(--mid); margin-top:auto; padding-top:12px; border-top:1px solid var(--border); }
+  .samsung-card-stats strong { color:var(--ink); font-weight:600; }
+  .samsung-card-badge {
+    position:absolute; top:10px; left:10px;
+    background:var(--gold); color:#fff;
+    font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+    padding:3px 9px; border-radius:3px;
+  }
+  .samsung-pg-btn {
+    min-width:36px; height:36px; padding:0 10px;
+    border:1px solid var(--border); border-radius:var(--r);
+    background:#fff; font-size:13px; font-weight:500; color:var(--ink);
+    cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:center;
+  }
+  .samsung-pg-btn:hover { border-color:var(--gold); color:var(--gold); }
+  .samsung-pg-btn.active { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .samsung-pg-btn:disabled { opacity:.35; pointer-events:none; }
+  #samsung-listings-grid .samsung-loading {
+    grid-column:1/-1; text-align:center; padding:48px; color:var(--mid); font-size:14px;
+  }
+  @media (max-width:900px) { #samsung-listings-grid { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:520px) { #samsung-listings-grid { grid-template-columns:1fr; } }
+</style>
+
 <!-- ── NEIGHBORHOODS ── -->
 <section class="nbhd-section" id="neighborhoods">
   <div class="section-inner">
@@ -1212,6 +1264,95 @@
       btn.disabled = false;
     }
   });
+
+  // ── Homes near Samsung campus ──
+  // Samsung fab: 12100 Samsung Blvd ≈ 30.4467, -97.6043
+  // 3-mile bounding box: ±0.0435 lat, ±0.050 lng
+  const SAM_BOUNDS = { north: '30.4902', south: '30.4032', east: '-97.5543', west: '-97.6543' };
+  const SAM_PER_PAGE = 12;
+  let samPage = 1;
+
+  function makePropertyUrl(l) {
+    const key = l.listing_key || '';
+    if (!key) return '#';
+    const addr = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-');
+    const city = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
+    const zip = (l.postal_code || '').replace(/[^0-9]/g, '');
+    return addr ? `/property/${addr}-${city}-tx${zip ? '-' + zip : ''}-${key}` : `/property/${key}`;
+  }
+
+  async function loadSamsungListings(page) {
+    samPage = page;
+    const grid = document.getElementById('samsung-listings-grid');
+    grid.innerHTML = '<div class="samsung-loading">Loading homes near Samsung campus…</div>';
+
+    const params = new URLSearchParams({
+      forRent: 'false', north: SAM_BOUNDS.north, south: SAM_BOUNDS.south,
+      east: SAM_BOUNDS.east, west: SAM_BOUNDS.west,
+      minPrice: 75000, sortBy: 'newest', page: page, limit: SAM_PER_PAGE
+    });
+
+    try {
+      const res = await fetch('/api/properties/search?' + params);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const listings = data.listings || [];
+      const totalPages = data.pages || 1;
+
+      grid.innerHTML = '';
+      if (!listings.length) {
+        grid.innerHTML = '<div class="samsung-loading">No homes currently listed in this area. Check back soon.</div>';
+        document.getElementById('samsung-pagination').innerHTML = '';
+        return;
+      }
+
+      listings.forEach(l => {
+        const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : 'Price N/A';
+        const addr = l.unparsed_address || 'Austin, TX';
+        const cityZip = [l.city, l.postal_code].filter(Boolean).join(', ');
+        const beds = l.bedrooms_total || '—';
+        const baths = l.bathrooms_total || '—';
+        const sqft = l.living_area ? Number(l.living_area).toLocaleString() : '—';
+        const photo = (l.photos && l.photos[0]) ? l.photos[0] : '';
+        const dom = l.days_on_market;
+        const isNew = dom != null && dom <= 3;
+
+        const card = document.createElement('a');
+        card.className = 'samsung-card';
+        card.href = makePropertyUrl(l);
+        card.innerHTML = `
+          <div class="samsung-card-img">
+            ${photo ? `<img src="${photo}" alt="${addr}" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;color:var(--light);font-size:12px\\'>No Photo</div>'" />` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--light);font-size:12px">No Photo</div>'}
+            ${isNew ? '<span class="samsung-card-badge" style="background:var(--ink)">New</span>' : '<span class="samsung-card-badge">For Sale</span>'}
+          </div>
+          <div class="samsung-card-body">
+            <div class="samsung-card-price">${price}</div>
+            <div class="samsung-card-addr">${addr}<br><span style="font-size:12px;color:var(--light)">${cityZip}</span></div>
+            <div class="samsung-card-stats">
+              <span><strong>${beds}</strong> bd</span>
+              <span><strong>${baths}</strong> ba</span>
+              <span><strong>${sqft}</strong> sqft</span>
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      });
+
+      const pag = document.getElementById('samsung-pagination');
+      if (totalPages <= 1) { pag.innerHTML = ''; return; }
+      let html = `<button class="samsung-pg-btn" onclick="loadSamsungListings(${page - 1})" ${page <= 1 ? 'disabled' : ''}>&lsaquo; Prev</button>`;
+      for (let i = 1; i <= Math.min(totalPages, 7); i++) {
+        html += `<button class="samsung-pg-btn${i === page ? ' active' : ''}" onclick="loadSamsungListings(${i})">${i}</button>`;
+      }
+      if (totalPages > 7) html += `<span style="color:var(--light);padding:0 4px;">…</span><button class="samsung-pg-btn" onclick="loadSamsungListings(${totalPages})">${totalPages}</button>`;
+      html += `<button class="samsung-pg-btn" onclick="loadSamsungListings(${page + 1})" ${page >= totalPages ? 'disabled' : ''}>Next &rsaquo;</button>`;
+      pag.innerHTML = html;
+      document.getElementById('homes').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch {
+      grid.innerHTML = '<div class="samsung-loading">Unable to load listings. Please try again.</div>';
+    }
+  }
+
+  loadSamsungListings(1);
 </script>
 </body>
 </html>
