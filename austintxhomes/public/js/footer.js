@@ -221,7 +221,6 @@
           <li><a href="/apple-austin-relocation">Apple</a></li>
           <li><a href="/google-austin-relocation">Google</a></li>
           <li><a href="/tesla-austin-relocation">Tesla</a></li>
-          <li><a href="/homes-for-sale-near-tesla-gigafactory">Homes Near Tesla Gigafactory</a></li>
           <li><a href="/oracle-austin-relocation">Oracle</a></li>
           <li><a href="/dell-austin-relocation">Dell</a></li>
           <li><a href="/samsung-austin-relocation">Samsung</a></li>
@@ -233,6 +232,23 @@
           <li><a href="/indeed-austin-relocation">Indeed</a></li>
           <li><a href="/ibm-austin-relocation">IBM</a></li>
           <li><a href="/salesforce-austin-relocation">Salesforce</a></li>
+        </ul>
+
+        <div class="sf-col-subhead">Homes Near Employers</div>
+        <ul class="sf-links">
+          <li><a href="/homes-for-sale-near-apple-austin">Near Apple</a></li>
+          <li><a href="/homes-for-sale-near-google-austin">Near Google</a></li>
+          <li><a href="/homes-for-sale-near-tesla-austin">Near Tesla</a></li>
+          <li><a href="/homes-for-sale-near-oracle-austin">Near Oracle</a></li>
+          <li><a href="/homes-for-sale-near-dell-austin">Near Dell</a></li>
+          <li><a href="/homes-for-sale-near-samsung-austin">Near Samsung</a></li>
+          <li><a href="/homes-for-sale-near-nvidia-austin">Near Nvidia</a></li>
+          <li><a href="/homes-for-sale-near-meta-austin">Near Meta</a></li>
+          <li><a href="/homes-for-sale-near-amazon-austin">Near Amazon</a></li>
+          <li><a href="/homes-for-sale-near-amd-austin">Near AMD</a></li>
+          <li><a href="/homes-for-sale-near-indeed-austin">Near Indeed</a></li>
+          <li><a href="/homes-for-sale-near-ibm-austin">Near IBM</a></li>
+          <li><a href="/homes-for-sale-near-salesforce-austin">Near Salesforce</a></li>
         </ul>
       </div>
 
