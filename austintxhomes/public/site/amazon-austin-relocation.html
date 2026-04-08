@@ -1005,6 +1005,25 @@
     </div>
   </section>
 
+  <!-- HOMES NEAR AMAZON CAMPUS -->
+  <section style="padding:80px 32px;background:var(--warm, #faf8f4);" id="homes">
+    <div style="max-width:var(--w, 1180px);margin:0 auto;">
+      <p style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold, #b8935a);margin-bottom:12px;">Homes for Sale</p>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:400;color:var(--ink, #0f0f0e);line-height:1.15;margin-bottom:8px;">Near <em style="font-style:italic;">Amazon Austin</em></h2>
+      <p style="font-size:14px;color:var(--mid, #5c5b57);max-width:520px;margin-bottom:40px;">Homes currently listed for sale within 3 miles of Amazon's Austin campus. Updated daily from MLS.</p>
+      <div id="amz-listings-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;"></div>
+      <div id="amz-pagination" style="display:flex;justify-content:center;gap:6px;margin-top:36px;"></div>
+      <div style="text-align:center;margin-top:24px;">
+        <a href="/homes-for-sale-near-amazon-austin" style="color:var(--gold, #b8935a);font-size:13px;letter-spacing:.08em;text-decoration:none;border-bottom:1px solid var(--gold, #b8935a);">View all homes near Amazon Austin →</a>
+      </div>
+    </div>
+  </section>
+  <style>
+    .amz-card{background:#fff;border:1px solid var(--border, #e5dfd4);border-radius:6px;overflow:hidden;transition:box-shadow .25s,transform .25s;text-decoration:none;display:flex;flex-direction:column;cursor:pointer}.amz-card:hover{box-shadow:0 8px 28px rgba(0,0,0,.08);transform:translateY(-2px)}.amz-card-img{position:relative;height:190px;background:var(--cream, #f1ece3);overflow:hidden}.amz-card-img img{width:100%;height:100%;object-fit:cover;display:block}.amz-card-body{padding:16px;flex:1;display:flex;flex-direction:column}.amz-card-price{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--ink, #0f0f0e);margin-bottom:4px}.amz-card-addr{font-size:13px;color:var(--mid, #5c5b57);margin-bottom:10px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.amz-card-stats{display:flex;gap:14px;font-size:12px;color:var(--mid, #5c5b57);margin-top:auto;padding-top:12px;border-top:1px solid var(--border, #e5dfd4)}.amz-card-stats strong{color:var(--ink, #0f0f0e);font-weight:600}.amz-card-badge{position:absolute;top:10px;left:10px;background:var(--gold, #b8935a);color:#fff;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:3px}
+    .amz-pg-btn{min-width:36px;height:36px;padding:0 10px;border:1px solid var(--border, #e5dfd4);border-radius:4px;background:#fff;font-size:13px;font-weight:500;color:var(--ink, #0f0f0e);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}.amz-pg-btn:hover{border-color:var(--gold, #b8935a);color:var(--gold, #b8935a)}.amz-pg-btn.active{background:var(--ink, #0f0f0e);color:#fff;border-color:var(--ink, #0f0f0e)}.amz-pg-btn:disabled{opacity:.35;pointer-events:none}#amz-listings-grid .amz-loading{grid-column:1/-1;text-align:center;padding:48px;color:var(--mid, #5c5b57);font-size:14px}
+    @media(max-width:900px){#amz-listings-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){#amz-listings-grid{grid-template-columns:1fr}}
+  </style>
+
   <!-- NEIGHBORHOODS -->
   <section id="neighborhoods" class="nbhd-section">
     <div class="section-inner">
@@ -1399,6 +1418,49 @@
         if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
       });
     });
+
+    // Homes near Amazon
+    const AMZ_BOUNDS = { north: '30.4405', south: '30.3535', east: '-97.6695', west: '-97.7695' };
+    let amzPage = 1;
+    function makePropertyUrl(l) {
+      const key = l.listing_key || ''; if (!key) return '#';
+      const addr = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-');
+      const city = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
+      const zip = (l.postal_code || '').replace(/[^0-9]/g, '');
+      return addr ? `/property/${addr}-${city}-tx${zip ? '-' + zip : ''}-${key}` : `/property/${key}`;
+    }
+    async function loadAmzListings(page) {
+      amzPage = page;
+      const grid = document.getElementById('amz-listings-grid');
+      grid.innerHTML = '<div class="amz-loading">Loading homes near Amazon Austin…</div>';
+      const params = new URLSearchParams({ forRent:'false', north:AMZ_BOUNDS.north, south:AMZ_BOUNDS.south, east:AMZ_BOUNDS.east, west:AMZ_BOUNDS.west, minPrice:75000, sortBy:'newest', page, limit:12 });
+      try {
+        const res = await fetch('/api/properties/search?' + params);
+        if (!res.ok) throw new Error();
+        const data = await res.json(); const listings = data.listings || []; const totalPages = data.pages || 1;
+        grid.innerHTML = '';
+        if (!listings.length) { grid.innerHTML = '<div class="amz-loading">No homes currently listed in this area.</div>'; document.getElementById('amz-pagination').innerHTML = ''; return; }
+        listings.forEach(l => {
+          const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : 'Price N/A';
+          const addr = l.unparsed_address || 'Austin, TX'; const cityZip = [l.city, l.postal_code].filter(Boolean).join(', ');
+          const beds = l.bedrooms_total || '—', baths = l.bathrooms_total || '—';
+          const sqft = l.living_area ? Number(l.living_area).toLocaleString() : '—';
+          const photo = (l.photos && l.photos[0]) || ''; const isNew = l.days_on_market != null && l.days_on_market <= 3;
+          const card = document.createElement('a'); card.className = 'amz-card'; card.href = makePropertyUrl(l);
+          card.innerHTML = `<div class="amz-card-img">${photo ? `<img src="${photo}" alt="${addr}" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px\\'>No Photo</div>'" />` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:12px">No Photo</div>'}${isNew ? '<span class="amz-card-badge" style="background:#0f0f0e">New</span>' : '<span class="amz-card-badge">For Sale</span>'}</div><div class="amz-card-body"><div class="amz-card-price">${price}</div><div class="amz-card-addr">${addr}<br><span style="font-size:12px;color:#999">${cityZip}</span></div><div class="amz-card-stats"><span><strong>${beds}</strong> bd</span><span><strong>${baths}</strong> ba</span><span><strong>${sqft}</strong> sqft</span></div></div>`;
+          grid.appendChild(card);
+        });
+        const pag = document.getElementById('amz-pagination');
+        if (totalPages <= 1) { pag.innerHTML = ''; return; }
+        let html = `<button class="amz-pg-btn" onclick="loadAmzListings(${page-1})" ${page<=1?'disabled':''}>&lsaquo; Prev</button>`;
+        for (let i = 1; i <= Math.min(totalPages, 7); i++) html += `<button class="amz-pg-btn${i===page?' active':''}" onclick="loadAmzListings(${i})">${i}</button>`;
+        if (totalPages > 7) html += `<span style="color:#999;padding:0 4px">…</span><button class="amz-pg-btn" onclick="loadAmzListings(${totalPages})">${totalPages}</button>`;
+        html += `<button class="amz-pg-btn" onclick="loadAmzListings(${page+1})" ${page>=totalPages?'disabled':''}>Next &rsaquo;</button>`;
+        pag.innerHTML = html;
+        document.getElementById('homes').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch { grid.innerHTML = '<div class="amz-loading">Unable to load listings.</div>'; }
+    }
+    loadAmzListings(1);
 
     document.getElementById('amazon-contact-form').addEventListener('submit', async function(e) {
       e.preventDefault();
