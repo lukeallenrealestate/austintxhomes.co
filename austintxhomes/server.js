@@ -665,6 +665,7 @@ app.get('/homes-for-sale-near-samsung-austin', (_req, res) => res.sendFile(path.
 app.get('/homes-for-sale-near-google-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-google-austin.html')));
 app.get('/homes-for-sale-near-dell-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-dell-austin.html')));
 app.get('/homes-for-sale-near-ibm-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-ibm-austin.html')));
+app.get('/homes-for-sale-near-oracle-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-oracle-austin.html')));
 app.get('/fix-and-flip-calculator-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/fix-and-flip-calculator-austin.html')));
 
 // Cash flow unsubscribe (GET so email links work directly)
