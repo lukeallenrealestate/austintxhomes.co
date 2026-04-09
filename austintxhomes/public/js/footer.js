@@ -188,6 +188,7 @@
         <div class="sf-col-head">Austin Guides</div>
         <ul class="sf-links">
           <li><a href="/market-report">Market Report ${year} <span class="sf-badge">Live</span></a></li>
+          <li><a href="/austin-multifamily-market-report">Multifamily Report <span class="sf-badge">Live</span></a></li>
           <li><a href="/austin-buyers-or-sellers-market">Buyer's or Seller's Market? <span class="sf-badge">Live</span></a></li>
           <li><a href="/austin-home-prices-falling">Are Austin Prices Falling?</a></li>
           <li><a href="/texas-residency-ut-austin-in-state-tuition">UT Austin In-State Tuition Guide</a></li>

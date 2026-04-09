@@ -466,6 +466,93 @@ app.get('/api/market-stats', async (_req, res) => {
   }
 });
 
+// Multifamily market stats — cached 1 hour
+let mfStatsCache = null, mfStatsCacheTime = 0;
+app.get('/api/multifamily-stats', async (_req, res) => {
+  try {
+    if (mfStatsCache && (Date.now() - mfStatsCacheTime) < 3600000) return res.json(mfStatsCache);
+
+    const db = require('./node_modules/../idx-search/db/database') || listingDb;
+
+    // Active multifamily for sale
+    const active = db.prepare(`
+      SELECT list_price, bedrooms_total, bathrooms_total, living_area, lot_size_sqft,
+             days_on_market, city, property_sub_type, listing_contract_date, unparsed_address
+      FROM listings
+      WHERE mlg_can_view = 1 AND standard_status = 'Active'
+        AND property_type NOT LIKE '%Lease%'
+        AND (property_sub_type LIKE '%Multi%' OR property_sub_type LIKE '%Duplex%'
+             OR property_sub_type LIKE '%Triplex%' OR property_sub_type LIKE '%Fourplex%'
+             OR property_sub_type LIKE '%Apartment%')
+        AND list_price > 50000
+        AND latitude IS NOT NULL
+      ORDER BY listing_contract_date DESC
+    `).all();
+
+    // Recently closed multifamily (last 6 months)
+    const closed = db.prepare(`
+      SELECT close_price, close_date, days_on_market, city, list_price
+      FROM listings
+      WHERE standard_status = 'Closed'
+        AND property_type NOT LIKE '%Lease%'
+        AND (property_sub_type LIKE '%Multi%' OR property_sub_type LIKE '%Duplex%'
+             OR property_sub_type LIKE '%Triplex%' OR property_sub_type LIKE '%Fourplex%'
+             OR property_sub_type LIKE '%Apartment%')
+        AND close_price > 50000 AND close_date >= date('now', '-180 days')
+    `).all();
+
+    const prices = active.map(l => l.list_price).sort((a, b) => a - b);
+    const closedPrices = closed.map(l => l.close_price).filter(Boolean).sort((a, b) => a - b);
+    const domValues = active.map(l => l.days_on_market).filter(d => d != null);
+
+    // Price tiers
+    const tiers = { under500: 0, t500to750: 0, t750to1m: 0, t1mto2m: 0, over2m: 0 };
+    for (const p of prices) {
+      if (p < 500000) tiers.under500++;
+      else if (p < 750000) tiers.t500to750++;
+      else if (p < 1000000) tiers.t750to1m++;
+      else if (p < 2000000) tiers.t1mto2m++;
+      else tiers.over2m++;
+    }
+
+    // City breakdown
+    const cityMap = {};
+    for (const l of active) { const c = l.city || 'Other'; cityMap[c] = (cityMap[c] || 0) + 1; }
+    const topCities = Object.entries(cityMap).sort((a, b) => b[1] - a[1]).slice(0, 10)
+      .map(([city, count]) => ({ city, count }));
+
+    // Sale-to-list ratio from closed
+    const ratios = closed.filter(l => l.list_price > 0 && l.close_price > 0)
+      .map(l => l.close_price / l.list_price);
+    const avgRatio = ratios.length ? (ratios.reduce((s, r) => s + r, 0) / ratios.length * 100).toFixed(1) : null;
+
+    // Closed DOM
+    const closedDom = closed.map(l => l.days_on_market).filter(d => d != null);
+
+    const stats = {
+      totalActive: active.length,
+      medianPrice: prices.length ? prices[Math.floor(prices.length / 2)] : 0,
+      avgPrice: prices.length ? Math.round(prices.reduce((s, p) => s + p, 0) / prices.length) : 0,
+      avgDom: domValues.length ? Math.round(domValues.reduce((s, d) => s + d, 0) / domValues.length) : 0,
+      tiers,
+      topCities,
+      closedCount: closed.length,
+      closedMedian: closedPrices.length ? closedPrices[Math.floor(closedPrices.length / 2)] : 0,
+      closedAvgDom: closedDom.length ? Math.round(closedDom.reduce((s, d) => s + d, 0) / closedDom.length) : 0,
+      saleToListRatio: avgRatio,
+      updated: new Date().toISOString()
+    };
+
+    mfStatsCache = stats;
+    mfStatsCacheTime = Date.now();
+    res.json(stats);
+  } catch (e) {
+    console.error('[MF-STATS]', e.message);
+    if (mfStatsCache) return res.json(mfStatsCache);
+    res.json({ totalActive: 0, medianPrice: 0, error: true });
+  }
+});
+
 // Manual trigger for closed lease comp sync (admin only)
 app.post('/api/admin/sync-lease-comps', (req, res) => {
   const key = req.headers['x-admin-key'] || req.query.key;
@@ -546,6 +633,7 @@ app.get('/rentals',       (_req, res) => res.sendFile(path.join(__dirname, 'publ
 app.get('/neighborhoods',     (_req, res) => res.sendFile(path.join(__dirname, 'public/site/neighborhoods.html')));
 app.get('/moving-to-austin',  (_req, res) => res.sendFile(path.join(__dirname, 'public/site/moving-to-austin.html')));
 app.get('/market-report',     (_req, res) => res.sendFile(path.join(__dirname, 'public/site/market-report.html')));
+app.get('/austin-multifamily-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-multifamily-market-report.html')));
 app.get('/new-construction',  (_req, res) => res.sendFile(path.join(__dirname, 'public/site/new-construction.html')));
 app.get('/first-time-buyers', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/first-time-buyers.html')));
 app.get('/investment-properties', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/investment-properties.html')));
