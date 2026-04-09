@@ -2,7 +2,7 @@
    Austin TX Homes — IDX Search Styles
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* Font loaded via <link> in HTML for faster rendering */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -511,7 +511,7 @@ input, select, textarea { font-family: inherit; }
 .status-pending { background: var(--orange); color: white; }
 .status-coming-soon { background: var(--blue); color: white; }
 .status-under-contract { background: #7c3aed; color: white; }
-.status-closed { background: var(--text-light); color: white; }
+.status-closed { background: #4b5563; color: white; }
 
 .card-photo-count {
   position: absolute;

@@ -373,6 +373,7 @@ async function loadGoogleMaps() {
 
 function initDetailMap() {
   if (!currentListing?.latitude || !currentListing?.longitude) return;
+  if (typeof google === 'undefined' || !google.maps) return;
 
   const mapEl = document.getElementById('detail-map');
   const map = new google.maps.Map(mapEl, {
