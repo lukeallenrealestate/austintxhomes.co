@@ -152,6 +152,13 @@
     }
 
     /* ─── HERO ─── */
+    .hero video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+    }
+    .hero video.ready { opacity: 1; }
     .hero {
       background: var(--ink);
       color: #fff;
@@ -850,6 +857,7 @@
 
 <!-- ─── HERO ─── -->
 <section class="hero" id="top">
+  <video id="city-hv" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
   <!-- Mountain silhouette SVG -->
   <div class="mountains" aria-hidden="true">
     <div class="mountain-layer">
@@ -904,6 +912,33 @@
         <div class="why-icon">🏠</div>
         <h3 class="why-title">Housing That Hasn't Already Run</h3>
         <p class="why-body">Denver housing has appreciated dramatically over the past decade. Austin's central neighborhoods are still meaningfully below comparable Denver-area communities on a price-per-square-foot basis. East Austin and Hyde Park offer the same urban character as RiNo and Capitol Hill — at prices Denver buyers recognize as competitive.</p>
+      </div>
+      </div><!-- /hero-left -->
+      <div class="hero-form">
+        <h3>Start Your Austin Search</h3>
+        <p>Tell me what you're looking for and I'll send curated options within 24 hours.</p>
+        <form id="hero-contact-form">
+          <input type="hidden" name="source" value="moving-from-denver" />
+          <input type="text" name="name" placeholder="Your name" required />
+          <input type="text" name="contact" placeholder="Email or phone" required />
+          <select name="budget">
+            <option value="">Budget range</option>
+            <option>Under $400K</option>
+            <option>$400K-$600K</option>
+            <option>$600K-$800K</option>
+            <option>$800K-$1M</option>
+            <option>$1M+</option>
+          </select>
+          <select name="timeline">
+            <option value="">When are you moving?</option>
+            <option>Within 30 days</option>
+            <option>1-3 months</option>
+            <option>3-6 months</option>
+            <option>Just exploring</option>
+          </select>
+          <button type="submit" class="btn-submit">Get Started</button>
+        </form>
+        <div class="hero-form-success" id="hero-form-success">Got it - I'll be in touch within a few hours.</div>
       </div>
     </div>
   </div>
@@ -1357,6 +1392,24 @@
       btn.disabled = false;
     }
   });
+</script>
+
+<script>
+// Hero video
+const cityVid = document.getElementById('city-hv');
+if (cityVid) {
+  if (cityVid.readyState >= 3) cityVid.classList.add('ready');
+  else cityVid.addEventListener('canplay', () => cityVid.classList.add('ready'), { once: true });
+}
+// Hero contact form
+const heroForm = document.getElementById('hero-contact-form');
+if (heroForm) heroForm.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(this));
+  try { await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); } catch {}
+  this.style.display = 'none';
+  document.getElementById('hero-form-success').style.display = 'block';
+});
 </script>
 </body>
 </html>
