@@ -135,6 +135,13 @@ input, select, textarea { font-family: inherit; }
 }
 .btn-ghost:hover { background: var(--bg); border-radius: var(--radius); }
 
+.btn-cta-gold {
+  background: #b8935a;
+  color: #fff;
+  border: none;
+}
+.btn-cta-gold:hover { background: #cda96f; }
+
 /* ============ AUTOCOMPLETE ============ */
 .autocomplete-dropdown {
   position: absolute;
@@ -2024,7 +2031,11 @@ input, select, textarea { font-family: inherit; }
   }
   .detail-page .header-actions .btn-primary,
   .detail-page .header-actions .btn-outline {
-    display: none; /* hide login/signup on detail, keep "Back to Search" */
+    display: none; /* hide login/signup on detail */
+  }
+  .detail-page .header-actions .btn-cta-gold {
+    display: inline-flex !important; /* always show "Talk to Luke" */
+    font-size: 12px !important;
   }
 
   /* --- Property detail: full-width gallery, sticky contact bar --- */

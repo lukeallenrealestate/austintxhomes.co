@@ -159,6 +159,7 @@ router.get('/:slug', (req, res) => {
     <a href="/admin.html" id="admin-link" class="btn btn-ghost" style="display:none;">Admin</a>
     <button id="login-btn" class="btn btn-outline">Log In</button>
     <button id="signup-btn" class="btn btn-primary">Sign Up</button>
+    <a href="tel:+12547182567" class="btn btn-cta-gold" style="background:#b8935a;color:#fff;border:none;white-space:nowrap;">Talk to Luke</a>
   </div>
 </header>
 

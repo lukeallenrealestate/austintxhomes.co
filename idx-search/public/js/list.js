@@ -81,7 +81,7 @@ function renderPropertyCard(listing) {
         ${renderHeartBtn(listing.listing_key)}
       </div>
       <div class="card-body">
-        <div class="card-price">${formatPrice(listing.list_price)}</div>
+        <div class="card-price">${formatPrice(listing.list_price)}${listing.property_type && (listing.property_type.includes('Lease') || listing.property_type.includes('Rental')) ? '<span style="font-size:14px;font-weight:400;color:var(--text-light)">/mo</span>' : ''}</div>
         <div class="card-beds">
           ${listing.bedrooms_total ? `<span><strong>${listing.bedrooms_total}</strong> bd</span>` : ''}
           ${listing.bathrooms_total ? `<span><strong>${listing.bathrooms_total}</strong> ba</span>` : ''}
