@@ -13,7 +13,7 @@
   <meta name="geo.region" content="US-TX">
   <meta name="geo.placename" content="Austin, Texas">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Austin Homes with Big Yards | Luke Allen, Realtor2>
+  <meta property="og:title" content="Austin Homes with Big Yards | Luke Allen, Realtor" />
   <meta property="og:description" content="Browse Austin TX homes with big yards — filtered by estimated yard size (lot minus house footprint). Find large lot single family homes with room for a pool, garden, or space to roam.">
   <meta property="og:url" content="https://austintxhomes.co/austin-homes-big-yard">
   <meta property="og:image" content="https://austintxhomes.co/images/og-big-yard.jpg">
@@ -106,17 +106,56 @@
     /* ── HERO ── */
     #hero {
       background: var(--ink);
-      background-image: radial-gradient(ellipse 65% 55% at 50% 40%, rgba(184,147,90,.12) 0%, transparent 68%);
-      padding: 140px 2rem 100px;
+      padding: 120px 2rem 100px;
       position: relative; overflow: hidden;
     }
+    #hero video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+    }
+    #hero video.ready { opacity: 1; }
     #hero::before {
       content: '';
       position: absolute; inset: 0;
-      background-image: linear-gradient(rgba(184,147,90,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(184,147,90,.03) 1px, transparent 1px);
-      background-size: 72px 72px; pointer-events: none;
+      background: linear-gradient(135deg, rgba(15,15,14,.82) 0%, rgba(26,20,16,.75) 50%, rgba(15,15,14,.82) 100%);
+      z-index: 1;
     }
-    .hero-inner { max-width: var(--w); margin: 0 auto; position: relative; z-index: 1; }
+    .hero-inner {
+      max-width: var(--w); margin: 0 auto; position: relative; z-index: 2;
+      display: grid; grid-template-columns: 1fr 380px; gap: 48px; align-items: start;
+    }
+    .hero-left {}
+    .hero-form {
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px; padding: 28px;
+    }
+    .hero-form h3 {
+      font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #fff; margin-bottom: 4px; font-weight: 400;
+    }
+    .hero-form p { font-size: 12px; color: rgba(255,255,255,.45); margin-bottom: 20px; }
+    .hero-form input, .hero-form select, .hero-form textarea {
+      width: 100%; padding: 10px 14px; margin-bottom: 10px;
+      border: 1px solid rgba(255,255,255,.15); border-radius: var(--r);
+      background: rgba(255,255,255,.08); color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 13px; outline: none; resize: none;
+    }
+    .hero-form input::placeholder, .hero-form textarea::placeholder { color: rgba(255,255,255,.3); }
+    .hero-form input:focus, .hero-form select:focus, .hero-form textarea:focus { border-color: var(--gold); }
+    .hero-form select option { background: #1a1918; color: #fff; }
+    .hero-form .btn-submit {
+      width: 100%; background: var(--gold); color: #fff; border: none;
+      padding: 12px; border-radius: var(--r); font-size: 12px;
+      letter-spacing: .1em; text-transform: uppercase; cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: background .2s; margin-top: 4px;
+    }
+    .hero-form .btn-submit:hover { background: var(--gold-lt); }
+    .hero-form-success { text-align: center; padding: 24px 0; color: var(--gold-lt); font-family: 'Cormorant Garamond', serif; font-size: 20px; display: none; }
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 32px; }
+      .hero-form { max-width: 420px; }
+    }
     .hero-eyebrow {
       font-size: 10px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase;
       color: var(--gold); margin-bottom: 1.25rem;
@@ -392,16 +431,39 @@
 
   <!-- HERO -->
   <section id="hero">
+    <video id="yard-hv" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
     <div class="hero-inner">
-      <div class="hero-eyebrow">Austin TX · Homes with Big Yards</div>
-      <h1>Austin Homes<br><em>with Big Yards</em></h1>
-      <p class="hero-desc">Most Austin MLS searches can't filter by yard size — so we do the math. We compare each home's lot size to its interior square footage. A 2,200 sq&nbsp;ft home on a 10,500 sq&nbsp;ft lot has roughly 8,300 sq&nbsp;ft of yard — room for a pool, a garden, a trampoline, or all three. Every listing below clears a minimum 4,000 sq&nbsp;ft estimated yard threshold.</p>
-      <div class="hero-pills">
-        <span class="hero-pill">4,000+ sq ft Yards</span>
-        <span class="hero-pill">Single Family Only</span>
-        <span class="hero-pill">City of Austin</span>
+      <div class="hero-left">
+        <div class="hero-eyebrow">Austin TX · Homes with Big Yards</div>
+        <h1>Austin Homes<br><em>with Big Yards</em></h1>
+        <p class="hero-desc">Most Austin MLS searches can't filter by yard size — so we do the math. We compare each home's lot size to its interior square footage. Every listing below clears a minimum 4,000 sq ft estimated yard threshold.</p>
+        <div class="hero-pills">
+          <span class="hero-pill">4,000+ sq ft Yards</span>
+          <span class="hero-pill">Single Family Only</span>
+          <span class="hero-pill">City of Austin</span>
+        </div>
+        <div class="hero-meta">Found <span id="listings-count">—</span> homes matching yard criteria</div>
       </div>
-      <div class="hero-meta">Found <span id="listings-count">—</span> homes matching yard criteria</div>
+      <div class="hero-form">
+        <h3>Find Your Big Yard Home</h3>
+        <p>Tell me what you're looking for and I'll send curated options within 24 hours.</p>
+        <form id="hero-contact-form">
+          <input type="hidden" name="source" value="big-yard-hero" />
+          <input type="text" name="name" placeholder="Your name" required />
+          <input type="text" name="contact" placeholder="Email or phone" required />
+          <select name="budget">
+            <option value="">Budget range</option>
+            <option>Under $400K</option>
+            <option>$400K–$600K</option>
+            <option>$600K–$800K</option>
+            <option>$800K–$1M</option>
+            <option>$1M+</option>
+          </select>
+          <textarea name="message" rows="2" placeholder="What matters most? (pool space, garden, kids, dogs…)"></textarea>
+          <button type="submit" class="btn-submit">Get Started</button>
+        </form>
+        <div class="hero-form-success" id="hero-form-success">Got it — I'll be in touch within a few hours.</div>
+      </div>
     </div>
   </section>
 
@@ -701,6 +763,24 @@ function makePropertyUrl(l) {
 <script src="/js/footer.js"></script>
 
   <script>
+    // Hero video fade-in
+    const yardVid = document.getElementById('yard-hv');
+    if (yardVid) {
+      if (yardVid.readyState >= 3) yardVid.classList.add('ready');
+      else yardVid.addEventListener('canplay', () => yardVid.classList.add('ready'), { once: true });
+    }
+
+    // Hero contact form
+    document.getElementById('hero-contact-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(this));
+      try {
+        await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      } catch {}
+      this.style.display = 'none';
+      document.getElementById('hero-form-success').style.display = 'block';
+    });
+
     /* ═══════════════════════════════════════════════
        STATE
     ═══════════════════════════════════════════════ */
