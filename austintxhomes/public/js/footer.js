@@ -201,18 +201,18 @@
         <div class="sf-col-subhead">City Relocation Guides</div>
         <ul class="sf-links">
           <li class="sf-hub-link"><a href="/moving-to-austin-guides">All City Guides →</a></li>
-          <li><a href="/los-angeles-to-austin">From Los Angeles</a></li>
-          <li><a href="/new-york-to-austin">From New York</a></li>
-          <li><a href="/chicago-to-austin">From Chicago</a></li>
-          <li><a href="/sf-to-austin">From San Francisco</a></li>
-          <li><a href="/seattle-to-austin">From Seattle</a></li>
-          <li><a href="/phoenix-to-austin">From Phoenix &amp; Scottsdale</a></li>
-          <li><a href="/denver-to-austin">From Denver</a></li>
-          <li><a href="/minneapolis-to-austin">From Minneapolis</a></li>
-          <li><a href="/portland-to-austin">From Portland</a></li>
-          <li><a href="/boston-to-austin">From Boston</a></li>
-          <li><a href="/dc-to-austin">From Washington DC</a></li>
-          <li><a href="/atlanta-to-austin">From Atlanta</a></li>
+          <li><a href="/moving-from-los-angeles-to-austin">From Los Angeles</a></li>
+          <li><a href="/moving-from-new-york-to-austin">From New York</a></li>
+          <li><a href="/moving-from-chicago-to-austin">From Chicago</a></li>
+          <li><a href="/moving-from-sf-to-austin">From San Francisco</a></li>
+          <li><a href="/moving-from-seattle-to-austin">From Seattle</a></li>
+          <li><a href="/moving-from-phoenix-to-austin">From Phoenix &amp; Scottsdale</a></li>
+          <li><a href="/moving-from-denver-to-austin">From Denver</a></li>
+          <li><a href="/moving-from-minneapolis-to-austin">From Minneapolis</a></li>
+          <li><a href="/moving-from-portland-to-austin">From Portland</a></li>
+          <li><a href="/moving-from-boston-to-austin">From Boston</a></li>
+          <li><a href="/moving-from-dc-to-austin">From Washington DC</a></li>
+          <li><a href="/moving-from-atlanta-to-austin">From Atlanta</a></li>
         </ul>
 
         <div class="sf-col-subhead">Employer Relocation Guides</div>
