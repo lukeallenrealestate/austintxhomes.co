@@ -217,6 +217,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Make map bottom sheet draggable on mobile
   setupDraggableSheet('.map-sidebar', '.map-sidebar-header');
 
+  // Contact modal: close on outside click + Esc key
+  document.getElementById('contact-modal')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('contact-modal')) closeContactModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      const cm = document.getElementById('contact-modal');
+      if (cm && cm.classList.contains('open')) closeContactModal();
+    }
+  });
+
   // Close dropdowns on outside click
   document.addEventListener('click', e => {
     if (!e.target.closest('.filter-dropdown') && !e.target.closest('.filter-btn')) {
@@ -554,6 +565,71 @@ function closeAllDropdowns() {
     d.style.top = '';
   });
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-open'));
+}
+
+// ---- Contact Modal ----
+function openContactModal() {
+  document.getElementById('contact-modal').classList.add('open');
+  // Pre-fill name/email if user is logged in
+  if (typeof Auth !== 'undefined' && Auth.isLoggedIn?.()) {
+    const u = Auth.getUser?.();
+    if (u) {
+      const n = document.getElementById('contact-name');
+      const e = document.getElementById('contact-email');
+      const p = document.getElementById('contact-phone');
+      if (n && !n.value) n.value = u.name || '';
+      if (e && !e.value) e.value = u.email || '';
+      if (p && !p.value) p.value = u.phone || '';
+    }
+  }
+  setTimeout(() => document.getElementById('contact-name')?.focus(), 100);
+}
+
+function closeContactModal() {
+  document.getElementById('contact-modal').classList.remove('open');
+  document.getElementById('contact-error').textContent = '';
+}
+
+async function submitContactModal() {
+  const name = document.getElementById('contact-name').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  const phone = document.getElementById('contact-phone').value.trim();
+  const message = document.getElementById('contact-message').value.trim();
+  const errEl = document.getElementById('contact-error');
+  errEl.textContent = '';
+
+  if (!name) { errEl.textContent = 'Please enter your name'; return; }
+  if (!email) { errEl.textContent = 'Please enter your email'; return; }
+  if (!message) { errEl.textContent = 'Please enter a message'; return; }
+
+  const btn = document.querySelector('#contact-modal .btn-primary');
+  const originalText = btn.textContent;
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ source: 'idx-search-contact', name, email, phone, message })
+    });
+    if (!res.ok) throw new Error('Failed');
+    // Replace modal contents with success message
+    document.querySelector('#contact-modal .modal').innerHTML = `
+      <button class="modal-close" onclick="closeContactModal();setTimeout(()=>location.reload(),300)">×</button>
+      <h2>Message sent!</h2>
+      <p class="modal-subtitle">Thanks ${escHtml(name)} — I'll get back to you within a few hours.</p>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;margin-top:8px;" onclick="closeContactModal();setTimeout(()=>location.reload(),300)">Close</button>
+    `;
+  } catch {
+    errEl.textContent = 'Could not send. Please try again or call (254) 718-2567.';
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // ---- Draggable bottom sheet (mobile only) ----
