@@ -341,7 +341,22 @@
       section { padding: 56px 1.25rem; }
       .fp-grid { grid-template-columns: 1fr; }
     }
-  </style>
+  
+    .hero video.bg-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+      z-index: 0;
+    }
+    .hero video.bg-video.ready { opacity: 1; }
+    .hero::after {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(135deg, rgba(15,15,14,.78) 0%, rgba(26,20,16,.7) 50%, rgba(15,15,14,.78) 100%);
+      pointer-events: none;
+    }
+    .hero > *:not(video) { position: relative; z-index: 2; }
+</style>
 
   <!-- JSON-LD: RealEstateAgent -->
   <script type="application/ld+json">
@@ -470,6 +485,7 @@
 
 <!-- ── HERO ──────────────────────────────────────────────────────────────── -->
 <section class="hero" style="margin-top: 64px;">
+  <video class="bg-video" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
   <div class="hero-eyebrow">Sienna at the Thompson &nbsp;·&nbsp; 501 Brazos St &nbsp;·&nbsp; Downtown Austin</div>
   <h1>Sienna at the Thompson<br><em>Floor Plans &amp; Pricing</em></h1>
   <p class="hero-sub">Studio, 1BR &amp; 2BR apartments in downtown Austin. Live pricing updated monthly from the property's official website.</p>
@@ -845,6 +861,16 @@ document.getElementById('sienna-form').addEventListener('submit', async (e) => {
     alert('Something went wrong. Please try again or call Luke directly at (254) 718-2567.');
   }
 });
+</script>
+
+<script>
+// Hero video fade-in
+(function(){
+  const v = document.querySelector('.hero video.bg-video');
+  if (!v) return;
+  if (v.readyState >= 3) v.classList.add('ready');
+  else v.addEventListener('canplay', () => v.classList.add('ready'), { once: true });
+})();
 </script>
 </body>
 </html>

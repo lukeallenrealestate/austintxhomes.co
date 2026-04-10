@@ -525,13 +525,29 @@
       .hero { padding: 80px 0 70px; }
       .equity-cards, .la-map-grid, .nbhd-grid, .school-grid { grid-template-columns: 1fr; }
     }
-  </style>
+  
+    .hero video.bg-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+      z-index: 0;
+    }
+    .hero video.bg-video.ready { opacity: 1; }
+    .hero::after {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(135deg, rgba(15,15,14,.78) 0%, rgba(26,20,16,.7) 50%, rgba(15,15,14,.78) 100%);
+      pointer-events: none;
+    }
+    .hero > *:not(video) { position: relative; z-index: 2; }
+</style>
 </head>
 <body>
 <script src="/js/nav.js"></script>
 
 <!-- ── HERO ── -->
 <section class="hero" id="top">
+  <video class="bg-video" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
   <div class="container">
     <div class="hero-content">
       <span class="eyebrow">Los Angeles → Austin, Texas</span>
@@ -1125,6 +1141,16 @@
     form.closest('.cta-form-wrap').innerHTML =
       '<p class="form-success"><em>I\'ll be in touch within a few hours — welcome to Austin.</em></p>';
   });
+</script>
+
+<script>
+// Hero video fade-in
+(function(){
+  const v = document.querySelector('.hero video.bg-video');
+  if (!v) return;
+  if (v.readyState >= 3) v.classList.add('ready');
+  else v.addEventListener('canplay', () => v.classList.add('ready'), { once: true });
+})();
 </script>
 </body>
 </html>

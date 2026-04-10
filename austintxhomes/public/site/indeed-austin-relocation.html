@@ -167,7 +167,7 @@
       background-image: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(184,147,90,.18) 0%, transparent 65%);
       padding: 120px 2rem 100px;
       text-align: center;
-    }
+     position: relative; overflow: hidden;}
 
     .eyebrow {
       font-family: 'Inter', sans-serif;
@@ -861,13 +861,29 @@
       .faq-grid { grid-template-columns: 1fr; }
       .form-row { grid-template-columns: 1fr; }
     }
-  </style>
+  
+    .hero video.bg-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+      z-index: 0;
+    }
+    .hero video.bg-video.ready { opacity: 1; }
+    .hero::after {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(135deg, rgba(15,15,14,.78) 0%, rgba(26,20,16,.7) 50%, rgba(15,15,14,.78) 100%);
+      pointer-events: none;
+    }
+    .hero > *:not(video) { position: relative; z-index: 2; }
+</style>
 </head>
 <body>
   <script src="/js/nav.js"></script>
 
   <!-- HERO -->
   <section class="hero">
+  <video class="bg-video" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
     <div class="eyebrow">Indeed Austin HQ · Employee Relocation</div>
     <h1>Moving to Austin<br><em>for Indeed?</em></h1>
     <p class="hero-lead">Welcome to Austin. You're joining one of Austin's few true homegrown tech giants — Indeed was built here, not transplanted. The headquarters campus sits in northwest Austin's premier tech corridor, near US-183 and the Arboretum. Cedar Park, Great Hills, Leander, and the Domain are your best neighborhoods. This guide gives you the honest commute math and housing breakdown for Indeed employees in 2026.</p>
@@ -1416,5 +1432,15 @@
       document.getElementById('form-success').style.display = 'block';
     });
   </script>
+
+<script>
+// Hero video fade-in
+(function(){
+  const v = document.querySelector('.hero video.bg-video');
+  if (!v) return;
+  if (v.readyState >= 3) v.classList.add('ready');
+  else v.addEventListener('canplay', () => v.classList.add('ready'), { once: true });
+})();
+</script>
 </body>
 </html>

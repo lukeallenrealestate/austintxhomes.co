@@ -438,7 +438,22 @@
       .hero-stats { gap: 24px; }
       .rate-calc { gap: 8px; padding: 12px 14px; }
     }
-  </style>
+  
+    .hero video.bg-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+      z-index: 0;
+    }
+    .hero video.bg-video.ready { opacity: 1; }
+    .hero::after {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(135deg, rgba(15,15,14,.78) 0%, rgba(26,20,16,.7) 50%, rgba(15,15,14,.78) 100%);
+      pointer-events: none;
+    }
+    .hero > *:not(video) { position: relative; z-index: 2; }
+</style>
 
   <script type="application/ld+json">
   {
@@ -536,6 +551,7 @@
 
 <!-- Hero -->
 <section class="hero" style="margin-top:64px">
+  <video class="bg-video" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
   <div class="hero-inner">
     <p class="hero-eyebrow">Austin TX Investment Properties</p>
     <h1>Cash-Flowing Properties<br><em>For Sale in Austin</em></h1>
@@ -873,6 +889,16 @@
   });
 
   loadListings();
+</script>
+
+<script>
+// Hero video fade-in
+(function(){
+  const v = document.querySelector('.hero video.bg-video');
+  if (!v) return;
+  if (v.readyState >= 3) v.classList.add('ready');
+  else v.addEventListener('canplay', () => v.classList.add('ready'), { once: true });
+})();
 </script>
 </body>
 </html>

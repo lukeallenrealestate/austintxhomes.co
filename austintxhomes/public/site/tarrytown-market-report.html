@@ -138,7 +138,7 @@
       background-image: radial-gradient(ellipse 70% 55% at 50% 40%, rgba(184,147,90,.18) 0%, transparent 70%);
       padding: 120px 2rem 80px;
       text-align: center;
-    }
+     position: relative; overflow: hidden;}
     .hero-eyebrow {
       font-size: .7rem; letter-spacing: .18em; text-transform: uppercase;
       color: var(--gold); margin-bottom: 1.5rem;
@@ -607,13 +607,29 @@
       .sales-table { font-size: .77rem; }
       .sales-table thead th, .sales-table tbody td { padding: .65rem .6rem; }
     }
-  </style>
+  
+    .hero video.bg-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+      z-index: 0;
+    }
+    .hero video.bg-video.ready { opacity: 1; }
+    .hero::after {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(135deg, rgba(15,15,14,.78) 0%, rgba(26,20,16,.7) 50%, rgba(15,15,14,.78) 100%);
+      pointer-events: none;
+    }
+    .hero > *:not(video) { position: relative; z-index: 2; }
+</style>
 </head>
 <body>
   <script src="/js/nav.js"></script>
 
   <!-- ── HERO ─────────────────────────────────────────────────── -->
   <section class="hero">
+  <video class="bg-video" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
     <div class="hero-eyebrow">Tarrytown Austin &middot; Market Intelligence</div>
     <h1>Tarrytown Austin<br><em>Market Report</em></h1>
     <p class="hero-sub">Current home prices, trends, and market analysis for Tarrytown, Austin TX (78703). Data-driven insights from Luke Allen &mdash; Tarrytown specialist, TREC #788149.</p>
@@ -1272,5 +1288,15 @@
       document.getElementById('form-success').style.display = 'block';
     });
   </script>
+
+<script>
+// Hero video fade-in
+(function(){
+  const v = document.querySelector('.hero video.bg-video');
+  if (!v) return;
+  if (v.readyState >= 3) v.classList.add('ready');
+  else v.addEventListener('canplay', () => v.classList.add('ready'), { once: true });
+})();
+</script>
 </body>
 </html>

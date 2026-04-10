@@ -267,7 +267,22 @@
       .stats-grid { grid-template-columns: 1fr; }
       .price-history { grid-template-columns: repeat(2, 1fr); }
     }
-  </style>
+  
+    .hero video.bg-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+      z-index: 0;
+    }
+    .hero video.bg-video.ready { opacity: 1; }
+    .hero::after {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(135deg, rgba(15,15,14,.78) 0%, rgba(26,20,16,.7) 50%, rgba(15,15,14,.78) 100%);
+      pointer-events: none;
+    }
+    .hero > *:not(video) { position: relative; z-index: 2; }
+</style>
 </head>
 <body>
 
@@ -275,6 +290,7 @@
 
 <!-- ── HERO ── -->
 <section class="hero">
+  <video class="bg-video" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
   <div class="hero-inner">
     <p class="hero-eyebrow">Zilker Austin · Market Intelligence</p>
     <h1>Zilker Austin<br><em>Market Report</em></h1>
@@ -719,5 +735,15 @@ form.addEventListener('submit', async (e) => {
 });
 </script>
 
+
+<script>
+// Hero video fade-in
+(function(){
+  const v = document.querySelector('.hero video.bg-video');
+  if (!v) return;
+  if (v.readyState >= 3) v.classList.add('ready');
+  else v.addEventListener('canplay', () => v.classList.add('ready'), { once: true });
+})();
+</script>
 </body>
 </html>

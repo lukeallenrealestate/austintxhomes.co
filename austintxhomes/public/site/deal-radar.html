@@ -67,7 +67,7 @@
       background: #0f0f0e;
       padding: 5rem 2rem 3.5rem;
       text-align: center;
-    }
+     position: relative; overflow: hidden;}
     .hero-eyebrow {
       font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
       color: #b8935a; margin-bottom: 1rem;
@@ -505,7 +505,22 @@
       .deal-grid { grid-template-columns: 1fr; }
       .stats-strip { gap: 1.25rem; }
     }
-  </style>
+  
+    .hero video.bg-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+      z-index: 0;
+    }
+    .hero video.bg-video.ready { opacity: 1; }
+    .hero::after {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(135deg, rgba(15,15,14,.78) 0%, rgba(26,20,16,.7) 50%, rgba(15,15,14,.78) 100%);
+      pointer-events: none;
+    }
+    .hero > *:not(video) { position: relative; z-index: 2; }
+</style>
 </head>
 <body>
 
@@ -513,6 +528,7 @@
 
 <!-- Hero -->
 <section class="hero">
+  <video class="bg-video" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
   <p class="hero-eyebrow">Austin TX · Algorithmic Screening Tool</p>
   <h1>Austin Real Estate<br><span>Deal Radar</span></h1>
   <p class="hero-sub">Active listings screened and scored for potential value relative to nearby comparables. Updated daily from live MLS data.</p>
@@ -1192,5 +1208,15 @@ const _origLoadDeals = loadDeals;
 loadDeals(1);
 </script>
 
+
+<script>
+// Hero video fade-in
+(function(){
+  const v = document.querySelector('.hero video.bg-video');
+  if (!v) return;
+  if (v.readyState >= 3) v.classList.add('ready');
+  else v.addEventListener('canplay', () => v.classList.add('ready'), { once: true });
+})();
+</script>
 </body>
 </html>

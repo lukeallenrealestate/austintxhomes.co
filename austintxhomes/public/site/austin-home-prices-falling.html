@@ -139,7 +139,7 @@
       padding: 120px 2rem 80px;
       text-align: center;
       margin-top: 80px;
-    }
+     position: relative; overflow: hidden;}
     .hero-eyebrow {
       font-size: .7rem; letter-spacing: .18em; text-transform: uppercase;
       color: var(--gold); margin-bottom: 1.5rem;
@@ -573,13 +573,29 @@
       .snapshot-section, .chart-section, .why-section, .area-section,
       .drivers-section, .forecast-section, .faq-section, .cta-section { padding: 48px 1.25rem; }
     }
-  </style>
+  
+    .hero video.bg-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+      z-index: 0;
+    }
+    .hero video.bg-video.ready { opacity: 1; }
+    .hero::after {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(135deg, rgba(15,15,14,.78) 0%, rgba(26,20,16,.7) 50%, rgba(15,15,14,.78) 100%);
+      pointer-events: none;
+    }
+    .hero > *:not(video) { position: relative; z-index: 2; }
+</style>
 </head>
 <body>
   <script src="/js/nav.js"></script>
 
   <!-- ── HERO ─────────────────────────────────────────────────── -->
   <section class="hero">
+  <video class="bg-video" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
     <div class="hero-eyebrow">Austin TX Home Prices · Live MLS Data · Updated Weekly</div>
     <h1>Are Austin Home Prices<br><em>Going to Keep Falling?</em></h1>
     <p class="hero-sub">They already fell — 15–20% from the 2022 peak. Here's where prices actually are now, why they fell, and what the data says comes next.</p>
@@ -1260,5 +1276,15 @@
       });
     });
   </script>
+
+<script>
+// Hero video fade-in
+(function(){
+  const v = document.querySelector('.hero video.bg-video');
+  if (!v) return;
+  if (v.readyState >= 3) v.classList.add('ready');
+  else v.addEventListener('canplay', () => v.classList.add('ready'), { once: true });
+})();
+</script>
 </body>
 </html>

@@ -48,7 +48,7 @@
     :root{--gold:#b8935a;--gold-lt:#cda96f;--gold-pale:#f5ede0;--ink:#0f0f0e;--text:#1a1918;--mid:#5c5b57;--light:#999690;--bg:#fff;--warm:#faf8f4;--cream:#f1ece3;--border:#e5dfd4;--r:4px;--w:1180px}
     body{font-family:'Inter',sans-serif;color:var(--text);background:var(--bg);line-height:1.6}
 
-    .hero{margin-top:64px;background:var(--ink);padding:72px 32px 64px;text-align:center}
+    .hero{margin-top:64px;background:var(--ink);padding:72px 32px 64px;text-align:center position: relative; overflow: hidden;}
     .hero-inner{max-width:var(--w);margin:0 auto}
     .hero-eye{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
     .hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,5vw,56px);font-weight:400;color:#fff;line-height:1.1;margin-bottom:16px}
@@ -101,12 +101,28 @@
 
     @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.stats-inner{gap:24px}}
     @media(max-width:520px){.grid{grid-template-columns:1fr}#meta-map{height:350px}.hero{padding:56px 20px 48px}.listings,.map-section{padding-left:16px;padding-right:16px}}
-  </style>
+  
+    .hero video.bg-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+      z-index: 0;
+    }
+    .hero video.bg-video.ready { opacity: 1; }
+    .hero::after {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(135deg, rgba(15,15,14,.78) 0%, rgba(26,20,16,.7) 50%, rgba(15,15,14,.78) 100%);
+      pointer-events: none;
+    }
+    .hero > *:not(video) { position: relative; z-index: 2; }
+</style>
 </head>
 <body>
 <script src="/js/nav.js"></script>
 
 <section class="hero">
+  <video class="bg-video" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
   <div class="hero-inner">
     <p class="hero-eye">Meta Downtown Austin</p>
     <h1>Homes for Sale Near Meta Austin</h1>
@@ -290,6 +306,16 @@ async function initMetaMap() {
 
 loadListings(1);
 initMetaMap();
+</script>
+
+<script>
+// Hero video fade-in
+(function(){
+  const v = document.querySelector('.hero video.bg-video');
+  if (!v) return;
+  if (v.readyState >= 3) v.classList.add('ready');
+  else v.addEventListener('canplay', () => v.classList.add('ready'), { once: true });
+})();
 </script>
 </body>
 </html>
