@@ -10,7 +10,7 @@ let drawnPolygon = null;
 let isDrawing = false;
 let drawPath = [];
 let drawPolyline = null;
-let markerClusterer = null;
+let mcInstance = null; // marker clusterer instance — renamed to avoid clash with window.markerClusterer library global
 let infoWindow = null;
 let mapPins = [];
 let searchDebounce = null;
@@ -254,8 +254,8 @@ async function loadGoogleMaps() {
   clusterScript.src = '/js/markerclusterer.min.js';
   clusterScript.onload = () => {
     // Re-cluster if map pins are already rendered (cluster script loaded after initMap)
-    if (window.googleMap && mapMarkers.length && !markerClusterer && window.markerClusterer?.MarkerClusterer) {
-      markerClusterer = new window.markerClusterer.MarkerClusterer({ map: window.googleMap, markers: mapMarkers });
+    if (googleMap && mapMarkers.length && !mcInstance && window.markerClusterer?.MarkerClusterer) {
+      mcInstance = new window.markerClusterer.MarkerClusterer({ map: googleMap, markers: mapMarkers });
     }
   };
   document.head.appendChild(clusterScript);
@@ -731,10 +731,31 @@ function clearAllFilters() {
   updateFilterBtnLabel('baths-btn', 'Baths');
   updateFilterBtnLabel('type-btn', 'Type');
   document.getElementById('more-btn')?.classList.remove('active');
+
+  // Reset For Sale / For Rent toggle to "For Sale"
+  document.querySelectorAll('.filter-toggle button').forEach(b => {
+    b.classList.toggle('active', b.dataset.type === 'buy');
+  });
+
+  // Clear any drawn polygon and exit draw mode
+  if (typeof drawnPolygon !== 'undefined' && drawnPolygon) {
+    drawnPolygon.setMap(null);
+    drawnPolygon = null;
+  }
+  if (typeof cancelDrawMode === 'function') cancelDrawMode();
+  const clearBtn = document.getElementById('clear-draw-btn');
+  if (clearBtn) clearBtn.style.display = 'none';
+
+  // Clear URL params so a refresh starts fresh
+  history.replaceState(null, '', window.location.pathname);
+
   currentPage = 1;
   applyFilters();
   closeAllDropdowns();
 }
+
+// Alias used by the filter bar Reset button
+function resetSearch() { clearAllFilters(); }
 
 // ---- Autocomplete ----
 function setupAutocomplete() {
@@ -1121,7 +1142,7 @@ function renderMapMarkers(pins) {
   // Clear existing
   mapMarkers.forEach(m => m.setMap(null));
   mapMarkers = [];
-  if (markerClusterer) { markerClusterer.clearMarkers(); }
+  if (mcInstance) { mcInstance.clearMarkers(); }
 
   if (!pins.length) return;
 
@@ -1144,8 +1165,8 @@ function renderMapMarkers(pins) {
 
   // Cluster markers — library exports to window.markerClusterer.MarkerClusterer (lowercase namespace)
   if (window.markerClusterer?.MarkerClusterer) {
-    if (markerClusterer) { markerClusterer.clearMarkers(); markerClusterer = null; }
-    markerClusterer = new window.markerClusterer.MarkerClusterer({ map: googleMap, markers: mapMarkers });
+    if (mcInstance) { mcInstance.clearMarkers(); mcInstance = null; }
+    mcInstance = new window.markerClusterer.MarkerClusterer({ map: googleMap, markers: mapMarkers });
   }
 }
 
