@@ -123,11 +123,27 @@ cron.schedule('0 14 * * 1', async () => {
   console.log('[WeeklyReport] Starting Monday morning report generation...');
   try {
     const post = await generateWeeklyReport(weeklyReports);
-    if (post) {
-      console.log(`[WeeklyReport] Done — published /blog/${post.slug}`);
-    }
+    if (post) console.log(`[WeeklyReport] Done — published /blog/${post.slug}`);
   } catch (e) {
     console.error('[WeeklyReport] Cron failed:', e.message);
+    // Notify Luke so a missed week is never invisible again
+    try {
+      const nodemailer = require('nodemailer');
+      const transport = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.EMAIL_PORT || '587'),
+        secure: process.env.EMAIL_SECURE === 'true',
+        auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+      });
+      await transport.sendMail({
+        from: `"Austin TX Homes" <${process.env.EMAIL_USER}>`,
+        to: 'Luke@austinmdg.com',
+        subject: 'Weekly Market Report Failed',
+        text: `The Monday weekly market report cron failed.\n\nError: ${e.message}\n\nManual trigger:\ncurl -X POST https://austintxhomes.co/api/weekly-report/generate -H "x-admin-key: ${process.env.DEAL_RADAR_ADMIN_KEY || 'austin-admin-2026'}"`
+      });
+    } catch (mailErr) {
+      console.error('[WeeklyReport] Failure notification also failed:', mailErr.message);
+    }
   }
 });
 

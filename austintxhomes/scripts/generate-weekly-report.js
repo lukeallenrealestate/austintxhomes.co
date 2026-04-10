@@ -8,7 +8,7 @@
  *   1. Google Business Profile blurb (<1500 chars) — emailed to Luke
  *   2. Full SEO blog post (HTML) — published live to /blog/:slug
  *
- * Data: live MLS via idx-search API (localhost:3000) + FRED mortgage rates
+ * Data: live MLS via merged server (localhost:3002) + FRED mortgage rates
  * Email: Gmail SMTP from idx-search .env credentials
  *
  * Optional env vars:
@@ -25,7 +25,7 @@ catch (_) { try { nodemailer = require('nodemailer'); } catch (__) {} }
 
 const REPORTS_FILE = path.join(__dirname, '../data/weekly-reports.json');
 const SITEMAP_FILE = path.join(__dirname, '../public/sitemap.xml');
-const IDX_API      = 'http://localhost:3000';
+const IDX_API      = process.env.IDX_API_URL || `http://localhost:${process.env.PORT || 3002}`;
 const TO_EMAIL     = 'Luke@austinmdg.com';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
