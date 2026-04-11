@@ -64,7 +64,7 @@ async function loadSavedSearches() {
       return `
         <div class="saved-search-item">
           <div style="flex:1;">
-            <a href="/?${filtersToQuery(s.filters)}" class="search-name">${escHtml(s.name)}</a>
+            <a href="/search?${filtersToQuery(s.filters)}" class="search-name">${escHtml(s.name)}</a>
             <div class="search-filters">${filterDesc}</div>
             <div class="search-date">Saved ${date}</div>
             <label class="alert-toggle-row alert-toggle-row--inline" title="${alertOn ? 'Email alerts on' : 'Email alerts off'}">

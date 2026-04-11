@@ -18,6 +18,7 @@ let autocompleteDebounce = null;
 let mapIdleTimer = null;
 let gmapsLoaded = false;
 let pendingMapZoom = false;
+let pendingPolygonRestore = false;
 
 // ---- Search state persistence ----
 function saveSearchState() {
@@ -109,6 +110,7 @@ function syncUrlFromFilters() {
   if (f.waterfront === 'true')      params.set('waterfront', 'true');
   if (f.newConstruction === 'true') params.set('newConstruction', 'true');
   if (f.forRent)      params.set('forRent', f.forRent);
+  if (f.polygon)      params.set('polygon', f.polygon);
   const qs = params.toString();
   history.replaceState(null, '', qs ? '?' + qs : window.location.pathname);
 }
@@ -195,8 +197,35 @@ function applyUrlParams() {
   } else if (forRent === 'false') {
     currentFilters.forRent = 'false';
     document.querySelectorAll('.filter-toggle button').forEach(b => {
-      b.classList.toggle('active', b.dataset.type === 'sale');
+      b.classList.toggle('active', b.dataset.type === 'buy');
     });
+  }
+
+  // Polygon (saved searches with custom map area)
+  const polygon = params.get('polygon');
+  if (polygon) {
+    try {
+      const path = JSON.parse(polygon);
+      if (Array.isArray(path) && path.length > 2) {
+        currentFilters.polygon = polygon;
+        // Derive bbox so the server-side bbox pre-filter narrows the SQL query
+        let north = -Infinity, south = Infinity, east = -Infinity, west = Infinity;
+        for (const p of path) {
+          if (p.lat > north) north = p.lat;
+          if (p.lat < south) south = p.lat;
+          if (p.lng > east) east = p.lng;
+          if (p.lng < west) west = p.lng;
+        }
+        currentFilters.north = north;
+        currentFilters.south = south;
+        currentFilters.east = east;
+        currentFilters.west = west;
+        // Default to map view since the polygon only makes sense visually.
+        // Mark for switch in init — actual switchView() happens after init order.
+        currentView = 'map';
+        pendingPolygonRestore = true;
+      }
+    } catch {}
   }
 }
 
@@ -351,7 +380,7 @@ function initMap() {
   mapDiv.addEventListener('mouseup', finishFreehandDraw);
   mapDiv.addEventListener('mouseleave', finishFreehandDraw);
 
-  // Restore drawn polygon from saved state
+  // Restore drawn polygon from saved state (localStorage or URL params)
   if (currentFilters.polygon) {
     try {
       const path = JSON.parse(currentFilters.polygon);
@@ -365,6 +394,20 @@ function initMap() {
         map: googleMap
       });
       document.getElementById('clear-draw-btn').style.display = 'flex';
+
+      // Fit map to polygon bounds + ensure view is in map mode
+      // (URL-restored polygons need this; localStorage flow already set the view)
+      if (pendingPolygonRestore) {
+        const bounds = new google.maps.LatLngBounds();
+        path.forEach(p => bounds.extend(new google.maps.LatLng(p.lat, p.lng)));
+        googleMap.fitBounds(bounds, 40);
+        pendingPolygonRestore = false;
+        // Force switchView to flip DOM visibility (even if currentView already === 'map',
+        // the DOM may still show list view because applyUrlParams only set the variable).
+        // switchView calls loadMapPins/loadMapCards internally with polygon filter intact
+        // since drawnPolygon now exists.
+        switchView('map');
+      }
     } catch(e) {}
   }
 
@@ -400,19 +443,21 @@ function initMap() {
   googleMap.addListener('idle', () => {
     clearTimeout(mapIdleTimer);
     mapIdleTimer = setTimeout(() => {
-      if (!drawnPolygon) {
-        const bounds = googleMap.getBounds();
-        if (!bounds) return;
-        const ne = bounds.getNorthEast();
-        const sw = bounds.getSouthWest();
-        currentFilters.north = ne.lat();
-        currentFilters.south = sw.lat();
-        currentFilters.east = ne.lng();
-        currentFilters.west = sw.lng();
-        delete currentFilters.polygon;
-        loadMapPins();
-        loadMapCards();
-      }
+      // If a polygon is active (drawn or restored from URL/localStorage),
+      // panning/zooming the map should NOT clobber the polygon filter.
+      // The polygon stays until the user explicitly clicks "Clear Drawing".
+      if (drawnPolygon || currentFilters.polygon) return;
+
+      const bounds = googleMap.getBounds();
+      if (!bounds) return;
+      const ne = bounds.getNorthEast();
+      const sw = bounds.getSouthWest();
+      currentFilters.north = ne.lat();
+      currentFilters.south = sw.lat();
+      currentFilters.east = ne.lng();
+      currentFilters.west = sw.lng();
+      loadMapPins();
+      loadMapCards();
     }, 300);
   });
 
