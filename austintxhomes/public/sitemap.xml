@@ -1704,4 +1704,62 @@
     <changefreq>daily</changefreq>
     <lastmod>2026-04-07</lastmod>
   </url>
+
+  <!-- Round Rock topical web -->
+  <url>
+    <loc>https://austintxhomes.co/round-rock</loc>
+    <priority>0.9</priority>
+    <changefreq>weekly</changefreq>
+    <lastmod>2026-04-11</lastmod>
+  </url>
+
+  <url><loc>https://austintxhomes.co/round-rock/teravista</loc><priority>0.8</priority><changefreq>weekly</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/teravista/homes-for-sale</loc><priority>0.8</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/teravista/homes-for-rent</loc><priority>0.7</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/teravista/best-realtor</loc><priority>0.7</priority><changefreq>monthly</changefreq><lastmod>2026-04-11</lastmod></url>
+
+  <url><loc>https://austintxhomes.co/round-rock/forest-creek</loc><priority>0.8</priority><changefreq>weekly</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/forest-creek/homes-for-sale</loc><priority>0.8</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/forest-creek/homes-for-rent</loc><priority>0.7</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/forest-creek/best-realtor</loc><priority>0.7</priority><changefreq>monthly</changefreq><lastmod>2026-04-11</lastmod></url>
+
+  <url><loc>https://austintxhomes.co/round-rock/paloma-lake</loc><priority>0.8</priority><changefreq>weekly</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/paloma-lake/homes-for-sale</loc><priority>0.8</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/paloma-lake/homes-for-rent</loc><priority>0.7</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/paloma-lake/best-realtor</loc><priority>0.7</priority><changefreq>monthly</changefreq><lastmod>2026-04-11</lastmod></url>
+
+  <url><loc>https://austintxhomes.co/round-rock/behrens-ranch</loc><priority>0.8</priority><changefreq>weekly</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/behrens-ranch/homes-for-sale</loc><priority>0.8</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/behrens-ranch/homes-for-rent</loc><priority>0.7</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/behrens-ranch/best-realtor</loc><priority>0.7</priority><changefreq>monthly</changefreq><lastmod>2026-04-11</lastmod></url>
+
+  <url><loc>https://austintxhomes.co/round-rock/brushy-creek</loc><priority>0.8</priority><changefreq>weekly</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/brushy-creek/homes-for-sale</loc><priority>0.8</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/brushy-creek/homes-for-rent</loc><priority>0.7</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/brushy-creek/best-realtor</loc><priority>0.7</priority><changefreq>monthly</changefreq><lastmod>2026-04-11</lastmod></url>
+
+  <url><loc>https://austintxhomes.co/round-rock/mayfield-ranch</loc><priority>0.8</priority><changefreq>weekly</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/mayfield-ranch/homes-for-sale</loc><priority>0.8</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/mayfield-ranch/homes-for-rent</loc><priority>0.7</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/mayfield-ranch/best-realtor</loc><priority>0.7</priority><changefreq>monthly</changefreq><lastmod>2026-04-11</lastmod></url>
+
+  <url><loc>https://austintxhomes.co/round-rock/cat-hollow</loc><priority>0.8</priority><changefreq>weekly</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/cat-hollow/homes-for-sale</loc><priority>0.8</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/cat-hollow/homes-for-rent</loc><priority>0.7</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/cat-hollow/best-realtor</loc><priority>0.7</priority><changefreq>monthly</changefreq><lastmod>2026-04-11</lastmod></url>
+
+  <url><loc>https://austintxhomes.co/round-rock/stone-canyon</loc><priority>0.8</priority><changefreq>weekly</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/stone-canyon/homes-for-sale</loc><priority>0.8</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/stone-canyon/homes-for-rent</loc><priority>0.7</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/stone-canyon/best-realtor</loc><priority>0.7</priority><changefreq>monthly</changefreq><lastmod>2026-04-11</lastmod></url>
+
+  <url><loc>https://austintxhomes.co/round-rock/sonoma</loc><priority>0.8</priority><changefreq>weekly</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/sonoma/homes-for-sale</loc><priority>0.8</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/sonoma/homes-for-rent</loc><priority>0.7</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/sonoma/best-realtor</loc><priority>0.7</priority><changefreq>monthly</changefreq><lastmod>2026-04-11</lastmod></url>
+
+  <url><loc>https://austintxhomes.co/round-rock/vista-oaks</loc><priority>0.8</priority><changefreq>weekly</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/vista-oaks/homes-for-sale</loc><priority>0.8</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/vista-oaks/homes-for-rent</loc><priority>0.7</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url><loc>https://austintxhomes.co/round-rock/vista-oaks/best-realtor</loc><priority>0.7</priority><changefreq>monthly</changefreq><lastmod>2026-04-11</lastmod></url>
 </urlset>

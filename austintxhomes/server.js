@@ -66,6 +66,10 @@ const renderNeighborhoodPage = require('./templates/neighborhood');
 const renderNeighborhoodHomesPage = require('./templates/neighborhood-homes');
 const renderNeighborhoodRealtorPage = require('./templates/neighborhood-realtor');
 
+// Round Rock topical web — separate data + templates for /round-rock/*
+const roundRockNeighborhoods = require('./data/round-rock-neighborhoods');
+const roundRockTemplates = require('./templates/round-rock');
+
 // Blog system
 const renderBlogPost = require('./templates/blog-post');
 const renderBlogIndex = require('./templates/blog-index');
@@ -909,6 +913,39 @@ app.get('/neighborhoods/:slug', (req, res) => {
   }
   res.setHeader('Content-Type', 'text/html');
   res.send(renderNeighborhoodPage(nbhd));
+});
+
+// ── Round Rock Topical Web ────────────────────────────────────────────────────
+// City hub — static HTML
+app.get('/round-rock', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/round-rock.html')));
+
+// Neighborhood sub-pages — SSR via round-rock template
+app.get('/round-rock/:slug/homes-for-sale', (req, res) => {
+  const nbhd = roundRockNeighborhoods[req.params.slug];
+  if (!nbhd) return res.status(404).sendFile(path.join(__dirname, 'public/site/round-rock.html'));
+  res.setHeader('Content-Type', 'text/html');
+  res.send(roundRockTemplates.renderHomesForSale(nbhd));
+});
+
+app.get('/round-rock/:slug/homes-for-rent', (req, res) => {
+  const nbhd = roundRockNeighborhoods[req.params.slug];
+  if (!nbhd) return res.status(404).sendFile(path.join(__dirname, 'public/site/round-rock.html'));
+  res.setHeader('Content-Type', 'text/html');
+  res.send(roundRockTemplates.renderHomesForRent(nbhd));
+});
+
+app.get('/round-rock/:slug/best-realtor', (req, res) => {
+  const nbhd = roundRockNeighborhoods[req.params.slug];
+  if (!nbhd) return res.status(404).sendFile(path.join(__dirname, 'public/site/round-rock.html'));
+  res.setHeader('Content-Type', 'text/html');
+  res.send(roundRockTemplates.renderBestRealtor(nbhd));
+});
+
+app.get('/round-rock/:slug', (req, res) => {
+  const nbhd = roundRockNeighborhoods[req.params.slug];
+  if (!nbhd) return res.status(404).sendFile(path.join(__dirname, 'public/site/round-rock.html'));
+  res.setHeader('Content-Type', 'text/html');
+  res.send(roundRockTemplates.renderHub(nbhd));
 });
 
 // Serve all static files from /public
