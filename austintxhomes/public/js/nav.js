@@ -66,10 +66,27 @@
       #site-nav { padding: 0 1rem; }
       #site-nav .sn-search .sn-search-label { display: none; }
       #site-nav .sn-search { padding: 7px 10px; }
-      #site-nav .sn-cta { padding: 8px 14px; font-size: .68rem; }
+      #site-nav .sn-cta { padding: 11px 16px; font-size: .68rem; }
     }
     @media (max-width: 400px) {
       #site-nav .sn-search { display: none; }
+    }
+
+    /* ─── Site-wide mobile overflow safety ───────────────────── */
+    /* Wide tables become horizontally scrollable instead of overflowing the page */
+    @media (max-width: 720px) {
+      table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      /* Grids with hardcoded column counts collapse to single column on phones */
+      .buy-grid, .comparison-grid, .stats-grid, .three-col, .four-col {
+        grid-template-columns: 1fr !important;
+      }
+      /* Prevent any accidental horizontal overflow on the body */
+      html, body { overflow-x: hidden; max-width: 100%; }
     }
   `;
 
