@@ -321,4 +321,17 @@
 
   document.body.appendChild(footer);
 
+  // Deferred hero video loader — defers 24 MB video download until after page is interactive.
+  // Works on any <video data-src="..."> on the page.
+  function loadDeferredVideos() {
+    document.querySelectorAll('video[data-src]').forEach(vid => {
+      if (vid.src) return;
+      vid.addEventListener('canplay', () => vid.classList.add('ready'), { once: true });
+      vid.src = vid.dataset.src;
+      vid.load();
+    });
+  }
+  if (document.readyState === 'complete') setTimeout(loadDeferredVideos, 100);
+  else window.addEventListener('load', () => setTimeout(loadDeferredVideos, 100), { once: true });
+
 })();

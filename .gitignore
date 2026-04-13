@@ -7,5 +7,8 @@ node_modules/
 !austintxhomes/public/favicon-48.png
 !austintxhomes/public/favicon-96.png
 !austintxhomes/public/favicon.svg
+!austintxhomes/public/images/logo.png
+!austintxhomes/public/images/luke-allen.jpg
+!austintxhomes/public/videos/hero-video.mp4
 .env
 austintxhomes/data/dealAlerts.json

@@ -1352,19 +1352,34 @@ async function confirmSaveSearch() {
   if (!name) { showToast('Please enter a search name', 'error'); return; }
 
   const alert_enabled = document.getElementById('alert-enabled-input')?.checked || false;
+  const btn = document.querySelector('#save-search-modal .btn-primary');
+  const originalText = btn?.textContent;
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
 
   try {
     const res = await Auth.apiFetch('/api/searches', {
       method: 'POST',
       body: JSON.stringify({ name, filters: currentFilters, alert_enabled })
     });
-    if (res?.ok) {
-      document.getElementById('save-search-modal').classList.remove('open');
-      document.getElementById('search-name-input').value = '';
-      if (document.getElementById('alert-enabled-input')) document.getElementById('alert-enabled-input').checked = false;
-      showToast(alert_enabled ? 'Search saved! You\'ll get email alerts for new listings.' : 'Search saved!', 'success');
+    if (!res) {
+      showToast('Your session expired — please log in again', 'error');
+      return;
     }
-  } catch {
-    showToast('Failed to save search', 'error');
+    if (!res.ok) {
+      let msg = `Failed to save search (${res.status})`;
+      try { const j = await res.json(); if (j?.error) msg = j.error; } catch {}
+      console.error('[saveSearch]', res.status, msg);
+      showToast(msg, 'error');
+      return;
+    }
+    document.getElementById('save-search-modal').classList.remove('open');
+    document.getElementById('search-name-input').value = '';
+    if (document.getElementById('alert-enabled-input')) document.getElementById('alert-enabled-input').checked = false;
+    showToast(alert_enabled ? 'Search saved! You\'ll get email alerts for new listings.' : 'Search saved!', 'success');
+  } catch (err) {
+    console.error('[saveSearch] exception', err);
+    showToast('Failed to save search: ' + (err?.message || 'network error'), 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = originalText; }
   }
 }

@@ -30,7 +30,9 @@ module.exports = function renderNeighborhoodHomesPage(n) {
   <title>Homes for Sale in ${n.name} Austin TX | MLS Listings | Luke Allen</title>
   <meta name="description" content="Browse all homes for sale in ${n.name}, Austin TX. Live MLS listings updated daily — every active property in ${n.name}. Luke Allen, TREC #788149." />
   <link rel="canonical" href="https://austintxhomes.co/neighborhoods/${n.slug}/homes-for-sale" />
-  <link rel="icon" href="/favicon.png" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/favicon-96.png" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Homes for Sale in ${n.name} Austin TX | MLS Listings | Luke Allen" />
   <meta property="og:description" content="Browse all homes for sale in ${n.name}, Austin TX. Live MLS listings updated daily — every active property in ${n.name}. Luke Allen, TREC #788149." />

@@ -430,7 +430,9 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
   <title>${title}</title>
   <meta name="description" content="${metaDesc.replace(/"/g,'&quot;').slice(0,160)}" />
   <link rel="canonical" href="${url}" />
-  <link rel="icon" href="/favicon.png" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/favicon-96.png" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="${title.replace(/"/g,'&quot;')}" />
   <meta property="og:description" content="${metaDesc.replace(/"/g,'&quot;').slice(0,200)}" />

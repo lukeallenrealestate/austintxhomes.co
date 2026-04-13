@@ -35,8 +35,8 @@ function makeStmt(sql) {
   return {
     run(...args) {
       const p = normalizeParams(args);
-      wasmDb.run(sql, p);
-      return { changes: wasmDb.changes ?? 0, lastInsertRowid: wasmDb.lastInsertRowid ?? 0 };
+      const r = wasmDb.run(sql, p) || {};
+      return { changes: r.changes ?? 0, lastInsertRowid: r.lastInsertRowid ?? 0 };
     },
     get(...args) {
       const p = normalizeParams(args);

@@ -371,6 +371,11 @@ app.get('/search', (_req, res) => {
   res.sendFile(path.join(IDX_PUBLIC, 'index.html'));
 });
 
+// /account — logged-in users' dashboard (saved searches, favorites)
+app.get('/account', (_req, res) => {
+  res.sendFile(path.join(IDX_PUBLIC, 'account.html'));
+});
+
 // Sienna at the Thompson floor plans — reads JSON file, cached 1 hour
 let siennaCache = null;
 let siennaCacheTime = 0;

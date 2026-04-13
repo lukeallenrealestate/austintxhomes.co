@@ -27,7 +27,9 @@ module.exports = function renderBlogPost(post) {
   <title>${post.title} | Luke Allen Austin TX Realtor</title>
   <meta name="description" content="${post.excerpt}" />
   <link rel="canonical" href="https://austintxhomes.co/blog/${post.slug}" />
-  <link rel="icon" href="/favicon.png" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/favicon-96.png" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
   <meta name="geo.region" content="US-TX" />
   <meta name="geo.placename" content="Austin, Texas" />

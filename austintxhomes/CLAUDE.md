@@ -10,7 +10,12 @@ Read this file before building or modifying any page on this site.
 - [ ] `<title>` — keep under 60 characters. Format: `{Page Topic} Austin TX | {Benefit} | Luke Allen`
 - [ ] `<meta name="description">` — 140–160 chars, includes primary keyword naturally
 - [ ] `<link rel="canonical">` — absolute URL: `https://austintxhomes.co/{slug}` — never `/site/` in the path
-- [ ] `<link rel="icon" href="/favicon.png" />`
+- [ ] Favicon block (required for Google Search favicon rich result):
+  ```html
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/favicon-96.png" />
+  ```
 - [ ] **All 5 OG tags** (required — missing og:image breaks social sharing and rich results):
   ```html
   <meta property="og:type" content="website" />

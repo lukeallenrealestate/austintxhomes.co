@@ -37,7 +37,9 @@ module.exports = function renderNeighborhoodPage(n) {
   <title>${n.title}</title>
   <meta name="description" content="${n.metaDescription}" />
   <link rel="canonical" href="https://austintxhomes.co/neighborhoods/${n.slug}" />
-  <link rel="icon" href="/favicon.png" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/favicon-96.png" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="${n.title}" />
   <meta property="og:description" content="${n.metaDescription}" />

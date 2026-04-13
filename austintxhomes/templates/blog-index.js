@@ -83,7 +83,9 @@ module.exports = function renderBlogIndex(posts, options) {
   <title>Austin TX Real Estate Blog | Market Updates &amp; Neighborhood Guides | Luke Allen</title>
   <meta name="description" content="Austin TX real estate insights from Luke Allen — neighborhood market updates, buyer tips, seller guides, and local Austin coverage. Updated weekly." />
   <link rel="canonical" href="https://austintxhomes.co/blog" />
-  <link rel="icon" href="/favicon.png" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/favicon-96.png" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
   <meta name="geo.region" content="US-TX" />
   <meta name="geo.placename" content="Austin, Texas" />

@@ -789,7 +789,7 @@
 
 <!-- HERO -->
 <section class="hero">
-  <video id="hv" autoplay muted loop playsinline preload="auto" src="/videos/hero-video.mp4"></video>
+  <video id="hv" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
   <div class="hero-veil"></div>
   <div class="hero-body">
     <div class="hero-kicker">Austin, Texas</div>
@@ -1169,12 +1169,9 @@ function makePropertyUrl(l) {
 <div class="toast" id="toast"></div>
 
 <script>
-// Video
+// Video readiness fade (deferred loading handled by footer.js)
 const vid = document.getElementById('hv');
-if (vid) {
-  if (vid.readyState >= 3) vid.classList.add('ready');
-  else vid.addEventListener('canplay', () => vid.classList.add('ready'), { once: true });
-}
+if (vid) vid.addEventListener('canplay', () => vid.classList.add('ready'), { once: true });
 
 // Hero search
 function doSearch(e) {

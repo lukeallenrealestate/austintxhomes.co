@@ -79,7 +79,9 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   <title>Best Realtor in ${n.name} Austin TX | Luke Allen | TREC #788149</title>
   <meta name="description" content="Luke Allen is the best realtor in ${n.name}, Austin TX. TREC #788149 — 5.0 ★ Google reviews. Expert buyer &amp; seller representation in ${n.name}." />
   <link rel="canonical" href="https://austintxhomes.co/neighborhoods/${n.slug}/best-realtor" />
-  <link rel="icon" href="/favicon.png" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/favicon-96.png" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
   <meta name="geo.region" content="US-TX" />
   <meta name="geo.placename" content="${n.name}, Austin, Texas" />
