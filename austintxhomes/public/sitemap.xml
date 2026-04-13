@@ -1762,4 +1762,10 @@
   <url><loc>https://austintxhomes.co/round-rock/vista-oaks/homes-for-sale</loc><priority>0.8</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
   <url><loc>https://austintxhomes.co/round-rock/vista-oaks/homes-for-rent</loc><priority>0.7</priority><changefreq>daily</changefreq><lastmod>2026-04-11</lastmod></url>
   <url><loc>https://austintxhomes.co/round-rock/vista-oaks/best-realtor</loc><priority>0.7</priority><changefreq>monthly</changefreq><lastmod>2026-04-11</lastmod></url>
+  <url>
+    <loc>https://austintxhomes.co/blog/austin-market-report-2026-04-13</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-04-13</lastmod>
+  </url>
 </urlset>
