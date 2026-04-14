@@ -53,7 +53,7 @@ const IDX_SERVER = `http://localhost:${PORT}`; // self-reference for internal HT
 const IDX_PUBLIC = path.join(__dirname, '../idx-search/public');
 
 // MLS sync + alert engine (merged — now runs in this process)
-const { syncListings, refreshPhotos, syncClosedLeases } = require('../idx-search/sync/mlsSync');
+const { syncListings, refreshPhotos, syncClosedLeases, syncClosedSales } = require('../idx-search/sync/mlsSync');
 const { runAlertJob } = require('../idx-search/services/alertJob');
 const r2Service = require('../idx-search/services/r2');
 // Ensure idx-search photo cache directory exists
@@ -202,6 +202,12 @@ cron.schedule('*/30 * * * *', () => {
 cron.schedule('0 7 * * *', () => {
   console.log('[LEASE-SYNC] Daily closed lease comp sync...');
   syncClosedLeases().catch(console.error);
+});
+
+// Closed sale comp sync — daily at 2:30am CDT (7:30 UTC) for market report stats
+cron.schedule('30 7 * * *', () => {
+  console.log('[SALES-SYNC] Daily closed sale comp sync...');
+  syncClosedSales().catch(console.error);
 });
 
 // Bulk photo URL refresh every 60 minutes at :05
@@ -521,14 +527,15 @@ app.get('/api/multifamily-stats', async (_req, res) => {
       ORDER BY listing_contract_date DESC
     `).all();
 
-    // Closed multifamily — we don't have close_date/close_price in our sync yet,
-    // so fall back to everything in Closed status and count them.
+    // Closed multifamily sales — comes from syncClosedSales.
+    // Filter last 180 days by close_date (or fall back to all Closed if close_date is null).
     const closed = db.prepare(`
       SELECT close_price, close_date, days_on_market, city, list_price, listing_contract_date
       FROM listings
       WHERE standard_status = 'Closed'
         AND property_type NOT LIKE '%Lease%'
         AND ${mfFilter}
+        AND (close_date IS NULL OR close_date >= date('now', '-180 days'))
     `).all();
 
     const prices = active.map(l => l.list_price).sort((a, b) => a - b);
@@ -557,10 +564,15 @@ app.get('/api/multifamily-stats', async (_req, res) => {
     const topCities = Object.entries(cityMap).sort((a, b) => b[1] - a[1]).slice(0, 10)
       .map(([city, count]) => ({ city, count }));
 
-    // Sale-to-list ratio from closed
-    const ratios = closed.filter(l => l.list_price > 0 && l.close_price > 0)
-      .map(l => l.close_price / l.list_price);
-    const avgRatio = ratios.length ? (ratios.reduce((s, r) => s + r, 0) / ratios.length * 100).toFixed(1) : null;
+    // Sale-to-list ratio — only meaningful when we have *actual* close prices distinct
+    // from list prices. ACTRIS IDX feed doesn't expose ClosePrice, so close_price is
+    // populated as a fallback from list_price — which would make every ratio = 100%.
+    // Only compute it if we see real variance (i.e., at least one row where
+    // close_price != list_price).
+    const realClosings = closed.filter(l => l.list_price > 0 && l.close_price > 0 && l.close_price !== l.list_price);
+    const avgRatio = realClosings.length >= 5
+      ? (realClosings.reduce((s, l) => s + l.close_price / l.list_price, 0) / realClosings.length * 100).toFixed(1)
+      : null;
 
     // Closed DOM — same fallback: compute from listing_contract_date if days_on_market is null
     const closedDom = closed
@@ -1073,4 +1085,15 @@ if (closedLeaseCount === 0) {
   syncClosedLeases().catch(console.error);
 } else {
   console.log(`[LEASE-SYNC] ${closedLeaseCount} closed lease comps in DB.`);
+}
+
+// Sync closed sale comps for market report stats (sale-to-list ratio, closed count, etc.)
+const closedSaleCount = idxDb.prepare(
+  `SELECT COUNT(*) as n FROM listings WHERE (property_type = 'Residential' OR property_type = 'Residential Income') AND standard_status = 'Closed'`
+).get().n;
+if (closedSaleCount === 0) {
+  console.log('[SALES-SYNC] No closed sale comps found — running initial closed sale sync...');
+  setTimeout(() => syncClosedSales().catch(console.error), 10000); // offset 10s from lease sync to avoid API rate limits
+} else {
+  console.log(`[SALES-SYNC] ${closedSaleCount} closed sale comps in DB.`);
 }

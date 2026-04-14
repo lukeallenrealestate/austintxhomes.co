@@ -118,8 +118,12 @@ function mapListing(p) {
     school_district: p.SchoolDistrict || null,
     days_on_market: p.DaysOnMarket || null,
     listing_contract_date: p.ListingContractDate || null,
-    close_date: p.CloseDate || null,
-    close_price: p.ClosePrice || null,
+    // MLS GRID / ACTRIS doesn't expose ClosePrice/CloseDate on the IDX feed.
+    // Fall back to MajorChangeTimestamp (when status flipped to Closed) and last list price.
+    close_date: p.CloseDate
+      || (p.StandardStatus === 'Closed' ? (p.MajorChangeTimestamp || p.ACT_LastChangeTimestamp || null) : null),
+    close_price: p.ClosePrice
+      || (p.StandardStatus === 'Closed' ? (p.ListPrice || p.OriginalListPrice || null) : null),
     modification_timestamp: p.ModificationTimestamp || null,
     photos_change_timestamp: p.PhotosChangeTimestamp || null,
     mlg_can_view: p.MlgCanView ? 1 : 0,
@@ -384,4 +388,66 @@ async function syncClosedLeases() {
   console.log(`[LEASE-SYNC] Done. Synced ${totalSynced} closed lease comps (${pageCount} pages).`);
 }
 
-module.exports = { syncListings, refreshPhotos, syncClosedLeases };
+// Sync closed MULTIFAMILY sales for the multifamily market report.
+// ACTRIS labels multifamily as PropertyType 'Residential Income' or 'Commercial Sale'
+// with sub-types like Apartment, Multi-Family, Duplex, Triplex, Quadruplex.
+// Runs WITHOUT MlgCanView filter — closed sales are comps, not display listings.
+async function syncClosedSales({ daysBack = 180 } = {}) {
+  if (!TOKEN) {
+    console.warn('[SALES-SYNC] No MLSGRID_ACCESS_TOKEN set — skipping');
+    return;
+  }
+
+  const cutoff = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000);
+  const cutoffTs = cutoff.toISOString();
+
+  // MLS GRID only allows PropertyType filter (not PropertySubType), so we pull
+  // the whole PropertyType and let the stats query filter by sub-type.
+  const propertyTypes = ['Residential Income', 'Commercial Sale'];
+
+  let grandTotal = 0;
+  let grandPages = 0;
+
+  for (const propType of propertyTypes) {
+    const filterParts = [
+      `OriginatingSystemName eq '${SYSTEM}'`,
+      `PropertyType eq '${propType}'`,
+      `StandardStatus eq 'Closed'`,
+      `ModificationTimestamp gt ${cutoffTs}`
+    ];
+    const filter = encodeURIComponent(filterParts.join(' and '));
+    let url = `${BASE_URL}/Property?$filter=${filter}&$top=1000`;
+
+    let typeSynced = 0;
+    let typePages = 0;
+    console.log(`[SALES-SYNC] Fetching closed ${propType} since ${cutoffTs}...`);
+
+    while (url) {
+      try {
+        typePages++;
+        console.log(`[SALES-SYNC] ${propType} page ${typePages}...`);
+        const data = await fetchPage(url);
+        const records = data.value || [];
+        if (!records.length) break;
+
+        // Reuse the lease-comp writer — it stores with mlg_can_view=0 so these are comps only
+        const mapped = records.map(mapListing);
+        const saved = batchUpsertLeaseComps(mapped);
+        typeSynced += saved;
+
+        url = data['@odata.nextLink'] || null;
+      } catch (err) {
+        console.error(`[SALES-SYNC] Error on ${propType} page ${typePages}:`, err.message);
+        break;
+      }
+    }
+    grandTotal += typeSynced;
+    grandPages += typePages;
+    console.log(`[SALES-SYNC] ${propType}: ${typeSynced} rows across ${typePages} pages.`);
+  }
+
+  console.log(`[SALES-SYNC] Done. Synced ${grandTotal} closed sale comps (${grandPages} pages total).`);
+  return grandTotal;
+}
+
+module.exports = { syncListings, refreshPhotos, syncClosedLeases, syncClosedSales };
