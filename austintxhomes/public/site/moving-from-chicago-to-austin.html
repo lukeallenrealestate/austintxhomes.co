@@ -15,7 +15,7 @@
   <meta name="author" content="Luke Allen">
 
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Moving from Chicago to Austin TX | Luke Allen, Realtor2>
+  <meta property="og:title" content="Moving from Chicago to Austin TX | Luke Allen, Realtor">
   <meta property="og:description" content="Moving from Chicago to Austin? IL 4.95% income tax → TX 0%, Chicago winters → 300 Austin sun days, and neighborhood-by-neighborhood housing comparison.">
   <meta property="og:url" content="https://austintxhomes.co/moving-from-chicago-to-austin">
   <meta property="og:image" content="https://austintxhomes.co/images/og-chicago-to-austin.jpg">
@@ -192,12 +192,56 @@
       -webkit-mask-image: radial-gradient(ellipse 70% 90% at 85% 30%, black 0%, transparent 65%);
     }
 
-    .hero-content { position: relative; z-index: 1; max-width: 720px; }
-    .hero .eyebrow { color: var(--gold-lt); }
-    .hero h1 { font-size: clamp(46px, 7vw, 78px); font-weight: 600; color: #fff; margin-bottom: 24px; letter-spacing: -0.01em; }
-    .hero h1 em { color: var(--gold-lt); }
-    .hero p { font-size: 17px; line-height: 1.7; color: rgba(255,255,255,.62); max-width: 600px; margin-bottom: 36px; }
-    .hero-pills { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
+    /* Hero video background — was missing, caused the video to render inline at 1280x720 */
+    .hero video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; transition: opacity 1.4s ease;
+      z-index: 0;
+    }
+    .hero video.ready { opacity: .35; }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      max-width: 1180px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 400px; gap: 56px; align-items: center;
+    }
+    .hero-left { min-width: 0; }
+    .hero .eyebrow { color: var(--gold-lt); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; display: block; margin-bottom: 18px; }
+    .hero h1 { font-size: clamp(40px, 5.2vw, 64px); font-weight: 400; font-family: 'Cormorant Garamond', serif; color: #fff; margin-bottom: 22px; letter-spacing: -0.01em; line-height: 1.05; }
+    .hero h1 em { color: var(--gold-lt); font-style: italic; }
+    .hero-left p { font-size: 16px; line-height: 1.7; color: rgba(255,255,255,.72); max-width: 560px; margin-bottom: 30px; }
+    .hero-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+    .hero-pills .pill { font-size: 11px; letter-spacing: .04em; color: rgba(255,255,255,.8); padding: 6px 12px; border: 1px solid rgba(184,147,90,.34); border-radius: 100px; background: rgba(184,147,90,.08); }
+
+    /* Lead form card */
+    .hero-form { background: rgba(15,15,14,.82); border: 1px solid rgba(184,147,90,.24); border-radius: 6px; padding: 28px 24px; }
+    .hero-form h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: #fff; margin-bottom: 4px; line-height: 1.2; }
+    .hero-form > p { font-size: 12px; color: rgba(255,255,255,.55); margin-bottom: 18px; line-height: 1.5; }
+    .hero-form input, .hero-form select {
+      width: 100%; padding: 11px 14px; margin-bottom: 10px;
+      border: 1px solid rgba(255,255,255,.14); border-radius: 4px;
+      font-family: 'Inter', sans-serif; font-size: 13px;
+      color: #fff; background: rgba(255,255,255,.07); outline: none;
+      transition: border-color .2s;
+      box-sizing: border-box;
+    }
+    .hero-form input::placeholder { color: rgba(255,255,255,.28); }
+    .hero-form input:focus, .hero-form select:focus { border-color: var(--gold); }
+    .hero-form select option { background: #1a1918; color: #fff; }
+    .hero-form .btn-submit {
+      width: 100%; background: var(--gold); color: #fff; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase; padding: 13px; border-radius: 4px;
+      transition: background .2s; margin-top: 6px;
+    }
+    .hero-form .btn-submit:hover { background: var(--gold-lt); }
+    .hero-form-success { display: none; text-align: center; padding: 24px 0; font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; color: var(--gold-lt); line-height: 1.5; }
+
+    @media (max-width: 900px) {
+      .hero-content { grid-template-columns: 1fr; gap: 32px; }
+    }
     .pill { display: inline-flex; align-items: center; padding: 8px 16px; border: 1px solid rgba(184,147,90,.35); border-radius: 100px; font-size: 12px; font-weight: 500; color: var(--gold-lt); background: rgba(184,147,90,.07); letter-spacing: 0.02em; }
     .hero-anchors { display: flex; flex-wrap: wrap; gap: 6px; }
     .hero-anchors a { font-size: 12px; color: rgba(255,255,255,.42); text-decoration: none; padding: 5px 12px; border: 1px solid rgba(255,255,255,.1); border-radius: 100px; transition: color .2s, border-color .2s; }
@@ -1016,6 +1060,27 @@
     form.closest('.cta-form-wrap').innerHTML =
       '<p class="form-success"><em>I\'ll be in touch within a few hours — welcome to Austin.</em></p>';
   });
+
+  // Hero lead form
+  const heroForm = document.getElementById('hero-contact-form');
+  if (heroForm) {
+    heroForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = heroForm.querySelector('.btn-submit');
+      btn.disabled = true; btn.textContent = 'Sending…';
+      const data = Object.fromEntries(new FormData(heroForm));
+      try {
+        const r = await fetch('/api/contact', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (r.ok) {
+          heroForm.style.display = 'none';
+          document.getElementById('hero-form-success').style.display = 'block';
+        } else { btn.disabled = false; btn.textContent = 'Get Started'; alert('Sorry, something went wrong. Please email Luke@austinmdg.com.'); }
+      } catch { btn.disabled = false; btn.textContent = 'Get Started'; alert('Network error. Please email Luke@austinmdg.com.'); }
+    });
+  }
 </script>
 </body>
 </html>
