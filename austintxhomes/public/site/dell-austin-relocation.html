@@ -352,6 +352,7 @@
 <section class="hero">
   <video class="bg-video" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
   <div class="hero-inner">
+    <div class="hero-copy">
     <p class="eyebrow">Dell Technologies · Employee Relocation</p>
     <h1>Moving to Austin<br><em>for Dell?</em></h1>
     <p>Quick clarification before you start searching on Zillow: Dell's headquarters is in Round Rock — not Austin proper. That's one exit north of Austin on I-35, and it changes your entire housing search. This guide gives you the honest commute math and best neighborhoods for Dell employees in 2026.</p>
@@ -368,6 +369,57 @@
       <a href="#taxes">Texas Taxes</a>
       <a href="#faq">FAQ</a>
     </nav>
+  </div>
+    
+    <!-- LEAD FORM (added for paid-ad landing) -->
+    <div class="lead-card" id="relocation-form">
+      <h3>Get Your Dell Relocation Guide</h3>
+      <p class="lead-sub">Free — neighborhoods, commute times, and current listings that match your budget. Delivered within 24 hours.</p>
+      <form id="relocation-contact-form" action="/api/contact" method="POST">
+        <input type="hidden" name="source" value="dell-relocation" />
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" name="name" placeholder="Jane Smith" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="you@email.com" required />
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" name="phone" placeholder="(512) 555-0100" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Budget</label>
+            <select name="budget">
+              <option value="">Select range</option>
+              <option>Under $400k</option>
+              <option>$400k – $600k</option>
+              <option>$600k – $900k</option>
+              <option>$900k – $1.5M</option>
+              <option>$1.5M+</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Start Date</label>
+            <select name="timeline">
+              <option value="">When?</option>
+              <option>Already moved</option>
+              <option>Next 30 days</option>
+              <option>1–3 months</option>
+              <option>3–6 months</option>
+              <option>6+ months</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="form-submit">Get My Relocation Guide</button>
+        <p class="lead-note">Luke Allen · TREC #788149 · Luke@austinmdg.com</p>
+      </form>
+      <div class="lead-success" id="lead-success">Thanks! Luke will send your personalized Dell relocation guide within 24 hours.</div>
+    </div>
   </div>
 </section>
 
@@ -463,7 +515,35 @@
   #dell-listings-grid .dell-loading{grid-column:1/-1;text-align:center;padding:48px;color:var(--mid, #5c5b57);font-size:14px}
   @media(max-width:900px){#dell-listings-grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:520px){#dell-listings-grid{grid-template-columns:1fr}}
-</style>
+
+    /* Lead form card (paid-ad landing) */
+    .hero-inner { display: grid; grid-template-columns: 1fr 400px; gap: 56px; align-items: center; max-width: 1180px; margin: 0 auto; }
+    .hero-copy { text-align: left; }
+    .lead-card { background: rgba(15,15,14,.82); border: 1px solid rgba(184,147,90,.24); border-radius: 6px; padding: 28px 24px; }
+    .lead-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: #fff; margin-bottom: 4px; line-height: 1.2; }
+    .lead-card .lead-sub { font-size: 12px; color: rgba(255,255,255,.55); margin-bottom: 20px; line-height: 1.5; }
+    .lead-card .form-group { margin-bottom: 12px; }
+    .lead-card .form-group label { display: block; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: 5px; }
+    .lead-card .form-group input, .lead-card .form-group select {
+      width: 100%; padding: 11px 14px; border: 1px solid rgba(255,255,255,.14);
+      border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 13px;
+      color: #fff; background: rgba(255,255,255,.07); outline: none; transition: border-color .2s;
+    }
+    .lead-card .form-group input::placeholder { color: rgba(255,255,255,.28); }
+    .lead-card .form-group input:focus, .lead-card .form-group select:focus { border-color: var(--gold, #b8935a); }
+    .lead-card .form-group select option { background: #1a1918; color: #fff; }
+    .lead-card .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .lead-card .form-submit { width: 100%; background: var(--gold, #b8935a); color: #fff; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase; padding: 13px; border-radius: 4px; transition: background .2s; margin-top: 6px; }
+    .lead-card .form-submit:hover { background: var(--gold-lt, #cda96f); }
+    .lead-note { font-size: 10.5px; color: rgba(255,255,255,.38); text-align: center; margin-top: 12px; letter-spacing: .04em; }
+    .lead-success { display: none; text-align: center; padding: 24px 0; font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; color: var(--gold-lt, #cda96f); line-height: 1.5; }
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr !important; gap: 32px; }
+      .hero-copy { text-align: left; }
+    }
+  </style>
 
 <!-- ── NEIGHBORHOODS ── -->
 <section class="nbhd-section" id="neighborhoods">
@@ -917,6 +997,27 @@
   if (!v) return;
   if (v.readyState >= 3) v.classList.add('ready');
   else v.addEventListener('canplay', () => v.classList.add('ready'), { once: true });
+})();
+</script>
+
+<script>
+(function(){
+  var form = document.getElementById('relocation-contact-form');
+  if (!form) return;
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var btn = form.querySelector('.form-submit');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    var data = Object.fromEntries(new FormData(form));
+    try {
+      var r = await fetch('/api/contact', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      });
+      if (r.ok) { form.style.display='none'; document.getElementById('lead-success').style.display='block'; }
+      else { btn.disabled=false; btn.textContent='Get My Relocation Guide'; alert('Sorry, something went wrong. Please try again or email Luke@austinmdg.com.'); }
+    } catch { btn.disabled=false; btn.textContent='Get My Relocation Guide'; alert('Network error. Please try again or email Luke@austinmdg.com.'); }
+  });
 })();
 </script>
 </body>

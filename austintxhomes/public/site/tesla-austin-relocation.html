@@ -96,17 +96,37 @@
 
     /* HERO */
     .hero {
-      background-image: linear-gradient(rgba(10,8,4,.62), rgba(10,8,4,.62)), url('/images/tesla-gigafactory-austin-tx.webp');
-      background-size: cover;
-      background-position: center;
-      padding: 80px 2rem 72px;
-      text-align: center;
+      position: relative; overflow: hidden;
+      background: #0f0f0e;
+      padding: 100px 2rem 72px;
     }
+    .hero::before {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(135deg, rgba(15,15,14,.82) 0%, rgba(26,20,16,.7) 50%, rgba(15,15,14,.82) 100%);
+      pointer-events: none;
+    }
+    .hero > * { position: relative; z-index: 2; }
+    .hero-inner { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 1fr 400px; gap: 56px; align-items: center; }
+    .hero-copy { text-align: left; }
     .eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
-    .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(46px, 6.5vw, 80px); font-weight: 400; line-height: 1.07; color: #fff; margin-bottom: 22px; }
+    .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(40px, 5.2vw, 64px); font-weight: 400; line-height: 1.07; color: #fff; margin-bottom: 22px; }
     .hero h1 em { font-style: italic; color: var(--gold-lt); }
-    .hero-sub { font-size: 15px; color: rgba(255,255,255,.58); max-width: 600px; margin: 0 auto 36px; line-height: 1.75; }
-    .pills { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+    .hero-sub { font-size: 15px; color: rgba(255,255,255,.72); max-width: 520px; margin: 0 0 32px; line-height: 1.7; }
+    .pills { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+    /* Lead form card */
+    .lead-card { background: rgba(15,15,14,.82); border: 1px solid rgba(184,147,90,.24); border-radius: 6px; padding: 28px 24px; }
+    .lead-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: #fff; margin-bottom: 4px; line-height: 1.2; }
+    .lead-card .lead-sub { font-size: 12px; color: rgba(255,255,255,.55); margin-bottom: 20px; line-height: 1.5; }
+    .lead-card .form-submit { margin-top: 4px; }
+    .lead-note { font-size: 10.5px; color: rgba(255,255,255,.38); text-align: center; margin-top: 12px; letter-spacing: .04em; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-group label { display: block; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: 5px; }
+    .lead-success { text-align: center; padding: 24px 0; font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; color: var(--gold-lt); line-height: 1.5; display: none; }
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 32px; }
+      .hero-copy { text-align: left; }
+      .hero h1 { font-size: clamp(38px, 7vw, 56px); }
+    }
     .pill { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; border: 1px solid rgba(184,147,90,.38); color: var(--gold-lt); padding: 7px 18px; border-radius: 20px; }
     .anchors { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
     .anchors a { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.38); text-decoration: none; transition: color .2s; }
@@ -287,15 +307,70 @@
 <!-- HERO -->
 <section class="hero">
   <video class="bg-video" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
-  <p class="eyebrow">Gigafactory Texas &nbsp;·&nbsp; Employee Relocation</p>
-  <h1>Moving to Austin<br><em>for Tesla?</em></h1>
-  <p class="hero-sub">Congratulations on your offer. Now the real question: where do you live? Gigafactory Texas sits southeast of Austin — which completely changes which neighborhoods make sense. This guide gives you the honest commute math and housing options for Tesla employees in 2026.</p>
-  <div class="pills">
-    <span class="pill">No State Income Tax</span>
-    <span class="pill">30-min Commute Options</span>
-    <span class="pill">Free Buyer Representation</span>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow">Gigafactory Texas &nbsp;·&nbsp; Employee Relocation</p>
+      <h1>Moving to Austin<br><em>for Tesla?</em></h1>
+      <p class="hero-sub">Congratulations on your offer. Gigafactory Texas sits southeast of Austin — which completely changes which neighborhoods make sense. Get a personalized shortlist of homes that fit your budget, commute, and timeline.</p>
+      <div class="pills">
+        <span class="pill">No State Income Tax</span>
+        <span class="pill">30-min Commute Options</span>
+        <span class="pill">Free Buyer Representation</span>
+      </div>
+    </div>
+
+    <!-- LEAD FORM -->
+    <div class="lead-card" id="relocation-form">
+      <h3>Get Your Tesla Relocation Guide</h3>
+      <p class="lead-sub">Free — neighborhoods, commute times, and current listings that match your budget. Delivered within 24 hours.</p>
+      <form id="relocation-contact-form" action="/api/contact" method="POST">
+        <input type="hidden" name="source" value="tesla-relocation" />
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" name="name" placeholder="Jane Smith" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="you@email.com" required />
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" name="phone" placeholder="(512) 555-0100" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Budget</label>
+            <select name="budget">
+              <option value="">Select range</option>
+              <option>Under $400k</option>
+              <option>$400k – $600k</option>
+              <option>$600k – $900k</option>
+              <option>$900k – $1.5M</option>
+              <option>$1.5M+</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Start Date</label>
+            <select name="timeline">
+              <option value="">When?</option>
+              <option>Already moved</option>
+              <option>Next 30 days</option>
+              <option>1–3 months</option>
+              <option>3–6 months</option>
+              <option>6+ months</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="form-submit">Get My Relocation Guide</button>
+        <p class="lead-note">Luke Allen · TREC #788149 · Luke@austinmdg.com</p>
+      </form>
+      <div class="lead-success" id="lead-success">Thanks! Luke will send your personalized Tesla relocation guide within 24 hours.</div>
+    </div>
   </div>
-  <nav class="anchors">
+
+  <nav class="anchors" style="max-width:1180px;margin:48px auto 0;">
     <a href="#commutes">Commutes</a>
     <a href="#neighborhoods">Neighborhoods</a>
     <a href="#housing">Housing Costs</a>
@@ -304,6 +379,27 @@
     <a href="#faq">FAQ</a>
   </nav>
 </section>
+
+<script>
+(function(){
+  var form = document.getElementById('relocation-contact-form');
+  if (!form) return;
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var btn = form.querySelector('.form-submit');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    var data = Object.fromEntries(new FormData(form));
+    try {
+      var r = await fetch('/api/contact', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      });
+      if (r.ok) { form.style.display='none'; document.getElementById('lead-success').style.display='block'; }
+      else { btn.disabled=false; btn.textContent='Get My Relocation Guide'; alert('Sorry, something went wrong. Please try again or email Luke@austinmdg.com.'); }
+    } catch { btn.disabled=false; btn.textContent='Get My Relocation Guide'; alert('Network error. Please try again or email Luke@austinmdg.com.'); }
+  });
+})();
+</script>
 
 <!-- GIGAFACTORY LOCATION -->
 <section class="location" id="commutes">
