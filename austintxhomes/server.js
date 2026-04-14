@@ -497,7 +497,16 @@ app.get('/api/multifamily-stats', async (_req, res) => {
   try {
     if (mfStatsCache && (Date.now() - mfStatsCacheTime) < 3600000) return res.json(mfStatsCache);
 
-    const db = require('./node_modules/../idx-search/db/database') || listingDb;
+    const db = listingDb;
+
+    // Multifamily sub-type match — covers the actual values in our DB
+    // (Residential Income, Duplex, Triplex, Quadruplex, Apartment, Multi-Family)
+    const mfFilter = `(
+      property_sub_type LIKE '%Multi%' OR property_sub_type LIKE '%Duplex%'
+      OR property_sub_type LIKE '%Triplex%' OR property_sub_type LIKE '%Quadruplex%'
+      OR property_sub_type LIKE '%Fourplex%' OR property_sub_type LIKE '%Apartment%'
+      OR property_type LIKE '%Multi%' OR property_type LIKE '%Income%'
+    )`;
 
     // Active multifamily for sale
     const active = db.prepare(`
@@ -506,29 +515,31 @@ app.get('/api/multifamily-stats', async (_req, res) => {
       FROM listings
       WHERE mlg_can_view = 1 AND standard_status = 'Active'
         AND property_type NOT LIKE '%Lease%'
-        AND (property_sub_type LIKE '%Multi%' OR property_sub_type LIKE '%Duplex%'
-             OR property_sub_type LIKE '%Triplex%' OR property_sub_type LIKE '%Fourplex%'
-             OR property_sub_type LIKE '%Apartment%')
+        AND ${mfFilter}
         AND list_price > 50000
         AND latitude IS NOT NULL
       ORDER BY listing_contract_date DESC
     `).all();
 
-    // Recently closed multifamily (last 6 months)
+    // Closed multifamily — we don't have close_date/close_price in our sync yet,
+    // so fall back to everything in Closed status and count them.
     const closed = db.prepare(`
-      SELECT close_price, close_date, days_on_market, city, list_price
+      SELECT close_price, close_date, days_on_market, city, list_price, listing_contract_date
       FROM listings
       WHERE standard_status = 'Closed'
         AND property_type NOT LIKE '%Lease%'
-        AND (property_sub_type LIKE '%Multi%' OR property_sub_type LIKE '%Duplex%'
-             OR property_sub_type LIKE '%Triplex%' OR property_sub_type LIKE '%Fourplex%'
-             OR property_sub_type LIKE '%Apartment%')
-        AND close_price > 50000 AND close_date >= date('now', '-180 days')
+        AND ${mfFilter}
     `).all();
 
     const prices = active.map(l => l.list_price).sort((a, b) => a - b);
-    const closedPrices = closed.map(l => l.close_price).filter(Boolean).sort((a, b) => a - b);
-    const domValues = active.map(l => l.days_on_market).filter(d => d != null);
+    const closedPrices = closed.map(l => l.close_price || l.list_price).filter(Boolean).sort((a, b) => a - b);
+
+    // DOM for active: our sync doesn't populate days_on_market, so compute from listing_contract_date
+    const today = Date.now();
+    const activeDom = active
+      .map(l => l.listing_contract_date ? Math.floor((today - new Date(l.listing_contract_date).getTime()) / 86400000) : null)
+      .filter(d => d != null && d >= 0 && d < 730); // cap at 2 years to ignore stale data
+    const domValues = activeDom;
 
     // Price tiers
     const tiers = { under500: 0, t500to750: 0, t750to1m: 0, t1mto2m: 0, over2m: 0 };
@@ -551,8 +562,11 @@ app.get('/api/multifamily-stats', async (_req, res) => {
       .map(l => l.close_price / l.list_price);
     const avgRatio = ratios.length ? (ratios.reduce((s, r) => s + r, 0) / ratios.length * 100).toFixed(1) : null;
 
-    // Closed DOM
-    const closedDom = closed.map(l => l.days_on_market).filter(d => d != null);
+    // Closed DOM — same fallback: compute from listing_contract_date if days_on_market is null
+    const closedDom = closed
+      .map(l => l.days_on_market != null ? l.days_on_market :
+        (l.listing_contract_date ? Math.floor((today - new Date(l.listing_contract_date).getTime()) / 86400000) : null))
+      .filter(d => d != null && d >= 0 && d < 730);
 
     const stats = {
       totalActive: active.length,
