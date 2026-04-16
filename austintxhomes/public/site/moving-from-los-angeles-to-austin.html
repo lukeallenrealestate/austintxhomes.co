@@ -199,7 +199,7 @@
       object-fit: cover;
       opacity: 0; transition: opacity 1.4s ease;
     }
-    .hero video.ready { opacity: 1; }
+    .hero video.ready { opacity: .55; }
     .hero::before {
       content: ''; position: absolute; inset: 0;
       background: linear-gradient(135deg, rgba(15,15,14,.84) 0%, rgba(26,20,16,.76) 50%, rgba(15,15,14,.84) 100%);
@@ -561,6 +561,10 @@
       .hero { padding: 80px 0 70px; }
       .equity-cards, .la-map-grid, .nbhd-grid, .school-grid { grid-template-columns: 1fr; }
     }
+  
+    /* darken-video-overlay — ensures hero text is readable on top of the bright video */
+    .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(15,15,14,.74) 0%, rgba(26,20,16,.66) 50%, rgba(15,15,14,.74) 100%); pointer-events: none; z-index: 1; }
+    .hero > *:not(video) { position: relative; z-index: 2; }
   </style>
 </head>
 <body>

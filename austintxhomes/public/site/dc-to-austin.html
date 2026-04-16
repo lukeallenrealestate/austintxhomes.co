@@ -589,14 +589,18 @@
       opacity: 0; transition: opacity 1.4s ease;
       z-index: 0;
     }
-    .hero video.bg-video.ready { opacity: 1; }
+    .hero video.bg-video.ready { opacity: .55; }
     .hero::after {
       content: ''; position: absolute; inset: 0; z-index: 1;
       background: linear-gradient(135deg, rgba(15,15,14,.78) 0%, rgba(26,20,16,.7) 50%, rgba(15,15,14,.78) 100%);
       pointer-events: none;
     }
     .hero > *:not(video) { position: relative; z-index: 2; }
-</style>
+
+    /* darken-video-overlay — ensures hero text is readable on top of the bright video */
+    .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(15,15,14,.74) 0%, rgba(26,20,16,.66) 50%, rgba(15,15,14,.74) 100%); pointer-events: none; z-index: 1; }
+    .hero > *:not(video) { position: relative; z-index: 2; }
+  </style>
 </head>
 <body>
 <script src="/js/nav.js"></script>
