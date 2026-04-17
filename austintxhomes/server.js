@@ -620,6 +620,7 @@ app.use('/api/auth',       require('../idx-search/routes/auth'));
 app.use('/api/favorites',  require('../idx-search/routes/favorites'));
 app.use('/api/searches',   require('../idx-search/routes/searches'));
 app.use('/api/admin',      require('../idx-search/routes/admin'));
+app.use('/api/admin-cms',  require('./routes/admin-cms'));
 app.use('/api/contact',    require('../idx-search/routes/contact'));
 
 // /api/listings — alias for /api/properties/search used by marketing-site pages

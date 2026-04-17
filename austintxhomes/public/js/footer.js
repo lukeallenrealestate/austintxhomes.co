@@ -334,4 +334,15 @@
   if (document.readyState === 'complete') setTimeout(loadDeferredVideos, 100);
   else window.addEventListener('load', () => setTimeout(loadDeferredVideos, 100), { once: true });
 
+  // Load edit-mode overlay for admin users (lightweight — exits immediately for non-admins)
+  try {
+    var u = JSON.parse(localStorage.getItem('idx_user') || '{}');
+    if (u.role === 'admin') {
+      var s = document.createElement('script');
+      s.src = '/js/edit-mode.js';
+      s.defer = true;
+      document.body.appendChild(s);
+    }
+  } catch (_) {}
+
 })();
