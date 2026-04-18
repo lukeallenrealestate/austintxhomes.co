@@ -57,6 +57,9 @@ router.post('/register', async (req, res) => {
       } catch {}
     }
   } catch (err) {
+    if (err.message?.includes('UNIQUE constraint')) {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }

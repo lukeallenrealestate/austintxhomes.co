@@ -210,8 +210,10 @@ cron.schedule('30 7 * * *', () => {
   syncClosedSales().catch(console.error);
 });
 
-// Bulk photo URL refresh every 60 minutes at :05
-cron.schedule('5 * * * *', () => {
+// Bulk photo URL refresh — once daily at 3:05am CDT (8:05 UTC).
+// This takes 8-10 minutes and fetches 73 pages from MLS API.
+// Running it hourly was crushing the server with API calls + socket hang ups.
+cron.schedule('5 8 * * *', () => {
   refreshPhotos().catch(console.error);
 });
 
@@ -1066,10 +1068,9 @@ if (count < 5000) {
   syncListings(true).catch(console.error);
 } else {
   console.log(`[SYNC] ${count} listings in DB. Starting incremental sync...`);
-  syncListings(false).then(() => {
-    console.log('[PHOTOS] Refreshing photo URLs after startup sync...');
-    refreshPhotos().catch(console.error);
-  }).catch(console.error);
+  syncListings(false).catch(console.error);
+  // Photo refresh deliberately NOT run on startup — it takes 8-10 min
+  // and blocks the event loop. Runs once daily via cron instead.
 }
 
 // Drain disk photo cache to R2 (background — uploads ~100 cached files per boot)

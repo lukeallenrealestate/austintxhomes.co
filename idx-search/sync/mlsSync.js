@@ -211,6 +211,17 @@ async function syncListings(isInitial = false) {
   const syncState = db.prepare('SELECT * FROM sync_state WHERE id = 1').get();
   const lastTimestamp = syncState?.last_sync_timestamp;
 
+  // Track which listings are truly NEW (not in DB before this sync) for Google Indexing
+  const existingKeys = new Set();
+  if (!isInitial && lastTimestamp) {
+    // Only track for incremental syncs (initial import would be thousands of URLs)
+    try {
+      const rows = db.prepare('SELECT listing_key FROM listings WHERE mlg_can_view = 1').all();
+      rows.forEach(r => existingKeys.add(r.listing_key));
+    } catch {}
+  }
+  const newListings = [];
+
   let filterParts = [`OriginatingSystemName eq '${SYSTEM}'`];
 
   if (isInitial || !lastTimestamp) {
@@ -222,7 +233,6 @@ async function syncListings(isInitial = false) {
   }
 
   const filter = encodeURIComponent(filterParts.join(' and '));
-  // No $select — let the API return all fields so we don't hit unsupported field errors
   let url = `${BASE_URL}/Property?$filter=${filter}&$expand=Media&$top=1000`;
 
   let totalSynced = 0;
@@ -239,10 +249,19 @@ async function syncListings(isInitial = false) {
       if (records.length === 0) break;
 
       const mapped = records.map(mapListing);
+
+      // Detect new listings before upserting
+      if (existingKeys.size > 0) {
+        for (const m of mapped) {
+          if (m.mlg_can_view && m.standard_status === 'Active' && !existingKeys.has(m.listing_key)) {
+            newListings.push(m);
+          }
+        }
+      }
+
       const saved = batchUpsert(mapped);
       totalSynced += saved;
 
-      // Track latest modification timestamp
       for (const r of records) {
         if (r.ModificationTimestamp) {
           if (!latestTimestamp || r.ModificationTimestamp > latestTimestamp) {
@@ -252,11 +271,9 @@ async function syncListings(isInitial = false) {
       }
 
       url = data['@odata.nextLink'] || null;
-      // Delay is now enforced in fetchPage via MIN_DELAY_MS rate limiter
 
     } catch (err) {
       console.error(`[SYNC] Error on page ${pageCount}:`, err.message);
-      // Save progress and exit — next incremental sync will catch up
       break;
     }
   }
@@ -266,6 +283,23 @@ async function syncListings(isInitial = false) {
   }
 
   console.log(`[SYNC] Done. Synced ${totalSynced} listings (${pageCount} pages).`);
+
+  // Notify Google Indexing API of new listing pages (fire-and-forget, non-blocking)
+  if (newListings.length > 0 && newListings.length <= 200) {
+    const { notifyUrls, listingUrl } = require('../services/googleIndexing');
+    const urls = newListings.map(listingUrl).filter(Boolean);
+    if (urls.length) {
+      console.log(`[INDEXING] Notifying Google of ${urls.length} new listing pages...`);
+      notifyUrls(urls).then(r => {
+        console.log(`[INDEXING] Done. Sent: ${r.sent}, errors: ${r.errors.length}`);
+        if (r.errors.length) console.log('[INDEXING] First error:', r.errors[0]);
+      }).catch(err => {
+        console.warn('[INDEXING] Failed:', err.message);
+      });
+    }
+  } else if (newListings.length > 200) {
+    console.log(`[INDEXING] Skipping — ${newListings.length} new listings exceeds 200/day quota`);
+  }
 }
 
 let refreshRunning = false;
@@ -319,8 +353,9 @@ async function refreshPhotos() {
       if (pageCount % FLUSH_EVERY === 0) {
         flushBatch();
         console.log(`[PHOTOS] Page ${pageCount}, refreshed ${totalRefreshed} listings...`);
+        // Yield to event loop so user requests aren't starved during this long-running job
+        await new Promise(r => setTimeout(r, 2000));
       }
-      // Rate limiting is handled in fetchPage
     } catch (e) {
       console.error('[PHOTOS] Error:', e.message);
       break;
