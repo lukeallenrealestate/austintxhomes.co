@@ -695,6 +695,7 @@ app.get('/luxury-homes',          (_req, res) => res.sendFile(path.join(__dirnam
 app.get('/condos',                (_req, res) => res.sendFile(path.join(__dirname, 'public/site/condos.html')));
 app.get('/cost-of-living',        (_req, res) => res.sendFile(path.join(__dirname, 'public/site/cost-of-living.html')));
 app.get('/tesla-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tesla-austin-relocation.html')));
+app.get('/apartments-near-tesla-gigafactory-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/apartments-near-tesla-gigafactory-austin.html')));
 app.get('/apple-austin-relocation',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/apple-austin-relocation.html')));
 app.get('/samsung-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/samsung-austin-relocation.html')));
 app.get('/dell-austin-relocation',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/dell-austin-relocation.html')));
