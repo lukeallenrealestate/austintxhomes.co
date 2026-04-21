@@ -87,15 +87,13 @@
     .container { max-width: var(--w); margin: 0 auto; padding: 0 24px; }
 
     /* UT cluster nav */
-    .ut-nav { background: var(--ut-dark); padding: 10px 2rem; text-align: center; margin-top: 80px; }
+    .ut-nav { padding: 90px 2rem 10px; text-align: center; }
     .ut-nav a { font-size: 11px; letter-spacing: .06em; color: rgba(255,255,255,.6); text-decoration: none; padding: 6px 14px; border-radius: 100px; transition: all .2s; display: inline-block; margin: 3px 2px; }
     .ut-nav a:hover { color: #fff; background: rgba(191,87,0,.3); }
     .ut-nav a.active { color: #fff; background: var(--ut); }
 
     /* HERO */
-    .hero { position: relative; overflow: hidden; background: var(--ink); padding: 60px 2rem 80px; }
-    .hero video.bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.4s ease; z-index: 0; }
-    .hero video.bg-video.ready { opacity: .4; }
+    .hero { position: relative; overflow: hidden; background: var(--ink) url("/images/ut-austin-campus-aerial.jpg") center/cover no-repeat; padding: 60px 2rem 80px; }
     .hero::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(135deg, rgba(15,15,14,.82) 0%, rgba(51,63,72,.7) 50%, rgba(15,15,14,.82) 100%); pointer-events: none; }
     .hero > * { position: relative; z-index: 2; }
     .hero-inner { max-width: var(--w); margin: 0 auto; display: grid; grid-template-columns: 1fr 380px; gap: 48px; align-items: center; }
@@ -211,7 +209,9 @@
 <script src="/js/nav.js"></script>
 
 <!-- UT CLUSTER NAV -->
-<div class="ut-nav">
+<!-- HERO -->
+<section class="hero">
+  <div class="ut-nav">
   <a href="/ut-austin-out-of-state-parent-guide">Parent Guide</a>
   <a href="/texas-residency-ut-austin-in-state-tuition">Residency Rules</a>
   <a href="/ut-austin-tuition-savings-calculator">Savings Calculator</a>
@@ -219,10 +219,6 @@
   <a href="/ut-austin-residency-checklist">Residency Checklist</a>
   <a href="/living-near-ut-austin">Neighborhoods</a>
 </div>
-
-<!-- HERO -->
-<section class="hero">
-  <video class="bg-video" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
   <div class="hero-inner">
     <div class="hero-copy">
       <span class="eyebrow">UT Austin · Condos for Sale Near Campus</span>
@@ -500,7 +496,7 @@
 (function(){
   var grid = document.getElementById('listings-grid');
   if (!grid) return;
-  fetch('/api/properties/search?limit=12&sortBy=newest&propertySubType=Condominium&minPrice=75000')
+  fetch('/api/properties/search?limit=12&sortBy=newest&propertySubType=Condominium&minPrice=75000&zip=78705,78751,78701,78702,78703')
     .then(function(r){ return r.json(); })
     .then(function(data){
       var listings = data.listings || data.results || data;

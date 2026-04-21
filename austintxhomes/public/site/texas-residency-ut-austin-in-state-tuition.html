@@ -172,11 +172,17 @@
 
     /* ── HERO ────────────────────────────────────────────────── */
     .hero {
-      background: var(--ink);
-      background-image: radial-gradient(ellipse 70% 55% at 50% 40%, rgba(184,147,90,.18) 0%, transparent 70%);
+      background: var(--ink) url("/images/ut-austin-campus-aerial.jpg") center/cover no-repeat;
       padding: 60px 2rem 80px;
       text-align: center;
-     position: relative; overflow: hidden;}
+      position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(15,15,14,.78) 0%, rgba(51,63,72,.65) 50%, rgba(15,15,14,.78) 100%);
+      pointer-events: none; z-index: 0;
+    }
+    .hero > * { position: relative; z-index: 1; }
     .hero-inner { max-width: 900px; margin: 0 auto; }
     .hero-eyebrow {
       font-size: .7rem; letter-spacing: .18em; text-transform: uppercase;
@@ -567,14 +573,6 @@
       .timeline-visual { grid-template-columns: 1fr; }
     }
   
-    .hero video.bg-video {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      opacity: 0; transition: opacity 1.4s ease;
-      z-index: 0;
-    }
-    .hero video.bg-video.ready { opacity: 1; }
     .hero::after {
       content: ''; position: absolute; inset: 0; z-index: 1;
       background: linear-gradient(135deg, rgba(15,15,14,.78) 0%, rgba(26,20,16,.7) 50%, rgba(15,15,14,.78) 100%);
@@ -587,7 +585,7 @@
 <script src="/js/nav.js"></script>
 
 <!-- UT CLUSTER NAV -->
-<div style="background:#333F48;padding:10px 2rem;text-align:center;margin-top:80px;">
+<div style="background:#333F48;padding:10px 2rem;text-align:center;">
   <a href="/ut-austin-out-of-state-parent-guide" style="font-size:11px;letter-spacing:.06em;color:rgba(255,255,255,.6);text-decoration:none;padding:6px 14px;border-radius:100px;display:inline-block;margin:3px 2px;">Parent Guide</a>
   <a href="/texas-residency-ut-austin-in-state-tuition" style="font-size:11px;letter-spacing:.06em;color:#fff;text-decoration:none;padding:6px 14px;border-radius:100px;display:inline-block;margin:3px 2px;background:#BF5700;">Residency Rules</a>
   <a href="/ut-austin-tuition-savings-calculator" style="font-size:11px;letter-spacing:.06em;color:rgba(255,255,255,.6);text-decoration:none;padding:6px 14px;border-radius:100px;display:inline-block;margin:3px 2px;">Savings Calculator</a>
@@ -598,7 +596,6 @@
 
 <!-- HERO -->
 <section class="hero">
-  <video class="bg-video" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
   <div class="hero-inner">
     <p class="hero-eyebrow">Complete Guide &middot; 2025&ndash;2026</p>
     <h1>Save Over <em>$100,000</em> on UT Austin Tuition</h1>
