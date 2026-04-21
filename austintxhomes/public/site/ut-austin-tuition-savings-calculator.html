@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UT Austin Tuition Savings Calculator | In-State vs Out-of-State | Luke Allen</title>
+  <meta name="description" content="Calculate exactly how much you'll save by establishing Texas residency for UT Austin in-state tuition. Interactive calculator + 12-month residency timeline + Rule #3 vs Rule #4 comparison.">
+  <link rel="canonical" href="https://austintxhomes.co/ut-austin-tuition-savings-calculator">
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/favicon-96.png" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <meta name="geo.region" content="US-TX"><meta name="geo.placename" content="Austin, Texas">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="UT Austin Tuition Savings Calculator — In-State vs Out-of-State">
+  <meta property="og:description" content="See how much you'll save establishing Texas residency for UT Austin. Interactive calculator shows exact dollar savings year by year.">
+  <meta property="og:url" content="https://austintxhomes.co/ut-austin-tuition-savings-calculator">
+  <meta property="og:image" content="https://austintxhomes.co/images/luke-allen.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "Article", "headline": "UT Austin Tuition Savings Calculator: In-State vs Out-of-State 2026", "datePublished": "2026-04-21", "dateModified": "2026-04-21", "author": { "@type": "Person", "name": "Luke Allen", "identifier": "TREC #788149" }, "publisher": { "@type": "Organization", "name": "AustinTXHomes", "url": "https://austintxhomes.co" }, "url": "https://austintxhomes.co/ut-austin-tuition-savings-calculator" }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "RealEstateAgent", "name": "Luke Allen – Austin TX Homes", "url": "https://austintxhomes.co", "telephone": "+12547182567", "email": "Luke@austinmdg.com", "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5.0", "reviewCount": "15", "bestRating": "5", "worstRating": "1" }, "sameAs": ["https://share.google/hETte82InqUPvWeNC","https://www.linkedin.com/in/lukeallentx/","https://www.instagram.com/lukeallenrealty/","https://www.tiktok.com/@austintxapartments"] }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://austintxhomes.co/" },
+    { "@type": "ListItem", "position": 2, "name": "UT Parent Guide", "item": "https://austintxhomes.co/ut-austin-out-of-state-parent-guide" },
+    { "@type": "ListItem", "position": 3, "name": "Savings Calculator", "item": "https://austintxhomes.co/ut-austin-tuition-savings-calculator" }
+  ]}
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --ut: #BF5700; --ut-lt: #D4783A; --ut-pale: #FDF0E6;
+      --ut-dark: #333F48; --ink: #0f0f0e; --text: #1a1918; --mid: #5c5b57;
+      --light: #999690; --bg: #ffffff; --warm: #faf8f4;
+      --cream: #f1ece3; --border: #e5dfd4; --r: 4px; --w: 1180px;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--sans); color: var(--text); background: var(--bg); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    .container { max-width: var(--w); margin: 0 auto; padding: 0 24px; }
+
+    .ut-nav { background: var(--ut-dark); padding: 10px 2rem; text-align: center; margin-top: 80px; }
+    .ut-nav a { font-size: 11px; letter-spacing: .06em; color: rgba(255,255,255,.6); text-decoration: none; padding: 6px 14px; border-radius: 100px; transition: all .2s; display: inline-block; margin: 3px 2px; }
+    .ut-nav a:hover { color: #fff; background: rgba(191,87,0,.3); }
+    .ut-nav a.active { color: #fff; background: var(--ut); }
+
+    .hero { position: relative; overflow: hidden; background: var(--ink); padding: 60px 2rem 70px; }
+    .hero video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.4s ease; z-index: 0; }
+    .hero video.ready { opacity: .4; }
+    .hero::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(135deg, rgba(15,15,14,.82) 0%, rgba(51,63,72,.7) 50%, rgba(15,15,14,.82) 100%); pointer-events: none; }
+    .hero > * { position: relative; z-index: 2; }
+    .hero-center { max-width: 800px; margin: 0 auto; text-align: center; }
+    .eyebrow { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ut); margin-bottom: 16px; display: block; }
+    .hero h1 { font-family: var(--serif); font-size: clamp(34px, 4.5vw, 52px); font-weight: 400; color: #fff; margin-bottom: 16px; line-height: 1.1; }
+    .hero h1 em { color: var(--ut-lt); font-style: italic; }
+    .hero p { font-size: 15px; color: rgba(255,255,255,.7); line-height: 1.7; max-width: 600px; margin: 0 auto; }
+
+    section { padding: 5rem 2rem; }
+    .sh { max-width: 720px; margin-bottom: 2.5rem; }
+    .sh h2 { font-family: var(--serif); font-size: clamp(26px, 3.2vw, 38px); font-weight: 400; margin-bottom: 10px; line-height: 1.15; }
+    .sh h2 em { color: var(--ut); font-style: italic; }
+    .sh p { font-size: 15px; color: var(--mid); line-height: 1.75; }
+
+    /* Calculator */
+    .calc-card { max-width: 800px; margin: 0 auto; background: var(--warm); border: 1px solid var(--border); border-radius: 8px; padding: 3rem; }
+    .calc-card h3 { font-family: var(--serif); font-size: 24px; margin-bottom: 6px; }
+    .calc-card > p { font-size: 13px; color: var(--mid); margin-bottom: 2rem; }
+    .calc-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 2rem; }
+    .calc-inputs label { display: block; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--mid); margin-bottom: 4px; font-weight: 500; }
+    .calc-inputs select, .calc-inputs input { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r); font-family: var(--sans); font-size: 14px; background: #fff; }
+    .calc-results { display: none; border-top: 2px solid var(--ut); padding-top: 2rem; }
+    .calc-results.visible { display: block; }
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 2rem; text-align: center; }
+    .result-item .result-num { font-family: var(--serif); font-size: 2.4rem; color: var(--ut); font-weight: 400; }
+    .result-item .result-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--mid); margin-top: 4px; }
+    .result-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+    .result-table th { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--light); text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--border); }
+    .result-table td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .result-table .savings { color: var(--ut); font-weight: 600; }
+    .calc-cta { text-align: center; margin-top: 2rem; }
+    .calc-cta a { display: inline-block; background: var(--ut); color: #fff; padding: 12px 28px; border-radius: var(--r); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; font-weight: 600; }
+
+    /* Timeline */
+    .tl-visual { max-width: 800px; margin: 2rem auto 0; display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
+    .tl-month { background: var(--cream); border-radius: 4px; padding: 12px 6px; text-align: center; font-size: 10px; }
+    .tl-month.highlight { background: var(--ut-pale); border: 1px solid var(--ut); }
+    .tl-month.deadline { background: var(--ut); color: #fff; font-weight: 600; }
+    .tl-month .month-label { font-weight: 600; font-size: 11px; display: block; margin-bottom: 4px; }
+    .tl-month .month-desc { font-size: 9px; color: var(--mid); line-height: 1.3; }
+    .tl-month.deadline .month-desc { color: rgba(255,255,255,.8); }
+
+    /* Comparison */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 800px; margin: 2rem auto 0; }
+    .compare-card { border: 1px solid var(--border); border-radius: 8px; padding: 28px 24px; }
+    .compare-card.recommended { border-color: var(--ut); background: var(--ut-pale); }
+    .compare-card h3 { font-family: var(--serif); font-size: 20px; margin-bottom: 12px; }
+    .compare-card ul { list-style: none; }
+    .compare-card li { font-size: 13px; color: var(--mid); line-height: 1.7; padding: 4px 0; padding-left: 20px; position: relative; }
+    .compare-card li::before { content: '✓'; position: absolute; left: 0; color: var(--ut); font-weight: 600; }
+    .compare-label { display: inline-block; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; background: var(--ut); color: #fff; padding: 3px 10px; border-radius: 100px; margin-bottom: 10px; }
+
+    /* Documents */
+    .doc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; max-width: 800px; margin: 2rem auto 0; }
+    .doc-item { background: var(--warm); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; text-align: center; }
+    .doc-item .doc-icon { font-size: 28px; margin-bottom: 8px; }
+    .doc-item p { font-size: 12px; color: var(--mid); font-weight: 500; }
+
+    .lead-card { max-width: 600px; margin: 3rem auto 0; background: var(--ut-dark); border-radius: 8px; padding: 32px; text-align: center; }
+    .lead-card h3 { font-family: var(--serif); font-size: 22px; color: #fff; margin-bottom: 6px; }
+    .lead-card p { font-size: 13px; color: rgba(255,255,255,.55); margin-bottom: 20px; }
+    .lead-card form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; max-width: 500px; margin: 0 auto; }
+    .lead-card input { padding: 10px 12px; border: 1px solid rgba(255,255,255,.15); border-radius: 4px; font-family: var(--sans); font-size: 13px; color: #fff; background: rgba(255,255,255,.07); outline: none; }
+    .lead-card input::placeholder { color: rgba(255,255,255,.3); }
+    .lead-card .form-submit { background: var(--ut); color: #fff; border: none; padding: 10px 20px; border-radius: 4px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; font-family: var(--sans); font-weight: 600; white-space: nowrap; }
+    .lead-success { display: none; text-align: center; padding: 20px; font-family: var(--serif); font-size: 17px; font-style: italic; color: var(--ut-lt); }
+
+    .cta-band { background: var(--ut-dark); padding: 4rem 2rem; text-align: center; }
+    .cta-band h2 { font-family: var(--serif); font-size: clamp(24px, 3vw, 34px); color: #fff; margin-bottom: 10px; }
+    .cta-band p { color: rgba(255,255,255,.6); font-size: 15px; margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .cta-btn { display: inline-block; background: var(--ut); color: #fff; padding: 14px 32px; border-radius: var(--r); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; font-weight: 600; }
+
+    @media (max-width: 900px) {
+      .calc-inputs { grid-template-columns: 1fr; }
+      .result-grid { grid-template-columns: 1fr; gap: 12px; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .tl-visual { grid-template-columns: repeat(4, 1fr); }
+      .lead-card form { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .tl-visual { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<script src="/js/nav.js"></script>
+
+<div class="ut-nav">
+  <a href="/ut-austin-out-of-state-parent-guide">Parent Guide</a>
+  <a href="/texas-residency-ut-austin-in-state-tuition">Residency Rules</a>
+  <a href="/ut-austin-tuition-savings-calculator" class="active">Savings Calculator</a>
+  <a href="/condos-near-ut-austin">Condos Near UT</a>
+  <a href="/ut-austin-residency-checklist">Residency Checklist</a>
+  <a href="/living-near-ut-austin">Neighborhoods</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <video autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
+  <div class="hero-center">
+    <span class="eyebrow">UT Austin · Tuition Calculator</span>
+    <h1>How Much Will You <em>Actually Save?</em></h1>
+    <p>Out-of-state families pay $33,220/year more than Texas residents. By establishing residency before sophomore year, you keep that money. Use the calculator below to see your exact savings.</p>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section>
+  <div class="container">
+    <div class="calc-card">
+      <h3>Tuition Savings Calculator</h3>
+      <p>Select your student's current year to see the potential savings from establishing Texas residency.</p>
+
+      <div class="calc-inputs">
+        <div>
+          <label>Student's Current Status</label>
+          <select id="calc-year">
+            <option value="">Select…</option>
+            <option value="incoming">Incoming Freshman (Haven't Started Yet)</option>
+            <option value="freshman">Current Freshman</option>
+            <option value="sophomore">Current Sophomore</option>
+          </select>
+        </div>
+        <div>
+          <label>Annual Out-of-State Tuition</label>
+          <input type="text" id="calc-oos" value="$44,908" />
+        </div>
+      </div>
+
+      <div class="calc-results" id="calc-results">
+        <div class="result-grid" id="result-grid"></div>
+        <table class="result-table" id="result-table"></table>
+        <div class="calc-cta">
+          <a href="/texas-residency-ut-austin-in-state-tuition">See How to Establish Residency →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12-MONTH TIMELINE -->
+<section style="background:var(--warm);">
+  <div class="container">
+    <div class="sh">
+      <span class="eyebrow">The 12-Month Clock</span>
+      <h2>Residency Timeline — <em>Month by Month</em></h2>
+      <p>From condo purchase to residency application, here's exactly what happens and when. The clock starts the day you close on the property and all requirements (TX ID, voter registration, utility bills) are in place.</p>
+    </div>
+
+    <div class="tl-visual">
+      <div class="tl-month deadline"><span class="month-label">Month 1</span><span class="month-desc">Close on condo. Start clock.</span></div>
+      <div class="tl-month highlight"><span class="month-label">Month 1</span><span class="month-desc">TX DL + Voter reg</span></div>
+      <div class="tl-month highlight"><span class="month-label">Month 1</span><span class="month-desc">Utilities in student name</span></div>
+      <div class="tl-month"><span class="month-label">Mo 2-3</span><span class="month-desc">Live in condo, collect bills</span></div>
+      <div class="tl-month"><span class="month-label">Mo 4-5</span><span class="month-desc">Continue residency. File taxes if Jan-Apr</span></div>
+      <div class="tl-month"><span class="month-label">Mo 6</span><span class="month-desc">Halfway. Keep all docs.</span></div>
+      <div class="tl-month"><span class="month-label">Mo 7-8</span><span class="month-desc">Continue. Save all utility bills.</span></div>
+      <div class="tl-month"><span class="month-label">Mo 9-10</span><span class="month-desc">Prepare residency docs</span></div>
+      <div class="tl-month"><span class="month-label">Mo 11</span><span class="month-desc">File federal taxes independently</span></div>
+      <div class="tl-month highlight"><span class="month-label">Mo 12</span><span class="month-desc">12 months complete!</span></div>
+      <div class="tl-month deadline"><span class="month-label">Apply</span><span class="month-desc">Submit residency questionnaire</span></div>
+      <div class="tl-month" style="background:#d4edda;border:1px solid #28a745;"><span class="month-label">✓</span><span class="month-desc" style="color:#155724;">In-state tuition!</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- RULE #3 vs RULE #4 -->
+<section>
+  <div class="container">
+    <div class="sh">
+      <span class="eyebrow">Two Paths</span>
+      <h2>Rule #3 vs Rule #4 — <em>Which Is Right for You?</em></h2>
+      <p>Texas law provides two property-based paths to residency. Both work — the right choice depends on your family's situation.</p>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card recommended">
+        <span class="compare-label">Most Common</span>
+        <h3>Rule #3: Student Lives in Condo</h3>
+        <ul>
+          <li>Purchase condo deeded in student's name</li>
+          <li>Student lives there for 12+ months</li>
+          <li>Utility bills in student's name</li>
+          <li>Texas DL + voter registration</li>
+          <li>File federal taxes independently</li>
+          <li>Submit: deed, utilities, tax return, TX DL, voter card</li>
+        </ul>
+        <p style="font-size:13px;color:var(--mid);margin-top:12px;"><strong>Best for:</strong> Families who want their student to have their own place near campus. The condo builds equity while saving on tuition.</p>
+      </div>
+      <div class="compare-card">
+        <h3>Rule #4: Student Owns Rental LLC</h3>
+        <ul>
+          <li>Purchase rental property for student to manage</li>
+          <li>Student creates LLC ($300, online via TX Secretary of State)</li>
+          <li>LLC has business checking account</li>
+          <li>Texas DL + voter registration</li>
+          <li>File federal taxes independently</li>
+          <li>Submit: deed, LLC cert, 12mo bank stmts, tax return, TX DL, voter card, TX lease proof</li>
+        </ul>
+        <p style="font-size:13px;color:var(--mid);margin-top:12px;"><strong>Best for:</strong> Families who want a pure investment play — the student can live in a dorm or apartment while managing the rental property as a business.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOCUMENTS NEEDED -->
+<section style="background:var(--warm);">
+  <div class="container">
+    <div class="sh">
+      <span class="eyebrow">What You'll Submit</span>
+      <h2>Residency <em>Documentation</em></h2>
+      <p>After 12 months, your student fills out the <a href="https://admissions.utexas.edu/residency" style="color:var(--ut);" target="_blank" rel="noopener">Residency Core Questionnaire</a> and uploads these documents to the Residency Portal:</p>
+    </div>
+
+    <div class="doc-grid">
+      <div class="doc-item"><div class="doc-icon">📜</div><p>Deed to the condo or property</p></div>
+      <div class="doc-item"><div class="doc-icon">💡</div><p>12 months of utility bills in student's name</p></div>
+      <div class="doc-item"><div class="doc-icon">📋</div><p>Federal tax return (filed independently)</p></div>
+      <div class="doc-item"><div class="doc-icon">🪪</div><p>Texas Driver's License or ID</p></div>
+      <div class="doc-item"><div class="doc-icon">🗳️</div><p>Texas Voter Registration Card</p></div>
+      <div class="doc-item"><div class="doc-icon">🏢</div><p>LLC Certificate of Formation (Rule #4 only)</p></div>
+      <div class="doc-item"><div class="doc-icon">🏦</div><p>12 months LLC bank statements (Rule #4 only)</p></div>
+      <div class="doc-item"><div class="doc-icon">📄</div><p>Proof of TX residence — lease or utility address (Rule #4 only)</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- LEAD FORM -->
+<section>
+  <div class="container">
+    <div class="lead-card">
+      <h3>Get Your Personalized Savings Estimate</h3>
+      <p>I'll calculate the exact savings for your family's situation and walk you through the timeline.</p>
+      <form id="calc-form">
+        <input type="hidden" name="source" value="ut-tuition-calculator" />
+        <input type="text" name="name" placeholder="Your name" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <button type="submit" class="form-submit">Get Estimate</button>
+      </form>
+      <div class="lead-success" id="lead-success">Thanks! Luke will send your personalized estimate within 24 hours.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-band">
+  <h2>Ready to Start the Process?</h2>
+  <p>I've helped hundreds of out-of-state families save on UT tuition. Let's find you the right condo.</p>
+  <a href="/condos-near-ut-austin" class="cta-btn">Browse Condos Near UT →</a>
+</div>
+
+<script src="/js/footer.js"></script>
+<script>
+// Calculator logic
+const IN_STATE = 11688;
+const OOS = 44908;
+const DIFF = OOS - IN_STATE;
+
+document.getElementById('calc-year').addEventListener('change', function() {
+  const year = this.value;
+  if (!year) { document.getElementById('calc-results').classList.remove('visible'); return; }
+
+  const oosInput = document.getElementById('calc-oos').value.replace(/[^0-9]/g, '');
+  const oos = parseInt(oosInput) || OOS;
+  const diff = oos - IN_STATE;
+
+  let yearsAtInState, description;
+  if (year === 'incoming') { yearsAtInState = 3; description = 'Pays OOS freshman year, then in-state sophomore through senior year.'; }
+  else if (year === 'freshman') { yearsAtInState = 3; description = 'Already paying OOS this year. Establish residency now → in-state starting sophomore year.'; }
+  else { yearsAtInState = 2; description = 'Establish residency now → in-state starting junior year (2 years of savings).'; }
+
+  const totalSaved = diff * yearsAtInState;
+
+  document.getElementById('result-grid').innerHTML = `
+    <div class="result-item"><div class="result-num">$${totalSaved.toLocaleString()}</div><div class="result-label">Total Savings</div></div>
+    <div class="result-item"><div class="result-num">$${diff.toLocaleString()}</div><div class="result-label">Saved Per Year</div></div>
+    <div class="result-item"><div class="result-num">${yearsAtInState}</div><div class="result-label">Years at In-State</div></div>
+  `;
+
+  let rows = '<thead><tr><th>Year</th><th>Without Residency</th><th>With Residency</th><th>Savings</th></tr></thead><tbody>';
+  const totalYears = year === 'sophomore' ? 4 : 4;
+  const startYear = year === 'incoming' ? 1 : (year === 'freshman' ? 1 : 1);
+
+  for (let y = 1; y <= 4; y++) {
+    let label, oosAmt, inAmt, saved;
+    if (year === 'incoming') {
+      label = ['Freshman', 'Sophomore', 'Junior', 'Senior'][y-1];
+      if (y === 1) { oosAmt = oos; inAmt = oos; saved = 0; }
+      else { oosAmt = oos; inAmt = IN_STATE; saved = diff; }
+    } else if (year === 'freshman') {
+      label = ['Freshman (current)', 'Sophomore', 'Junior', 'Senior'][y-1];
+      if (y === 1) { oosAmt = oos; inAmt = oos; saved = 0; }
+      else { oosAmt = oos; inAmt = IN_STATE; saved = diff; }
+    } else {
+      label = ['Freshman', 'Sophomore (current)', 'Junior', 'Senior'][y-1];
+      if (y <= 2) { oosAmt = oos; inAmt = oos; saved = 0; }
+      else { oosAmt = oos; inAmt = IN_STATE; saved = diff; }
+    }
+    rows += `<tr><td>${label}</td><td>$${oosAmt.toLocaleString()}</td><td>$${inAmt.toLocaleString()}</td><td class="savings">${saved ? '+$' + saved.toLocaleString() : '—'}</td></tr>`;
+  }
+  const totalOos = oos * 4;
+  const totalWith = year === 'sophomore' ? oos*2 + IN_STATE*2 : oos + IN_STATE*3;
+  rows += `<tr style="font-weight:600;border-top:2px solid var(--border);"><td>Total</td><td>$${totalOos.toLocaleString()}</td><td>$${totalWith.toLocaleString()}</td><td class="savings">+$${totalSaved.toLocaleString()}</td></tr>`;
+  rows += '</tbody>';
+  document.getElementById('result-table').innerHTML = rows;
+  document.getElementById('calc-results').classList.add('visible');
+});
+
+// Form
+(function(){
+  var form = document.getElementById('calc-form');
+  if (!form) return;
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var btn = form.querySelector('.form-submit');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    var data = Object.fromEntries(new FormData(form));
+    try {
+      var r = await fetch('/api/contact', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+      if (r.ok) { form.style.display='none'; document.getElementById('lead-success').style.display='block'; }
+      else { btn.disabled=false; btn.textContent='Get Estimate'; }
+    } catch { btn.disabled=false; btn.textContent='Get Estimate'; }
+  });
+})();
+</script>
+</body>
+</html>
