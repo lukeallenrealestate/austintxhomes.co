@@ -172,23 +172,42 @@ function enrichListing(listing, db, neighborhoods) {
     if (row && row.avg_ppsf) market = row;
   } catch {}
 
-  // 2. Comparable sold listings (same city, ±1 bed, closed last 12 months)
+  // 2. Comparable sold listings — same city, ±1 bed, similar price + sqft, NOT leases
+  //    Filters:
+  //    - property_type NOT LIKE '%Lease%'  (critical — was showing $700/mo leases as sale comps)
+  //    - close_price within ±35% of subject's list_price (ignore comps if list_price unavailable)
+  //    - living_area within ±35% of subject's sqft (if available)
+  //    - Only residential sale types (no commercial/land/farm)
+  //    - close_price > $10,000  (lease comps often have $1 close_price)
   let comps = [];
   try {
+    const subjectPrice = listing.list_price || 0;
+    const subjectSqft = listing.living_area || 0;
+    const minPrice = subjectPrice ? Math.round(subjectPrice * 0.65) : 10000;
+    const maxPrice = subjectPrice ? Math.round(subjectPrice * 1.35) : 999999999;
+    const minSqft = subjectSqft ? Math.round(subjectSqft * 0.65) : 500;
+    const maxSqft = subjectSqft ? Math.round(subjectSqft * 1.35) : 99999;
+
     comps = db.prepare(`
       SELECT unparsed_address, close_price, list_price, bedrooms_total, bathrooms_total,
              living_area, close_date, days_on_market, subdivision_name
       FROM listings
       WHERE city = ?
         AND standard_status = 'Closed'
-        AND close_price > 0
-        AND close_date >= date('now', '-12 months')
+        AND close_price >= 10000
+        AND close_price BETWEEN ? AND ?
+        AND living_area BETWEEN ? AND ?
         AND bedrooms_total BETWEEN ? AND ?
-        AND living_area > 500
-      ORDER BY close_date DESC
+        AND property_type NOT LIKE '%Lease%'
+        AND property_type NOT LIKE '%Land%'
+        AND property_type NOT LIKE '%Farm%'
+        AND property_type NOT LIKE '%Commercial%'
+        AND (close_date IS NULL OR close_date >= date('now', '-18 months'))
+      ORDER BY ABS(close_price - ?) ASC
       LIMIT 5
-    `).all(city, Math.max(0, beds - 1), beds + 1);
-  } catch {}
+    `).all(city, minPrice, maxPrice, minSqft, maxSqft,
+           Math.max(0, beds - 1), beds + 1, subjectPrice);
+  } catch (e) { console.warn('[comps]', e.message); }
 
   // 3. Neighborhood editorial match
   const neighborhood = findNeighborhood(listing, neighborhoods);
