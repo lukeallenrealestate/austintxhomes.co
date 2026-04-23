@@ -482,7 +482,10 @@ document.querySelectorAll('.faq-q').forEach(q => {
 (async function() {
   const grid = document.getElementById('listings-grid');
   try {
-    const res = await fetch('/api/properties/search?forRent=true&limit=12&sortBy=newest&minPrice=800&maxPrice=4000&lat=30.221&lng=-97.617&radius=15');
+    // Zips within ~20 min commute of Tesla Gigafactory (Del Valle, SE Austin, East Austin, SoCo):
+    // 78617 (Del Valle), 78742 (SE/Montopolis), 78741 (Riverside), 78744 (SE Austin),
+    // 78702 (East Austin), 78721 (East Austin), 78724 (E Austin), 78723 (NE/Mueller)
+    const res = await fetch('/api/properties/search?forRent=true&limit=12&sortBy=newest&minPrice=800&maxPrice=4000&zip=78617,78742,78741,78744,78702,78721,78724,78723');
     const data = await res.json();
     if (!data.listings || !data.listings.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--light);">No rental listings currently available.</div>'; return; }
     grid.innerHTML = '';
@@ -509,7 +512,7 @@ document.querySelectorAll('.faq-q').forEach(q => {
       grid.appendChild(card);
     });
     if (data.total > 12) {
-      document.getElementById('listings-more').innerHTML = '<a href="/search?forRent=true&lat=30.221&lng=-97.617&radius=15" class="cta-btn" style="background:var(--ink);">View All ' + data.total.toLocaleString() + ' Rentals Near Tesla →</a>';
+      document.getElementById('listings-more').innerHTML = '<a href="/search?forRent=true&zip=78617,78742,78741,78744,78702,78721,78724,78723" class="cta-btn" style="background:var(--ink);">View All ' + data.total.toLocaleString() + ' Rentals Near Tesla →</a>';
     }
   } catch { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--light);">Unable to load listings.</div>'; }
 })();

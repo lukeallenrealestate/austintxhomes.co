@@ -172,14 +172,17 @@ function enrichListing(listing, db, neighborhoods) {
     if (row && row.avg_ppsf) market = row;
   } catch {}
 
-  // 2. Comparable sold listings — same city, ±1 bed, similar price + sqft, NOT leases
+  // 2. Similar listings — same city, ±1 bed, similar price + sqft, NOT leases
+  //    ACTRIS IDX feed doesn't expose close_price for residential sales, so we show
+  //    similar ACTIVE listings currently on the market instead of sold comps.
+  //    This gives buyers real price context even without closed-sale data.
   //    Filters:
-  //    - property_type NOT LIKE '%Lease%'  (critical — was showing $700/mo leases as sale comps)
-  //    - close_price within ±35% of subject's list_price (ignore comps if list_price unavailable)
-  //    - living_area within ±35% of subject's sqft (if available)
-  //    - Only residential sale types (no commercial/land/farm)
-  //    - close_price > $10,000  (lease comps often have $1 close_price)
+  //    - NOT leases, land, farm, commercial  (critical — was showing leases as comps)
+  //    - list_price within ±35% of subject
+  //    - living_area within ±35% of subject
+  //    - NOT the subject listing itself
   let comps = [];
+  let compsLabel = 'Similar Active Listings';
   try {
     const subjectPrice = listing.list_price || 0;
     const subjectSqft = listing.living_area || 0;
@@ -189,24 +192,26 @@ function enrichListing(listing, db, neighborhoods) {
     const maxSqft = subjectSqft ? Math.round(subjectSqft * 1.35) : 99999;
 
     comps = db.prepare(`
-      SELECT unparsed_address, close_price, list_price, bedrooms_total, bathrooms_total,
-             living_area, close_date, days_on_market, subdivision_name
+      SELECT unparsed_address, list_price AS close_price, list_price, bedrooms_total,
+             bathrooms_total, living_area, listing_contract_date AS close_date,
+             days_on_market, subdivision_name, listing_key
       FROM listings
       WHERE city = ?
-        AND standard_status = 'Closed'
-        AND close_price >= 10000
-        AND close_price BETWEEN ? AND ?
+        AND mlg_can_view = 1
+        AND standard_status = 'Active'
+        AND list_price BETWEEN ? AND ?
         AND living_area BETWEEN ? AND ?
         AND bedrooms_total BETWEEN ? AND ?
         AND property_type NOT LIKE '%Lease%'
         AND property_type NOT LIKE '%Land%'
         AND property_type NOT LIKE '%Farm%'
         AND property_type NOT LIKE '%Commercial%'
-        AND (close_date IS NULL OR close_date >= date('now', '-18 months'))
-      ORDER BY ABS(close_price - ?) ASC
+        AND listing_key != ?
+      ORDER BY ABS(list_price - ?) ASC
       LIMIT 5
     `).all(city, minPrice, maxPrice, minSqft, maxSqft,
-           Math.max(0, beds - 1), beds + 1, subjectPrice);
+           Math.max(0, beds - 1), beds + 1,
+           listing.listing_key, subjectPrice);
   } catch (e) { console.warn('[comps]', e.message); }
 
   // 3. Neighborhood editorial match
@@ -327,20 +332,18 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
   // Comps table
   const compsHTML = comps.length ? `
   <section class="insight-section">
-    <p class="section-label">Recent Comparable Sales in ${city}</p>
-    <h2 class="section-title">What Similar Homes Have Sold For</h2>
-    <p style="font-size:.88rem;color:var(--mid);margin:0 0 1.25rem;">The following homes closed within the last 12 months in ${city} with similar bedroom counts — giving you a real-market benchmark for this property's pricing.</p>
+    <p class="section-label">Similar Homes on the Market in ${city}</p>
+    <h2 class="section-title">Comparable Listings Right Now</h2>
+    <p style="font-size:.88rem;color:var(--mid);margin:0 0 1.25rem;">Homes currently for sale in ${city} with similar bedroom count, size, and price range — giving you real-time context for how this property's asking price compares to the active market.</p>
     <div class="comps-table">
       <div class="comp-header">
-        <span>Address</span><span>Close Price</span><span>$/sqft</span><span>Beds/Baths</span><span>Sqft</span><span>DOM</span><span>Closed</span>
+        <span>Address</span><span>List Price</span><span>$/sqft</span><span>Beds/Baths</span><span>Sqft</span><span>DOM</span><span>Listed</span>
       </div>
       ${comps.map(c => {
-        const cppsf = c.living_area > 0 ? Math.round(c.close_price / c.living_area) : null;
-        const overAsk = c.close_price && c.list_price ? c.close_price - c.list_price : 0;
-        const overAskStr = overAsk > 0 ? `<span class="over-ask">+${fmtPrice(overAsk)}</span>` : overAsk < 0 ? `<span class="under-ask">${fmtPrice(overAsk)}</span>` : '';
+        const cppsf = c.living_area > 0 ? Math.round(c.list_price / c.living_area) : null;
         return `<div class="comp-row">
-          <span class="comp-addr">${c.unparsed_address || '—'}${c.subdivision_name ? '<br><small>'+c.subdivision_name+'</small>' : ''}</span>
-          <span>${fmtPrice(c.close_price)} ${overAskStr}</span>
+          <span class="comp-addr">${c.listing_key ? `<a href="/homes/${buildSlug(c)}" style="color:inherit;text-decoration:none;">` : ''}${c.unparsed_address || '—'}${c.listing_key ? '</a>' : ''}${c.subdivision_name ? '<br><small>'+c.subdivision_name+'</small>' : ''}</span>
+          <span>${fmtPrice(c.list_price)}</span>
           <span>${cppsf ? fmtPrice(cppsf) : '—'}</span>
           <span>${c.bedrooms_total||'—'} bd / ${c.bathrooms_total||'—'} ba</span>
           <span>${c.living_area ? fmt(c.living_area)+' sqft' : '—'}</span>
@@ -349,7 +352,7 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
         </div>`;
       }).join('')}
     </div>
-    <p style="font-size:.75rem;color:var(--light);margin-top:.75rem;">Source: ACTRIS MLS. Comparable selection based on city and bedroom count. Not a formal appraisal. Contact Luke for a precise comparative market analysis.</p>
+    <p style="font-size:.75rem;color:var(--light);margin-top:.75rem;">Source: ACTRIS MLS, live listings. Similar by ±1 bed, ±35% price, ±35% sqft. Contact Luke for a formal comparative market analysis.</p>
   </section>` : '';
 
   // Investment section
