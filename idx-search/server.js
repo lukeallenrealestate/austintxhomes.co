@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const cron = require('node-cron');
 const { syncListings, refreshPhotos } = require('./sync/mlsSync');
+const photoBackfill = require('./sync/photoBackfill');
 const { runAlertJob } = require('./services/alertJob');
 
 // Track whether the server has fully started so we know when startup errors are fatal.
@@ -297,4 +298,16 @@ cron.schedule('5 * * * *', () => {
 // Email alerts for saved searches — runs every hour at :30 to avoid collisions
 cron.schedule('30 * * * *', () => {
   runAlertJob().catch(console.error);
+});
+
+// Photo backfill — eagerly mirrors MLS photos to R2 so every listing has photos
+// without waiting for a user to click. Once caught up, ticks become no-ops.
+// Shares the MLS rate budget with mlsSync via sync/throttle.js.
+cron.schedule('* * * * *', () => {
+  photoBackfill.runBatch('cron').catch(err => console.warn('[BACKFILL]', err.message));
+});
+
+// Hourly progress email to ADMIN_EMAIL. Self-suppresses once steady-state.
+cron.schedule('0 * * * *', () => {
+  photoBackfill.sendHourlyReport().catch(err => console.warn('[BACKFILL-EMAIL]', err.message));
 });

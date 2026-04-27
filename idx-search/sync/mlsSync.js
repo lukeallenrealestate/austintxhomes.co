@@ -227,19 +227,12 @@ const batchUpsertLeaseComps = db.transaction((listings) => {
   return count;
 });
 
-// Rate limiter with exponential backoff for 429 errors
-let lastRequestTime = 0;
-const MIN_DELAY_MS = 600; // Keep ~1.6 RPS (well under 2 RPS limit)
+// Shared MLS rate limiter — coordinates with photoBackfill so we never exceed 1.6 RPS combined
+const { throttle } = require('./throttle');
 
 async function fetchPage(url, retries = 3) {
   for (let attempt = 0; attempt < retries; attempt++) {
-    // Enforce minimum delay between requests
-    const elapsed = Date.now() - lastRequestTime;
-    if (elapsed < MIN_DELAY_MS) {
-      await new Promise(r => setTimeout(r, MIN_DELAY_MS - elapsed));
-    }
-    
-    lastRequestTime = Date.now();
+    await throttle();
     
     try {
       const res = await fetch(url, { headers: HEADERS });
@@ -362,6 +355,16 @@ async function syncListings(isInitial = false) {
     }
   } else if (newListings.length > 200) {
     console.log(`[INDEXING] Skipping — ${newListings.length} new listings exceeds 200/day quota`);
+  }
+
+  // Kick the backfill once after sync completes so newly-arrived listings get
+  // their hero photos cached within ~1 minute instead of waiting for the next
+  // backfill cron tick or a user click. Lazy require to avoid startup-order issues.
+  try {
+    const photoBackfill = require('./photoBackfill');
+    photoBackfill.runBatch('post-sync').catch(err => console.warn('[BACKFILL]', err.message));
+  } catch (e) {
+    console.warn('[BACKFILL] post-sync hook failed to load:', e.message);
   }
 }
 

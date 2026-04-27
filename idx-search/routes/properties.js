@@ -822,4 +822,7 @@ function tryParse(str, fallback) {
   } catch { return fallback; }
 }
 
+// Expose refreshListingPhotos to other modules (e.g. photoBackfill) without
+// breaking the express-router contract — extra properties on a router are ignored.
+router.refreshListingPhotos = refreshListingPhotos;
 module.exports = router;

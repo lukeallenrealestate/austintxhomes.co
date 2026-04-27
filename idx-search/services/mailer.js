@@ -77,4 +77,17 @@ function escHtml(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-module.exports = { sendNewListingsAlert };
+// Generic transactional sender — used by photoBackfill and other admin-facing jobs.
+async function sendMail({ to, subject, html, text }) {
+  const fromName = process.env.EMAIL_FROM_NAME || 'Luke Allen';
+  const fromEmail = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+  return transporter.sendMail({
+    from: `"${fromName}" <${fromEmail}>`,
+    to,
+    subject,
+    html,
+    text
+  });
+}
+
+module.exports = { sendNewListingsAlert, sendMail };

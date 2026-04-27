@@ -185,7 +185,21 @@ statements.forEach(sql => wasmDb.run(sql));
 // Migrations — add columns that may not exist in older DBs
 const migrations = [
   `ALTER TABLE saved_searches ADD COLUMN last_alerted_at DATETIME`,
-  `ALTER TABLE listings ADD COLUMN photos_r2 TEXT`
+  `ALTER TABLE listings ADD COLUMN photos_r2 TEXT`,
+  `CREATE TABLE IF NOT EXISTS backfill_progress (
+    listing_key TEXT NOT NULL,
+    photo_idx INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    attempts INTEGER DEFAULT 0,
+    last_attempt_at DATETIME,
+    last_error TEXT,
+    PRIMARY KEY (listing_key, photo_idx)
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_backfill_status ON backfill_progress(status)`,
+  // Track the last "fully cached" listing count emailed so we can suppress
+  // duplicate hourly reports once backfill reaches steady state.
+  `ALTER TABLE sync_state ADD COLUMN backfill_last_email_count INTEGER DEFAULT -1`,
+  `ALTER TABLE sync_state ADD COLUMN backfill_last_email_at DATETIME`
 ];
 migrations.forEach(sql => { try { wasmDb.run(sql); } catch {} });
 
