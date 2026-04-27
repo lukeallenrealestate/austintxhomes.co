@@ -20,8 +20,9 @@ const { throttle } = require('./throttle');
 // Per-tick cap. At 1.6 RPS, ~80 photos in a minute is the theoretical max,
 // but we leave headroom in case other workers are also using the rate budget.
 const BATCH_SIZE = 60;
-const FETCH_TIMEOUT_MS = 10000;
+const FETCH_TIMEOUT_MS = 5000; // tighter so a stuck CDN doesn't burn 10 min/batch
 const MAX_ATTEMPTS = 3;
+const RATE_LIMIT_BACKOFF_MS = 15000; // when MLS sends 429, pause 15s before next photo
 
 const METRO_SUBURBS = [
   'Westlake Hills', 'West Lake Hills', 'Pflugerville', 'Round Rock',
@@ -103,23 +104,39 @@ async function runBatch(label = 'cron') {
   let succeeded = 0;
   let failed = 0;
 
+  // Per-batch status histogram so we can SEE why photos fail in the logs.
+  const failureStats = {};
+  let bumpFail = (code) => { failureStats[code] = (failureStats[code] || 0) + 1; };
+
   try {
     const rows = pickNextBatch.all([BATCH_SIZE]);
     if (!rows.length) {
       // Steady-state no-op once backfill is fully caught up.
+      console.log(`[BACKFILL] ${label} idle: nothing left to mirror`);
       return { processed: 0, succeeded: 0, failed: 0, idle: true };
     }
+
+    console.log(`[BACKFILL] ${label} starting batch of ${rows.length} photos...`);
 
     for (const row of rows) {
       processed++;
       const idx = row.next_idx;
       try {
         await throttle();
-        const ok = await fetchAndMirror(row.listing_key, idx, row.photos);
-        if (ok) succeeded++;
-        else failed++;
+        const result = await fetchAndMirror(row.listing_key, idx, row.photos);
+        if (result.ok) {
+          succeeded++;
+        } else {
+          failed++;
+          bumpFail(result.code || 'unknown');
+          // Back off when MLS is rate-limiting us — extra wait beyond the throttle.
+          if (result.code === 'HTTP 429') {
+            await new Promise(r => setTimeout(r, RATE_LIMIT_BACKOFF_MS));
+          }
+        }
       } catch (err) {
         failed++;
+        bumpFail('threw');
         console.warn(`[BACKFILL] ${row.listing_key}/${idx} threw:`, err.message);
         try {
           recordFailure.run([row.listing_key, idx, 'failed_transient', err.message.slice(0, 500)]);
@@ -132,8 +149,12 @@ async function runBatch(label = 'cron') {
       ? ((cov.hero_done / cov.total_with_photos) * 100).toFixed(1)
       : '0.0';
     const elapsedSec = ((Date.now() - startedAt) / 1000).toFixed(1);
+    const failBreakdown = Object.entries(failureStats)
+      .sort((a, b) => b[1] - a[1])
+      .map(([code, n]) => `${code}:${n}`)
+      .join(' ');
     console.log(
-      `[BACKFILL] ${label} batch: ${succeeded}✓ ${failed}✗ in ${elapsedSec}s | hero coverage ${cov.hero_done}/${cov.total_with_photos} (${heroPct}%)`
+      `[BACKFILL] ${label} batch: ${succeeded}✓ ${failed}✗ in ${elapsedSec}s | hero coverage ${cov.hero_done}/${cov.total_with_photos} (${heroPct}%)${failBreakdown ? ' | failures: ' + failBreakdown : ''}`
     );
 
     return { processed, succeeded, failed, heroDone: cov.hero_done, heroTotal: cov.total_with_photos };
@@ -142,13 +163,14 @@ async function runBatch(label = 'cron') {
   }
 }
 
+// Returns { ok: true } on success, or { ok: false, code: 'HTTP 429' | 'CDN timeout' | ... } on failure.
 async function fetchAndMirror(listingKey, photoIdx, photosJson) {
   let photos;
-  try { photos = JSON.parse(photosJson) || []; } catch { return false; }
-  if (!Array.isArray(photos) || photoIdx >= photos.length) return false;
+  try { photos = JSON.parse(photosJson) || []; } catch { return { ok: false, code: 'parse-error' }; }
+  if (!Array.isArray(photos) || photoIdx >= photos.length) return { ok: false, code: 'no-url' };
 
   const url = photos[photoIdx];
-  if (!url) return false;
+  if (!url) return { ok: false, code: 'no-url' };
 
   // Per-photo timeout so a slow MLS CDN can't stall the batch.
   const controller = new AbortController();
@@ -157,8 +179,14 @@ async function fetchAndMirror(listingKey, photoIdx, photosJson) {
   try {
     let res = await fetch(url, { signal: controller.signal });
 
-    // MLS signed URL expired — refresh once and retry.
-    if (!res.ok && (res.status === 400 || res.status === 403 || res.status === 404)) {
+    // 429 = MLS rate limit. Don't burn a refresh attempt; just back off and retry next batch.
+    if (res.status === 429) {
+      recordFailure.run([listingKey, photoIdx, 'failed_transient', 'HTTP 429 rate-limited']);
+      return { ok: false, code: 'HTTP 429' };
+    }
+
+    // 4xx = signed URL likely expired or wrong — try refreshing from MLS GRID API once.
+    if (!res.ok && res.status >= 400 && res.status < 500) {
       const fresh = await tryRefreshAndRefetch(listingKey, photoIdx, controller.signal);
       if (fresh) res = fresh;
     }
@@ -168,26 +196,26 @@ async function fetchAndMirror(listingKey, photoIdx, photosJson) {
       const attempts = (prior?.attempts || 0) + 1;
       const status = attempts >= MAX_ATTEMPTS ? 'failed_permanent' : 'failed_transient';
       recordFailure.run([listingKey, photoIdx, status, `HTTP ${res.status}`]);
-      return false;
+      return { ok: false, code: `HTTP ${res.status}` };
     }
 
     const contentType = res.headers.get('content-type') || 'image/jpeg';
     const buffer = await res.buffer();
     if (!buffer || !buffer.length) {
       recordFailure.run([listingKey, photoIdx, 'failed_transient', 'empty buffer']);
-      return false;
+      return { ok: false, code: 'empty-buffer' };
     }
 
     // r2Service.uploadPhoto persists the public URL into listings.photos_r2 via saveR2Url().
     const publicUrl = await r2Service.uploadPhoto(listingKey, photoIdx, buffer, contentType);
-    return !!publicUrl;
+    return publicUrl ? { ok: true } : { ok: false, code: 'r2-upload-null' };
   } catch (err) {
     if (err.name === 'AbortError') {
       recordFailure.run([listingKey, photoIdx, 'failed_transient', 'CDN timeout']);
-    } else {
-      recordFailure.run([listingKey, photoIdx, 'failed_transient', err.message.slice(0, 500)]);
+      return { ok: false, code: 'CDN timeout' };
     }
-    return false;
+    recordFailure.run([listingKey, photoIdx, 'failed_transient', err.message.slice(0, 500)]);
+    return { ok: false, code: 'fetch-error' };
   } finally {
     clearTimeout(timer);
   }
@@ -264,13 +292,18 @@ function estimateRemaining(photosTotal, photosCached) {
   return `~${(hours / 24).toFixed(1)} days`;
 }
 
-async function sendHourlyReport() {
+async function sendHourlyReport(reason = 'cron') {
+  console.log(`[BACKFILL-EMAIL] sendHourlyReport called (reason=${reason})`);
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_FROM || process.env.EMAIL_USER;
   if (!adminEmail) {
     console.warn('[BACKFILL-EMAIL] No ADMIN_EMAIL/EMAIL_FROM/EMAIL_USER set; skipping');
     return;
   }
-  if (!r2Service.isEnabled()) return; // No R2 → no backfill running → no point reporting
+  console.log(`[BACKFILL-EMAIL] adminEmail=${adminEmail}`);
+  if (!r2Service.isEnabled()) {
+    console.warn('[BACKFILL-EMAIL] R2 disabled — skipping email');
+    return;
+  }
 
   const stats = getProgressStats.get() || {};
   const buckets = getCityProgress.all() || [];
@@ -278,9 +311,11 @@ async function sendHourlyReport() {
 
   const fullyDone = stats.fully_done || 0;
   const total = stats.total_with_photos || 0;
+  console.log(`[BACKFILL-EMAIL] stats: fullyDone=${fullyDone} total=${total} prior=${prior}`);
 
   // Suppress no-op emails: backfill is fully complete AND no new listings finished since last report.
-  if (fullyDone === total && fullyDone === prior) {
+  if (fullyDone === total && fullyDone === prior && reason === 'cron') {
+    console.log('[BACKFILL-EMAIL] Suppressed: steady-state, no new completions since last email');
     return;
   }
 
@@ -355,4 +390,37 @@ async function sendHourlyReport() {
   }
 }
 
-module.exports = { runBatch, sendHourlyReport };
+// One-shot email at server startup so we know the email pipeline is alive.
+// If you stop seeing this on each redeploy, SMTP is broken (not the cron).
+async function sendStartupPing() {
+  console.log('[BACKFILL-EMAIL] sendStartupPing called');
+  const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_FROM || process.env.EMAIL_USER;
+  if (!adminEmail) {
+    console.warn('[BACKFILL-EMAIL] startup ping: no admin email configured');
+    return;
+  }
+  try {
+    const { sendMail } = require('../services/mailer');
+    const cov = getCoverageSnapshot.get() || {};
+    const r2On = r2Service.isEnabled();
+    await sendMail({
+      to: adminEmail,
+      subject: `[austintxhomes] IDX server restarted — backfill is ${r2On ? 'live' : 'DISABLED (R2 off)'}`,
+      text: `Server just restarted. R2 ${r2On ? 'enabled' : 'DISABLED'}. Hero coverage at boot: ${cov.hero_done || 0}/${cov.total_with_photos || 0} listings. You'll get an hourly progress email on the hour.`,
+      html: `<div style="font-family:-apple-system,sans-serif;max-width:520px;color:#1a1918;">
+        <h2 style="font-family:Georgia,serif;font-weight:400;margin:0 0 6px;">IDX server restarted</h2>
+        <p style="font-size:14px;color:#5c5b57;margin:0 0 18px;">austintxhomes.co · ${new Date().toISOString()}</p>
+        <div style="background:#faf8f4;border:1px solid #e5dfd4;border-radius:6px;padding:14px 18px;font-size:14px;line-height:1.7;">
+          <div><strong>R2 status:</strong> ${r2On ? '✓ enabled' : '✗ disabled — fix R2_* env vars'}</div>
+          <div><strong>Hero coverage at boot:</strong> ${cov.hero_done || 0} / ${cov.total_with_photos || 0} listings</div>
+        </div>
+        <p style="font-size:12px;color:#999690;margin-top:16px;">Hourly progress emails will follow at the top of each hour.</p>
+      </div>`
+    });
+    console.log(`[BACKFILL-EMAIL] startup ping sent to ${adminEmail}`);
+  } catch (err) {
+    console.warn('[BACKFILL-EMAIL] startup ping failed:', err.message);
+  }
+}
+
+module.exports = { runBatch, sendHourlyReport, sendStartupPing };

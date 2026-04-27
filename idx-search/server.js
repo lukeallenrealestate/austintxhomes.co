@@ -304,10 +304,19 @@ cron.schedule('30 * * * *', () => {
 // without waiting for a user to click. Once caught up, ticks become no-ops.
 // Shares the MLS rate budget with mlsSync via sync/throttle.js.
 cron.schedule('* * * * *', () => {
+  console.log('[BACKFILL] cron tick fired');
   photoBackfill.runBatch('cron').catch(err => console.warn('[BACKFILL]', err.message));
 });
 
 // Hourly progress email to ADMIN_EMAIL. Self-suppresses once steady-state.
 cron.schedule('0 * * * *', () => {
-  photoBackfill.sendHourlyReport().catch(err => console.warn('[BACKFILL-EMAIL]', err.message));
+  console.log('[BACKFILL-EMAIL] hourly cron fired');
+  photoBackfill.sendHourlyReport('cron').catch(err => console.warn('[BACKFILL-EMAIL]', err.message));
 });
+
+// One-shot ping email at startup so we get instant confirmation that SMTP works
+// and we can see what coverage state the server boots into. Fires 30s after start
+// to give R2 + DB modules time to initialize.
+setTimeout(() => {
+  photoBackfill.sendStartupPing().catch(err => console.warn('[BACKFILL-EMAIL] startup', err.message));
+}, 30000);
