@@ -31,8 +31,13 @@ const SELECT_FIELDS = [
   'ParkingTotal', 'AssociationFee', 'AssociationFeeFrequency', 'TaxAnnualAmount'
 ].join(',');
 
+// Upsert preserves photos_r2 (Cloudflare R2 mirror URLs) across syncs.
+// INSERT OR REPLACE would wipe photos_r2 to NULL every cycle, defeating the
+// CDN cache and causing the persistent "No Photo" cards on /search.
+// photos_r2 is only cleared when MLS reports a newer photos_change_timestamp,
+// signaling that the cached R2 mirrors are stale and must re-mirror.
 const upsertListing = db.prepare(`
-  INSERT OR REPLACE INTO listings (
+  INSERT INTO listings (
     listing_key, listing_id, standard_status, property_type, property_sub_type,
     list_price, bedrooms_total, bathrooms_total, bathrooms_full, bathrooms_half,
     living_area, lot_size_acres, lot_size_sqft, year_built, garage_spaces,
@@ -61,6 +66,64 @@ const upsertListing = db.prepare(`
     @stories, @parking_total, @association_fee, @association_fee_frequency,
     @tax_annual_amount, @raw_data, CURRENT_TIMESTAMP
   )
+  ON CONFLICT(listing_key) DO UPDATE SET
+    listing_id = excluded.listing_id,
+    standard_status = excluded.standard_status,
+    property_type = excluded.property_type,
+    property_sub_type = excluded.property_sub_type,
+    list_price = excluded.list_price,
+    bedrooms_total = excluded.bedrooms_total,
+    bathrooms_total = excluded.bathrooms_total,
+    bathrooms_full = excluded.bathrooms_full,
+    bathrooms_half = excluded.bathrooms_half,
+    living_area = excluded.living_area,
+    lot_size_acres = excluded.lot_size_acres,
+    lot_size_sqft = excluded.lot_size_sqft,
+    year_built = excluded.year_built,
+    garage_spaces = excluded.garage_spaces,
+    unparsed_address = excluded.unparsed_address,
+    street_number = excluded.street_number,
+    street_name = excluded.street_name,
+    unit_number = excluded.unit_number,
+    city = excluded.city,
+    state_or_province = excluded.state_or_province,
+    postal_code = excluded.postal_code,
+    county = excluded.county,
+    subdivision_name = excluded.subdivision_name,
+    latitude = excluded.latitude,
+    longitude = excluded.longitude,
+    public_remarks = excluded.public_remarks,
+    list_agent_full_name = excluded.list_agent_full_name,
+    list_agent_direct_phone = excluded.list_agent_direct_phone,
+    list_agent_email = excluded.list_agent_email,
+    list_office_name = excluded.list_office_name,
+    elementary_school = excluded.elementary_school,
+    middle_school = excluded.middle_school,
+    high_school = excluded.high_school,
+    school_district = excluded.school_district,
+    days_on_market = excluded.days_on_market,
+    listing_contract_date = excluded.listing_contract_date,
+    close_date = excluded.close_date,
+    close_price = excluded.close_price,
+    modification_timestamp = excluded.modification_timestamp,
+    mlg_can_view = excluded.mlg_can_view,
+    photos = excluded.photos,
+    pool_features = excluded.pool_features,
+    waterfront_yn = excluded.waterfront_yn,
+    new_construction_yn = excluded.new_construction_yn,
+    stories = excluded.stories,
+    parking_total = excluded.parking_total,
+    association_fee = excluded.association_fee,
+    association_fee_frequency = excluded.association_fee_frequency,
+    tax_annual_amount = excluded.tax_annual_amount,
+    raw_data = excluded.raw_data,
+    photos_r2 = CASE
+      WHEN COALESCE(excluded.photos_change_timestamp, '') != COALESCE(listings.photos_change_timestamp, '')
+        THEN NULL
+      ELSE listings.photos_r2
+    END,
+    photos_change_timestamp = excluded.photos_change_timestamp,
+    synced_at = CURRENT_TIMESTAMP
 `);
 
 const deleteListing = db.prepare(`DELETE FROM listings WHERE listing_key = ?`);
