@@ -118,7 +118,9 @@ const upsertListing = db.prepare(`
     tax_annual_amount = excluded.tax_annual_amount,
     raw_data = excluded.raw_data,
     photos_r2 = CASE
-      WHEN COALESCE(excluded.photos_change_timestamp, '') != COALESCE(listings.photos_change_timestamp, '')
+      WHEN excluded.photos_change_timestamp IS NOT NULL
+       AND listings.photos_change_timestamp IS NOT NULL
+       AND excluded.photos_change_timestamp > listings.photos_change_timestamp
         THEN NULL
       ELSE listings.photos_r2
     END,
@@ -339,7 +341,13 @@ async function syncListings(isInitial = false) {
     updateSyncState.run(latestTimestamp, totalSynced);
   }
 
-  console.log(`[SYNC] Done. Synced ${totalSynced} listings (${pageCount} pages).`);
+  const missingR2 = db.prepare(`
+    SELECT COUNT(*) AS n FROM listings
+    WHERE mlg_can_view = 1
+      AND (photos_r2 IS NULL OR photos_r2 = '[]')
+      AND photos IS NOT NULL AND photos != '[]'
+  `).get();
+  console.log(`[SYNC] Done. Synced ${totalSynced} listings (${pageCount} pages). Listings still missing R2 mirrors: ${missingR2.n}`);
 
   // Notify Google Indexing API of new listing pages (fire-and-forget, non-blocking)
   if (newListings.length > 0 && newListings.length <= 200) {

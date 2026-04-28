@@ -510,19 +510,23 @@ async function sendStartupPing() {
   try {
     const { sendMail } = require('../services/mailer');
     const cov = getCoverageSnapshot.get() || {};
+    const heroDone = cov.hero_done || 0;
+    const totalWithPhotos = cov.total_with_photos || 0;
+    const missingMirrors = Math.max(0, totalWithPhotos - heroDone);
     const r2On = r2Service.isEnabled();
     await sendMail({
       to: adminEmail,
       subject: `[austintxhomes] IDX server restarted — backfill is ${r2On ? 'live' : 'DISABLED (R2 off)'}`,
-      text: `Server just restarted. R2 ${r2On ? 'enabled' : 'DISABLED'}. Hero coverage at boot: ${cov.hero_done || 0}/${cov.total_with_photos || 0} listings. You'll get an hourly progress email on the hour.`,
+      text: `Server just restarted. R2 ${r2On ? 'enabled' : 'DISABLED'}. Hero coverage at boot: ${heroDone}/${totalWithPhotos} listings. Listings still missing R2 mirrors: ${missingMirrors}. You'll get an hourly progress email on the hour.`,
       html: `<div style="font-family:-apple-system,sans-serif;max-width:520px;color:#1a1918;">
         <h2 style="font-family:Georgia,serif;font-weight:400;margin:0 0 6px;">IDX server restarted</h2>
         <p style="font-size:14px;color:#5c5b57;margin:0 0 18px;">austintxhomes.co · ${new Date().toISOString()}</p>
         <div style="background:#faf8f4;border:1px solid #e5dfd4;border-radius:6px;padding:14px 18px;font-size:14px;line-height:1.7;">
           <div><strong>R2 status:</strong> ${r2On ? '✓ enabled' : '✗ disabled — fix R2_* env vars'}</div>
-          <div><strong>Hero coverage at boot:</strong> ${cov.hero_done || 0} / ${cov.total_with_photos || 0} listings</div>
+          <div><strong>Hero coverage at boot:</strong> ${heroDone} / ${totalWithPhotos} listings</div>
+          <div><strong>Listings still missing R2 mirrors:</strong> ${missingMirrors}</div>
         </div>
-        <p style="font-size:12px;color:#999690;margin-top:16px;">Hourly progress emails will follow at the top of each hour.</p>
+        <p style="font-size:12px;color:#999690;margin-top:16px;">Hourly progress emails will follow at the top of each hour. If this number jumps upward between restarts, the upsert is wiping cached mirrors — investigate.</p>
       </div>`
     });
     console.log(`[BACKFILL-EMAIL] startup ping sent to ${adminEmail}`);
