@@ -866,7 +866,7 @@ const r2Service = require('../services/r2');
 // Tier 3: MLS CDN fetch — GATED by shared MLS rate budget. When MLS is recently
 //         rate-limited or we've hit our hourly cap, this tier returns 404 instead
 //         of hitting MLS so user/bot traffic can't get our API token suspended.
-const { isRecentlyRateLimited: _isRateLimited, isOverHourlyCap: _isOverCap, recordMlsCall: _recordCall, recordRateLimit: _recordLimit } = require('../sync/throttle');
+const { isRecentlyRateLimited: _isRateLimited, isOverHourlyCap: _isOverCap, recordMlsCall: _recordCall, recordRateLimit: _recordLimit, throttle: _throttle } = require('../sync/throttle');
 router.get('/photos/:listingKey/:idx', async (req, res) => {
   const { listingKey, idx } = req.params;
   const photoIdx = parseInt(idx) || 0;
@@ -912,6 +912,10 @@ router.get('/photos/:listingKey/:idx', async (req, res) => {
   const timer = setTimeout(() => controller.abort(), 10000);
 
   try {
+    // Enforce the shared 600ms inter-request gap. Without this, a card grid
+    // with 30 thumbnails fires 30 fetches at MLS in <1s and trips the 2 RPS
+    // suspension limit even though we're under the hourly cap.
+    await _throttle();
     _recordCall(); // count toward shared hourly MLS budget
     let cdnRes = await fetch(photoUrl, { signal: controller.signal });
 

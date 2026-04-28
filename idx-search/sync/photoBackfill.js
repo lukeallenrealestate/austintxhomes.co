@@ -28,7 +28,10 @@ const EXTRA_BACKFILL_DELAY_MS = 4000;  // 4s extra delay between photos. Net ~5s
 
 // Hourly cap + MLS-call counter live in sync/throttle.js so they're shared across
 // ALL MLS-bound code paths (sync, backfill, AND the photo proxy in properties.js).
-const MLS_DOMAIN_PATTERN = /api\.mlsgrid\.com/i;
+// Match both api.mlsgrid.com (RESO API) and CDN subdomains like media.mlsgrid.com /
+// cdn.mlsgrid.com / etc. — photo URLs live on the CDN and were previously not
+// counted toward the cap, leaving the 1000/hr ceiling significantly undercounted.
+const MLS_DOMAIN_PATTERN = /mlsgrid\.com/i;
 
 const METRO_SUBURBS = [
   'Westlake Hills', 'West Lake Hills', 'Pflugerville', 'Round Rock',
