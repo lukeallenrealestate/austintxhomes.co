@@ -17,12 +17,13 @@ const db = require('../db/database');
 const r2Service = require('../services/r2');
 const { throttle, isRecentlyRateLimited } = require('./throttle');
 
-// Per-tick cap. At 1.6 RPS, ~80 photos in a minute is the theoretical max,
-// but we leave headroom in case other workers are also using the rate budget.
-const BATCH_SIZE = 60;
-const FETCH_TIMEOUT_MS = 5000; // tighter so a stuck CDN doesn't burn 10 min/batch
+// Per-tick cap. Reduced from 60 to 30 to stop overwhelming MLS GRID's burst limits.
+// At ~1 photo per 2 seconds (extra throttle below), one batch takes ~1 min.
+const BATCH_SIZE = 30;
+const FETCH_TIMEOUT_MS = 5000;
 const MAX_ATTEMPTS = 3;
 const RATE_LIMIT_BACKOFF_MS = 15000; // when MLS sends 429, pause 15s before next photo
+const EXTRA_BACKFILL_DELAY_MS = 1500; // additional delay between photos beyond the shared throttle
 
 const METRO_SUBURBS = [
   'Westlake Hills', 'West Lake Hills', 'Pflugerville', 'Round Rock',
@@ -89,7 +90,53 @@ const getCoverageSnapshot = db.prepare(`
 
 let isRunning = false;
 
+// Server.js timers (setInterval/setTimeout/cron) don't appear to fire reliably on
+// this Replit deployment. We piggyback on the post-sync hook in mlsSync.js, which
+// IS reliable, to drive the periodic jobs from inside runBatch instead.
+let hasFiredStartupPing = false;
+let hasFiredBulkUrlRefresh = false;
+let lastHourlyEmailAt = 0;
+const HOURLY_EMAIL_INTERVAL_MS = 55 * 60 * 1000; // 55 min — slightly under an hour to ensure we send when called every 30 min
+
+async function maybeStartupPing() {
+  if (hasFiredStartupPing) return;
+  hasFiredStartupPing = true;
+  try {
+    await sendStartupPing();
+  } catch (err) {
+    console.warn('[BACKFILL-EMAIL] maybeStartupPing failed:', err.message);
+  }
+}
+
+async function maybeHourlyEmail() {
+  if (Date.now() - lastHourlyEmailAt < HOURLY_EMAIL_INTERVAL_MS) return;
+  lastHourlyEmailAt = Date.now();
+  try {
+    await sendHourlyReport('opportunistic');
+  } catch (err) {
+    console.warn('[BACKFILL-EMAIL] maybeHourlyEmail failed:', err.message);
+  }
+}
+
+async function maybeBulkUrlRefresh() {
+  if (hasFiredBulkUrlRefresh) return;
+  if (isRecentlyRateLimited()) return; // try again next runBatch when MLS recovers
+  hasFiredBulkUrlRefresh = true;
+  try {
+    console.log('[PHOTOS] Bulk URL refresh starting (one-time per server boot)...');
+    const { refreshPhotos } = require('./mlsSync');
+    await refreshPhotos();
+    console.log('[PHOTOS] Bulk URL refresh complete');
+  } catch (err) {
+    console.warn('[PHOTOS] Bulk URL refresh failed:', err.message);
+    hasFiredBulkUrlRefresh = false; // allow retry on next runBatch
+  }
+}
+
 async function runBatch(label = 'cron') {
+  // Fire startup ping ASAP — independent of R2 state so we always know the server is alive.
+  maybeStartupPing().catch(() => {});
+
   if (!r2Service.isEnabled()) {
     console.warn('[BACKFILL] R2 not enabled — skipping (set R2_* env vars)');
     return { skipped: true };
@@ -100,6 +147,8 @@ async function runBatch(label = 'cron') {
   // If MLS just rate-limited the regular sync, pause so we don't make it worse.
   if (isRecentlyRateLimited()) {
     console.log(`[BACKFILL] ${label} skipped: MLS rate-limited recently, backing off`);
+    // Still send hourly email if it's time — backfill being paused doesn't mean we shouldn't report.
+    maybeHourlyEmail().catch(() => {});
     return { skipped: true, reason: 'rate-limited' };
   }
   isRunning = true;
@@ -128,6 +177,11 @@ async function runBatch(label = 'cron') {
       const idx = row.next_idx;
       try {
         await throttle();
+        // Extra delay beyond the shared throttle — backfill is non-urgent so giving
+        // MLS more breathing room reduces 429s for the regular sync.
+        if (EXTRA_BACKFILL_DELAY_MS > 0) {
+          await new Promise(r => setTimeout(r, EXTRA_BACKFILL_DELAY_MS));
+        }
         const result = await fetchAndMirror(row.listing_key, idx, row.photos);
         if (result.ok) {
           succeeded++;
@@ -165,6 +219,12 @@ async function runBatch(label = 'cron') {
     return { processed, succeeded, failed, heroDone: cov.hero_done, heroTotal: cov.total_with_photos };
   } finally {
     isRunning = false;
+    // Opportunistic post-batch jobs — fire hourly email + bulk URL refresh from the
+    // same hook that calls us, since server.js timers aren't firing on this Replit instance.
+    maybeHourlyEmail().catch(() => {});
+    // Run the bulk URL refresh AFTER we release isRunning so it can use the throttle.
+    // Fire-and-forget — don't await, it can take many minutes.
+    maybeBulkUrlRefresh().catch(() => {});
   }
 }
 

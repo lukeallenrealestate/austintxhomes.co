@@ -300,39 +300,8 @@ cron.schedule('30 * * * *', () => {
   runAlertJob().catch(console.error);
 });
 
-// Photo backfill — using setInterval instead of node-cron because Replit appears
-// to silently drop fast cron schedules (only the existing */30 cron fires reliably).
-// setInterval is plain Node.js, no scheduler magic, fires every 60s no matter what.
-setInterval(() => {
-  console.log('[BACKFILL] interval tick fired');
-  photoBackfill.runBatch('interval').catch(err => console.warn('[BACKFILL]', err.message));
-}, 60 * 1000);
-
-// Hourly progress email to ADMIN_EMAIL. Self-suppresses once steady-state.
-setInterval(() => {
-  console.log('[BACKFILL-EMAIL] hourly interval fired');
-  photoBackfill.sendHourlyReport('interval').catch(err => console.warn('[BACKFILL-EMAIL]', err.message));
-}, 60 * 60 * 1000);
-
-// Startup ping — fires 5s after boot so we get fast confirmation that SMTP works.
-// Wrapped in a try/catch around the call site so a missing function ref doesn't
-// crash the whole server.
-setTimeout(() => {
-  try {
-    if (typeof photoBackfill.sendStartupPing === 'function') {
-      photoBackfill.sendStartupPing().catch(err => console.warn('[BACKFILL-EMAIL] startup', err.message));
-    } else {
-      console.warn('[BACKFILL-EMAIL] startup: sendStartupPing not exported');
-    }
-  } catch (err) {
-    console.warn('[BACKFILL-EMAIL] startup threw:', err.message);
-  }
-}, 5000);
-
-// One-time bulk URL refresh on startup — the DB likely has stale signed URLs from
-// older syncs. Without fresh URLs, the photo proxy returns HTTP 400 and the backfill
-// fails. We fire this 90s after boot so the initial sync gets MLS rate priority first.
-setTimeout(() => {
-  console.log('[PHOTOS] Startup bulk URL refresh starting...');
-  refreshPhotos().catch(err => console.warn('[PHOTOS] startup refresh failed:', err.message));
-}, 90000);
+// Photo backfill scheduling lives inside photoBackfill.js itself, triggered by the
+// post-sync hook in mlsSync.js. We discovered that setInterval/setTimeout/cron from
+// server.js don't fire reliably on this Replit deployment (likely a file-watch or
+// cache issue), but the post-sync hook is dependable. So startup ping, hourly email,
+// and one-time bulk URL refresh all piggyback on runBatch() and fire from there.
