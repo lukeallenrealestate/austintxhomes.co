@@ -228,17 +228,18 @@ const batchUpsertLeaseComps = db.transaction((listings) => {
 });
 
 // Shared MLS rate limiter — coordinates with photoBackfill so we never exceed 1.6 RPS combined
-const { throttle } = require('./throttle');
+const { throttle, recordRateLimit } = require('./throttle');
 
 async function fetchPage(url, retries = 3) {
   for (let attempt = 0; attempt < retries; attempt++) {
     await throttle();
-    
+
     try {
       const res = await fetch(url, { headers: HEADERS });
-      
+
       if (res.status === 429) {
-        // Rate limited — exponential backoff
+        // Rate limited — record for shared backoff (so backfill pauses too) + exponential backoff
+        recordRateLimit();
         const backoffMs = Math.pow(2, attempt) * 2000; // 2s, 4s, 8s
         console.warn(`[API] Rate limited (429). Backing off ${backoffMs}ms (attempt ${attempt + 1}/${retries})`);
         await new Promise(r => setTimeout(r, backoffMs));

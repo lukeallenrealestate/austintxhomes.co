@@ -15,7 +15,7 @@
 const fetch = require('node-fetch');
 const db = require('../db/database');
 const r2Service = require('../services/r2');
-const { throttle } = require('./throttle');
+const { throttle, isRecentlyRateLimited } = require('./throttle');
 
 // Per-tick cap. At 1.6 RPS, ~80 photos in a minute is the theoretical max,
 // but we leave headroom in case other workers are also using the rate budget.
@@ -96,6 +96,11 @@ async function runBatch(label = 'cron') {
   }
   if (isRunning) {
     return { skipped: true, reason: 'already-running' };
+  }
+  // If MLS just rate-limited the regular sync, pause so we don't make it worse.
+  if (isRecentlyRateLimited()) {
+    console.log(`[BACKFILL] ${label} skipped: MLS rate-limited recently, backing off`);
+    return { skipped: true, reason: 'rate-limited' };
   }
   isRunning = true;
 
