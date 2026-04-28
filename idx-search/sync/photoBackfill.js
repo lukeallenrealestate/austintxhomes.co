@@ -51,6 +51,14 @@ const METRO_SUBURBS = [
 
 // Highest-priority listing with the lowest unmirrored photo index.
 // Returns rows of { listing_key, photos, photos_r2, next_idx, total_photos }.
+//
+// Priority order is calibrated for the reality that MLS signed-URL photos expire
+// in hours. We sort by FRESHNESS first (synced_at) so the backfill catches URLs
+// while they're still valid, instead of wasting attempts on long-stale listings:
+//   1. photos_r2 length ASC (hero photos before secondary photos)
+//   2. synced_at DESC (recently-synced listings have fresh URLs)
+//   3. priority bucket (Austin Active first when freshness ties)
+//   4. list_price DESC
 const pickNextBatch = db.prepare(`
   SELECT
     l.listing_key,
@@ -71,6 +79,7 @@ const pickNextBatch = db.prepare(`
     )
   ORDER BY
     json_array_length(COALESCE(l.photos_r2, '[]')) ASC,
+    l.synced_at DESC,
     CASE
       WHEN l.city = 'Austin' AND l.standard_status = 'Active' THEN 1
       WHEN l.city IN (${METRO_SUBURBS}) AND l.standard_status = 'Active' THEN 2
@@ -80,6 +89,20 @@ const pickNextBatch = db.prepare(`
     END,
     l.list_price DESC
   LIMIT ?
+`);
+
+// Diagnostic — what's the freshness distribution of the queue we're picking from?
+// Logged once per batch so we can see whether MLS is actually emitting fresh URLs.
+const getQueueFreshness = db.prepare(`
+  SELECT
+    SUM(CASE WHEN synced_at >= datetime('now', '-1 hour') THEN 1 ELSE 0 END) AS within_1h,
+    SUM(CASE WHEN synced_at >= datetime('now', '-24 hours') THEN 1 ELSE 0 END) AS within_24h,
+    COUNT(*) AS total
+  FROM listings l
+  WHERE l.mlg_can_view = 1
+    AND l.photos IS NOT NULL
+    AND l.photos != '[]'
+    AND json_array_length(l.photos) > json_array_length(COALESCE(l.photos_r2, '[]'))
 `);
 
 const recordFailure = db.prepare(`
@@ -188,7 +211,8 @@ async function runBatch(label = 'cron') {
       return { processed: 0, succeeded: 0, failed: 0, idle: true };
     }
 
-    console.log(`[BACKFILL] ${label} starting batch of ${rows.length} photos...`);
+    const freshness = getQueueFreshness.get() || {};
+    console.log(`[BACKFILL] ${label} starting batch of ${rows.length} photos | queue freshness: ${freshness.within_1h || 0} synced <1h, ${freshness.within_24h || 0} synced <24h, ${freshness.total || 0} total uncached`);
 
     for (const row of rows) {
       processed++;
@@ -395,6 +419,7 @@ async function sendHourlyReport(reason = 'cron') {
   const stats = getProgressStats.get() || {};
   const buckets = getCityProgress.all() || [];
   const prior = (getEmailState.get() || {}).backfill_last_email_count;
+  const freshness = getQueueFreshness.get() || {};
 
   const fullyDone = stats.fully_done || 0;
   const total = stats.total_with_photos || 0;
@@ -453,7 +478,14 @@ async function sendHourlyReport(reason = 'cron') {
 
       <div style="font-size:13px;color:#5c5b57;line-height:1.7;">
         <div><strong>Photos mirrored to R2:</strong> ${photosCached.toLocaleString()} / ${photosTotal.toLocaleString()} (${pct(photosCached, photosTotal)})</div>
+        <div><strong>Listings with fresh URLs (synced &lt;1h):</strong> ${(freshness.within_1h || 0).toLocaleString()} &middot; <strong>&lt;24h:</strong> ${(freshness.within_24h || 0).toLocaleString()}</div>
         <div><strong>Estimated time to full coverage:</strong> ${remaining}</div>
+      </div>
+
+      <div style="margin-top:18px;padding:14px 18px;background:#fff8e1;border:1px solid #f5deb3;border-radius:6px;font-size:13px;color:#5c4d2c;line-height:1.6;">
+        <strong>What's working:</strong> Listings synced in the last hour have fresh MLS photo URLs and cache successfully on the next backfill tick.<br>
+        <strong>What's not:</strong> Listings synced more than ~24h ago have expired signed URLs that return HTTP 400. Those won't cache until MLS re-emits them via a regular sync (which happens when the listing's photos change or status flips).<br>
+        <strong>Implication:</strong> Coverage builds organically from "recently active" listings outward. Long-tail older listings will fill in slowly as MLS naturally re-syncs them.
       </div>
 
       ${isFullyDone ? `
