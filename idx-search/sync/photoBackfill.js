@@ -15,7 +15,7 @@
 const fetch = require('node-fetch');
 const db = require('../db/database');
 const r2Service = require('../services/r2');
-const { throttle, isRecentlyRateLimited } = require('./throttle');
+const { throttle, isRecentlyRateLimited, recordMlsCall, isOverHourlyCap, getMlsCallCount, MLS_HOURLY_CAP } = require('./throttle');
 
 // Per-tick cap. With per-photo URL refresh disabled, each photo is exactly ONE
 // MLS-domain fetch. At 5s per photo × 50 = 250s of work per ~30-min batch, our
@@ -26,23 +26,9 @@ const MAX_ATTEMPTS = 3;
 const RATE_LIMIT_BACKOFF_MS = 30000;   // 30s after a 429 before next photo
 const EXTRA_BACKFILL_DELAY_MS = 4000;  // 4s extra delay between photos. Net ~5s/photo.
 
-// Hard quota guard — count MLS-domain fetches per rolling hour and pause if
-// we approach the warning limit (4 RPS = 14400/hr). We stay well below.
+// Hourly cap + MLS-call counter live in sync/throttle.js so they're shared across
+// ALL MLS-bound code paths (sync, backfill, AND the photo proxy in properties.js).
 const MLS_DOMAIN_PATTERN = /api\.mlsgrid\.com/i;
-const MLS_HOURLY_CAP = 1000;           // self-imposed hourly cap, very conservative
-let mlsCallTimestamps = [];
-function pruneOldTimestamps() {
-  const oneHourAgo = Date.now() - 60 * 60 * 1000;
-  mlsCallTimestamps = mlsCallTimestamps.filter(t => t > oneHourAgo);
-}
-function recordMlsCall() {
-  mlsCallTimestamps.push(Date.now());
-  pruneOldTimestamps();
-}
-function isOverHourlyCap() {
-  pruneOldTimestamps();
-  return mlsCallTimestamps.length >= MLS_HOURLY_CAP;
-}
 
 const METRO_SUBURBS = [
   'Westlake Hills', 'West Lake Hills', 'Pflugerville', 'Round Rock',
@@ -210,7 +196,7 @@ async function runBatch(label = 'cron') {
   }
   // Self-imposed hourly cap: stay well under MLS GRID's 7200/hr warning limit.
   if (isOverHourlyCap()) {
-    console.log(`[BACKFILL] ${label} skipped: hourly MLS cap reached (${mlsCallTimestamps.length}/${MLS_HOURLY_CAP})`);
+    console.log(`[BACKFILL] ${label} skipped: hourly MLS cap reached (${getMlsCallCount()}/${MLS_HOURLY_CAP})`);
     maybeHourlyEmail().catch(() => {});
     return { skipped: true, reason: 'hourly-cap' };
   }

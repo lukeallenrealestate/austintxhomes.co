@@ -683,7 +683,10 @@ const r2Service = require('../services/r2');
 // GET /api/properties/photos/:listingKey/:idx
 // Tier 1: disk cache (instant)
 // Tier 2: R2 redirect (fast — Cloudflare edge, if configured)
-// Tier 3: MLS CDN fetch with streaming + async disk write + background R2 upload
+// Tier 3: MLS CDN fetch — GATED by shared MLS rate budget. When MLS is recently
+//         rate-limited or we've hit our hourly cap, this tier returns 404 instead
+//         of hitting MLS so user/bot traffic can't get our API token suspended.
+const { isRecentlyRateLimited: _isRateLimited, isOverHourlyCap: _isOverCap, recordMlsCall: _recordCall, recordRateLimit: _recordLimit } = require('../sync/throttle');
 router.get('/photos/:listingKey/:idx', async (req, res) => {
   const { listingKey, idx } = req.params;
   const photoIdx = parseInt(idx) || 0;
@@ -709,7 +712,15 @@ router.get('/photos/:listingKey/:idx', async (req, res) => {
     }
   } catch (_) {}
 
-  // Tier 3: fetch from MLS CDN with 10s timeout, buffer and serve
+  // Tier 3: gated MLS CDN fetch.
+  // CRITICAL: Without this gate, user/bot traffic to the photo endpoint hammers
+  // MLS GRID and gets our API token suspended. We absorb the cost of "no photo"
+  // placeholders during traffic spikes rather than risk suspension.
+  if (_isRateLimited() || _isOverCap()) {
+    res.set('Cache-Control', 'public, max-age=300'); // tell browsers to back off for 5 min
+    return res.status(404).end();
+  }
+
   let photoUrl;
   try {
     const urlList = dbRow.photos ? JSON.parse(dbRow.photos) : null;
@@ -721,15 +732,23 @@ router.get('/photos/:listingKey/:idx', async (req, res) => {
   const timer = setTimeout(() => controller.abort(), 10000);
 
   try {
+    _recordCall(); // count toward shared hourly MLS budget
     let cdnRes = await fetch(photoUrl, { signal: controller.signal });
 
-    // If MLS CDN rejects (signed URL expired), trigger on-demand refresh + retry once
-    if (!cdnRes.ok && (cdnRes.status === 400 || cdnRes.status === 403 || cdnRes.status === 404)) {
-      const fresh = await refreshListingPhotos(listingKey);
-      if (fresh && fresh[photoIdx]) {
-        photoUrl = fresh[photoIdx];
-        cdnRes = await fetch(photoUrl, { signal: controller.signal });
-      }
+    // 429 → record so backfill + future proxy calls back off across the whole system
+    if (cdnRes.status === 429) {
+      _recordLimit();
+      clearTimeout(timer);
+      res.set('Cache-Control', 'public, max-age=300');
+      return res.status(404).end();
+    }
+
+    // 4xx → URL is stale. Skip the per-request refresh entirely — that's what got
+    // us suspended. The bulk sync re-emits fresh URLs naturally.
+    if (!cdnRes.ok && cdnRes.status >= 400 && cdnRes.status < 500) {
+      clearTimeout(timer);
+      res.set('Cache-Control', 'public, max-age=300');
+      return res.status(404).end();
     }
 
     clearTimeout(timer);
