@@ -4,7 +4,7 @@
 let lastRequestTime = 0;
 let lastRateLimitTime = 0;
 const MIN_DELAY_MS = 600; // ~1.6 RPS, well under MLS GRID's 2 RPS cap
-const RATE_LIMIT_BACKOFF_MS = 10 * 60 * 1000; // backfill pauses for 10 min after a 429
+const RATE_LIMIT_BACKOFF_MS = 30 * 60 * 1000; // backfill pauses for 30 min after a 429 (was 10)
 
 async function throttle() {
   const elapsed = Date.now() - lastRequestTime;

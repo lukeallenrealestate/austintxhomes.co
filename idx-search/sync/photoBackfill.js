@@ -17,13 +17,32 @@ const db = require('../db/database');
 const r2Service = require('../services/r2');
 const { throttle, isRecentlyRateLimited } = require('./throttle');
 
-// Per-tick cap. Reduced from 60 to 30 to stop overwhelming MLS GRID's burst limits.
-// At ~1 photo per 2 seconds (extra throttle below), one batch takes ~1 min.
-const BATCH_SIZE = 30;
+// Per-tick cap. AGGRESSIVELY reduced after MLS GRID suspended our API for hitting
+// 8 RPS hourly average vs their 2 RPS limit. We now run at ~0.2 RPS (one photo
+// every 5 seconds) and skip per-photo URL refresh entirely.
+const BATCH_SIZE = 12;                 // 12 photos per ~30-min batch = 24/hour
 const FETCH_TIMEOUT_MS = 5000;
 const MAX_ATTEMPTS = 3;
-const RATE_LIMIT_BACKOFF_MS = 15000; // when MLS sends 429, pause 15s before next photo
-const EXTRA_BACKFILL_DELAY_MS = 1500; // additional delay between photos beyond the shared throttle
+const RATE_LIMIT_BACKOFF_MS = 30000;   // 30s after a 429 before next photo
+const EXTRA_BACKFILL_DELAY_MS = 4000;  // 4s extra delay between photos. Net ~5s/photo.
+
+// Hard quota guard — count MLS-domain fetches per rolling hour and pause if
+// we approach the warning limit (4 RPS = 14400/hr). We stay well below.
+const MLS_DOMAIN_PATTERN = /api\.mlsgrid\.com/i;
+const MLS_HOURLY_CAP = 1000;           // self-imposed hourly cap, very conservative
+let mlsCallTimestamps = [];
+function pruneOldTimestamps() {
+  const oneHourAgo = Date.now() - 60 * 60 * 1000;
+  mlsCallTimestamps = mlsCallTimestamps.filter(t => t > oneHourAgo);
+}
+function recordMlsCall() {
+  mlsCallTimestamps.push(Date.now());
+  pruneOldTimestamps();
+}
+function isOverHourlyCap() {
+  pruneOldTimestamps();
+  return mlsCallTimestamps.length >= MLS_HOURLY_CAP;
+}
 
 const METRO_SUBURBS = [
   'Westlake Hills', 'West Lake Hills', 'Pflugerville', 'Round Rock',
@@ -118,19 +137,12 @@ async function maybeHourlyEmail() {
   }
 }
 
+// NOTE: bulk URL refresh was DISABLED after MLS suspended our API. It was paginating
+// through 900+ MLS pages per server boot and contributed to the 8 RPS spike. The
+// regular */30 sync already updates photos for new listings; old stale-URL listings
+// will simply wait until MLS re-emits their PhotosChangeTimestamp.
 async function maybeBulkUrlRefresh() {
-  if (hasFiredBulkUrlRefresh) return;
-  if (isRecentlyRateLimited()) return; // try again next runBatch when MLS recovers
-  hasFiredBulkUrlRefresh = true;
-  try {
-    console.log('[PHOTOS] Bulk URL refresh starting (one-time per server boot)...');
-    const { refreshPhotos } = require('./mlsSync');
-    await refreshPhotos();
-    console.log('[PHOTOS] Bulk URL refresh complete');
-  } catch (err) {
-    console.warn('[PHOTOS] Bulk URL refresh failed:', err.message);
-    hasFiredBulkUrlRefresh = false; // allow retry on next runBatch
-  }
+  return; // intentionally disabled
 }
 
 async function runBatch(label = 'cron') {
@@ -150,6 +162,12 @@ async function runBatch(label = 'cron') {
     // Still send hourly email if it's time — backfill being paused doesn't mean we shouldn't report.
     maybeHourlyEmail().catch(() => {});
     return { skipped: true, reason: 'rate-limited' };
+  }
+  // Self-imposed hourly cap: stay well under MLS GRID's 7200/hr warning limit.
+  if (isOverHourlyCap()) {
+    console.log(`[BACKFILL] ${label} skipped: hourly MLS cap reached (${mlsCallTimestamps.length}/${MLS_HOURLY_CAP})`);
+    maybeHourlyEmail().catch(() => {});
+    return { skipped: true, reason: 'hourly-cap' };
   }
   isRunning = true;
 
@@ -242,6 +260,9 @@ async function fetchAndMirror(listingKey, photoIdx, photosJson) {
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
   try {
+    // Count this against our self-imposed hourly MLS quota if it hits the MLS domain.
+    if (MLS_DOMAIN_PATTERN.test(url)) recordMlsCall();
+
     let res = await fetch(url, { signal: controller.signal });
 
     // 429 = MLS rate limit. Don't burn a refresh attempt; just back off and retry next batch.
@@ -250,11 +271,12 @@ async function fetchAndMirror(listingKey, photoIdx, photosJson) {
       return { ok: false, code: 'HTTP 429' };
     }
 
-    // 4xx = signed URL likely expired or wrong — try refreshing from MLS GRID API once.
-    if (!res.ok && res.status >= 400 && res.status < 500) {
-      const fresh = await tryRefreshAndRefetch(listingKey, photoIdx, controller.signal);
-      if (fresh) res = fresh;
-    }
+    // NOTE: per-photo URL refresh is INTENTIONALLY DISABLED. It was making 2-3 MLS
+    // API calls per failed photo and got our account suspended for exceeding 2 RPS.
+    // Stale URLs (400/403/404) just record as transient failures here — the next
+    // regular MLS sync naturally re-fetches photos when MLS reports updated
+    // photos_change_timestamp, and the sync's INSERT...ON CONFLICT clears photos_r2
+    // so they get re-mirrored on the next backfill pass.
 
     if (!res.ok) {
       const prior = getFailureCount.get([listingKey, photoIdx]);
