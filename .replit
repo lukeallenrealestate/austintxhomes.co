@@ -36,3 +36,6 @@ waitForPort = 3002
 [deployment]
 deploymentTarget = "gce"
 run = ["sh", "-c", "bash start.sh"]
+
+[nix]
+packages = ["sqlite"]
