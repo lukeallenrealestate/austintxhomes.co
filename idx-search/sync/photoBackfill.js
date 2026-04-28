@@ -129,33 +129,14 @@ const HOURLY_EMAIL_INTERVAL_MS = 55 * 60 * 1000; // 55 min — slightly under an
 async function maybeStartupPing() {
   if (hasFiredStartupPing) return;
   hasFiredStartupPing = true;
-  try {
-    await sendStartupPing();
-  } catch (err) {
-    console.warn('[BACKFILL-EMAIL] maybeStartupPing failed:', err.message);
-  }
-  // Also: clear failed_permanent records for listings that have been re-synced
-  // since the failure was logged. Yesterday's URL-refresh-storm left thousands
-  // of listings flagged as permanently broken — but their URLs may have been
-  // refreshed by sync since. Give them another shot.
-  try {
-    const result = db.prepare(`
-      DELETE FROM backfill_progress
-      WHERE status = 'failed_permanent'
-        AND listing_key IN (
-          SELECT bp.listing_key
-          FROM backfill_progress bp
-          JOIN listings l ON l.listing_key = bp.listing_key
-          WHERE bp.status = 'failed_permanent'
-            AND l.synced_at > bp.last_attempt_at
-        )
-    `).run();
-    if (result.changes > 0) {
-      console.log(`[BACKFILL] Cleared ${result.changes} stale failed_permanent records (listings re-synced since failure)`);
-    }
-  } catch (err) {
-    console.warn('[BACKFILL] Failed to clear stale failures:', err.message);
-  }
+  // Fire-and-forget — never block runBatch on the email send.
+  sendStartupPing().catch(err => console.warn('[BACKFILL-EMAIL] maybeStartupPing failed:', err.message));
+  // NOTE: The "clear stale failed_permanent records" query that lived here was
+  // removed because node-sqlite3-wasm is synchronous and blocks the event loop.
+  // The query's nested self-join (~30K x 38K rows) was hanging the server long
+  // enough for Replit's healthcheck to time out and force a restart. Listings
+  // marked failed_permanent simply stay marked; the lazy cache will pick them
+  // up if a user actually visits, and new listings always get a fresh shot.
 }
 
 async function maybeHourlyEmail() {

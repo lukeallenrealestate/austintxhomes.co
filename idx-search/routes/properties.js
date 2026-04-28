@@ -101,6 +101,91 @@ function pointInPolygon(lat, lng, polygon) {
 const countCache = new Map();
 const COUNT_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
+// Shared WHERE-clause builder — mirrors /search logic so /map-bundle returns
+// identical result sets for pins and cards in a single pass.
+function buildSearchWhere(q) {
+  const {
+    status, propertyType, subType, forRent,
+    minPrice, maxPrice, minBeds, maxBeds, minBaths,
+    minSqft, maxSqft, minYear, maxYear,
+    city, zip, neighborhood, schoolDistrict, keyword,
+    pool, waterfront, newConstruction,
+    north, south, east, west
+  } = q;
+
+  const conditions = ['mlg_can_view = 1', 'latitude IS NOT NULL', 'longitude IS NOT NULL'];
+  const values = [];
+
+  if (status) {
+    const statuses = status.split(',').map(s => s.trim());
+    conditions.push(`standard_status IN (${statuses.map(() => '?').join(',')})`);
+    values.push(...statuses);
+  } else if (forRent === 'true') {
+    conditions.push(`(property_type LIKE '%Lease%' OR standard_status = 'Active')`);
+  } else {
+    conditions.push(`standard_status = 'Active'`);
+  }
+
+  if (forRent === 'true') {
+    conditions.push(`(property_type LIKE '%Lease%' OR property_type LIKE '%Rental%')`);
+  } else if (forRent === 'false') {
+    conditions.push(`property_type NOT LIKE '%Lease%'`);
+  }
+
+  if (propertyType) { conditions.push('property_type = ?'); values.push(propertyType); }
+  if (subType) {
+    const types = subType.split(',').map(s => s.trim());
+    conditions.push(`property_sub_type IN (${types.map(() => '?').join(',')})`);
+    values.push(...types);
+  }
+  if (minPrice) { conditions.push('list_price >= ?'); values.push(Number(minPrice)); }
+  if (maxPrice) { conditions.push('list_price <= ?'); values.push(Number(maxPrice)); }
+  if (minBeds)  { conditions.push('bedrooms_total >= ?'); values.push(Number(minBeds)); }
+  if (maxBeds)  { conditions.push('bedrooms_total <= ?'); values.push(Number(maxBeds)); }
+  if (minBaths) { conditions.push('bathrooms_total >= ?'); values.push(Number(minBaths)); }
+  if (minSqft)  { conditions.push('living_area >= ?'); values.push(Number(minSqft)); }
+  if (maxSqft)  { conditions.push('living_area <= ?'); values.push(Number(maxSqft)); }
+  if (minYear)  { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
+  if (maxYear)  { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
+
+  if (city) {
+    const cities = city.split(',').map(s => s.trim());
+    conditions.push(`city IN (${cities.map(() => '?').join(',')})`);
+    values.push(...cities);
+  }
+  if (zip) {
+    const zips = zip.split(',').map(s => s.trim());
+    conditions.push(`postal_code IN (${zips.map(() => '?').join(',')})`);
+    values.push(...zips);
+  }
+  if (neighborhood)   { conditions.push(`subdivision_name LIKE ?`); values.push(`%${neighborhood}%`); }
+  if (schoolDistrict) { conditions.push(`school_district LIKE ?`);  values.push(`%${schoolDistrict}%`); }
+
+  if (keyword) {
+    conditions.push(`(
+      unparsed_address LIKE ? OR city LIKE ? OR postal_code LIKE ?
+      OR subdivision_name LIKE ? OR school_district LIKE ?
+      OR elementary_school LIKE ? OR high_school LIKE ?
+      OR public_remarks LIKE ?
+    )`);
+    const kw = `%${keyword}%`;
+    values.push(kw, kw, kw, kw, kw, kw, kw, kw);
+  }
+
+  if (pool === 'true')             conditions.push(`pool_features IS NOT NULL AND pool_features != ''`);
+  if (waterfront === 'true')       conditions.push(`waterfront_yn = 1`);
+  if (newConstruction === 'true')  conditions.push(`new_construction_yn = 1`);
+
+  if (north && south && east && west) {
+    conditions.push('latitude BETWEEN ? AND ?');
+    values.push(Number(south), Number(north));
+    conditions.push('longitude BETWEEN ? AND ?');
+    values.push(Number(west), Number(east));
+  }
+
+  return { where: conditions.join(' AND '), values };
+}
+
 // GET /api/properties/search
 router.get('/search', (req, res) => {
   try {
@@ -234,9 +319,11 @@ router.get('/search', (req, res) => {
     const cached = countCache.get(countKey);
     if (cached && Date.now() - cached.ts < COUNT_CACHE_TTL) {
       total = cached.total;
+      res.set('X-Cache', 'HIT');
     } else {
       total = db.prepare(`SELECT COUNT(*) as total FROM listings WHERE ${where}`).get(values).total;
       countCache.set(countKey, { total, ts: Date.now() });
+      res.set('X-Cache', 'MISS');
     }
 
     // If polygon search, we need all results in bounds then filter — skip SQL pagination
@@ -379,6 +466,99 @@ router.get('/map-pins', (req, res) => {
     }));
   } catch (err) {
     console.error('[MAP-PINS]', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/properties/map-bundle — returns pins + paginated cards + total in ONE call.
+// Map view uses this instead of /map-pins + /search to eliminate duplicate DB work.
+router.get('/map-bundle', (req, res) => {
+  try {
+    const { sortBy, page = 1, limit = 50, polygon } = req.query;
+    const { where, values } = buildSearchWhere(req.query);
+
+    const sortMap = {
+      price_asc: 'list_price ASC',
+      price_desc: 'list_price DESC',
+      newest: 'listing_contract_date DESC',
+      oldest: 'listing_contract_date ASC',
+      beds_desc: 'bedrooms_total DESC',
+      sqft_desc: 'living_area DESC',
+      dom_asc: 'days_on_market ASC'
+    };
+    const orderBy = sortMap[sortBy] || 'listing_contract_date DESC';
+
+    const hasPolygon = polygon && polygon !== '[]';
+    let polygonArr = [];
+    if (hasPolygon) { try { polygonArr = JSON.parse(polygon); } catch {} }
+
+    // Pins: lightweight columns, up to 5000
+    let pins = db.prepare(`
+      SELECT listing_key, list_price, latitude, longitude, standard_status,
+             bedrooms_total, bathrooms_total, living_area, unparsed_address,
+             city, postal_code, photos, photos_r2
+      FROM listings WHERE ${where} LIMIT 5000
+    `).all(values);
+
+    if (hasPolygon && polygonArr.length > 2) {
+      pins = pins.filter(p => pointInPolygon(p.latitude, p.longitude, polygonArr));
+    }
+
+    pins = pins.map(p => {
+      const photos = tryParse(p.photos, []);
+      const r2Photos = tryParse(p.photos_r2, []);
+      return { ...p, photos: resolvePhotos(photos, p.listing_key, r2Photos) };
+    });
+
+    // Cards: full columns, paginated
+    let total;
+    let rows;
+    if (hasPolygon && polygonArr.length > 2) {
+      // For polygon searches the pin list already contains the visible set —
+      // fetch full cards for just the first page's listings by key.
+      const offset = (Number(page) - 1) * Number(limit);
+      total = pins.length;
+      const pageKeys = pins.slice(offset, offset + Number(limit)).map(p => p.listing_key);
+      if (pageKeys.length) {
+        const placeholders = pageKeys.map(() => '?').join(',');
+        rows = db.prepare(
+          `SELECT ${SEARCH_COLUMNS} FROM listings WHERE listing_key IN (${placeholders}) ORDER BY ${orderBy}`
+        ).all(pageKeys);
+      } else {
+        rows = [];
+      }
+    } else {
+      const countKey = where + JSON.stringify(values);
+      const cached = countCache.get(countKey);
+      if (cached && Date.now() - cached.ts < COUNT_CACHE_TTL) {
+        total = cached.total;
+        res.set('X-Cache', 'HIT');
+      } else {
+        total = db.prepare(`SELECT COUNT(*) as total FROM listings WHERE ${where}`).get(values).total;
+        countCache.set(countKey, { total, ts: Date.now() });
+        res.set('X-Cache', 'MISS');
+      }
+      const offset = (Number(page) - 1) * Number(limit);
+      rows = db.prepare(
+        `SELECT ${SEARCH_COLUMNS} FROM listings WHERE ${where} ORDER BY ${orderBy} LIMIT ? OFFSET ?`
+      ).all([...values, Number(limit), offset]);
+    }
+
+    rows = rows.map(r => {
+      const photos = tryParse(r.photos, []);
+      const r2Photos = tryParse(r.photos_r2, []);
+      return { ...r, photos: resolvePhotos(photos, r.listing_key, r2Photos) };
+    });
+
+    res.json({
+      pins,
+      total,
+      page: Number(page),
+      pages: Math.ceil(total / Number(limit)),
+      listings: rows
+    });
+  } catch (err) {
+    console.error('[MAP-BUNDLE]', err);
     res.status(500).json({ error: err.message });
   }
 });
