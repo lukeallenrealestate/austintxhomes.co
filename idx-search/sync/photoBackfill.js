@@ -17,10 +17,10 @@ const db = require('../db/database');
 const r2Service = require('../services/r2');
 const { throttle, isRecentlyRateLimited } = require('./throttle');
 
-// Per-tick cap. AGGRESSIVELY reduced after MLS GRID suspended our API for hitting
-// 8 RPS hourly average vs their 2 RPS limit. We now run at ~0.2 RPS (one photo
-// every 5 seconds) and skip per-photo URL refresh entirely.
-const BATCH_SIZE = 12;                 // 12 photos per ~30-min batch = 24/hour
+// Per-tick cap. With per-photo URL refresh disabled, each photo is exactly ONE
+// MLS-domain fetch. At 5s per photo × 50 = 250s of work per ~30-min batch, our
+// effective rate is ~0.03 RPS — still 60x under MLS GRID's 2 RPS limit.
+const BATCH_SIZE = 50;                 // 50 photos per ~30-min batch = 100/hour
 const FETCH_TIMEOUT_MS = 5000;
 const MAX_ATTEMPTS = 3;
 const RATE_LIMIT_BACKOFF_MS = 30000;   // 30s after a 429 before next photo
@@ -147,6 +147,28 @@ async function maybeStartupPing() {
     await sendStartupPing();
   } catch (err) {
     console.warn('[BACKFILL-EMAIL] maybeStartupPing failed:', err.message);
+  }
+  // Also: clear failed_permanent records for listings that have been re-synced
+  // since the failure was logged. Yesterday's URL-refresh-storm left thousands
+  // of listings flagged as permanently broken — but their URLs may have been
+  // refreshed by sync since. Give them another shot.
+  try {
+    const result = db.prepare(`
+      DELETE FROM backfill_progress
+      WHERE status = 'failed_permanent'
+        AND listing_key IN (
+          SELECT bp.listing_key
+          FROM backfill_progress bp
+          JOIN listings l ON l.listing_key = bp.listing_key
+          WHERE bp.status = 'failed_permanent'
+            AND l.synced_at > bp.last_attempt_at
+        )
+    `).run();
+    if (result.changes > 0) {
+      console.log(`[BACKFILL] Cleared ${result.changes} stale failed_permanent records (listings re-synced since failure)`);
+    }
+  } catch (err) {
+    console.warn('[BACKFILL] Failed to clear stale failures:', err.message);
   }
 }
 
