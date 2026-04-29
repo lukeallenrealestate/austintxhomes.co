@@ -205,17 +205,22 @@ function mapListing(p) {
   };
 }
 
+// Always upsert — never delete. Listings that flap to MlgCanView=false get
+// kept in the table with mlg_can_view=0, so their cached photos_r2 (and any
+// other downstream-derived state) survives the flap. Search queries already
+// filter mlg_can_view=1, so hidden listings remain invisible to users. The
+// previous DELETE path lost photos_r2 every time MLS briefly reported a
+// listing as not-viewable (during agent edits, status flux, etc.) — the
+// next sync would re-INSERT the row fresh with photos_r2=NULL.
 const batchUpsert = db.transaction((listings) => {
-  let count = 0;
+  let visible = 0;
+  let hidden = 0;
   for (const listing of listings) {
-    if (!listing.mlg_can_view) {
-      deleteListing.run(listing.listing_key);
-    } else {
-      upsertListing.run(listing);
-      count++;
-    }
+    upsertListing.run(listing);
+    if (listing.mlg_can_view) visible++;
+    else hidden++;
   }
-  return count;
+  return { visible, hidden };
 });
 
 // For closed lease comps — always insert regardless of mlg_can_view (they're comps, not display listings)
@@ -295,6 +300,7 @@ async function syncListings(isInitial = false) {
   let url = `${BASE_URL}/Property?$filter=${filter}&$expand=Media&$top=1000`;
 
   let totalSynced = 0;
+  let totalHidden = 0;
   let latestTimestamp = lastTimestamp;
   let pageCount = 0;
 
@@ -318,8 +324,9 @@ async function syncListings(isInitial = false) {
         }
       }
 
-      const saved = batchUpsert(mapped);
-      totalSynced += saved;
+      const { visible, hidden } = batchUpsert(mapped);
+      totalSynced += visible;
+      totalHidden += hidden;
 
       for (const r of records) {
         if (r.ModificationTimestamp) {
@@ -347,7 +354,8 @@ async function syncListings(isInitial = false) {
       AND (photos_r2 IS NULL OR photos_r2 = '[]')
       AND photos IS NOT NULL AND photos != '[]'
   `).get();
-  console.log(`[SYNC] Done. Synced ${totalSynced} listings (${pageCount} pages). Listings still missing R2 mirrors: ${missingR2.n}`);
+  const hiddenSuffix = totalHidden > 0 ? ` (${totalHidden} kept hidden — flapped MlgCanView=false)` : '';
+  console.log(`[SYNC] Done. Synced ${totalSynced} listings (${pageCount} pages)${hiddenSuffix}. Listings still missing R2 mirrors: ${missingR2.n}`);
 
   // Notify Google Indexing API of new listing pages (fire-and-forget, non-blocking)
   if (newListings.length > 0 && newListings.length <= 200) {
