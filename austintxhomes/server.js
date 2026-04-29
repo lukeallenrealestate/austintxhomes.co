@@ -62,17 +62,20 @@ fs.mkdirSync(PHOTO_CACHE_DIR, { recursive: true });
 
 // Neighborhood page system
 const neighborhoods = require('./data/neighborhoods');
-const renderNeighborhoodPage = require('./templates/neighborhood');
-const renderNeighborhoodHomesPage = require('./templates/neighborhood-homes');
-const renderNeighborhoodRealtorPage = require('./templates/neighborhood-realtor');
+// Wrap template requires in thunks so hot-push.sh's cache-bust takes effect on
+// the next request without restarting Node. require() has its own cache so this
+// is essentially free when the underlying module hasn't changed.
+const renderNeighborhoodPage = (...a) => require('./templates/neighborhood')(...a);
+const renderNeighborhoodHomesPage = (...a) => require('./templates/neighborhood-homes')(...a);
+const renderNeighborhoodRealtorPage = (...a) => require('./templates/neighborhood-realtor')(...a);
 
 // Round Rock topical web — separate data + templates for /round-rock/*
 const roundRockNeighborhoods = require('./data/round-rock-neighborhoods');
-const roundRockTemplates = require('./templates/round-rock');
+const roundRockTemplates = new Proxy({}, { get: (_, k) => require('./templates/round-rock')[k] });
 
 // Blog system
-const renderBlogPost = require('./templates/blog-post');
-const renderBlogIndex = require('./templates/blog-index');
+const renderBlogPost = (...a) => require('./templates/blog-post')(...a);
+const renderBlogIndex = (...a) => require('./templates/blog-index')(...a);
 let blogPosts = require('./data/blog-posts');
 
 // Weekly generated market reports (prepended to blog feed)
@@ -85,7 +88,9 @@ const allBlogPosts = () => [...weeklyReports, ...blogPosts];
 const generateWeeklyReport = require('./scripts/generate-weekly-report');
 
 // Luxury listing page system (programmatic SEO for $1M+ properties)
-const { renderListingPage, enrichListing, slugifyAddress } = require('./templates/listing');
+const renderListingPage = (...a) => require('./templates/listing').renderListingPage(...a);
+const enrichListing = (...a) => require('./templates/listing').enrichListing(...a);
+const slugifyAddress = (...a) => require('./templates/listing').slugifyAddress(...a);
 const listingDb = require('../idx-search/db/database');
 
 // Deal Radar engine + alert system
@@ -698,6 +703,7 @@ app.get('/luxury-homes',          (_req, res) => res.sendFile(path.join(__dirnam
 app.get('/condos',                (_req, res) => res.sendFile(path.join(__dirname, 'public/site/condos.html')));
 app.get('/cost-of-living',        (_req, res) => res.sendFile(path.join(__dirname, 'public/site/cost-of-living.html')));
 app.get('/tesla-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tesla-austin-relocation.html')));
+app.get('/tesla-austin-employee-relocation', (_req, res) => res.redirect(301, '/tesla-austin-relocation'));
 app.get('/apartments-near-tesla-gigafactory-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/apartments-near-tesla-gigafactory-austin.html')));
 app.get('/apple-austin-relocation',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/apple-austin-relocation.html')));
 app.get('/samsung-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/samsung-austin-relocation.html')));
