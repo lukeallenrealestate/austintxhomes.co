@@ -15,7 +15,7 @@
 const fetch = require('node-fetch');
 const db = require('../db/database');
 const r2Service = require('../services/r2');
-const { throttle, isRecentlyRateLimited, recordMlsCall, isOverHourlyCap, getMlsCallCount, MLS_HOURLY_CAP } = require('./throttle');
+const { throttle, isRecentlyRateLimited, recordMlsCall, isOverBackfillCap, getMlsCallCount, BACKFILL_HOURLY_CAP } = require('./throttle');
 
 // Per-tick cap. With per-photo URL refresh disabled, each photo is exactly ONE
 // MLS-domain fetch. At 200 photos × 0.6s shared throttle = ~120s of work per
@@ -184,11 +184,15 @@ async function runBatch(label = 'cron') {
     maybeHourlyEmail().catch(() => {});
     return { skipped: true, reason: 'rate-limited' };
   }
-  // Self-imposed hourly cap: stay well under MLS GRID's 7200/hr warning limit.
-  if (isOverHourlyCap()) {
-    console.log(`[BACKFILL] ${label} skipped: hourly MLS cap reached (${getMlsCallCount()}/${MLS_HOURLY_CAP})`);
+  // Backfill-only soft cap: stop scheduling new batches once we've used the
+  // backfill's share of the hourly budget, leaving the (MLS_HOURLY_CAP −
+  // BACKFILL_HOURLY_CAP) reserve for user-facing photo proxy traffic. The
+  // photo proxy still gates at the higher MLS_HOURLY_CAP, so users keep
+  // getting served while backfill self-throttles during traffic spikes.
+  if (isOverBackfillCap()) {
+    console.log(`[BACKFILL] ${label} skipped: backfill cap reached (${getMlsCallCount()}/${BACKFILL_HOURLY_CAP}) — reserving budget for user traffic`);
     maybeHourlyEmail().catch(() => {});
-    return { skipped: true, reason: 'hourly-cap' };
+    return { skipped: true, reason: 'backfill-cap' };
   }
   isRunning = true;
 

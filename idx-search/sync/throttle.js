@@ -25,12 +25,25 @@ function isRecentlyRateLimited() {
   return (Date.now() - lastRateLimitTime) < RATE_LIMIT_BACKOFF_MS;
 }
 
-// Hourly cap shared across all MLS-bound code paths — sync, backfill, and proxy.
-// 1500/hr × 24 = 36,000/day, comfortably under MLS GRID's 40,000/day rolling
-// warning. Throttle's 600ms gap still bounds sustained RPS at 1.667 (under
-// MLS's 4 RPS warning), so peak burst behavior is unchanged — this just gives
-// the backfill more headroom to keep running when bot/user proxy traffic spikes.
+// Two-bucket hourly cap. All MLS-bound calls (sync, backfill, proxy, on-demand
+// refresh) record to the same sliding-window timestamp list, but two different
+// thresholds gate two different code paths:
+//
+//   MLS_HOURLY_CAP (1500) — hard ceiling. The user-facing photo proxy stops
+//     hitting MLS at this number. We're well under MLS's 7,200/hr warning and
+//     the daily 1500×24 = 36,000 stays under their 40,000/day rolling warning.
+//
+//   BACKFILL_HOURLY_CAP (800) — soft cap for background work. The backfill
+//     stops scheduling new batches at this number, leaving the (1500−800)=700
+//     calls/hour difference reserved for real user/bot photo proxy traffic.
+//     Without this, the backfill (~400/hr) plus moderate bot crawl exhausts
+//     the single shared 1500 bucket and users start seeing broken-photo
+//     placeholders, which is what we just observed in production.
+//
+// Net effect: backfill self-throttles when traffic is hot, users always have
+// at least 700/hr of headroom, MLS limits never breached.
 const MLS_HOURLY_CAP = 1500;
+const BACKFILL_HOURLY_CAP = 800;
 let mlsCallTimestamps = [];
 function pruneOldTimestamps() {
   const oneHourAgo = Date.now() - 60 * 60 * 1000;
@@ -44,6 +57,10 @@ function isOverHourlyCap() {
   pruneOldTimestamps();
   return mlsCallTimestamps.length >= MLS_HOURLY_CAP;
 }
+function isOverBackfillCap() {
+  pruneOldTimestamps();
+  return mlsCallTimestamps.length >= BACKFILL_HOURLY_CAP;
+}
 function getMlsCallCount() {
   pruneOldTimestamps();
   return mlsCallTimestamps.length;
@@ -56,6 +73,8 @@ module.exports = {
   isRecentlyRateLimited,
   recordMlsCall,
   isOverHourlyCap,
+  isOverBackfillCap,
   getMlsCallCount,
-  MLS_HOURLY_CAP
+  MLS_HOURLY_CAP,
+  BACKFILL_HOURLY_CAP
 };
