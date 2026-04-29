@@ -26,8 +26,11 @@ function isRecentlyRateLimited() {
 }
 
 // Hourly cap shared across all MLS-bound code paths — sync, backfill, and proxy.
-// Stays well under MLS GRID's 7200/hr warning limit even at peak traffic.
-const MLS_HOURLY_CAP = 1000;
+// 1500/hr × 24 = 36,000/day, comfortably under MLS GRID's 40,000/day rolling
+// warning. Throttle's 600ms gap still bounds sustained RPS at 1.667 (under
+// MLS's 4 RPS warning), so peak burst behavior is unchanged — this just gives
+// the backfill more headroom to keep running when bot/user proxy traffic spikes.
+const MLS_HOURLY_CAP = 1500;
 let mlsCallTimestamps = [];
 function pruneOldTimestamps() {
   const oneHourAgo = Date.now() - 60 * 60 * 1000;

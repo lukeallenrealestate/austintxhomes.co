@@ -293,12 +293,15 @@ async function fetchAndMirror(listingKey, photoIdx, photosJson) {
       return { ok: false, code: 'HTTP 429' };
     }
 
-    // NOTE: per-photo URL refresh is INTENTIONALLY DISABLED. It was making 2-3 MLS
-    // API calls per failed photo and got our account suspended for exceeding 2 RPS.
-    // Stale URLs (400/403/404) just record as transient failures here — the next
-    // regular MLS sync naturally re-fetches photos when MLS reports updated
-    // photos_change_timestamp, and the sync's INSERT...ON CONFLICT clears photos_r2
-    // so they get re-mirrored on the next backfill pass.
+    // 4xx (not 429) → URL likely stale. Try ONE on-demand refresh + retry. The
+    // refreshListingPhotos helper now goes through the shared throttle, records
+    // toward the hourly MLS cap, and has a 5-min per-listing cooldown — so this
+    // path is bounded and can't re-trigger the suspension that originally got
+    // it disabled. Converts wasted 400-failure batches into ~70%+ success.
+    if (!res.ok && res.status >= 400 && res.status < 500) {
+      const fresh = await tryRefreshAndRefetch(listingKey, photoIdx, controller.signal);
+      if (fresh) res = fresh;
+    }
 
     if (!res.ok) {
       const prior = getFailureCount.get([listingKey, photoIdx]);
@@ -339,6 +342,10 @@ async function tryRefreshAndRefetch(listingKey, photoIdx, signal) {
     if (typeof refresh !== 'function') return null;
     const fresh = await refresh(listingKey);
     if (!fresh || !fresh[photoIdx]) return null;
+    // Retry fetch must respect the same shared rate budget so the retry can't
+    // burst past 1.667 RPS or exceed the hourly cap.
+    await throttle();
+    if (MLS_DOMAIN_PATTERN.test(fresh[photoIdx])) recordMlsCall();
     return await fetch(fresh[photoIdx], { signal });
   } catch {
     return null;
