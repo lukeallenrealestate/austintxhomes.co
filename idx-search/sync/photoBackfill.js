@@ -18,13 +18,14 @@ const r2Service = require('../services/r2');
 const { throttle, isRecentlyRateLimited, recordMlsCall, isOverHourlyCap, getMlsCallCount, MLS_HOURLY_CAP } = require('./throttle');
 
 // Per-tick cap. With per-photo URL refresh disabled, each photo is exactly ONE
-// MLS-domain fetch. At 5s per photo × 50 = 250s of work per ~30-min batch, our
-// effective rate is ~0.03 RPS — still 60x under MLS GRID's 2 RPS limit.
-const BATCH_SIZE = 50;                 // 50 photos per ~30-min batch = 100/hour
+// MLS-domain fetch. At 200 photos × 0.6s shared throttle = ~120s of work per
+// ~30-min batch → 1.67 RPS during the batch (under MLS's 2 RPS hard limit) and
+// ~400 photos/hour averaged over the cycle, far below the 1000/hr self-cap.
+const BATCH_SIZE = 200;                // 200 photos per ~30-min batch = ~9.6k/day
 const FETCH_TIMEOUT_MS = 5000;
 const MAX_ATTEMPTS = 3;
 const RATE_LIMIT_BACKOFF_MS = 30000;   // 30s after a 429 before next photo
-const EXTRA_BACKFILL_DELAY_MS = 4000;  // 4s extra delay between photos. Net ~5s/photo.
+const EXTRA_BACKFILL_DELAY_MS = 0;     // shared throttle() already enforces 600ms gap
 
 // Hourly cap + MLS-call counter live in sync/throttle.js so they're shared across
 // ALL MLS-bound code paths (sync, backfill, AND the photo proxy in properties.js).

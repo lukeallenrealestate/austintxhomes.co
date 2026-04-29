@@ -196,6 +196,12 @@ const migrations = [
     PRIMARY KEY (listing_key, photo_idx)
   )`,
   `CREATE INDEX IF NOT EXISTS idx_backfill_status ON backfill_progress(status)`,
+  // Partial index that supports photoBackfill.pickNextBatch — scopes to rows that
+  // actually have photos to mirror and pre-orders the synced_at DESC tiebreaker so
+  // the planner doesn't have to re-sort 36k+ rows on each batch pick.
+  `CREATE INDEX IF NOT EXISTS idx_listings_backfill_pick
+    ON listings(mlg_can_view, synced_at DESC)
+    WHERE photos IS NOT NULL AND photos != '[]'`,
   // Track the last "fully cached" listing count emailed so we can suppress
   // duplicate hourly reports once backfill reaches steady state.
   `ALTER TABLE sync_state ADD COLUMN backfill_last_email_count INTEGER DEFAULT -1`,
