@@ -39,36 +39,39 @@ const METRO_SUBURBS = [
   'Cedar Park', 'Lakeway', 'Bee Cave', 'Leander', 'Manor', 'Buda', 'Kyle'
 ].map(c => `'${c}'`).join(',');
 
-// Highest-priority listing with the lowest unmirrored photo index.
-// Returns rows of { listing_key, photos, photos_r2, next_idx, total_photos }.
+// Hero-only backfill: pick listings whose photo index 0 isn't yet mirrored to R2.
+// Secondary photos (idx 1+) are filled in lazily by the photo proxy when users
+// click into a property — saves us mirroring ~1M photos that may never get viewed.
 //
-// Priority order is calibrated for the reality that MLS signed-URL photos expire
-// in hours. We sort by FRESHNESS first (synced_at) so the backfill catches URLs
-// while they're still valid, instead of wasting attempts on long-stale listings:
-//   1. photos_r2 length ASC (hero photos before secondary photos)
-//   2. synced_at DESC (recently-synced listings have fresh URLs)
-//   3. priority bucket (Austin Active first when freshness ties)
-//   4. list_price DESC
+// We check json_extract($[0]) IS NULL rather than json_array_length, because
+// saveR2Url pads with nulls and the lazy proxy can fill any index first
+// (e.g. photos_r2 = "[null, null, \"r2\"]" when idx 2 was lazy-cached before idx 0).
+//
+// Priority order:
+//   1. synced_at DESC — freshest MLS signed URLs first (they expire in hours)
+//   2. priority bucket — Austin Active before suburbs before stale
+//   3. list_price DESC — high-value listings sort first within a tie
 const pickNextBatch = db.prepare(`
   SELECT
     l.listing_key,
     l.photos,
     l.photos_r2,
-    json_array_length(COALESCE(l.photos_r2, '[]')) AS next_idx,
+    0 AS next_idx,
     json_array_length(l.photos) AS total_photos
   FROM listings l
   WHERE l.mlg_can_view = 1
     AND l.photos IS NOT NULL
     AND l.photos != '[]'
-    AND json_array_length(l.photos) > json_array_length(COALESCE(l.photos_r2, '[]'))
+    AND (l.photos_r2 IS NULL
+         OR l.photos_r2 = '[]'
+         OR json_extract(l.photos_r2, '$[0]') IS NULL)
     AND NOT EXISTS (
       SELECT 1 FROM backfill_progress bp
       WHERE bp.listing_key = l.listing_key
-        AND bp.photo_idx = json_array_length(COALESCE(l.photos_r2, '[]'))
+        AND bp.photo_idx = 0
         AND bp.status = 'failed_permanent'
     )
   ORDER BY
-    json_array_length(COALESCE(l.photos_r2, '[]')) ASC,
     l.synced_at DESC,
     CASE
       WHEN l.city = 'Austin' AND l.standard_status = 'Active' THEN 1
@@ -81,8 +84,8 @@ const pickNextBatch = db.prepare(`
   LIMIT ?
 `);
 
-// Diagnostic — what's the freshness distribution of the queue we're picking from?
-// Logged once per batch so we can see whether MLS is actually emitting fresh URLs.
+// Diagnostic — count of listings whose hero is still missing, plus freshness split.
+// Mirrors pickNextBatch's WHERE so the log line reflects the actual hero queue.
 const getQueueFreshness = db.prepare(`
   SELECT
     SUM(CASE WHEN synced_at >= datetime('now', '-1 hour') THEN 1 ELSE 0 END) AS within_1h,
@@ -92,7 +95,9 @@ const getQueueFreshness = db.prepare(`
   WHERE l.mlg_can_view = 1
     AND l.photos IS NOT NULL
     AND l.photos != '[]'
-    AND json_array_length(l.photos) > json_array_length(COALESCE(l.photos_r2, '[]'))
+    AND (l.photos_r2 IS NULL
+         OR l.photos_r2 = '[]'
+         OR json_extract(l.photos_r2, '$[0]') IS NULL)
 `);
 
 const recordFailure = db.prepare(`

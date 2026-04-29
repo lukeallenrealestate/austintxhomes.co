@@ -10,13 +10,26 @@ const PHOTO_CACHE_DIR = path.join(__dirname, '../cache/photos');
 // On-demand single-listing photo refresh. Called when the MLS CDN returns a
 // signed-URL expiration error. Fetches fresh URLs from MLS GRID for just this
 // one listing, writes them to the DB, and returns the updated URL list.
-// In-flight dedup: if two requests for the same listing race, only one API call fires.
+//
+// Safety gates (must all be in place — bypassing any one suspended us before):
+//   1. In-flight dedup (_refreshingNow): two concurrent requests for the same
+//      listing share one MLS API call.
+//   2. Per-listing cooldown (_lastRefreshAt): never re-refresh the same listing
+//      within 5 min, even after the in-flight promise resolves.
+//   3. Shared throttle() (600ms gap across ALL MLS-bound calls, defined in
+//      sync/throttle.js): keeps sustained RPS at 1.667.
+//   4. recordMlsCall() so this counts toward the 1000/hr hourly cap shared with
+//      backfill + photo proxy.
 const _refreshingNow = new Map();
+const _lastRefreshAt = new Map();
+const REFRESH_COOLDOWN_MS = 5 * 60 * 1000;
 async function refreshListingPhotos(listingKey) {
   if (_refreshingNow.has(listingKey)) return _refreshingNow.get(listingKey);
+  if (Date.now() - (_lastRefreshAt.get(listingKey) || 0) < REFRESH_COOLDOWN_MS) return null;
   const MLS_TOKEN = process.env.MLSGRID_ACCESS_TOKEN;
   const SYSTEM = process.env.MLSGRID_ORIGINATING_SYSTEM || 'actris';
   if (!MLS_TOKEN) return null;
+  _lastRefreshAt.set(listingKey, Date.now());
 
   const promise = (async () => {
     try {
@@ -24,7 +37,10 @@ async function refreshListingPhotos(listingKey) {
         `OriginatingSystemName eq '${SYSTEM}' and ListingKey eq '${listingKey}'`
       );
       const url = `https://api.mlsgrid.com/v2/Property?$filter=${filter}&$expand=Media&$top=1`;
+      await _throttle();
+      _recordCall();
       const res = await fetch(url, { headers: { Authorization: `Bearer ${MLS_TOKEN}`, 'Accept-Encoding': 'gzip' } });
+      if (res.status === 429) { _recordLimit(); return null; }
       if (!res.ok) return null;
       const data = await res.json();
       const record = (data.value || [])[0];
@@ -927,12 +943,28 @@ router.get('/photos/:listingKey/:idx', async (req, res) => {
       return res.status(404).end();
     }
 
-    // 4xx → URL is stale. Skip the per-request refresh entirely — that's what got
-    // us suspended. The bulk sync re-emits fresh URLs naturally.
+    // 4xx → URL likely stale. If the listing was synced more than 60 min ago,
+    // trigger a single-listing on-demand URL refresh (rate-limited internally
+    // via the shared throttle + 5-min per-listing cooldown) and retry the CDN
+    // fetch once with the freshly-signed URL. Recently-synced listings skip the
+    // refresh — their URLs should still be valid and refreshing would waste an
+    // MLS API call. This is the path that was disabled during the suspension
+    // panic; the throttle + cooldown make it safe to re-enable.
     if (!cdnRes.ok && cdnRes.status >= 400 && cdnRes.status < 500) {
-      clearTimeout(timer);
-      res.set('Cache-Control', 'public, max-age=300');
-      return res.status(404).end();
+      const syncedRow = db.prepare('SELECT synced_at FROM listings WHERE listing_key = ?').get(listingKey);
+      const syncedMs = syncedRow?.synced_at ? new Date(syncedRow.synced_at).getTime() : 0;
+      const stale = syncedMs && (Date.now() - syncedMs) > 60 * 60 * 1000;
+      if (stale) {
+        const fresh = await refreshListingPhotos(listingKey);
+        if (fresh && fresh[photoIdx]) {
+          cdnRes = await fetch(fresh[photoIdx], { signal: controller.signal });
+        }
+      }
+      if (!cdnRes.ok && cdnRes.status >= 400 && cdnRes.status < 500) {
+        clearTimeout(timer);
+        res.set('Cache-Control', 'public, max-age=300');
+        return res.status(404).end();
+      }
     }
 
     clearTimeout(timer);
