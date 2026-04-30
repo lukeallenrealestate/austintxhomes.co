@@ -5,9 +5,17 @@ const path = require('path');
 
 const wasmDb = new WasmDB(path.join(__dirname, 'idx.db'));
 
-// WAL mode = better concurrency (readers don't block writers and vice-versa).
-// busy_timeout = wait up to 30 s instead of throwing immediately when locked.
-try { wasmDb.run('PRAGMA journal_mode=WAL'); } catch {}
+// DELETE mode (default rollback journal) — every COMMIT is fsync'd to the main
+// idx.db file before returning, so container kills (Replit deploys, OOM, panic)
+// don't lose committed writes. We previously used WAL for concurrency, but
+// Replit's deploy lifecycle force-kills containers without giving SIGTERM
+// handlers time to run wal_checkpoint(TRUNCATE), so every Publish nuked
+// thousands of un-checkpointed photos_r2 writes (the "Cleaning up stale
+// SQLite artifacts" boot step swept the orphaned -wal/-shm files).
+// node-sqlite3-wasm is single-threaded synchronous, so WAL's reader-doesn't-
+// block-writer benefit didn't apply. busy_timeout still useful for the rare
+// case of overlapping prepared-statement reuse.
+try { wasmDb.run('PRAGMA journal_mode=DELETE'); } catch {}
 try { wasmDb.run('PRAGMA busy_timeout=30000'); } catch {}
 
 // Convert {key: val} → {'@key': val} so named SQL params (@key) resolve correctly
