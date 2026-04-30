@@ -158,12 +158,24 @@ async function maybeHourlyEmail() {
   }
 }
 
-// NOTE: bulk URL refresh was DISABLED after MLS suspended our API. It was paginating
-// through 900+ MLS pages per server boot and contributed to the 8 RPS spike. The
-// regular */30 sync already updates photos for new listings; old stale-URL listings
-// will simply wait until MLS re-emits their PhotosChangeTimestamp.
+// Bulk URL refresh once per hour. MLS signed photo URLs expire in ~1 hour, so
+// without this the backfill spends most of its budget retrying stale URLs.
+// Now safe to re-enable: the shared throttle() (600ms gap) bounds RPS at 1.667
+// across all paths, the 1500/hr cap caps daily volume, and refreshPhotos uses
+// $select=ListingKey to keep payload small. ~74 pages × 0.6s + idle = ~50s of
+// actual MLS time per refresh × 24 refreshes/day = 1,776 calls/day, well
+// under MLS's 40k/day rolling warning.
+let lastBulkRefreshAt = 0;
+const BULK_REFRESH_INTERVAL_MS = 55 * 60 * 1000; // 55 min — fires once per hour through the post-batch hook
 async function maybeBulkUrlRefresh() {
-  return; // intentionally disabled
+  if (Date.now() - lastBulkRefreshAt < BULK_REFRESH_INTERVAL_MS) return;
+  lastBulkRefreshAt = Date.now();
+  try {
+    const { refreshPhotos } = require('./mlsSync');
+    refreshPhotos().catch(err => console.warn('[BACKFILL] bulk URL refresh failed:', err.message));
+  } catch (err) {
+    console.warn('[BACKFILL] bulk URL refresh load failed:', err.message);
+  }
 }
 
 async function runBatch(label = 'cron') {

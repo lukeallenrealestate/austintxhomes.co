@@ -215,10 +215,15 @@ cron.schedule('30 7 * * *', () => {
   syncClosedSales().catch(console.error);
 });
 
-// Bulk photo URL refresh — once daily at 3:05am CDT (8:05 UTC).
-// This takes 8-10 minutes and fetches 73 pages from MLS API.
-// Running it hourly was crushing the server with API calls + socket hang ups.
-cron.schedule('5 8 * * *', () => {
+// Bulk photo URL refresh — once per hour at :05.
+// MLS signed URLs expire in ~1 hour, so daily refresh left 22+ hours of stale
+// URLs per cycle and the backfill burned its rate budget retrying them. The
+// shared throttle() now bounds RPS at 1.667 across all paths, so hourly is
+// safe (it was the unbounded refresh + concurrent-path collisions that
+// crushed the server before, not the cadence itself).
+// maybeBulkUrlRefresh in photoBackfill.js also fires this from the post-sync
+// hook every ~55 min as a backup since Replit's cron isn't always reliable.
+cron.schedule('5 * * * *', () => {
   refreshPhotos().catch(console.error);
 });
 

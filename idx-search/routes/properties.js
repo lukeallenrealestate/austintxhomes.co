@@ -29,7 +29,6 @@ async function refreshListingPhotos(listingKey) {
   const MLS_TOKEN = process.env.MLSGRID_ACCESS_TOKEN;
   const SYSTEM = process.env.MLSGRID_ORIGINATING_SYSTEM || 'actris';
   if (!MLS_TOKEN) return null;
-  _lastRefreshAt.set(listingKey, Date.now());
 
   const promise = (async () => {
     try {
@@ -53,6 +52,12 @@ async function refreshListingPhotos(listingKey) {
       if (!urls.length) return null;
       db.prepare('UPDATE listings SET photos = ? WHERE listing_key = ?')
         .run(JSON.stringify(urls), listingKey);
+      // Cooldown only fires on SUCCESS — a failed refresh (429, transient
+      // network error, MLS hiccup) shouldn't lock the listing out of retries
+      // for 5 min. The in-flight dedup + shared throttle already bound the
+      // call rate; a failed refresh just lets the next photo's retry take
+      // another shot at the bat.
+      _lastRefreshAt.set(listingKey, Date.now());
       console.log('[PHOTO] On-demand refresh succeeded:', listingKey, urls.length, 'URLs');
       return urls;
     } catch (e) {
