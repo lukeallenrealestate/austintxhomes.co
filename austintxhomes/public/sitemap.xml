@@ -708,39 +708,39 @@
   </url>
   <url>
     <loc>https://austintxhomes.co/texas-residency-ut-austin-in-state-tuition</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <lastmod>2026-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <lastmod>2026-04-25</lastmod>
   </url>
   <url>
     <loc>https://austintxhomes.co/ut-austin-out-of-state-parent-guide</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://austintxhomes.co/ut-austin-tuition-savings-calculator</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://austintxhomes.co/condos-near-ut-austin</loc>
-    <lastmod>2026-04-21</lastmod>
+    <lastmod>2026-04-25</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://austintxhomes.co/ut-austin-residency-checklist</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://austintxhomes.co/living-near-ut-austin</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://austintxhomes.co/austin-isd-homes-for-sale</loc>
@@ -1822,4 +1822,17 @@
     <priority>0.8</priority>
     <lastmod>2026-04-13</lastmod>
   </url>
+  <!-- Horseshoe Bay TX / Lake LBJ resort city web -->
+  <url><loc>https://austintxhomes.co/neighborhoods/horseshoe-bay</loc><priority>0.9</priority><changefreq>weekly</changefreq><lastmod>2026-04-30</lastmod></url>
+  <url><loc>https://austintxhomes.co/horseshoe-bay-realtor</loc><priority>0.9</priority><changefreq>monthly</changefreq><lastmod>2026-04-30</lastmod></url>
+  <url><loc>https://austintxhomes.co/horseshoe-bay-homes-for-sale</loc><priority>0.9</priority><changefreq>weekly</changefreq><lastmod>2026-04-30</lastmod></url>
+  <url><loc>https://austintxhomes.co/horseshoe-bay-market-report</loc><priority>0.9</priority><changefreq>monthly</changefreq><lastmod>2026-04-30</lastmod></url>
+  <url><loc>https://austintxhomes.co/living-in-horseshoe-bay</loc><priority>0.8</priority><changefreq>monthly</changefreq><lastmod>2026-04-30</lastmod></url>
+  <url><loc>https://austintxhomes.co/sell-home-horseshoe-bay</loc><priority>0.9</priority><changefreq>monthly</changefreq><lastmod>2026-04-30</lastmod></url>
+  <url><loc>https://austintxhomes.co/sell-luxury-home-horseshoe-bay</loc><priority>0.8</priority><changefreq>monthly</changefreq><lastmod>2026-04-30</lastmod></url>
+  <url><loc>https://austintxhomes.co/horseshoe-bay-waterfront-homes</loc><priority>0.9</priority><changefreq>weekly</changefreq><lastmod>2026-04-30</lastmod></url>
+  <url><loc>https://austintxhomes.co/horseshoe-bay-golf-homes</loc><priority>0.9</priority><changefreq>weekly</changefreq><lastmod>2026-04-30</lastmod></url>
+  <url><loc>https://austintxhomes.co/lake-lbj-homes-for-sale</loc><priority>0.9</priority><changefreq>weekly</changefreq><lastmod>2026-04-30</lastmod></url>
+  <url><loc>https://austintxhomes.co/neighborhoods/horseshoe-bay/homes-for-sale</loc><priority>0.8</priority><changefreq>daily</changefreq><lastmod>2026-04-30</lastmod></url>
+  <url><loc>https://austintxhomes.co/neighborhoods/horseshoe-bay/best-realtor</loc><priority>0.8</priority><changefreq>monthly</changefreq><lastmod>2026-04-30</lastmod></url>
 </urlset>

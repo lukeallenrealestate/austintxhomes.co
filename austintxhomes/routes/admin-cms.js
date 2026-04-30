@@ -7,6 +7,8 @@ const { requireAdmin } = require('../../idx-search/middleware/authMiddleware');
 const SITE_DIR = path.join(__dirname, '..', 'public', 'site');
 const ALLOWED_DIRS = [
   path.join(__dirname, '..', 'public', 'site'),
+  path.join(__dirname, '..', 'public', 'js'),
+  path.join(__dirname, '..', 'public', 'css'),
   path.join(__dirname, '..', 'data'),
   path.join(__dirname, '..', 'templates'),
 ];

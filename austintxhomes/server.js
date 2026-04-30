@@ -61,7 +61,15 @@ const PHOTO_CACHE_DIR = path.join(__dirname, '../idx-search/cache/photos');
 fs.mkdirSync(PHOTO_CACHE_DIR, { recursive: true });
 
 // Neighborhood page system
-const neighborhoods = require('./data/neighborhoods');
+// Proxy-wrapped so hot-pushed updates to data/neighborhoods.js take effect on the
+// next request without a Replit Publish — same pattern as the template thunks.
+// Without this, the captured const holds the boot-time data forever.
+const neighborhoods = new Proxy({}, {
+  get: (_, k) => require('./data/neighborhoods')[k],
+  has: (_, k) => k in require('./data/neighborhoods'),
+  ownKeys: () => Reflect.ownKeys(require('./data/neighborhoods')),
+  getOwnPropertyDescriptor: (_, k) => Object.getOwnPropertyDescriptor(require('./data/neighborhoods'), k)
+});
 // Wrap template requires in thunks so hot-push.sh's cache-bust takes effect on
 // the next request without restarting Node. require() has its own cache so this
 // is essentially free when the underlying module hasn't changed.
@@ -802,6 +810,16 @@ app.get('/tarrytown-homes-for-sale', (_req, res) => res.sendFile(path.join(__dir
 app.get('/tarrytown-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-market-report.html')));
 app.get('/living-in-tarrytown-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-tarrytown-austin.html')));
 app.get('/sell-home-tarrytown-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-tarrytown-austin.html')));
+// Horseshoe Bay TX — Lake LBJ resort city web
+app.get('/horseshoe-bay-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/horseshoe-bay-realtor.html')));
+app.get('/horseshoe-bay-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/horseshoe-bay-homes-for-sale.html')));
+app.get('/horseshoe-bay-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/horseshoe-bay-market-report.html')));
+app.get('/living-in-horseshoe-bay', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-horseshoe-bay.html')));
+app.get('/sell-home-horseshoe-bay', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-horseshoe-bay.html')));
+app.get('/sell-luxury-home-horseshoe-bay', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-luxury-home-horseshoe-bay.html')));
+app.get('/horseshoe-bay-waterfront-homes', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/horseshoe-bay-waterfront-homes.html')));
+app.get('/horseshoe-bay-golf-homes', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/horseshoe-bay-golf-homes.html')));
+app.get('/lake-lbj-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/lake-lbj-homes-for-sale.html')));
 app.get('/living-in-allandale-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-allandale-austin.html')));
 app.get('/sell-home-allandale-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-allandale-austin.html')));
 app.get('/zilker-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/zilker-realtor.html')));

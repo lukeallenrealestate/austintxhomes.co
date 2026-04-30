@@ -1,102 +1,102 @@
 /**
- * AustinTXHomes — shared site footer
+ * AustinTXHomes - shared site footer
  * Included by every page. Edit this ONE file to update the footer everywhere.
  * Provides rich internal linking for SEO across all pages.
  */
 (function () {
 
   const css = `
-    #site-footer {
-      background: #0f0f0e;
-      font-family: 'Inter', system-ui, sans-serif;
-      color: rgba(255,255,255,.38);
-      border-top: 1px solid rgba(255,255,255,.07);
-    }
-    #site-footer * { box-sizing: border-box; }
-    #site-footer .sf-main {
-      max-width: 1180px; margin: 0 auto;
-      padding: 64px 2rem 48px;
-      display: grid;
-      grid-template-columns: 1.6fr 1fr 1fr 1.4fr;
-      gap: 3rem;
-    }
-    #site-footer .sf-brand-name {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 1.3rem; font-weight: 400;
-      color: #b8935a; letter-spacing: .04em;
-      text-decoration: none; display: block; margin-bottom: .75rem;
-    }
-    #site-footer .sf-brand-tagline {
-      font-size: 13px; color: rgba(255,255,255,.45);
-      line-height: 1.7; margin-bottom: 1.25rem; max-width: 260px;
-    }
-    #site-footer .sf-contact-line {
-      font-size: 12px; color: rgba(255,255,255,.4);
-      line-height: 1.9; text-decoration: none; display: block;
-    }
-    #site-footer .sf-contact-line:hover { color: #b8935a; }
-    #site-footer .sf-col-head {
-      font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
-      color: rgba(255,255,255,.3); margin-bottom: 1rem; font-weight: 500;
-    }
-    #site-footer .sf-col-subhead {
-      font-size: 9px; letter-spacing: .14em; text-transform: uppercase;
-      color: rgba(255,255,255,.18); margin: .9rem 0 .4rem; font-weight: 500;
-    }
-    #site-footer .sf-links {
-      list-style: none; margin: 0; padding: 0;
-      display: flex; flex-direction: column; gap: .45rem;
-    }
-    #site-footer .sf-links a {
-      font-size: 13px; color: rgba(255,255,255,.5);
-      text-decoration: none; transition: color .2s; line-height: 1.4;
-    }
-    #site-footer .sf-links a:hover { color: #b8935a; }
-    #site-footer .sf-links .sf-badge {
-      display: inline-block; font-size: 9px; letter-spacing: .08em;
-      text-transform: uppercase; background: rgba(184,147,90,.15);
-      color: #b8935a; border: 1px solid rgba(184,147,90,.25);
-      border-radius: 3px; padding: 1px 5px; margin-left: 5px;
-      vertical-align: middle; line-height: 1.5;
-    }
-    #site-footer .sf-links .sf-hub-link a {
-      color: #b8935a; font-size: 12px;
-    }
-    #site-footer .sf-bottom {
-      border-top: 1px solid rgba(255,255,255,.06);
-      padding: 20px 2rem;
-    }
-    #site-footer .sf-bottom-inner {
-      max-width: 1180px; margin: 0 auto;
-      display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; gap: .5rem;
-    }
-    #site-footer .sf-legal {
-      font-size: 11px; color: rgba(255,255,255,.28); line-height: 1.7;
-    }
-    #site-footer .sf-legal a { color: rgba(255,255,255,.28); text-decoration: none; }
-    #site-footer .sf-legal a:hover { color: #b8935a; }
-    #site-footer .sf-bottom-links {
-      display: flex; gap: 1.5rem; flex-wrap: wrap;
-    }
-    #site-footer .sf-bottom-links a {
-      font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
-      color: rgba(255,255,255,.28); text-decoration: none; transition: color .2s;
-    }
-    #site-footer .sf-bottom-links a:hover { color: #b8935a; }
-    @media (max-width: 900px) {
-      #site-footer .sf-main {
-        grid-template-columns: 1fr 1fr;
-        gap: 2.5rem;
-      }
-    }
-    @media (max-width: 540px) {
-      #site-footer .sf-main {
-        grid-template-columns: 1fr;
-        padding: 40px 1.25rem 32px;
-      }
-      #site-footer .sf-bottom-inner { flex-direction: column; align-items: flex-start; }
-    }
+  #site-footer {
+  background: #0f0f0e;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: rgba(255,255,255,.38);
+  border-top: 1px solid rgba(255,255,255,.07);
+  }
+  #site-footer * { box-sizing: border-box; }
+  #site-footer .sf-main {
+  max-width: 1180px; margin: 0 auto;
+  padding: 64px 2rem 48px;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1.4fr;
+  gap: 3rem;
+  }
+  #site-footer .sf-brand-name {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.3rem; font-weight: 400;
+  color: #b8935a; letter-spacing: .04em;
+  text-decoration: none; display: block; margin-bottom: .75rem;
+  }
+  #site-footer .sf-brand-tagline {
+  font-size: 13px; color: rgba(255,255,255,.45);
+  line-height: 1.7; margin-bottom: 1.25rem; max-width: 260px;
+  }
+  #site-footer .sf-contact-line {
+  font-size: 12px; color: rgba(255,255,255,.4);
+  line-height: 1.9; text-decoration: none; display: block;
+  }
+  #site-footer .sf-contact-line:hover { color: #b8935a; }
+  #site-footer .sf-col-head {
+  font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  color: rgba(255,255,255,.3); margin-bottom: 1rem; font-weight: 500;
+  }
+  #site-footer .sf-col-subhead {
+  font-size: 9px; letter-spacing: .14em; text-transform: uppercase;
+  color: rgba(255,255,255,.18); margin: .9rem 0 .4rem; font-weight: 500;
+  }
+  #site-footer .sf-links {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: .45rem;
+  }
+  #site-footer .sf-links a {
+  font-size: 13px; color: rgba(255,255,255,.5);
+  text-decoration: none; transition: color .2s; line-height: 1.4;
+  }
+  #site-footer .sf-links a:hover { color: #b8935a; }
+  #site-footer .sf-links .sf-badge {
+  display: inline-block; font-size: 9px; letter-spacing: .08em;
+  text-transform: uppercase; background: rgba(184,147,90,.15);
+  color: #b8935a; border: 1px solid rgba(184,147,90,.25);
+  border-radius: 3px; padding: 1px 5px; margin-left: 5px;
+  vertical-align: middle; line-height: 1.5;
+  }
+  #site-footer .sf-links .sf-hub-link a {
+  color: #b8935a; font-size: 12px;
+  }
+  #site-footer .sf-bottom {
+  border-top: 1px solid rgba(255,255,255,.06);
+  padding: 20px 2rem;
+  }
+  #site-footer .sf-bottom-inner {
+  max-width: 1180px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: .5rem;
+  }
+  #site-footer .sf-legal {
+  font-size: 11px; color: rgba(255,255,255,.28); line-height: 1.7;
+  }
+  #site-footer .sf-legal a { color: rgba(255,255,255,.28); text-decoration: none; }
+  #site-footer .sf-legal a:hover { color: #b8935a; }
+  #site-footer .sf-bottom-links {
+  display: flex; gap: 1.5rem; flex-wrap: wrap;
+  }
+  #site-footer .sf-bottom-links a {
+  font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  color: rgba(255,255,255,.28); text-decoration: none; transition: color .2s;
+  }
+  #site-footer .sf-bottom-links a:hover { color: #b8935a; }
+  @media (max-width: 900px) {
+  #site-footer .sf-main {
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  }
+  }
+  @media (max-width: 540px) {
+  #site-footer .sf-main {
+  grid-template-columns: 1fr;
+  padding: 40px 1.25rem 32px;
+  }
+  #site-footer .sf-bottom-inner { flex-direction: column; align-items: flex-start; }
+  }
   `;
 
   const style = document.createElement('style');
@@ -108,243 +108,244 @@
   const footer = document.createElement('footer');
   footer.id = 'site-footer';
   footer.innerHTML = `
-    <div class="sf-main">
+  <div class="sf-main">
 
-      <!-- BRAND -->
-      <div class="sf-brand">
-        <a href="/" class="sf-brand-name">AustinTXHomes</a>
-        <p class="sf-brand-tagline">Licensed Austin TX Realtor. Expert buyer &amp; seller representation across all of greater Austin.</p>
-        <a href="tel:+12547182567" class="sf-contact-line">(254) 718-2567</a>
-        <a href="mailto:Luke@austinmdg.com" class="sf-contact-line">Luke@austinmdg.com</a>
-        <span class="sf-contact-line">TREC License #788149</span>
-      </div>
+  <!-- BRAND -->
+  <div class="sf-brand">
+  <a href="/" class="sf-brand-name">AustinTXHomes</a>
+  <p class="sf-brand-tagline">Licensed Austin TX Realtor. Expert buyer &amp; seller representation across all of greater Austin.</p>
+  <a href="tel:+12547182567" class="sf-contact-line">(254) 718-2567</a>
+  <a href="mailto:Luke@austinmdg.com" class="sf-contact-line">Luke@austinmdg.com</a>
+  <span class="sf-contact-line">TREC License #788149</span>
+  </div>
 
-      <!-- SERVICES -->
-      <div>
-        <div class="sf-col-head">Services</div>
-        <ul class="sf-links">
-          <li><a href="/buy">Buy a Home in Austin</a></li>
-          <li><a href="/homes-with-pool-austin">Homes with Pool in Austin</a></li>
-          <li><a href="/sell">Sell Your Austin Home</a></li>
-          <li><a href="/what-is-my-home-worth">What Is My Home Worth?</a></li>
-          <li><a href="/rentals">Austin Rentals</a></li>
-          <li><a href="/sienna-at-the-thompson-austin">Sienna at the Thompson</a></li>
-          <li><a href="/search" target="_blank" rel="noopener">Search All MLS Listings</a></li>
-          <li><a href="/austin-homes-under-400k">Homes Under $400K in Austin</a></li>
-          <li><a href="/austin-homes-under-500k">Homes Under $500K in Austin</a></li>
-          <li><a href="/austin-homes-under-750k">Homes Under $750K in Austin</a></li>
-          <li><a href="/austin-homes-under-1-million">Homes Under $1M in Austin</a></li>
-          <li><a href="/austin-homes-big-yard">Austin Homes with Big Yards</a></li>
-          <li><a href="/new-construction">New Construction Austin</a></li>
-          <li><a href="/eanes-isd-homes-for-sale">Eanes ISD Homes for Sale</a></li>
-          <li><a href="/luxury-homes">Luxury Homes Austin TX</a></li>
-          <li><a href="/investment-properties">Investment Properties</a></li>
-          <li><a href="/fix-and-flip-calculator-austin">Fix &amp; Flip Calculator</a></li>
-          <li><a href="/rental-properties-for-sale-austin">Rental Properties Austin</a></li>
-          <li><a href="/austin-tx-realtor">Austin TX Realtor</a></li>
-          <li><a href="/commercial-real-estate-austin">Commercial Real Estate</a></li>
-          <li><a href="/1031-exchange-austin">1031 Exchange Austin</a></li>
-          <li><a href="/brrrr-method-austin">BRRRR Method Austin</a></li>
-          <li><a href="/condos">Austin Condos for Sale</a></li>
-          <li><a href="/condos-for-sale-in-the-austonian">Austonian Condos for Sale</a></li>
-          <li><a href="/condos-for-rent-in-the-austonian">Austonian Condos for Rent</a></li>
-          <li><a href="/condos-for-sale-in-the-modern">The Modern Condos for Sale</a></li>
-          <li><a href="/condos-for-rent-in-the-modern">The Modern Condos for Rent</a></li>
-          <li><a href="/deal-radar">Deal Radar <span class="sf-badge">New</span></a></li>
-        </ul>
+  <!-- SERVICES -->
+  <div>
+  <div class="sf-col-head">Services</div>
+  <ul class="sf-links">
+  <li><a href="/buy">Buy a Home in Austin</a></li>
+  <li><a href="/homes-with-pool-austin">Homes with Pool in Austin</a></li>
+  <li><a href="/sell">Sell Your Austin Home</a></li>
+  <li><a href="/what-is-my-home-worth">What Is My Home Worth?</a></li>
+  <li><a href="/rentals">Austin Rentals</a></li>
+  <li><a href="/sienna-at-the-thompson-austin">Sienna at the Thompson</a></li>
+  <li><a href="/search" target="_blank" rel="noopener">Search All MLS Listings</a></li>
+  <li><a href="/austin-homes-under-400k">Homes Under $400K in Austin</a></li>
+  <li><a href="/austin-homes-under-500k">Homes Under $500K in Austin</a></li>
+  <li><a href="/austin-homes-under-750k">Homes Under $750K in Austin</a></li>
+  <li><a href="/austin-homes-under-1-million">Homes Under $1M in Austin</a></li>
+  <li><a href="/austin-homes-big-yard">Austin Homes with Big Yards</a></li>
+  <li><a href="/new-construction">New Construction Austin</a></li>
+  <li><a href="/eanes-isd-homes-for-sale">Eanes ISD Homes for Sale</a></li>
+  <li><a href="/luxury-homes">Luxury Homes Austin TX</a></li>
+  <li><a href="/investment-properties">Investment Properties</a></li>
+  <li><a href="/fix-and-flip-calculator-austin">Fix &amp; Flip Calculator</a></li>
+  <li><a href="/rental-properties-for-sale-austin">Rental Properties Austin</a></li>
+  <li><a href="/austin-tx-realtor">Austin TX Realtor</a></li>
+  <li><a href="/commercial-real-estate-austin">Commercial Real Estate</a></li>
+  <li><a href="/1031-exchange-austin">1031 Exchange Austin</a></li>
+  <li><a href="/brrrr-method-austin">BRRRR Method Austin</a></li>
+  <li><a href="/condos">Austin Condos for Sale</a></li>
+  <li><a href="/condos-for-sale-in-the-austonian">Austonian Condos for Sale</a></li>
+  <li><a href="/condos-for-rent-in-the-austonian">Austonian Condos for Rent</a></li>
+  <li><a href="/condos-for-sale-in-the-modern">The Modern Condos for Sale</a></li>
+  <li><a href="/condos-for-rent-in-the-modern">The Modern Condos for Rent</a></li>
+  <li><a href="/deal-radar">Deal Radar <span class="sf-badge">New</span></a></li>
+  </ul>
 
-        <div class="sf-col-subhead">School Districts</div>
-        <ul class="sf-links">
-          <li><a href="/eanes-isd-homes-for-sale">Eanes ISD Homes</a></li>
-          <li><a href="/austin-isd-homes-for-sale">Austin ISD Homes</a></li>
-          <li><a href="/leander-isd-homes-for-sale">Leander ISD Homes</a></li>
-          <li><a href="/round-rock-isd-homes-for-sale">Round Rock ISD Homes</a></li>
-          <li><a href="/lake-travis-isd-homes-for-sale">Lake Travis ISD Homes</a></li>
-          <li><a href="/hays-isd-homes-for-sale">Hays CISD Homes</a></li>
-          <li><a href="/pflugerville-isd-homes-for-sale">Pflugerville ISD Homes</a></li>
-        </ul>
+  <div class="sf-col-subhead">School Districts</div>
+  <ul class="sf-links">
+  <li><a href="/eanes-isd-homes-for-sale">Eanes ISD Homes</a></li>
+  <li><a href="/austin-isd-homes-for-sale">Austin ISD Homes</a></li>
+  <li><a href="/leander-isd-homes-for-sale">Leander ISD Homes</a></li>
+  <li><a href="/round-rock-isd-homes-for-sale">Round Rock ISD Homes</a></li>
+  <li><a href="/lake-travis-isd-homes-for-sale">Lake Travis ISD Homes</a></li>
+  <li><a href="/hays-isd-homes-for-sale">Hays CISD Homes</a></li>
+  <li><a href="/pflugerville-isd-homes-for-sale">Pflugerville ISD Homes</a></li>
+  </ul>
 
-        <div class="sf-col-subhead">Divorce Real Estate</div>
-        <ul class="sf-links">
-          <li><a href="/divorce-realtor-austin">Divorce Realtor Austin</a></li>
-          <li><a href="/sell-home-during-divorce-austin">Sell Home During Divorce</a></li>
-          <li><a href="/buying-home-after-divorce-austin">Buy After Divorce Austin</a></li>
-        </ul>
+  <div class="sf-col-subhead">Divorce Real Estate</div>
+  <ul class="sf-links">
+  <li><a href="/divorce-realtor-austin">Divorce Realtor Austin</a></li>
+  <li><a href="/sell-home-during-divorce-austin">Sell Home During Divorce</a></li>
+  <li><a href="/buying-home-after-divorce-austin">Buy After Divorce Austin</a></li>
+  </ul>
 
-        <div class="sf-col-subhead">Sell by Home Style</div>
-        <ul class="sf-links">
-          <li><a href="/sell-luxury-home-austin">Sell a Luxury Home</a></li>
-          <li><a href="/sell-midcentury-modern-home-austin">Sell a Mid-Century Modern</a></li>
-          <li><a href="/sell-ranch-home-austin">Sell a Ranch-Style Home</a></li>
-          <li><a href="/sell-contemporary-home-austin">Sell a Contemporary Home</a></li>
-          <li><a href="/sell-craftsman-home-austin">Sell a Craftsman Bungalow</a></li>
-          <li><a href="/sell-townhome-austin">Sell a Townhome</a></li>
-          <li><a href="/sell-condo-austin">Sell a Condo</a></li>
-        </ul>
-      </div>
+  <div class="sf-col-subhead">Sell by Home Style</div>
+  <ul class="sf-links">
+  <li><a href="/sell-luxury-home-austin">Sell a Luxury Home</a></li>
+  <li><a href="/sell-midcentury-modern-home-austin">Sell a Mid-Century Modern</a></li>
+  <li><a href="/sell-ranch-home-austin">Sell a Ranch-Style Home</a></li>
+  <li><a href="/sell-contemporary-home-austin">Sell a Contemporary Home</a></li>
+  <li><a href="/sell-craftsman-home-austin">Sell a Craftsman Bungalow</a></li>
+  <li><a href="/sell-townhome-austin">Sell a Townhome</a></li>
+  <li><a href="/sell-condo-austin">Sell a Condo</a></li>
+  </ul>
+  </div>
 
-      <!-- GUIDES & MOVING -->
-      <div>
-        <div class="sf-col-head">Austin Guides</div>
-        <ul class="sf-links">
-          <li><a href="/market-report">Market Report ${year} <span class="sf-badge">Live</span></a></li>
-          <li><a href="/austin-multifamily-market-report">Multifamily Report <span class="sf-badge">Live</span></a></li>
-          <li><a href="/austin-buyers-or-sellers-market">Buyer's or Seller's Market? <span class="sf-badge">Live</span></a></li>
-          <li><a href="/austin-home-prices-falling">Are Austin Prices Falling?</a></li>
-          <li><a href="/ut-austin-out-of-state-parent-guide">UT Austin Parent Guide</a></li>
-          <li><a href="/texas-residency-ut-austin-in-state-tuition">UT In-State Tuition Guide</a></li>
-          <li><a href="/condos-near-ut-austin">Condos Near UT Austin</a></li>
-          <li><a href="/moving-to-austin">Moving to Austin Guide</a></li>
-          <li><a href="/cost-of-living">Austin Cost of Living ${year}</a></li>
-          <li><a href="/first-time-buyers">First-Time Buyer Guide</a></li>
-          <li><a href="/about">About Luke Allen</a></li>
-          <li><a href="/about#contact">Contact Luke</a></li>
-        </ul>
+  <!-- GUIDES & MOVING -->
+  <div>
+  <div class="sf-col-head">Austin Guides</div>
+  <ul class="sf-links">
+  <li><a href="/market-report">Market Report ${year} <span class="sf-badge">Live</span></a></li>
+  <li><a href="/austin-multifamily-market-report">Multifamily Report <span class="sf-badge">Live</span></a></li>
+  <li><a href="/austin-buyers-or-sellers-market">Buyer's or Seller's Market? <span class="sf-badge">Live</span></a></li>
+  <li><a href="/austin-home-prices-falling">Are Austin Prices Falling?</a></li>
+  <li><a href="/ut-austin-out-of-state-parent-guide">UT Austin Parent Guide</a></li>
+  <li><a href="/texas-residency-ut-austin-in-state-tuition">UT In-State Tuition Guide</a></li>
+  <li><a href="/condos-near-ut-austin">Condos Near UT Austin</a></li>
+  <li><a href="/moving-to-austin">Moving to Austin Guide</a></li>
+  <li><a href="/cost-of-living">Austin Cost of Living ${year}</a></li>
+  <li><a href="/first-time-buyers">First-Time Buyer Guide</a></li>
+  <li><a href="/about">About Luke Allen</a></li>
+  <li><a href="/about#contact">Contact Luke</a></li>
+  </ul>
 
-        <div class="sf-col-subhead">City Relocation Guides</div>
-        <ul class="sf-links">
-          <li class="sf-hub-link"><a href="/moving-to-austin-guides">All City Guides →</a></li>
-          <li><a href="/moving-from-los-angeles-to-austin">From Los Angeles</a></li>
-          <li><a href="/moving-from-new-york-to-austin">From New York</a></li>
-          <li><a href="/moving-from-chicago-to-austin">From Chicago</a></li>
-          <li><a href="/moving-from-sf-to-austin">From San Francisco</a></li>
-          <li><a href="/moving-from-seattle-to-austin">From Seattle</a></li>
-          <li><a href="/moving-from-phoenix-to-austin">From Phoenix &amp; Scottsdale</a></li>
-          <li><a href="/moving-from-denver-to-austin">From Denver</a></li>
-          <li><a href="/moving-from-minneapolis-to-austin">From Minneapolis</a></li>
-          <li><a href="/moving-from-portland-to-austin">From Portland</a></li>
-          <li><a href="/moving-from-boston-to-austin">From Boston</a></li>
-          <li><a href="/moving-from-dc-to-austin">From Washington DC</a></li>
-          <li><a href="/moving-from-atlanta-to-austin">From Atlanta</a></li>
-        </ul>
+  <div class="sf-col-subhead">City Relocation Guides</div>
+  <ul class="sf-links">
+  <li class="sf-hub-link"><a href="/moving-to-austin-guides">All City Guides →</a></li>
+  <li><a href="/moving-from-los-angeles-to-austin">From Los Angeles</a></li>
+  <li><a href="/moving-from-new-york-to-austin">From New York</a></li>
+  <li><a href="/moving-from-chicago-to-austin">From Chicago</a></li>
+  <li><a href="/moving-from-sf-to-austin">From San Francisco</a></li>
+  <li><a href="/moving-from-seattle-to-austin">From Seattle</a></li>
+  <li><a href="/moving-from-phoenix-to-austin">From Phoenix &amp; Scottsdale</a></li>
+  <li><a href="/moving-from-denver-to-austin">From Denver</a></li>
+  <li><a href="/moving-from-minneapolis-to-austin">From Minneapolis</a></li>
+  <li><a href="/moving-from-portland-to-austin">From Portland</a></li>
+  <li><a href="/moving-from-boston-to-austin">From Boston</a></li>
+  <li><a href="/moving-from-dc-to-austin">From Washington DC</a></li>
+  <li><a href="/moving-from-atlanta-to-austin">From Atlanta</a></li>
+  </ul>
 
-        <div class="sf-col-subhead">Employer Relocation Guides</div>
-        <ul class="sf-links">
-          <li class="sf-hub-link"><a href="/employer-relocation-austin">All Employer Guides →</a></li>
-          <li><a href="/apple-austin-relocation">Apple</a></li>
-          <li><a href="/google-austin-relocation">Google</a></li>
-          <li><a href="/tesla-austin-relocation">Tesla</a></li>
-          <li><a href="/oracle-austin-relocation">Oracle</a></li>
-          <li><a href="/dell-austin-relocation">Dell</a></li>
-          <li><a href="/samsung-austin-relocation">Samsung</a></li>
-          <li><a href="/nvidia-austin-relocation">Nvidia</a></li>
-          <li><a href="/meta-austin-relocation">Meta</a></li>
-          <li><a href="/amazon-austin-relocation">Amazon</a></li>
-          <li><a href="/schwab-austin-relocation">Charles Schwab</a></li>
-          <li><a href="/amd-austin-relocation">AMD</a></li>
-          <li><a href="/indeed-austin-relocation">Indeed</a></li>
-          <li><a href="/ibm-austin-relocation">IBM</a></li>
-          <li><a href="/salesforce-austin-relocation">Salesforce</a></li>
-        </ul>
+  <div class="sf-col-subhead">Employer Relocation Guides</div>
+  <ul class="sf-links">
+  <li class="sf-hub-link"><a href="/employer-relocation-austin">All Employer Guides →</a></li>
+  <li><a href="/apple-austin-relocation">Apple</a></li>
+  <li><a href="/google-austin-relocation">Google</a></li>
+  <li><a href="/tesla-austin-relocation">Tesla</a></li>
+  <li><a href="/oracle-austin-relocation">Oracle</a></li>
+  <li><a href="/dell-austin-relocation">Dell</a></li>
+  <li><a href="/samsung-austin-relocation">Samsung</a></li>
+  <li><a href="/nvidia-austin-relocation">Nvidia</a></li>
+  <li><a href="/meta-austin-relocation">Meta</a></li>
+  <li><a href="/amazon-austin-relocation">Amazon</a></li>
+  <li><a href="/schwab-austin-relocation">Charles Schwab</a></li>
+  <li><a href="/amd-austin-relocation">AMD</a></li>
+  <li><a href="/indeed-austin-relocation">Indeed</a></li>
+  <li><a href="/ibm-austin-relocation">IBM</a></li>
+  <li><a href="/salesforce-austin-relocation">Salesforce</a></li>
+  </ul>
 
-        <div class="sf-col-subhead">Homes Near Employers</div>
-        <ul class="sf-links">
-          <li><a href="/homes-for-sale-near-apple-austin">Near Apple</a></li>
-          <li><a href="/homes-for-sale-near-google-austin">Near Google</a></li>
-          <li><a href="/homes-for-sale-near-tesla-austin">Near Tesla</a></li>
-          <li><a href="/homes-for-sale-near-oracle-austin">Near Oracle</a></li>
-          <li><a href="/homes-for-sale-near-dell-austin">Near Dell</a></li>
-          <li><a href="/homes-for-sale-near-samsung-austin">Near Samsung</a></li>
-          <li><a href="/homes-for-sale-near-nvidia-austin">Near Nvidia</a></li>
-          <li><a href="/homes-for-sale-near-meta-austin">Near Meta</a></li>
-          <li><a href="/homes-for-sale-near-amazon-austin">Near Amazon</a></li>
-          <li><a href="/homes-for-sale-near-amd-austin">Near AMD</a></li>
-          <li><a href="/homes-for-sale-near-indeed-austin">Near Indeed</a></li>
-          <li><a href="/homes-for-sale-near-ibm-austin">Near IBM</a></li>
-          <li><a href="/homes-for-sale-near-salesforce-austin">Near Salesforce</a></li>
-        </ul>
-      </div>
+  <div class="sf-col-subhead">Homes Near Employers</div>
+  <ul class="sf-links">
+  <li><a href="/homes-for-sale-near-apple-austin">Near Apple</a></li>
+  <li><a href="/homes-for-sale-near-google-austin">Near Google</a></li>
+  <li><a href="/homes-for-sale-near-tesla-austin">Near Tesla</a></li>
+  <li><a href="/homes-for-sale-near-oracle-austin">Near Oracle</a></li>
+  <li><a href="/homes-for-sale-near-dell-austin">Near Dell</a></li>
+  <li><a href="/homes-for-sale-near-samsung-austin">Near Samsung</a></li>
+  <li><a href="/homes-for-sale-near-nvidia-austin">Near Nvidia</a></li>
+  <li><a href="/homes-for-sale-near-meta-austin">Near Meta</a></li>
+  <li><a href="/homes-for-sale-near-amazon-austin">Near Amazon</a></li>
+  <li><a href="/homes-for-sale-near-amd-austin">Near AMD</a></li>
+  <li><a href="/homes-for-sale-near-indeed-austin">Near Indeed</a></li>
+  <li><a href="/homes-for-sale-near-ibm-austin">Near IBM</a></li>
+  <li><a href="/homes-for-sale-near-salesforce-austin">Near Salesforce</a></li>
+  </ul>
+  </div>
 
-      <!-- NEIGHBORHOODS -->
-      <div>
-        <div class="sf-col-head">Neighborhoods</div>
-        <ul class="sf-links">
-          <li><a href="/neighborhoods/mueller">Mueller</a></li>
-          <li><a href="/neighborhoods/hyde-park">Hyde Park</a></li>
-          <li><a href="/neighborhoods/crestview">Crestview</a></li>
-          <li><a href="/neighborhoods/brentwood">Brentwood</a></li>
-          <li><a href="/neighborhoods/tarrytown">Tarrytown</a></li>
-          <li><a href="/east-austin-realtor">East Austin</a></li>
-          <li><a href="/neighborhoods/bouldin-creek">Bouldin Creek</a></li>
-          <li><a href="/neighborhoods/clarksville">Clarksville</a></li>
-          <li><a href="/neighborhoods/south-congress">South Congress</a></li>
-          <li><a href="/neighborhoods/westlake-hills">Westlake Hills</a></li>
-          <li><a href="/round-rock">Round Rock Hub</a></li>
-          <li><a href="/neighborhoods/cedar-park">Cedar Park</a></li>
-          <li><a href="/neighborhoods/georgetown">Georgetown</a></li>
-          <li><a href="/neighborhoods/pflugerville">Pflugerville</a></li>
-          <li><a href="/neighborhoods/kyle">Kyle</a></li>
-          <li><a href="/neighborhoods/leander">Leander</a></li>
-          <li><a href="/neighborhoods/buda">Buda</a></li>
-          <li><a href="/driftwood-tx">Driftwood TX Homes</a></li>
-          <li><a href="/lago-vista-tx">Lago Vista TX Homes</a></li>
-          <li><a href="/briarcliff-tx">Briarcliff TX Homes</a></li>
-          <li><a href="/spicewood-tx">Spicewood TX Homes</a></li>
-          <li><a href="/rob-roy-austin">Rob Roy Austin</a></li>
-          <li><a href="/steiner-ranch-austin">Steiner Ranch Austin</a></li>
-          <li><a href="/lakeway-tx">Lakeway TX Homes</a></li>
-          <li><a href="/bee-cave-tx">Bee Cave TX Homes</a></li>
-          <li><a href="/neighborhoods/hudson-bend">Hudson Bend Austin</a></li>
-          <li><a href="/neighborhoods">Browse All 41 Neighborhoods →</a></li>
-        </ul>
+  <!-- NEIGHBORHOODS -->
+  <div>
+  <div class="sf-col-head">Neighborhoods</div>
+  <ul class="sf-links">
+  <li><a href="/neighborhoods/mueller">Mueller</a></li>
+  <li><a href="/neighborhoods/hyde-park">Hyde Park</a></li>
+  <li><a href="/neighborhoods/crestview">Crestview</a></li>
+  <li><a href="/neighborhoods/brentwood">Brentwood</a></li>
+  <li><a href="/neighborhoods/tarrytown">Tarrytown</a></li>
+  <li><a href="/east-austin-realtor">East Austin</a></li>
+  <li><a href="/neighborhoods/bouldin-creek">Bouldin Creek</a></li>
+  <li><a href="/neighborhoods/clarksville">Clarksville</a></li>
+  <li><a href="/neighborhoods/south-congress">South Congress</a></li>
+  <li><a href="/neighborhoods/westlake-hills">Westlake Hills</a></li>
+  <li><a href="/round-rock">Round Rock Hub</a></li>
+  <li><a href="/neighborhoods/cedar-park">Cedar Park</a></li>
+  <li><a href="/neighborhoods/georgetown">Georgetown</a></li>
+  <li><a href="/neighborhoods/pflugerville">Pflugerville</a></li>
+  <li><a href="/neighborhoods/kyle">Kyle</a></li>
+  <li><a href="/neighborhoods/leander">Leander</a></li>
+  <li><a href="/neighborhoods/buda">Buda</a></li>
+  <li><a href="/driftwood-tx">Driftwood TX Homes</a></li>
+  <li><a href="/lago-vista-tx">Lago Vista TX Homes</a></li>
+  <li><a href="/briarcliff-tx">Briarcliff TX Homes</a></li>
+  <li><a href="/spicewood-tx">Spicewood TX Homes</a></li>
+  <li><a href="/rob-roy-austin">Rob Roy Austin</a></li>
+  <li><a href="/steiner-ranch-austin">Steiner Ranch Austin</a></li>
+  <li><a href="/lakeway-tx">Lakeway TX Homes</a></li>
+  <li><a href="/bee-cave-tx">Bee Cave TX Homes</a></li>
+  <li><a href="/neighborhoods/hudson-bend">Hudson Bend Austin</a></li>
+  <li><a href="/neighborhoods/horseshoe-bay">Horseshoe Bay</a></li>
+  <li><a href="/neighborhoods">Browse All 41 Neighborhoods →</a></li>
+  </ul>
 
-        <div class="sf-col-subhead">Round Rock Neighborhoods</div>
-        <ul class="sf-links">
-          <li class="sf-hub-link"><a href="/round-rock">Round Rock Hub →</a></li>
-          <li><a href="/round-rock/teravista">Teravista</a></li>
-          <li><a href="/round-rock/forest-creek">Forest Creek</a></li>
-          <li><a href="/round-rock/paloma-lake">Paloma Lake</a></li>
-          <li><a href="/round-rock/behrens-ranch">Behrens Ranch</a></li>
-          <li><a href="/round-rock/brushy-creek">Brushy Creek</a></li>
-          <li><a href="/round-rock/mayfield-ranch">Mayfield Ranch</a></li>
-          <li><a href="/round-rock/cat-hollow">Cat Hollow</a></li>
-          <li><a href="/round-rock/stone-canyon">Stone Canyon</a></li>
-          <li><a href="/round-rock/sonoma">Sonoma</a></li>
-          <li><a href="/round-rock/vista-oaks">Vista Oaks</a></li>
-        </ul>
-      </div>
+  <div class="sf-col-subhead">Round Rock Neighborhoods</div>
+  <ul class="sf-links">
+  <li class="sf-hub-link"><a href="/round-rock">Round Rock Hub →</a></li>
+  <li><a href="/round-rock/teravista">Teravista</a></li>
+  <li><a href="/round-rock/forest-creek">Forest Creek</a></li>
+  <li><a href="/round-rock/paloma-lake">Paloma Lake</a></li>
+  <li><a href="/round-rock/behrens-ranch">Behrens Ranch</a></li>
+  <li><a href="/round-rock/brushy-creek">Brushy Creek</a></li>
+  <li><a href="/round-rock/mayfield-ranch">Mayfield Ranch</a></li>
+  <li><a href="/round-rock/cat-hollow">Cat Hollow</a></li>
+  <li><a href="/round-rock/stone-canyon">Stone Canyon</a></li>
+  <li><a href="/round-rock/sonoma">Sonoma</a></li>
+  <li><a href="/round-rock/vista-oaks">Vista Oaks</a></li>
+  </ul>
+  </div>
 
-    </div>
+  </div>
 
-    <div class="sf-bottom">
-      <div class="sf-bottom-inner">
-        <p class="sf-legal">
-          &copy; ${year} Austin TX Homes &nbsp;·&nbsp; Luke Allen, TREC #788149 &nbsp;·&nbsp; Austin Marketing + Development Group &nbsp;·&nbsp;
-          <a href="https://www.trec.texas.gov" target="_blank" rel="noopener">Texas Real Estate Commission</a>
-        </p>
-        <nav class="sf-bottom-links">
-          <a href="/sitemap.xml">Sitemap</a>
-          <a href="/about">About</a>
-          <a href="/about#contact">Contact</a>
-        </nav>
-      </div>
-    </div>
+  <div class="sf-bottom">
+  <div class="sf-bottom-inner">
+  <p class="sf-legal">
+  &copy; ${year} Austin TX Homes &nbsp;·&nbsp; Luke Allen, TREC #788149 &nbsp;·&nbsp; Austin Marketing + Development Group &nbsp;·&nbsp;
+  <a href="https://www.trec.texas.gov" target="_blank" rel="noopener">Texas Real Estate Commission</a>
+  </p>
+  <nav class="sf-bottom-links">
+  <a href="/sitemap.xml">Sitemap</a>
+  <a href="/about">About</a>
+  <a href="/about#contact">Contact</a>
+  </nav>
+  </div>
+  </div>
   `;
 
   document.body.appendChild(footer);
 
-  // Deferred hero video loader — defers 24 MB video download until after page is interactive.
+  // Deferred hero video loader - defers 24 MB video download until after page is interactive.
   // Works on any <video data-src="..."> on the page.
   function loadDeferredVideos() {
-    document.querySelectorAll('video[data-src]').forEach(vid => {
-      if (vid.src) return;
-      vid.addEventListener('canplay', () => vid.classList.add('ready'), { once: true });
-      vid.src = vid.dataset.src;
-      vid.load();
-    });
+  document.querySelectorAll('video[data-src]').forEach(vid => {
+  if (vid.src) return;
+  vid.addEventListener('canplay', () => vid.classList.add('ready'), { once: true });
+  vid.src = vid.dataset.src;
+  vid.load();
+  });
   }
   if (document.readyState === 'complete') setTimeout(loadDeferredVideos, 100);
   else window.addEventListener('load', () => setTimeout(loadDeferredVideos, 100), { once: true });
 
-  // Load edit-mode overlay for admin users (lightweight — exits immediately for non-admins)
+  // Load edit-mode overlay for admin users (lightweight - exits immediately for non-admins)
   try {
-    var u = JSON.parse(localStorage.getItem('idx_user') || '{}');
-    if (u.role === 'admin') {
-      var s = document.createElement('script');
-      s.src = '/js/edit-mode.js';
-      s.defer = true;
-      document.body.appendChild(s);
-    }
+  var u = JSON.parse(localStorage.getItem('idx_user') || '{}');
+  if (u.role === 'admin') {
+  var s = document.createElement('script');
+  s.src = '/js/edit-mode.js';
+  s.defer = true;
+  document.body.appendChild(s);
+  }
   } catch (_) {}
 
 })();
