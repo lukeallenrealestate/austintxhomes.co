@@ -131,12 +131,27 @@ router.post('/', async (req, res) => {
         </div>`
     });
 
-    // Send both emails in parallel
-    await Promise.all([leadEmailPromise, confirmEmailPromise]);
+    // The lead notification to Luke is the only must-succeed step. The
+    // confirmation email going back to the submitter is best-effort — it'll fail
+    // gracefully if the visitor typed a phone number into the "phone or email"
+    // field (nodemailer rejects non-RFC addresses). Use allSettled so a failed
+    // confirmation doesn't poison a real lead.
+    const looksLikeEmail = /.+@.+\..+/.test(email || '');
+    const sendConfirm = looksLikeEmail ? confirmEmailPromise : Promise.resolve({ skipped: true });
+
+    const [leadResult, confirmResult] = await Promise.allSettled([leadEmailPromise, sendConfirm]);
+
+    if (leadResult.status === 'rejected') {
+      console.error('[CONTACT] lead email failed:', leadResult.reason?.message || leadResult.reason);
+      return res.status(500).json({ error: 'Failed to send lead notification' });
+    }
+    if (confirmResult.status === 'rejected') {
+      console.warn('[CONTACT] confirmation email failed (lead still delivered):', confirmResult.reason?.message || confirmResult.reason);
+    }
 
     const isHtmlForm = req.headers['content-type']?.includes('application/x-www-form-urlencoded');
     if (isHtmlForm) return res.redirect(303, (req.headers.referer || '/') + '?submitted=1');
-    res.json({ ok: true });
+    res.json({ ok: true, confirmationSent: confirmResult.status === 'fulfilled' && !confirmResult.value?.skipped });
   } catch (err) {
     console.error('[CONTACT]', err.message);
     res.status(500).json({ error: 'Failed to send email' });
