@@ -264,6 +264,7 @@ async function fetchPage(url, retries = 3) {
       await new Promise(r => setTimeout(r, 1000));
     }
   }
+  throw new Error(`MLS GRID API rate-limited after ${retries} attempts`);
 }
 
 async function syncListings(isInitial = false) {
