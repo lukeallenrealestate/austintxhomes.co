@@ -32,9 +32,15 @@ echo "Stopping old server..."
 kill_port 3002
 sleep 1
 
-# Remove stale SQLite lock and journal artifacts left by previously killed processes.
-echo "Cleaning up stale SQLite artifacts..."
-rm -f  /home/runner/workspace/idx-search/db/idx.db-journal
+# Remove ONLY the lock directory left by previously killed processes.
+# IMPORTANT: do NOT remove idx.db-journal here. In SQLite DELETE journal mode,
+# a lingering -journal file means the prior process was killed mid-COMMIT;
+# SQLite needs that file to roll the partial transaction forward or back on
+# reopen. Pre-emptively rm-ing it leaves the DB in an inconsistent state and
+# was the cause of photos_r2 wipes across deploys (4263 listings → 0 on the
+# 2026-04-30 deploy). The .lock file is just a directory SQLite creates for
+# OS-level locking and is safe to remove.
+echo "Cleaning up stale SQLite lock..."
 rm -rf /home/runner/workspace/idx-search/db/idx.db.lock
 
 # Trap to clean up on exit.

@@ -92,6 +92,100 @@ router.post('/refresh-photos', async (_req, res) => {
   res.json({ message: 'Photo refresh started in background' });
 });
 
+// POST /api/admin/recover-r2-from-bucket
+// Rebuilds the listings.photos_r2 column by listing the R2 bucket directly.
+// Used after a Replit deploy nukes the column (the photo files in R2 itself
+// survive — only the DB pointers are lost). Runs in background; check logs
+// for [R2-RECOVER] progress.
+router.post('/recover-r2-from-bucket', async (_req, res) => {
+  recoverR2FromBucket().catch(e => console.error('[R2-RECOVER] fatal:', e));
+  res.json({ message: 'R2 bucket scan + photos_r2 rebuild started in background. Watch logs for [R2-RECOVER] lines.' });
+});
+
+async function recoverR2FromBucket() {
+  const BUCKET = process.env.R2_BUCKET || 'austintxhomes-photos';
+  const PUBLIC_URL = (process.env.R2_PUBLIC_URL || '').replace(/\/$/, '');
+  if (!process.env.R2_ACCOUNT_ID || !process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY || !PUBLIC_URL) {
+    console.error('[R2-RECOVER] R2 env not configured — aborting');
+    return;
+  }
+
+  const { S3Client, ListObjectsV2Command } = require('@aws-sdk/client-s3');
+  const client = new S3Client({
+    region: 'auto',
+    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    credentials: {
+      accessKeyId: process.env.R2_ACCESS_KEY_ID,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+    },
+  });
+
+  console.log('[R2-RECOVER] Starting bucket scan...');
+  const t0 = Date.now();
+
+  // Build { listing_key: { idx: url, ... } } from R2 keys shaped like photos/{key}/{idx}.jpg
+  const byListing = new Map();
+  let token, pageCount = 0, totalKeys = 0;
+  do {
+    const out = await client.send(new ListObjectsV2Command({ Bucket: BUCKET, Prefix: 'photos/', ContinuationToken: token }));
+    pageCount++;
+    for (const o of (out.Contents || [])) {
+      totalKeys++;
+      const m = /^photos\/([^/]+)\/(\d+)\.jpg$/.exec(o.Key);
+      if (!m) continue;
+      const lk = m[1];
+      const idx = Number(m[2]);
+      let m2 = byListing.get(lk);
+      if (!m2) { m2 = {}; byListing.set(lk, m2); }
+      m2[idx] = `${PUBLIC_URL}/photos/${lk}/${idx}.jpg`;
+    }
+    token = out.IsTruncated ? out.NextContinuationToken : undefined;
+    if (pageCount % 5 === 0) {
+      console.log(`[R2-RECOVER] Scanned page ${pageCount}, ${totalKeys} keys, ${byListing.size} unique listings...`);
+    }
+  } while (token);
+
+  console.log(`[R2-RECOVER] Scan complete: ${totalKeys} keys across ${byListing.size} listings in ${((Date.now() - t0) / 1000).toFixed(1)}s. Rebuilding DB column...`);
+
+  // For each listing the bucket has, build photos_r2 sized to match listings.photos and UPDATE.
+  // Skip listings the DB doesn't know about (e.g., listings that left MlgCanView=true since being mirrored).
+  const sel = db.prepare('SELECT photos FROM listings WHERE listing_key = ?');
+  const upd = db.prepare('UPDATE listings SET photos_r2 = ? WHERE listing_key = ?');
+
+  let updated = 0, skipped = 0, t1 = Date.now();
+  const tx = db.transaction((entries) => {
+    for (const [lk, idxMap] of entries) {
+      const row = sel.get(lk);
+      if (!row) { skipped++; continue; }
+      let totalPhotos = 0;
+      try { totalPhotos = (JSON.parse(row.photos) || []).length; } catch {}
+      if (totalPhotos === 0) {
+        // No photos array on the listing — fall back to one slot per R2 key found.
+        totalPhotos = Math.max(...Object.keys(idxMap).map(Number)) + 1;
+      }
+      const arr = new Array(totalPhotos).fill(null);
+      for (const [idx, url] of Object.entries(idxMap)) {
+        const i = Number(idx);
+        if (i < arr.length) arr[i] = url;
+      }
+      upd.run(JSON.stringify(arr), lk);
+      updated++;
+    }
+  });
+
+  // Chunk so we don't hold a single mega-transaction (node-sqlite3-wasm is single-threaded).
+  const allEntries = [...byListing.entries()];
+  const CHUNK = 500;
+  for (let i = 0; i < allEntries.length; i += CHUNK) {
+    tx(allEntries.slice(i, i + CHUNK));
+    if ((i / CHUNK) % 10 === 0) {
+      console.log(`[R2-RECOVER] Updated ${updated} / ${byListing.size} listings...`);
+    }
+  }
+
+  console.log(`[R2-RECOVER] Done. Updated ${updated} listings (${skipped} R2 keys had no DB row) in ${((Date.now() - t1) / 1000).toFixed(1)}s.`);
+}
+
 function tryParse(str, fallback) {
   try { return JSON.parse(str); } catch { return fallback; }
 }
