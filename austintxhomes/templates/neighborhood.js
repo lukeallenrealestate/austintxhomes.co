@@ -53,19 +53,38 @@ module.exports = function renderNeighborhoodPage(n) {
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
   <meta name="geo.region" content="US-TX" />
-  <meta name="geo.placename" content="${n.name}, Austin, Texas" />
+  <meta name="geo.placename" content="${n.geoPlace || `${n.name}, Austin, Texas`}" />
+
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  "name": "Luke Allen – Austin TX Homes",
+  "url": "https://austintxhomes.co",
+  "telephone": "+12547182567",
+  "email": "Luke@austinmdg.com",
+  "image": "https://austintxhomes.co/images/luke-allen.jpg",
+  "areaServed": [
+  { "@type": "City", "name": "${n.city || 'Austin'}", "addressRegion": "TX" },
+  { "@type": "Neighborhood", "name": "${n.name}" }
+  ],
+  "hasCredential": { "@type": "EducationalOccupationalCredential", "name": "Texas Real Estate License", "identifier": "788149", "credentialCategory": "license" },
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5.0", "reviewCount": "15", "bestRating": "5", "worstRating": "1" },
+  "sameAs": ["https://share.google/hETte82InqUPvWeNC","https://www.linkedin.com/in/lukeallentx/","https://www.instagram.com/lukeallenrealty/","https://www.tiktok.com/@austintxapartments"]
+  }
+  </script>
 
   <script type="application/ld+json">
   {
   "@context": "https://schema.org",
   "@type": "RealEstateListing",
-  "name": "Homes for Sale in ${n.name}, Austin TX",
+  "name": "Homes for Sale in ${n.name}, ${n.city || 'Austin'} TX",
   "description": "${n.metaDescription}",
   "url": "https://austintxhomes.co/neighborhoods/${n.slug}",
   "areaServed": {
-  "@type": "Neighborhood",
+  "@type": "${n.city ? 'City' : 'Neighborhood'}",
   "name": "${n.name}",
-  "containedInPlace": { "@type": "City", "name": "Austin", "addressRegion": "TX" }
+  "containedInPlace": { "@type": "${n.city ? 'AdministrativeArea' : 'City'}", "name": "${n.city ? 'Texas' : 'Austin'}", "addressRegion": "TX" }
   },
   "provider": {
   "@type": "RealEstateAgent",
@@ -88,7 +107,7 @@ module.exports = function renderNeighborhoodPage(n) {
   "author": { "@type": "Person", "name": "Luke Allen", "jobTitle": "Licensed Austin TX Realtor", "url": "https://austintxhomes.co/about", "image": "https://austintxhomes.co/images/luke-allen.jpg" },
   "publisher": { "@type": "Organization", "name": "AustinTXHomes", "url": "https://austintxhomes.co", "logo": { "@type": "ImageObject", "url": "https://austintxhomes.co/images/luke-allen.jpg" } },
   "mainEntityOfPage": { "@type": "WebPage", "@id": "https://austintxhomes.co/neighborhoods/${n.slug}" },
-  "about": { "@type": "Place", "name": "${n.name}, Austin, TX" }
+  "about": { "@type": "Place", "name": "${n.name}, ${n.city || 'Austin'}, TX" }
   }
   </script>
 
@@ -310,7 +329,7 @@ module.exports = function renderNeighborhoodPage(n) {
   <div class="hero-inner">
   <div class="hero-copy">
   <p class="breadcrumb"><a href="/">Home</a> / <a href="/neighborhoods">Neighborhoods</a> / ${n.name} <span style="margin-left:10px;color:var(--gold);">&middot; Updated ${todayHuman}</span></p>
-  <p class="hero-eyebrow">Austin TX &middot; ${n.name}</p>
+  <p class="hero-eyebrow">${n.city && n.city === n.name ? `${n.area || 'Texas Hill Country'} &middot; ${n.name} TX` : `${n.city ? `${n.city} TX` : 'Austin TX'} &middot; ${n.name}`}</p>
   <h1>${n.h1.replace('Homes for Sale in ', 'Homes for Sale in <em>').replace(', Austin TX', '</em>, Austin TX').replace(', TX', '</em>, TX')}</h1>
   <p class="hero-tagline">${n.tagline}</p>
   <div class="hero-tags">${n.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
@@ -378,7 +397,7 @@ module.exports = function renderNeighborhoodPage(n) {
   <div class="buy-inner">
   <p class="section-eyebrow" style="color:var(--gold)">Buying in ${n.name}</p>
   <h2 class="section-title" style="color:#fff">Why Buy a Home in <em style="color:var(--gold-lt)">${n.name}</em>?</h2>
-  <p class="section-sub" style="color:rgba(255,255,255,.6)">Here's what makes ${n.name} one of Austin's most compelling places to buy right now - and what you need to know before making an offer.</p>
+  <p class="section-sub" style="color:rgba(255,255,255,.6)">Here's what makes ${n.name} one of ${n.city && n.city === n.name ? `Texas Hill Country's` : `Austin's`} most compelling places to buy right now - and what you need to know before making an offer.</p>
   <div class="buy-grid">
   ${(n.buyReasons || []).map(r => `
   <div class="buy-card">

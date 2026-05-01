@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Horseshoe Bay TX Homes for Sale | Lake LBJ Real Estate | Updated Daily</title>
-  <meta name="description" content="Browse all homes for sale in Horseshoe Bay, TX. Lake LBJ waterfront, Robert Trent Jones golf course homes, and Hill Country resort properties. Live MLS, updated daily." />
+  <title>Horseshoe Bay TX Homes for Sale | Lake LBJ Real Estate</title>
+  <meta name="description" content="Homes for sale in Horseshoe Bay, TX — Lake LBJ waterfront, RTJ golf course homes, and Hill Country resort properties. Live MLS, updated daily." />
   <link rel="canonical" href="https://austintxhomes.co/horseshoe-bay-homes-for-sale" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
@@ -396,7 +396,7 @@
       status: 'Active'
     });
     if (beds) params.set('minBeds', beds);
-    if (type) params.set('propertyType', type);
+    if (type) params.set('subType', type);
     try {
       const res = await fetch('/api/properties/search?' + params.toString());
       if (!res.ok) throw new Error('Bad response');
@@ -421,7 +421,7 @@
         const addrSlug = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g,'').trim().replace(/\s+/g,'-');
         const link = l.listing_key ? (addrSlug ? '/property/' + addrSlug + '-' + l.listing_key : '/property/' + l.listing_key) : '#';
         return '<a class="listing-card" href="' + link + '">' +
-          '<div class="card-img">' + (img ? '<img src="' + img + '" alt="' + addr + '" loading="lazy" onerror="this.style.display=\\'none\\';this.parentElement.innerHTML=\\'<div class=card-no-photo>No photo</div>\\'" />' : '<div class="card-no-photo">No photo</div>') +
+          '<div class="card-img">' + (img ? '<img src="' + img + '" alt="' + addr + '" loading="lazy" />' : '<div class="card-no-photo">No photo</div>') +
           '<span class="card-badge">For Sale</span></div>' +
           '<div class="card-body"><div class="card-price">' + price + '</div>' +
           '<div class="card-address">' + addr + '</div>' +
