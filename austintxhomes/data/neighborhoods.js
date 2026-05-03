@@ -1947,4 +1947,52 @@ module.exports = {
   nearbyNames: ['Hudson Bend', 'Westlake Hills', 'Cedar Park']
   },
 
+  'pedernales-river': {
+  slug: 'pedernales-river',
+  name: 'Pedernales River',
+  mlsSearch: 'Spicewood',
+  searchParam: 'city=Spicewood,Briarcliff,Bee%20Cave,Johnson%20City,Stonewall',
+  area: 'Texas Hill Country',
+  city: 'Pedernales River',
+  geoPlace: 'Pedernales River, Texas',
+  title: 'Pedernales River Homes for Sale | Hill Country Waterfront',
+  metaDescription: 'Pedernales River homes, ranches, and waterfront land for sale across the Texas Hill Country. Live MLS, river-frontage analysis, and Spicewood / Briarcliff / Johnson City inventory.',
+  h1: 'Homes for Sale Along the Pedernales River, TX',
+  tagline: 'The Hill Country river that the locals quietly buy on',
+  medianPrice: '$925K+',
+  priceRange: '$400K to $10M+',
+  homeTypes: 'River-frontage estates, Hill Country ranches, custom homes on acreage, weekend cabins, raw land',
+  schools: 'Lake Travis ISD (south end), Marble Falls ISD, Johnson City ISD, Fredericksburg ISD',
+  commute: '35 min to Bee Cave, 50 min to downtown Austin, 90 min to San Antonio',
+  walkScore: 8,
+  vibe: 'Private acreage, river-frontage living, Hill Country ranching, weekend escapes from Austin',
+  tags: ['River Frontage', 'Hill Country', 'Acreage', 'Ranches', 'Spicewood', 'Lake Travis ISD'],
+  intro: [
+  'The Pedernales River runs 106 miles through the Texas Hill Country before it spills into Lake Travis at the Pedernales arm. The stretch from Johnson City east through Stonewall, Spicewood, and Briarcliff is where the bulk of the river-frontage real estate lives, and it is one of the most quietly desirable corners of the Austin region. Most homes here sit on 1 to 100+ acres with private river access, well water, septic, and the kind of stargazing you do not get inside Austin city limits.',
+  'Buyers along the Pedernales tend to be Austin tech executives looking for a weekend home, ranch buyers from across Texas, retirees wanting to live big without an HOA telling them how to do it, and families chasing Lake Travis ISD on the south side. River frontage commands a meaningful premium, but the real value driver is acreage and privacy. A 5-acre lot with 200 feet of river is a different asset than a tract home in Bee Cave, even at a similar price. The Pedernales market does not move on the same cycle as urban Austin.',
+  'Inventory turnover is slow. Many of these properties have been in the same family for decades. When something good comes up, it tends to move through word-of-mouth before it ever hits MLS. That is why working with someone who actually knows the river matters here. Below you can see every active listing across Spicewood, Briarcliff, and the Johnson City corridor, plus a market read on what is actually selling and at what price.'
+  ],
+  highlights: [
+  { icon: '🏞️', label: 'Private River Frontage', text: 'Most Pedernales properties sell with private river access. Frontage length, depth, swimming-hole quality, and limestone bluff features all swing value. A 5-acre lot with 300 feet of river and a deep swimming hole is worth more than 20 acres with shallow rocky frontage.' },
+  { icon: '🏡', label: 'Acreage and Privacy', text: 'Typical lots run 1 to 25 acres, with ranches stretching to 100+ acres. No HOAs in most areas. Properties usually carry well water and septic systems, with city water only in pockets near Spicewood and Briarcliff.' },
+  { icon: '🎓', label: 'Lake Travis ISD Coverage', text: 'The south side of the river through Spicewood and Briarcliff falls inside Lake Travis ISD, one of the most highly-rated school districts in Central Texas. School coverage is a key value driver for full-time families.' },
+  { icon: '🌳', label: 'Pedernales Falls + Hamilton Pool', text: 'Pedernales Falls State Park, Hamilton Pool Preserve, Westcave Preserve, and Reimers Ranch sit along this stretch. The river also runs through the LBJ Ranch in Stonewall. Recreation and natural-feature density is unmatched in the region.' }
+  ],
+  faqs: [
+  { q: 'What is the average price of a Pedernales River home?', a: 'Median Pedernales River frontage homes run $1.2M to $2.8M for typical river-frontage acreage with a custom home. Larger ranches with substantial river frontage start at $3M and reach $10M+. Raw land with river frontage can be found from around $400K for smaller parcels up through $5M+ for ranch-scale acreage. Off-river homes on nearby acreage start lower, typically $500K to $1M.' },
+  { q: 'How far is the Pedernales River from Austin?', a: 'The closest river-frontage properties (Spicewood, Briarcliff) are about 30 to 45 minutes from downtown Austin via Highway 71. Johnson City is about an hour west. Stonewall and the LBJ Ranch corridor sits about 90 minutes from Austin on Highway 290. Most weekend buyers from Austin land in the Spicewood and Briarcliff corridor because it is the closest practical commute.' },
+  { q: 'Does the Pedernales River run year-round?', a: 'The Pedernales is a Hill Country spring-and-rain-fed river. Flow varies seasonally - it runs strong in spring and after rains, and can drop to slow pools during late summer. The deeper holes and spring-fed sections hold water year-round. Buying here, you should walk the property in late August to see your river at its most stressed, not in April when everything looks great.' },
+  { q: 'What schools serve the Pedernales River area?', a: 'School coverage depends on location. The south side of the river from Spicewood through Briarcliff is in Lake Travis ISD, one of the top-rated districts in Central Texas. Areas north of the river around Marble Falls fall in Marble Falls ISD. Johnson City has its own ISD. Stonewall is in Fredericksburg ISD. Lake Travis ISD coverage is the single biggest school-driven value lift along the river.' },
+  { q: 'Can I build my own home on Pedernales River land?', a: 'Yes - most Pedernales properties allow custom builds, but several layers of approval matter: county building codes (Travis vs Burnet vs Blanco vs Gillespie all differ), septic system permits through the county health department, well-drilling rights, FEMA floodplain restrictions on river-adjacent footprints, and any subdivision deed restrictions. Always pull a survey and verify floodplain status before offering on raw land.' },
+  { q: 'What is the property tax rate along the Pedernales River?', a: 'Property tax rates run 1.5 to 1.9 percent across Burnet, Blanco, and Gillespie counties, lower than Austin proper at 2.0 to 2.4 percent. The Travis County portion of the river (Spicewood, Briarcliff) runs slightly higher at 1.8 to 2.1 percent. There are also wildlife and ag exemptions available for qualifying acreage that can dramatically reduce the assessed value of large tracts.' }
+  ],
+  buyReasons: [
+  { icon: '🏞️', heading: 'River Frontage Holds Value Through Cycles', body: 'Pedernales River frontage is structurally finite. Unlike subdivision lots that can keep getting added, river frontage is a fixed quantity. That structural scarcity has historically made river-front parcels more recession-resistant than typical Austin-suburb inventory. Long-term owners report holding value through cycles that hammered urban condos and tract homes.' },
+  { icon: '🌳', heading: 'Privacy and Lifestyle Have No Substitute', body: 'For buyers prioritizing privacy, dark skies, river access, and acreage, there is no substitute for this corridor at this distance from Austin. The next closest option with similar privacy is Hamilton or further west, an additional hour away. The Pedernales hits the rare price point where you can be 35 to 45 minutes from a city of 2 million and still own enough acreage to lose your neighbors.' },
+  { icon: '💰', heading: 'Lower Property Tax + Wildlife Exemptions', body: 'Tax rates on the Burnet, Blanco, and Gillespie county sides of the river run notably below Austin city. For larger tracts, qualifying for an ag or wildlife exemption can drop assessed value by 60 to 90 percent, which makes carrying costs on a recreational property much more manageable than equivalent acreage in Travis County.' }
+  ],
+  nearby: ['cedar-park', 'westlake-hills'],
+  nearbyNames: ['Cedar Park', 'Westlake Hills']
+  },
+
 };

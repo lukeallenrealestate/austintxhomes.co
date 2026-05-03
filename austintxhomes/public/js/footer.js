@@ -286,7 +286,8 @@
   <li><a href="/bee-cave-tx">Bee Cave TX Homes</a></li>
   <li><a href="/neighborhoods/hudson-bend">Hudson Bend Austin</a></li>
   <li><a href="/neighborhoods/horseshoe-bay">Horseshoe Bay</a></li>
-  <li><a href="/neighborhoods">Browse All 41 Neighborhoods →</a></li>
+  <li><a href="/neighborhoods/pedernales-river">Pedernales River</a></li>
+  <li><a href="/neighborhoods">Browse All 42 Neighborhoods →</a></li>
   </ul>
 
   <div class="sf-col-subhead">Round Rock Neighborhoods</div>
