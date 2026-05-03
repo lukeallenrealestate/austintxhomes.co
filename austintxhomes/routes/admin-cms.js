@@ -12,10 +12,18 @@ const ALLOWED_DIRS = [
   path.join(__dirname, '..', 'data'),
   path.join(__dirname, '..', 'templates'),
 ];
+// Specific public/-root files that are SEO-relevant and worth allowing
+// to hot-push without granting blanket write access to the whole public/ tree.
+const ALLOWED_FILES = [
+  path.join(__dirname, '..', 'public', 'sitemap.xml'),
+  path.join(__dirname, '..', 'public', 'robots.txt'),
+];
 
 function isSafePath(filePath) {
   const resolved = path.resolve(filePath);
-  return ALLOWED_DIRS.some(dir => resolved.startsWith(dir));
+  if (ALLOWED_FILES.includes(resolved)) return true;
+  // Append path.sep so /foo/public/site does not match /foo/public/site-attack
+  return ALLOWED_DIRS.some(dir => resolved === dir || resolved.startsWith(dir + path.sep));
 }
 
 // GET /api/admin-cms/pages - list all pages with metadata
