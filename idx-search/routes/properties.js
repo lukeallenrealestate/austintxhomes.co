@@ -493,6 +493,12 @@ router.get('/map-pins', (req, res) => {
 
 // GET /api/properties/map-bundle — returns pins + paginated cards + total in ONE call.
 // Map view uses this instead of /map-pins + /search to eliminate duplicate DB work.
+// Map-bundle response cache - large payloads on common filters get reused
+// for 5 minutes. Keyed by the SQL where + values + sort + page + polygon flag.
+const mapBundleCache = new Map();
+const MAP_BUNDLE_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const MAP_BUNDLE_CACHE_MAX = 50; // simple LRU cap to avoid unbounded growth
+
 router.get('/map-bundle', (req, res) => {
   try {
     const { sortBy, page = 1, limit = 50, polygon } = req.query;
@@ -513,7 +519,23 @@ router.get('/map-bundle', (req, res) => {
     let polygonArr = [];
     if (hasPolygon) { try { polygonArr = JSON.parse(polygon); } catch {} }
 
-    // Pins: lightweight columns, up to 5000
+    // Cache lookup. Polygon filters skip cache because the polygon shape is
+    // effectively unique per-request and serializing it as a key gets expensive.
+    const cacheKey = !hasPolygon
+      ? `${where}|${JSON.stringify(values)}|${orderBy}|p${page}|l${limit}`
+      : null;
+    if (cacheKey) {
+      const cached = mapBundleCache.get(cacheKey);
+      if (cached && Date.now() - cached.ts < MAP_BUNDLE_CACHE_TTL) {
+        res.set('X-Map-Cache', 'HIT');
+        return res.json(cached.payload);
+      }
+    }
+
+    // Pins: lightweight columns, up to 5000.
+    // photos and photos_r2 are pulled from the DB so we can extract the hero
+    // photo per pin, but the FULL arrays are dropped before sending to the
+    // client - pins only need one image for the info-window thumbnail.
     let pins = db.prepare(`
       SELECT listing_key, list_price, latitude, longitude, standard_status,
              bedrooms_total, bathrooms_total, living_area, unparsed_address,
@@ -525,10 +547,16 @@ router.get('/map-bundle', (req, res) => {
       pins = pins.filter(p => pointInPolygon(p.latitude, p.longitude, polygonArr));
     }
 
+    // Replace each pin's full photos array with a single `photo` field (hero
+    // only). For 5000 pins with 30 photos each, this drops payload from
+    // ~7 MB to ~500 KB. The info-window only ever shows photo[0]; the full
+    // photo set loads when the user clicks through to /property/{key}.
     pins = pins.map(p => {
       const photos = tryParse(p.photos, []);
       const r2Photos = tryParse(p.photos_r2, []);
-      return { ...p, photos: resolvePhotos(photos, p.listing_key, r2Photos) };
+      const resolved = resolvePhotos(photos, p.listing_key, r2Photos);
+      const { photos: _drop1, photos_r2: _drop2, ...rest } = p;
+      return { ...rest, photo: resolved[0] || null };
     });
 
     // Cards: full columns, paginated
@@ -571,13 +599,26 @@ router.get('/map-bundle', (req, res) => {
       return { ...r, photos: resolvePhotos(photos, r.listing_key, r2Photos) };
     });
 
-    res.json({
+    const payload = {
       pins,
       total,
       page: Number(page),
       pages: Math.ceil(total / Number(limit)),
       listings: rows
-    });
+    };
+
+    // Cache for 5 minutes (skipped for polygon searches since the key would be
+    // unique per request anyway). Simple LRU eviction when the cache fills up.
+    if (cacheKey) {
+      if (mapBundleCache.size >= MAP_BUNDLE_CACHE_MAX) {
+        const oldestKey = mapBundleCache.keys().next().value;
+        mapBundleCache.delete(oldestKey);
+      }
+      mapBundleCache.set(cacheKey, { payload, ts: Date.now() });
+      res.set('X-Map-Cache', 'MISS');
+    }
+
+    res.json(payload);
   } catch (err) {
     console.error('[MAP-BUNDLE]', err);
     res.status(500).json({ error: err.message });

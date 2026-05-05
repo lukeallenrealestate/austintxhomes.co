@@ -17,6 +17,7 @@ let searchDebounce = null;
 let autocompleteDebounce = null;
 let mapIdleTimer = null;
 let gmapsLoaded = false;
+let gmapsLoading = false;
 let pendingMapZoom = false;
 let pendingPolygonRestore = false;
 
@@ -231,11 +232,13 @@ function applyUrlParams() {
 
 // ---- Init ----
 document.addEventListener('DOMContentLoaded', async () => {
-  loadGoogleMaps();
   setupAutocomplete();
   restoreSearchState();
   applyUrlParams();   // override with URL params from homepage neighborhood links
   document.getElementById('view-controls').style.display = 'flex';
+  // Only load Google Maps up-front if the user is landing directly on map view
+  // (polygon URL or previously-saved map-view state). Otherwise defer until they click Map.
+  if (currentView === 'map') loadGoogleMaps();
   applyFilters();
   setupPillListeners();
 
@@ -265,11 +268,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
-// ---- Load Google Maps ----
+// ---- Load Google Maps (lazy — only fires when map view is opened) ----
 async function loadGoogleMaps() {
+  if (gmapsLoaded || gmapsLoading) return;
+  gmapsLoading = true;
+
   const res = await fetch('/api/config');
   const config = await res.json();
-  if (!config.googleMapsKey) return;
+  if (!config.googleMapsKey) { gmapsLoading = false; return; }
 
   window.initMap = initMap;
   const script = document.createElement('script');
@@ -1108,26 +1114,22 @@ function goToPage(page) {
 }
 
 // ---- Map View ----
+// Single combined fetch replaces the old dual /map-pins + /search calls —
+// backend runs one WHERE clause and returns pins + cards + total.
 async function loadMapPins() {
   if (!googleMap) return;
 
-  const params = new URLSearchParams({ ...currentFilters });
-
-  const res = await fetch(`/api/properties/map-pins?${params}`);
-  mapPins = await res.json();
-
-  renderMapMarkers(mapPins);
-}
-
-async function loadMapCards() {
   const params = new URLSearchParams({
     ...currentFilters,
     page: 1,
     limit: 50
   });
 
-  const res = await fetch(`/api/properties/search?${params}`);
+  const res = await fetch(`/api/properties/map-bundle?${params}`);
   const data = await res.json();
+
+  mapPins = data.pins || [];
+  renderMapMarkers(mapPins);
 
   const countEl = document.getElementById('results-count');
   if (countEl) countEl.innerHTML = `<strong>${data.total.toLocaleString()}</strong> homes found`;
@@ -1136,8 +1138,11 @@ async function loadMapCards() {
   if (mapCount) mapCount.textContent = `${data.total.toLocaleString()} homes`;
 
   const listEl = document.getElementById('map-cards-list');
-  if (listEl) listEl.innerHTML = data.listings.map(renderMapCard).join('');
+  if (listEl) listEl.innerHTML = (data.listings || []).map(renderMapCard).join('');
 }
+
+// Merged into loadMapPins — kept as a no-op so existing paired call sites still compile.
+async function loadMapCards() {}
 
 function markerIcon(pin, zoom, hovered = false) {
   const fill = hovered ? '#f97316' : (pin.standard_status === 'Active' ? '#1877F2' : '#374151');
@@ -1216,7 +1221,10 @@ function renderMapMarkers(pins) {
 }
 
 function showMarkerInfo(pin, marker) {
-  const photo = pin.photos?.[0] || '';
+  // The map-bundle endpoint now returns `photo` (singular hero) instead of
+  // the full `photos` array - dropped from ~7MB to ~500KB on city searches.
+  // Fallback to photos[0] keeps this working with older endpoint responses.
+  const photo = pin.photo || pin.photos?.[0] || '';
   const beds = pin.bedrooms_total ? pin.bedrooms_total + ' bd' : '';
   const baths = pin.bathrooms_total ? pin.bathrooms_total + ' ba' : '';
   const sqft = pin.living_area ? Math.round(pin.living_area).toLocaleString() + ' sqft' : '';
@@ -1332,6 +1340,10 @@ function switchView(view) {
         loadMapPins();
         loadMapCards();
       }
+    } else {
+      // First time the user opens map view — kick off the Maps bundle now.
+      // initMap's 'idle' listener will fire loadMapPins/loadMapCards once ready.
+      loadGoogleMaps();
     }
   } else {
     loadListings();
