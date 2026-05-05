@@ -437,6 +437,50 @@ function fetchJSON(url) {
   });
 }
 
+// ── Homepage neighborhood-count endpoint ──────────────────────────────────
+// The homepage previously fired 9 separate /api/properties/search?limit=1 calls
+// in parallel to count active listings per featured neighborhood. Each cost
+// 800-1200ms because the search endpoint runs full SQL per request. Replaces
+// all 9 with one call, cached for 1 hour. Caches per-neighborhood individually
+// so adding a neighborhood to the homepage does not invalidate the whole batch.
+let neighborhoodCountsCache = null;
+let neighborhoodCountsCacheTime = 0;
+const HOMEPAGE_NEIGHBORHOODS = [
+  ['barton-hills', 'Barton Hills'],
+  ['tarrytown', 'Tarrytown'],
+  ['westlake-hills', 'Westlake Hills'],
+  ['hyde-park', 'Hyde Park'],
+  ['travis-heights', 'Travis Heights'],
+  ['mueller', 'Mueller'],
+  ['clarksville', 'Clarksville'],
+  ['south-congress', 'South Congress'],
+  ['east-austin', 'East Austin']
+];
+
+app.get('/api/neighborhood-counts', (_req, res) => {
+  // Cache for 1 hour. Counts change at MLS sync intervals, no need to recompute on every request.
+  if (neighborhoodCountsCache && (Date.now() - neighborhoodCountsCacheTime) < 3600000) {
+    return res.json(neighborhoodCountsCache);
+  }
+  try {
+    const out = {};
+    for (const [slug, name] of HOMEPAGE_NEIGHBORHOODS) {
+      const row = listingDb.prepare(
+        `SELECT COUNT(*) as n FROM listings
+         WHERE standard_status = 'Active' AND mlg_can_view = 1
+           AND subdivision_name LIKE ?`
+      ).get('%' + name + '%');
+      out[slug] = row?.n || 0;
+    }
+    neighborhoodCountsCache = out;
+    neighborhoodCountsCacheTime = Date.now();
+    res.json(out);
+  } catch (e) {
+    console.warn('[neighborhood-counts] failed:', e.message);
+    res.status(500).json({ error: 'failed' });
+  }
+});
+
 app.get('/api/market-stats', async (_req, res) => {
   try {
     // Serve cached stats if fresh (< 1 hour)
