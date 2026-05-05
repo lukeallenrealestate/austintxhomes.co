@@ -163,9 +163,9 @@
   </url>
   <url>
     <loc>https://austintxhomes.co/1031-exchange-austin</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <lastmod>2026-05-04</lastmod>
   </url>
   <url>
     <loc>https://austintxhomes.co/brrrr-method-austin</loc>
@@ -1846,4 +1846,9 @@
   <url><loc>https://austintxhomes.co/neighborhoods/pedernales-river</loc><priority>0.9</priority><changefreq>weekly</changefreq><lastmod>2026-05-03</lastmod></url>
   <url><loc>https://austintxhomes.co/neighborhoods/pedernales-river/homes-for-sale</loc><priority>0.8</priority><changefreq>daily</changefreq><lastmod>2026-05-03</lastmod></url>
   <url><loc>https://austintxhomes.co/neighborhoods/pedernales-river/best-realtor</loc><priority>0.8</priority><changefreq>monthly</changefreq><lastmod>2026-05-03</lastmod></url>
+  <url><loc>https://austintxhomes.co/1031-exchange-rules-and-deadlines</loc><priority>0.9</priority><changefreq>monthly</changefreq><lastmod>2026-05-04</lastmod></url>
+  <url><loc>https://austintxhomes.co/reverse-1031-exchange-austin</loc><priority>0.9</priority><changefreq>monthly</changefreq><lastmod>2026-05-04</lastmod></url>
+  <url><loc>https://austintxhomes.co/1031-exchange-qualified-intermediary-austin</loc><priority>0.9</priority><changefreq>monthly</changefreq><lastmod>2026-05-04</lastmod></url>
+  <url><loc>https://austintxhomes.co/1031-replacement-properties-austin</loc><priority>0.9</priority><changefreq>weekly</changefreq><lastmod>2026-05-04</lastmod></url>
+  <url><loc>https://austintxhomes.co/1031-exchange-multifamily-austin</loc><priority>0.9</priority><changefreq>monthly</changefreq><lastmod>2026-05-04</lastmod></url>
 </urlset>
