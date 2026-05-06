@@ -1187,6 +1187,36 @@ if (r2Service.isEnabled()) {
   setTimeout(() => bulkUploadDiskCacheToR2().catch(console.error), 5000);
 }
 
+// Auto-recover photos_r2 column if Replit Publish wiped it. Heuristic: if many
+// listings have populated photos but few have photos_r2 mirrors, the column
+// was likely reset and the R2 bucket itself still has the files. The recovery
+// is idempotent (no-op when bucket is empty) so this is safe even on first deploy.
+if (r2Service.isEnabled()) {
+  setTimeout(() => {
+    try {
+      const stats = idxDb.prepare(`
+        SELECT
+          SUM(CASE WHEN photos IS NOT NULL AND photos != '[]' THEN 1 ELSE 0 END) AS with_photos,
+          SUM(CASE WHEN photos_r2 IS NOT NULL AND photos_r2 != '[]' AND photos_r2 != 'null' THEN 1 ELSE 0 END) AS with_r2
+        FROM listings WHERE mlg_can_view = 1
+      `).get();
+      const withPhotos = stats.with_photos || 0;
+      const withR2 = stats.with_r2 || 0;
+      const ratio = withPhotos > 0 ? withR2 / withPhotos : 1;
+      if (withPhotos >= 2000 && ratio < 0.15) {
+        console.log(`[STARTUP] photos_r2 wipe detected (${withR2}/${withPhotos} = ${(ratio*100).toFixed(1)}%) — auto-running R2 bucket recovery in 60s`);
+        setTimeout(() => {
+          r2Service.recoverR2FromBucket().catch(e => console.error('[R2-RECOVER] startup fatal:', e));
+        }, 60000);
+      } else {
+        console.log(`[STARTUP] photos_r2 healthy (${withR2}/${withPhotos} = ${(ratio*100).toFixed(1)}%) — skipping auto-recovery`);
+      }
+    } catch (e) {
+      console.warn('[STARTUP] photos_r2 wipe check failed:', e.message);
+    }
+  }, 30000);
+}
+
 // Sync closed lease comps for cash-flow algorithm (runs after main sync)
 const closedLeaseCount = idxDb.prepare(
   `SELECT COUNT(*) as n FROM listings WHERE (property_type LIKE '%Lease%') AND standard_status = 'Closed'`

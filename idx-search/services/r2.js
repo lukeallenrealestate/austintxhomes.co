@@ -92,4 +92,91 @@ function saveR2Url(listingKey, photoIdx, url) {
   }
 }
 
-module.exports = { isEnabled, uploadPhoto, saveR2Url };
+// Rebuild photos_r2 by listing the R2 bucket directly. Used after a Replit
+// Publish nukes the column. The actual photo files in R2 survive — only the
+// DB pointers are lost. Yields between chunks so HTTP traffic isn't starved.
+async function recoverR2FromBucket() {
+  const BUCKET = process.env.R2_BUCKET || 'austintxhomes-photos';
+  const PUBLIC_URL = (process.env.R2_PUBLIC_URL || '').replace(/\/$/, '');
+  if (!process.env.R2_ACCOUNT_ID || !process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY || !PUBLIC_URL) {
+    console.error('[R2-RECOVER] R2 env not configured — aborting');
+    return { aborted: 'env-missing' };
+  }
+  const { S3Client, ListObjectsV2Command } = require('@aws-sdk/client-s3');
+  const client = new S3Client({
+    region: 'auto',
+    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    credentials: {
+      accessKeyId: process.env.R2_ACCESS_KEY_ID,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+    },
+  });
+
+  console.log('[R2-RECOVER] Starting bucket scan...');
+  const t0 = Date.now();
+  const byListing = new Map();
+  let token, pageCount = 0, totalKeys = 0;
+  do {
+    const out = await client.send(new ListObjectsV2Command({ Bucket: BUCKET, Prefix: 'photos/', ContinuationToken: token }));
+    pageCount++;
+    for (const o of (out.Contents || [])) {
+      totalKeys++;
+      const m = /^photos\/([^/]+)\/(\d+)\.jpg$/.exec(o.Key);
+      if (!m) continue;
+      const lk = m[1];
+      const idx = Number(m[2]);
+      let m2 = byListing.get(lk);
+      if (!m2) { m2 = {}; byListing.set(lk, m2); }
+      m2[idx] = `${PUBLIC_URL}/photos/${lk}/${idx}.jpg`;
+    }
+    token = out.IsTruncated ? out.NextContinuationToken : undefined;
+    if (pageCount % 5 === 0) {
+      console.log(`[R2-RECOVER] Scanned page ${pageCount}, ${totalKeys} keys, ${byListing.size} unique listings...`);
+    }
+  } while (token);
+
+  console.log(`[R2-RECOVER] Scan complete: ${totalKeys} keys across ${byListing.size} listings in ${((Date.now() - t0) / 1000).toFixed(1)}s. Rebuilding DB column...`);
+  if (byListing.size === 0) {
+    console.log('[R2-RECOVER] R2 bucket is empty — nothing to recover.');
+    return { keys: 0, listings: 0, updated: 0 };
+  }
+
+  const sel = db.prepare('SELECT photos FROM listings WHERE listing_key = ?');
+  const upd = db.prepare('UPDATE listings SET photos_r2 = ? WHERE listing_key = ?');
+  let updated = 0, skipped = 0;
+  const tx = db.transaction((entries) => {
+    for (const [lk, idxMap] of entries) {
+      const row = sel.get(lk);
+      if (!row) { skipped++; continue; }
+      let totalPhotos = 0;
+      try { totalPhotos = (JSON.parse(row.photos) || []).length; } catch {}
+      if (totalPhotos === 0) {
+        totalPhotos = Math.max(...Object.keys(idxMap).map(Number)) + 1;
+      }
+      const arr = new Array(totalPhotos).fill(null);
+      for (const [idx, url] of Object.entries(idxMap)) {
+        const i = Number(idx);
+        if (i < arr.length) arr[i] = url;
+      }
+      upd.run(JSON.stringify(arr), lk);
+      updated++;
+    }
+  });
+
+  // 100-row sub-transactions with setImmediate yields keep the event loop
+  // free for HTTP traffic during recovery.
+  const allEntries = [...byListing.entries()];
+  const CHUNK = 100;
+  for (let i = 0; i < allEntries.length; i += CHUNK) {
+    tx(allEntries.slice(i, i + CHUNK));
+    if ((i / CHUNK) % 20 === 0) {
+      console.log(`[R2-RECOVER] Updated ${updated} / ${byListing.size} listings...`);
+    }
+    await new Promise(r => setImmediate(r));
+  }
+
+  console.log(`[R2-RECOVER] Done. Updated ${updated} listings (${skipped} R2 keys had no DB row) in ${((Date.now() - t0) / 1000).toFixed(1)}s.`);
+  return { keys: totalKeys, listings: byListing.size, updated, skipped };
+}
+
+module.exports = { isEnabled, uploadPhoto, saveR2Url, recoverR2FromBucket };
