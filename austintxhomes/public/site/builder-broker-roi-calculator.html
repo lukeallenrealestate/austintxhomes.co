@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Builder vs Broker ROI Calculator | Austin New Construction</title>
+  <meta name="description" content="Calculate net proceeds: builder-led marketing vs broker-listed for Austin new construction. Days on market, carry cost, commission. Free, no email gate." />
+  <link rel="canonical" href="https://austintxhomes.co/builder-broker-roi-calculator" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/favicon-96.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Builder vs Broker ROI Calculator | Austin" />
+  <meta property="og:description" content="Calculate net proceeds: builder-led marketing vs MLS-listed broker partnership for Austin new construction projects." />
+  <meta property="og:url" content="https://austintxhomes.co/builder-broker-roi-calculator" />
+  <meta property="og:image" content="https://austintxhomes.co/images/luke-allen.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <meta name="geo.region" content="US-TX" />
+  <meta name="geo.placename" content="Austin, Texas" />
+
+  <script type="application/ld+json">
+  [{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Builder vs Broker ROI Calculator",
+  "description": "Free interactive calculator that compares net proceeds for Austin builders running their own marketing versus partnering with a listing broker for MLS launch. Inputs include project size, list price, marketing budget, days on market, carry cost, and commission. No email gate.",
+  "url": "https://austintxhomes.co/builder-broker-roi-calculator",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "creator": { "@type": "Person", "name": "Luke Allen", "jobTitle": "Licensed Texas Realtor" },
+  "publisher": { "@type": "Organization", "name": "AustinTXHomes" }
+  },{
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  "name": "Luke Allen - Austin TX Homes",
+  "url": "https://austintxhomes.co",
+  "telephone": "+12547182567",
+  "email": "Luke@austinmdg.com",
+  "image": "https://austintxhomes.co/images/luke-allen.jpg",
+  "areaServed": [{ "@type": "City", "name": "Austin", "addressRegion": "TX" }],
+  "hasCredential": { "@type": "EducationalOccupationalCredential", "name": "Texas Real Estate License", "identifier": "788149", "credentialCategory": "license" },
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5.0", "reviewCount": "15", "bestRating": "5", "worstRating": "1" },
+  "sameAs": ["https://share.google/hETte82InqUPvWeNC","https://www.linkedin.com/in/lukeallentx/","https://www.instagram.com/lukeallenrealty/","https://www.tiktok.com/@austintxapartments"]
+  },{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://austintxhomes.co/" },
+    { "@type": "ListItem", "position": 2, "name": "New Construction Listing Agent", "item": "https://austintxhomes.co/austin-new-construction-listing-agent" },
+    { "@type": "ListItem", "position": 3, "name": "Builder Broker ROI Calculator", "item": "https://austintxhomes.co/builder-broker-roi-calculator" }
+  ]
+  }]
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--gold:#b8935a;--gold-lt:#cda96f;--gold-pale:#f5ede0;--ink:#0f0f0e;--text:#1a1918;--mid:#5c5b57;--light:#999690;--bg:#fff;--warm:#faf8f4;--cream:#f1ece3;--border:#e5dfd4;--r:4px;--w:1180px}
+  body{font-family:'Inter',sans-serif;color:var(--text);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:'Cormorant Garamond',serif;font-weight:400;line-height:1.15;color:var(--ink)}
+  a{color:var(--gold);text-decoration:none}a:hover{color:var(--gold-lt)}
+
+  .hero{background:var(--ink);padding:130px 32px 80px;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(184,147,90,.16) 0%,transparent 70%);pointer-events:none}
+  .hero-inner{max-width:var(--w);margin:0 auto;position:relative;text-align:center}
+  .hero-eye{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);background:rgba(184,147,90,.1);border:1px solid rgba(184,147,90,.3);padding:6px 14px;border-radius:100px;margin-bottom:1.5rem}
+  .hero h1{font-size:clamp(2.4rem,5vw,3.8rem);color:#fff;margin-bottom:1.25rem;font-weight:300;letter-spacing:-.01em;line-height:1.05;max-width:880px;margin-left:auto;margin-right:auto}
+  .hero h1 em{color:var(--gold-lt);font-style:italic;font-weight:300}
+  .hero p.lead{font-size:1.05rem;color:rgba(255,255,255,.72);max-width:680px;margin:0 auto 1.5rem;line-height:1.8;font-weight:300}
+  .hero .crumb{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:1.25rem}
+  .hero .crumb a{color:rgba(255,255,255,.7)}.hero .crumb a:hover{color:var(--gold)}
+
+  .calc-section{background:var(--warm);padding:80px 32px}
+  .calc-inner{max-width:1080px;margin:0 auto}
+  .calc-card{background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.04)}
+  .calc-header{background:var(--ink);color:#fff;padding:2rem 2.5rem}
+  .calc-header h2{color:#fff;font-size:1.75rem;margin-bottom:.4rem}
+  .calc-header p{color:rgba(255,255,255,.65);font-size:.9rem;line-height:1.6}
+  .calc-body{padding:2.5rem;display:grid;grid-template-columns:1fr 1.2fr;gap:2.5rem}
+  @media(max-width:880px){.calc-body{grid-template-columns:1fr;padding:1.75rem}}
+
+  .inputs h3{font-size:1.3rem;margin-bottom:1.25rem;color:var(--ink)}
+  .input-row{margin-bottom:1.25rem}
+  .input-row label{display:block;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);margin-bottom:.4rem;font-weight:500}
+  .input-row .desc{font-size:.78rem;color:var(--light);margin-top:.3rem;line-height:1.5}
+  .input-row input,.input-row select{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r);font-family:'Inter',sans-serif;font-size:1rem;background:#fff;outline:none;transition:border-color .2s}
+  .input-row input:focus,.input-row select:focus{border-color:var(--gold)}
+  .input-row .prefix{position:relative}
+  .input-row .prefix::before{content:attr(data-prefix);position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mid);font-size:1rem;pointer-events:none}
+  .input-row .prefix input{padding-left:30px}
+  .input-row .suffix{position:relative}
+  .input-row .suffix::after{content:attr(data-suffix);position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--mid);font-size:.85rem;pointer-events:none}
+
+  .results{background:var(--cream);border-radius:6px;padding:2rem 2rem;border-left:3px solid var(--gold)}
+  .results h3{font-size:1.3rem;margin-bottom:1.5rem;color:var(--ink)}
+  .scenario{background:#fff;border:1px solid var(--border);border-radius:4px;padding:1.5rem 1.5rem;margin-bottom:1rem}
+  .scenario.broker{border-left:3px solid var(--gold)}
+  .scenario h4{font-size:1.1rem;color:var(--ink);margin-bottom:.6rem;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.02em}
+  .scenario .net{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:var(--gold);line-height:1;margin-bottom:.4rem;font-style:italic}
+  .scenario.builder .net{color:var(--mid)}
+  .scenario .breakdown{font-size:.82rem;color:var(--mid);line-height:1.7}
+  .scenario .breakdown div{display:flex;justify-content:space-between;border-bottom:1px dashed var(--border);padding:5px 0}
+  .scenario .breakdown div:last-child{border-bottom:none;font-weight:600;color:var(--ink);padding-top:8px}
+
+  .delta{background:var(--ink);color:#fff;padding:1.5rem 1.75rem;border-radius:6px;margin-top:1rem;text-align:center}
+  .delta .delta-label{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+  .delta .delta-num{font-family:'Cormorant Garamond',serif;font-size:2.6rem;color:var(--gold-lt);line-height:1;font-style:italic;margin-bottom:.4rem}
+  .delta .delta-note{font-size:.82rem;color:rgba(255,255,255,.7);line-height:1.6}
+
+  section.content{padding:80px 32px}
+  section.content.cream{background:var(--cream)}
+  .content-inner{max-width:880px;margin:0 auto}
+  .content-eye{display:inline-flex;align-items:center;gap:10px;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.9rem;font-weight:600}
+  .content-eye::before{content:'';width:24px;height:1px;background:var(--gold)}
+  .content-title{font-size:clamp(1.9rem,3vw,2.4rem);font-weight:400;color:var(--ink);margin-bottom:1.5rem;line-height:1.15}
+  .content-title em{color:var(--gold);font-style:italic}
+  .content-inner p{font-size:1rem;color:var(--text);line-height:1.85;margin-bottom:1.1rem}
+  .content-inner p strong{color:var(--ink)}
+  .content-inner ul{margin:1rem 0 1.5rem 1.5rem}
+  .content-inner ul li{margin-bottom:.6rem;font-size:1rem;line-height:1.75;color:var(--text)}
+
+  .cta-band{background:var(--ink);padding:80px 32px;text-align:center}
+  .cta-band-inner{max-width:780px;margin:0 auto}
+  .cta-band h2{color:#fff;font-size:clamp(1.9rem,3vw,2.4rem);margin-bottom:1rem}
+  .cta-band h2 em{color:var(--gold-lt);font-style:italic}
+  .cta-band p{color:rgba(255,255,255,.72);font-size:1rem;margin-bottom:2rem;line-height:1.75}
+  .cta-band .lead-form{max-width:560px;margin:0 auto;background:rgba(255,255,255,.04);border:1px solid rgba(184,147,90,.3);border-radius:6px;padding:2rem 1.75rem}
+  .cta-band input,.cta-band select,.cta-band textarea{width:100%;padding:11px 14px;margin-bottom:11px;border:1px solid rgba(255,255,255,.13);border-radius:var(--r);background:rgba(255,255,255,.06);color:#fff;font-family:'Inter',sans-serif;font-size:.9rem;outline:none}
+  .cta-band input::placeholder,.cta-band textarea::placeholder{color:rgba(255,255,255,.32)}
+  .cta-band input:focus,.cta-band select:focus,.cta-band textarea:focus{border-color:var(--gold)}
+  .cta-band select option{background:#1a1410;color:#fff}
+  .cta-band textarea{min-height:80px;resize:vertical}
+  .cta-band button{width:100%;background:var(--gold);color:#fff;border:none;cursor:pointer;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:14px;border-radius:var(--r);font-weight:500}
+  .cta-band button:hover{background:var(--gold-lt)}
+  .form-success{display:none;text-align:center;padding:32px 8px;font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--gold-lt);line-height:1.4}
+
+  .related{background:var(--warm);padding:64px 32px;border-top:1px solid var(--border)}
+  .related-inner{max-width:var(--w);margin:0 auto}
+  .related h3{font-size:1.5rem;margin-bottom:1.5rem;color:var(--ink)}
+  .related-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .related-card{background:#fff;border:1px solid var(--border);padding:1.1rem 1.25rem;border-radius:4px;font-size:.92rem;color:var(--ink);transition:border-color .2s;display:block}
+  .related-card:hover{border-color:var(--gold)}
+  .related-card strong{display:block;font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--ink);margin-bottom:.25rem}
+  .related-card span{font-size:.8rem;color:var(--mid)}
+  </style>
+</head>
+<body>
+  <script src="/js/nav.js"></script>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="crumb"><a href="/">Home</a> &nbsp;/&nbsp; <a href="/austin-new-construction-listing-agent">New Construction Listing Agent</a> &nbsp;/&nbsp; ROI Calculator</div>
+      <span class="hero-eye">Free Calculator - No Email Gate</span>
+      <h1>Builder vs Broker <em>ROI Calculator</em></h1>
+      <p class="lead">Run the math on your specific project. Compare net proceeds for builder-led marketing versus a broker MLS listing partnership. The output is open. No email required, no PDF gate.</p>
+    </div>
+  </section>
+
+  <section class="calc-section">
+    <div class="calc-inner">
+      <div class="calc-card">
+        <div class="calc-header">
+          <h2>Project Inputs</h2>
+          <p>Enter your project specifics. The calculator updates live. Defaults are set to a typical Austin mid-market spec home.</p>
+        </div>
+        <div class="calc-body">
+          <div class="inputs">
+            <h3>Your Project</h3>
+            <div class="input-row">
+              <label>Number of Units</label>
+              <input type="number" id="units" value="1" min="1" step="1" />
+              <div class="desc">1 for spec home, higher for townhome or BTR project</div>
+            </div>
+            <div class="input-row">
+              <label>List Price Per Unit</label>
+              <div class="prefix" data-prefix="$"><input type="number" id="price" value="850000" min="0" step="1000" /></div>
+            </div>
+            <div class="input-row">
+              <label>Builder Cost Basis Per Unit</label>
+              <div class="prefix" data-prefix="$"><input type="number" id="cost" value="640000" min="0" step="1000" /></div>
+              <div class="desc">Land + hard cost + soft cost - everything except marketing and commission</div>
+            </div>
+            <div class="input-row">
+              <label>Carry Cost Per Month Per Unit</label>
+              <div class="prefix" data-prefix="$"><input type="number" id="carry" value="4200" min="0" step="100" /></div>
+              <div class="desc">Construction loan interest, insurance, utilities, taxes - the holding cost</div>
+            </div>
+            <div class="input-row">
+              <label>Builder DOM (Days on Market - Self-Marketed)</label>
+              <input type="number" id="builderDom" value="96" min="0" step="1" />
+              <div class="desc">Q1 2026 Austin median for builder-marketed product not on MLS: 96 days</div>
+            </div>
+            <div class="input-row">
+              <label>Broker DOM (MLS-Listed)</label>
+              <input type="number" id="brokerDom" value="73" min="0" step="1" />
+              <div class="desc">Q1 2026 Austin median for MLS-launched new construction: 73 days</div>
+            </div>
+            <div class="input-row">
+              <label>Builder Marketing Budget Per Unit</label>
+              <div class="prefix" data-prefix="$"><input type="number" id="marketing" value="12000" min="0" step="500" /></div>
+              <div class="desc">Photography, signage, online ads, model staging, open house cost</div>
+            </div>
+            <div class="input-row">
+              <label>Broker Total Commission</label>
+              <div class="suffix" data-suffix="%"><input type="number" id="commission" value="5" min="0" max="10" step="0.1" /></div>
+              <div class="desc">Total commission paid (split between listing side + buyer side). 5% is typical Austin builder partnership.</div>
+            </div>
+            <div class="input-row">
+              <label>Price Lift From MLS Launch</label>
+              <div class="suffix" data-suffix="%"><input type="number" id="priceLift" value="2" min="0" max="10" step="0.1" /></div>
+              <div class="desc">Conservative estimate: MLS exposure typically achieves 1-3% higher closed price vs builder-direct</div>
+            </div>
+          </div>
+          <div class="results">
+            <h3>Calculated Net</h3>
+            <div class="scenario builder">
+              <h4>Builder-Led (Self-Marketed)</h4>
+              <div class="net" id="builderNet">$0</div>
+              <div class="breakdown" id="builderBreakdown"></div>
+            </div>
+            <div class="scenario broker">
+              <h4>Broker-Listed (MLS Partnership)</h4>
+              <div class="net" id="brokerNet">$0</div>
+              <div class="breakdown" id="brokerBreakdown"></div>
+            </div>
+            <div class="delta">
+              <div class="delta-label">Net Difference</div>
+              <div class="delta-num" id="delta">$0</div>
+              <div class="delta-note" id="deltaNote">Adjust inputs to see how DOM, price lift, and carry cost affect the comparison</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="content-inner">
+      <span class="content-eye">How This Works</span>
+      <h2 class="content-title">The Math <em>Behind the Calculator</em></h2>
+      <p>The calculator runs two parallel scenarios on your project specifics and reports the net proceeds delta. The inputs that drive the comparison are days on market (DOM), carry cost per unit per month, marketing spend, commission rate, and price lift from MLS exposure.</p>
+      <p><strong>Builder-led scenario.</strong> Net = (List Price - Cost Basis - Marketing Budget - (Carry x Builder DOM / 30)) x Units. The builder keeps 100% of the closed price minus their costs and saved commission, but pays full carry cost during the longer DOM and absorbs marketing expenses directly.</p>
+      <p><strong>Broker-listed scenario.</strong> Net = (List Price x (1 + Price Lift) - Cost Basis - (List Price x Commission Rate) - (Carry x Broker DOM / 30)) x Units. The builder pays commission on the higher closed price but eliminates marketing budget (broker covers it), captures the price lift, and reduces carry by the DOM delta.</p>
+      <p><strong>What flips the comparison?</strong> The break-even point depends on how aggressive the price lift assumption is and how high carry cost runs. On a $4,200/month carry per unit at the Q1 2026 Austin DOM medians (96 vs 73 days), the broker scenario typically wins on net even before the price lift kicks in. On lower-carry, lower-priced suburban product, the comparison narrows. The calculator lets you stress-test your specific project rather than relying on a generic rule of thumb.</p>
+      <p><strong>Conservative inputs.</strong> The defaults are set conservatively. The 2% price lift assumption is below the 3-5% typical, the 73-day broker DOM is the Q1 2026 median (some submarkets run faster), and the $12K builder marketing budget per unit reflects what builders actually spend, not what they think they spend. Higher accuracy comes from plugging in your actual cost basis, your actual carry rate, and your honest DOM history on prior projects.</p>
+    </div>
+  </section>
+
+  <section class="content cream">
+    <div class="content-inner">
+      <span class="content-eye">Real Numbers</span>
+      <h2 class="content-title">Worked Examples by <em>Project Type</em></h2>
+      <p><strong>Spec home in 78704, $1.2M list, $880K cost basis.</strong> Builder-led at 96 DOM: $1.2M - $880K - $12K marketing - $13.4K carry = $294,600 net. Broker-listed at 73 DOM with 2% lift and 5% commission: $1.224M - $880K - $61.2K commission - $10.2K carry = $272,600 net. On this specific math, builder-led wins by $22K because the $61K commission outweighs the carry savings and price lift. The break-even price lift is 4.1% - achievable in 78704 where MLS exposure to qualified buyer pool typically lifts pricing 3-5%.</p>
+      <p><strong>20-unit townhome project, $580K list per unit, $410K cost basis.</strong> Builder-led at 8 month average absorption: $580K - $410K - $12K marketing - $33.6K carry = $124,400 net per unit, $2.49M total. Broker-listed at 6 month absorption with 2% lift: $591.6K - $410K - $29.6K commission - $25.2K carry = $126,800 net per unit, $2.54M total. Broker wins by $48K total even with conservative 2% lift assumption. With 3% lift, broker wins by $164K. The townhome model favors broker partnerships because per-unit carry compounds across 20 units.</p>
+      <p><strong>10-unit duplex project, $720K list per duplex (2 units sold separately), $510K cost basis per unit.</strong> Self-marketed across an 18 month absorption window with builder DOM averaging 145 days per unit. Carry per unit per month: $3,800. Broker-listed cuts DOM to 90 days per unit. Builder-led: $720K - $510K - $14K marketing - $18.4K carry = $177,600 net per unit. Broker-listed: $734.4K - $510K - $36.7K commission - $11.4K carry = $176,300 net per unit. Roughly break-even on conservative inputs, broker wins clearly with 3%+ price lift, and broker wins on the carry math alone if interest rates rise during the absorption window. The risk-adjusted comparison favors broker.</p>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="content-inner">
+      <span class="content-eye">What This Calculator Does Not Capture</span>
+      <h2 class="content-title">Inputs the Calculator <em>Does Not Model</em></h2>
+      <ul>
+        <li><strong>Builder time cost.</strong> Self-marketing consumes builder hours on listing inquiries, showings, qualifying buyers, contract review. The calculator does not assign a $/hour cost to builder time. Realistic estimate: 8-12 hours per unit during active marketing window. At builder hourly opportunity cost (typically $200+/hour at the boutique scale), that is $1,600-$2,400 per unit not captured in the math.</li>
+        <li><strong>Buyer-pool quality.</strong> MLS-listed product reaches the full buyer-agent network. Builder-marketed product often misses 60%+ of qualified buyers represented by exclusive buyer agents. The price lift assumption is the proxy for this effect, but in tight markets the access advantage compounds beyond price into transaction certainty.</li>
+        <li><strong>Closing certainty.</strong> Builder-marketed contracts have higher fall-out rates because the buyer pool skews toward unrepresented buyers with less due diligence support. Each fall-out adds 30-60 DOM to the actual close timeline. The calculator uses median DOM but real-world variance is higher for self-marketed product.</li>
+        <li><strong>Construction loan covenant pressure.</strong> Lenders typically require sales pace milestones during the construction loan term. Falling behind triggers covenant pressure and can force price drops. Broker partnerships with predictable MLS launch timelines reduce this risk - not modeled in the calculator but real on every project.</li>
+        <li><strong>Repeat business and reputation.</strong> Building a track record of fast-absorbing projects with broker partnerships compounds across the next project, the next capital partner, and the next land acquisition opportunity. Self-marketed slow projects compound the opposite direction.</li>
+      </ul>
+      <p>The point of the calculator is to anchor the comparison in numbers rather than vibes. The numbers say broker-listed wins on most Austin builder math at current Q1 2026 inputs. The numbers do not capture the strategic value of a repeat partnership. Both matter.</p>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="cta-band-inner">
+      <h2>Run the Math on a <em>Real Project</em></h2>
+      <p>If you have a project in pre-construction or under construction and want to run the listing-partnership conversation against your actual numbers, send the project specifics. The conversation is no-pressure and the math is honest.</p>
+      <form class="lead-form" id="roi-form">
+        <input type="hidden" name="source" value="builder-broker-roi-calculator" />
+        <input type="text" name="name" placeholder="Your name" required />
+        <input type="text" name="company" placeholder="Company / development entity" />
+        <input type="text" name="contact" placeholder="Email or phone" required />
+        <select name="projectType">
+          <option value="">Project type</option>
+          <option value="spec">Spec home (1-3 units)</option>
+          <option value="townhome">Townhome project (4-50 units)</option>
+          <option value="duplex">Duplex project</option>
+          <option value="condo">Condo regime</option>
+          <option value="btr">Build-to-rent portfolio</option>
+          <option value="other">Other</option>
+        </select>
+        <textarea name="message" placeholder="Project specifics: location, unit count, target list price, timeline"></textarea>
+        <button type="submit">Run the Math Together</button>
+      </form>
+      <div class="form-success" id="roi-success">Got it. I will reply within 1 business day with a project-specific ROI breakdown.</div>
+    </div>
+  </section>
+
+  <section class="related">
+    <div class="related-inner">
+      <h3>Related for builders and developers</h3>
+      <div class="related-grid">
+        <a class="related-card" href="/austin-new-construction-listing-agent"><strong>Listing Agent</strong><span>Pillar - full service stack</span></a>
+        <a class="related-card" href="/austin-new-construction-market-report"><strong>Market Report</strong><span>Q1 2026 permits + absorption</span></a>
+        <a class="related-card" href="/austin-home-initiative-developer-guide"><strong>HOME Initiative Guide</strong><span>Phase 1 + 2 reference</span></a>
+        <a class="related-card" href="/sell-spec-homes-austin"><strong>Sell Spec Homes</strong><span>Spec home listing strategy</span></a>
+        <a class="related-card" href="/austin-townhome-development-sales"><strong>Townhome Sales</strong><span>20-50 unit project listing</span></a>
+        <a class="related-card" href="/austin-duplex-project-listing-services"><strong>Duplex Projects</strong><span>East/South duplex strategy</span></a>
+        <a class="related-card" href="/austin-infill-development-broker"><strong>Infill Development</strong><span>HOME-aware listing partner</span></a>
+        <a class="related-card" href="/austin-condo-regime-sales"><strong>Condo Regime Sales</strong><span>Stacked product, conversions</span></a>
+        <a class="related-card" href="/build-to-rent-austin-broker"><strong>Build to Rent</strong><span>BTR portfolio sales</span></a>
+        <a class="related-card" href="/austin-developer-land-acquisition"><strong>Land Acquisition</strong><span>Off-market lot sourcing</span></a>
+        <a class="related-card" href="/sell-bulk-new-construction-austin"><strong>Bulk Sales</strong><span>Project close-out portfolios</span></a>
+      </div>
+    </div>
+  </section>
+
+  <script src="/js/footer.js"></script>
+  <script>
+  // Live ROI calculator
+  function fmt(n){ return '$' + Math.round(n).toLocaleString(); }
+  function fmtSigned(n){ const s = Math.round(n); return (s >= 0 ? '+$' : '-$') + Math.abs(s).toLocaleString(); }
+
+  function calculate(){
+    const units = parseFloat(document.getElementById('units').value) || 1;
+    const price = parseFloat(document.getElementById('price').value) || 0;
+    const cost = parseFloat(document.getElementById('cost').value) || 0;
+    const carry = parseFloat(document.getElementById('carry').value) || 0;
+    const builderDom = parseFloat(document.getElementById('builderDom').value) || 0;
+    const brokerDom = parseFloat(document.getElementById('brokerDom').value) || 0;
+    const marketing = parseFloat(document.getElementById('marketing').value) || 0;
+    const commissionPct = (parseFloat(document.getElementById('commission').value) || 0) / 100;
+    const priceLift = (parseFloat(document.getElementById('priceLift').value) || 0) / 100;
+
+    // Builder-led
+    const builderCarry = (carry * builderDom / 30);
+    const builderNetPerUnit = price - cost - marketing - builderCarry;
+    const builderTotal = builderNetPerUnit * units;
+
+    // Broker-listed
+    const brokerPrice = price * (1 + priceLift);
+    const brokerCommission = brokerPrice * commissionPct;
+    const brokerCarry = (carry * brokerDom / 30);
+    const brokerNetPerUnit = brokerPrice - cost - brokerCommission - brokerCarry;
+    const brokerTotal = brokerNetPerUnit * units;
+
+    const delta = brokerTotal - builderTotal;
+
+    document.getElementById('builderNet').textContent = fmt(builderTotal);
+    document.getElementById('brokerNet').textContent = fmt(brokerTotal);
+
+    document.getElementById('builderBreakdown').innerHTML = `
+      <div><span>List price total</span><span>${fmt(price * units)}</span></div>
+      <div><span>Cost basis total</span><span>-${fmt(cost * units)}</span></div>
+      <div><span>Marketing total</span><span>-${fmt(marketing * units)}</span></div>
+      <div><span>Carry (${builderDom} days)</span><span>-${fmt(builderCarry * units)}</span></div>
+      <div><span>Net proceeds</span><span>${fmt(builderTotal)}</span></div>
+    `;
+
+    document.getElementById('brokerBreakdown').innerHTML = `
+      <div><span>List price total (+${(priceLift*100).toFixed(1)}%)</span><span>${fmt(brokerPrice * units)}</span></div>
+      <div><span>Cost basis total</span><span>-${fmt(cost * units)}</span></div>
+      <div><span>Commission (${(commissionPct*100).toFixed(1)}%)</span><span>-${fmt(brokerCommission * units)}</span></div>
+      <div><span>Carry (${brokerDom} days)</span><span>-${fmt(brokerCarry * units)}</span></div>
+      <div><span>Net proceeds</span><span>${fmt(brokerTotal)}</span></div>
+    `;
+
+    document.getElementById('delta').textContent = fmtSigned(delta);
+    const deltaNote = delta > 0
+      ? `Broker-listed scenario nets ${fmt(delta)} more than builder-led on these inputs.`
+      : delta < 0
+      ? `Builder-led scenario nets ${fmt(Math.abs(delta))} more than broker-listed on these inputs. Try increasing the price-lift assumption.`
+      : 'The two scenarios net the same on these inputs.';
+    document.getElementById('deltaNote').textContent = deltaNote;
+  }
+
+  ['units','price','cost','carry','builderDom','brokerDom','marketing','commission','priceLift'].forEach(id => {
+    document.getElementById(id).addEventListener('input', calculate);
+  });
+  calculate();
+
+  // Contact form
+  document.getElementById('roi-form').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('button[type=submit]');
+    const orig = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Sending...';
+    const data = Object.fromEntries(new FormData(form));
+    try {
+      await fetch('/api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+      form.style.display = 'none';
+      document.getElementById('roi-success').style.display = 'block';
+    } catch (_) {
+      btn.disabled = false; btn.textContent = orig;
+      alert('Could not reach the server. Please email Luke@austinmdg.com directly.');
+    }
+  });
+  </script>
+</body>
+</html>

@@ -745,6 +745,20 @@ app.get('/reverse-1031-exchange-austin',              (_req, res) => res.sendFil
 app.get('/1031-exchange-qualified-intermediary-austin',(_req, res) => res.sendFile(path.join(__dirname, 'public/site/1031-exchange-qualified-intermediary-austin.html')));
 app.get('/1031-replacement-properties-austin',        (_req, res) => res.sendFile(path.join(__dirname, 'public/site/1031-replacement-properties-austin.html')));
 app.get('/1031-exchange-multifamily-austin',          (_req, res) => res.sendFile(path.join(__dirname, 'public/site/1031-exchange-multifamily-austin.html')));
+
+// ── Builder/Developer cluster (rank #1 for "Austin new construction listing agent")
+app.get('/austin-new-construction-listing-agent',     (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-new-construction-listing-agent.html')));
+app.get('/sell-spec-homes-austin',                    (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-spec-homes-austin.html')));
+app.get('/austin-townhome-development-sales',         (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-townhome-development-sales.html')));
+app.get('/austin-duplex-project-listing-services',    (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-duplex-project-listing-services.html')));
+app.get('/austin-infill-development-broker',          (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-infill-development-broker.html')));
+app.get('/austin-condo-regime-sales',                 (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-condo-regime-sales.html')));
+app.get('/build-to-rent-austin-broker',               (_req, res) => res.sendFile(path.join(__dirname, 'public/site/build-to-rent-austin-broker.html')));
+app.get('/austin-developer-land-acquisition',         (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-developer-land-acquisition.html')));
+app.get('/sell-bulk-new-construction-austin',         (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-bulk-new-construction-austin.html')));
+app.get('/austin-new-construction-market-report',     (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-new-construction-market-report.html')));
+app.get('/builder-broker-roi-calculator',             (_req, res) => res.sendFile(path.join(__dirname, 'public/site/builder-broker-roi-calculator.html')));
+app.get('/austin-home-initiative-developer-guide',    (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-home-initiative-developer-guide.html')));
 app.get('/brrrr-method-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/brrrr-method-austin.html')));
 app.get('/homes-with-pool-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-with-pool-austin.html')));
 app.get('/rental-properties-for-sale-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/rental-properties-for-sale-austin.html')));

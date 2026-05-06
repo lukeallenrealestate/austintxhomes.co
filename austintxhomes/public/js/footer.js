@@ -153,6 +153,22 @@
   <li><a href="/deal-radar">Deal Radar <span class="sf-badge">New</span></a></li>
   </ul>
 
+  <div class="sf-col-subhead">For Builders &amp; Developers</div>
+  <ul class="sf-links">
+  <li><a href="/austin-new-construction-listing-agent">New Construction Listing Agent</a></li>
+  <li><a href="/sell-spec-homes-austin">Sell Spec Homes Austin</a></li>
+  <li><a href="/austin-townhome-development-sales">Townhome Development Sales</a></li>
+  <li><a href="/austin-duplex-project-listing-services">Duplex Project Listing</a></li>
+  <li><a href="/austin-infill-development-broker">Infill Development Broker</a></li>
+  <li><a href="/austin-condo-regime-sales">Condo Regime Sales</a></li>
+  <li><a href="/build-to-rent-austin-broker">Build-to-Rent Broker</a></li>
+  <li><a href="/austin-developer-land-acquisition">Developer Land Acquisition</a></li>
+  <li><a href="/sell-bulk-new-construction-austin">Bulk New Construction Sale</a></li>
+  <li><a href="/austin-new-construction-market-report">New Construction Market Report</a></li>
+  <li><a href="/builder-broker-roi-calculator">Builder ROI Calculator</a></li>
+  <li><a href="/austin-home-initiative-developer-guide">HOME Initiative Developer Guide</a></li>
+  </ul>
+
   <div class="sf-col-subhead">School Districts</div>
   <ul class="sf-links">
   <li><a href="/eanes-isd-homes-for-sale">Eanes ISD Homes</a></li>
