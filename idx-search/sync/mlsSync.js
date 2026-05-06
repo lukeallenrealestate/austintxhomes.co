@@ -400,19 +400,28 @@ async function refreshPhotos() {
   let pageCount = 0;
   let totalRefreshed = 0;
 
-  // Prepare DB write helpers (flushed every FLUSH_EVERY pages to limit peak RAM)
-  const FLUSH_EVERY = 10; // ~5000 listings per flush
+  // Prepare DB write helpers. Flush after every page (~500 listings) and chunk
+  // each flush into 100-row transactions with setImmediate yields between them.
+  // node-sqlite3-wasm is synchronous and single-threaded — without these yields,
+  // a 5000-row transaction blocks the Node event loop for 30-40 seconds and the
+  // public site becomes unreachable while the hourly photo refresh runs.
+  const FLUSH_EVERY = 1; // flush every page so chunks stay bounded at ~500 each
+  const TX_CHUNK = 100;  // rows per sub-transaction inside a flush
   const stmt = db.prepare('UPDATE listings SET photos = ? WHERE listing_key = ?');
   const batchUpdate = db.transaction((batch) => {
     for (const [key, urls] of batch) stmt.run(JSON.stringify(urls), key);
   });
   let pageBatch = {};
 
-  const flushBatch = () => {
+  const flushBatch = async () => {
     const entries = Object.entries(pageBatch);
     if (!entries.length) return;
     try {
-      batchUpdate(entries);
+      for (let i = 0; i < entries.length; i += TX_CHUNK) {
+        batchUpdate(entries.slice(i, i + TX_CHUNK));
+        // Yield so HTTP traffic interleaves with DB writes.
+        await new Promise(r => setImmediate(r));
+      }
       totalRefreshed += entries.length;
     } catch (e) {
       console.error(`[PHOTOS] Batch write failed (${entries.length} listings):`, e.message);
@@ -435,10 +444,12 @@ async function refreshPhotos() {
       }
       url = data['@odata.nextLink'] || null;
       if (pageCount % FLUSH_EVERY === 0) {
-        flushBatch();
-        console.log(`[PHOTOS] Page ${pageCount}, refreshed ${totalRefreshed} listings...`);
+        await flushBatch();
+        if (pageCount % 10 === 0) {
+          console.log(`[PHOTOS] Page ${pageCount}, refreshed ${totalRefreshed} listings...`);
+        }
         // Yield to event loop so user requests aren't starved during this long-running job
-        await new Promise(r => setTimeout(r, 2000));
+        await new Promise(r => setTimeout(r, 200));
       }
     } catch (e) {
       console.error('[PHOTOS] Error:', e.message);
@@ -446,7 +457,7 @@ async function refreshPhotos() {
     }
   }
 
-  flushBatch(); // flush any remaining
+  await flushBatch(); // flush any remaining
   if (totalRefreshed === 0) {
     console.log('[PHOTOS] No photos to refresh.');
     refreshRunning = false;
