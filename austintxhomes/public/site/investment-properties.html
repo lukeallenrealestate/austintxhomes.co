@@ -106,33 +106,46 @@
   #site-nav { min-height: 64px; }
 
   /* HERO */
-  .hero {
-  position: relative; min-height: 72vh;
-  display: flex; align-items: center; justify-content: center;
-  text-align: center; overflow: hidden; background: #0f0f0e;
-  }
-  .hero video {
+  .hero { position: relative; padding: 130px 32px 80px; background: #0f0f0e; overflow: hidden; }
+  .hero video.bg-video {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-  opacity: 0; transition: opacity 1s ease;
+  opacity: 0; transition: opacity 1.4s ease; z-index: 0;
   }
-  .hero video.loaded { opacity: .32; }
+  .hero video.bg-video.ready { opacity: .35; }
+  .hero::before {
+  content: ''; position: absolute; inset: 0; z-index: 1;
+  background: radial-gradient(ellipse 70% 60% at 50% 40%,rgba(184,147,90,.16) 0%,transparent 70%);
+  pointer-events: none;
+  }
   .hero::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(to bottom, rgba(15,15,14,.5) 0%, rgba(15,15,14,.75) 100%);
+  content: ''; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(135deg,rgba(15,15,14,.84) 0%,rgba(26,20,16,.76) 50%,rgba(15,15,14,.84) 100%);
+  pointer-events: none;
   }
-  .hero-inner { position: relative; z-index: 2; max-width: 820px; padding: 0 2rem; }
+  .hero-inner {
+  position: relative; z-index: 2;
+  max-width: 1180px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 420px; gap: 56px; align-items: center;
+  }
+  .hero-left { min-width: 0; }
   .hero-eyebrow {
-  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
-  color: #b8935a; margin-bottom: 1.25rem;
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+  color: #b8935a; background: rgba(184,147,90,.1);
+  border: 1px solid rgba(184,147,90,.3);
+  padding: 6px 14px; border-radius: 100px; margin-bottom: 1.5rem;
   }
+  .hero-eyebrow::before { content:''; width:6px; height:6px; background:#b8935a; border-radius:50%; }
   .hero h1 {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 400;
-  color: #fff; line-height: 1.15; margin-bottom: 1.25rem;
+  font-size: clamp(2.2rem, 4.5vw, 3.6rem); font-weight: 300;
+  color: #fff; line-height: 1.08; margin-bottom: 1.25rem; letter-spacing: -.01em;
   }
+  .hero h1 em { color: #cda96f; font-style: italic; font-weight: 300; }
   .hero-sub {
-  font-size: clamp(1rem, 1.8vw, 1.15rem);
-  color: rgba(255,255,255,.72); max-width: 580px; margin: 0 auto 2.5rem;
+  font-size: 1.05rem;
+  color: rgba(255,255,255,.72); max-width: 580px; margin: 0 0 2rem;
+  line-height: 1.8; font-weight: 300;
   }
   .hero-cta {
   display: inline-block; background: #b8935a; color: #fff;
@@ -141,6 +154,60 @@
   text-decoration: none; transition: background .2s;
   }
   .hero-cta:hover { background: #a07e4d; }
+  .hero-form {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(184,147,90,.3);
+  border-radius: 6px; padding: 2.25rem 2rem;
+  backdrop-filter: blur(4px);
+  }
+  .hero-form .hf-eye {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: .65rem; letter-spacing: .16em; text-transform: uppercase;
+  color: #b8935a; margin-bottom: .85rem;
+  }
+  .hero-form .hf-eye::before { content:''; width: 24px; height: 1px; background: #b8935a; }
+  .hero-form h3 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.5rem; color: #fff; margin-bottom: .4rem; font-weight: 400;
+  }
+  .hero-form > p {
+  font-size: .85rem; color: rgba(255,255,255,.55);
+  margin-bottom: 1.4rem; line-height: 1.55;
+  }
+  .hero-form input, .hero-form select, .hero-form textarea {
+  width: 100%; padding: 11px 14px; margin-bottom: 11px;
+  border: 1px solid rgba(255,255,255,.13); border-radius: 4px;
+  background: rgba(255,255,255,.06); color: #fff;
+  font-family: 'Inter', sans-serif; font-size: .9rem; outline: none;
+  transition: border-color .2s;
+  }
+  .hero-form input::placeholder, .hero-form textarea::placeholder { color: rgba(255,255,255,.32); }
+  .hero-form input:focus, .hero-form select:focus, .hero-form textarea:focus { border-color: #b8935a; }
+  .hero-form select option { background: #1a1410; color: #fff; }
+  .hero-form textarea { min-height: 70px; resize: vertical; }
+  .hero-form button {
+  width: 100%; background: #b8935a; color: #fff;
+  border: none; cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  padding: 13px; border-radius: 4px;
+  transition: background .2s; font-weight: 500;
+  }
+  .hero-form button:hover { background: #cda96f; }
+  .hero-form .hf-foot {
+  font-size: .65rem; color: rgba(255,255,255,.4);
+  text-align: center; margin-top: .85rem; letter-spacing: .04em;
+  }
+  .hero-form .form-success {
+  display: none; text-align: center; padding: 24px 8px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.2rem; color: #cda96f; line-height: 1.4;
+  }
+  @media (max-width: 880px) {
+  .hero { padding: 110px 1.25rem 60px; }
+  .hero-inner { grid-template-columns: 1fr; gap: 32px; }
+  .hero-form { padding: 1.5rem 1.25rem; }
+  }
 
   /* STATS BAR */
   .stats-bar { background: #1a1a18; padding: 2.5rem 2rem; }
@@ -335,14 +402,37 @@
   <script src="/js/nav.js"></script>
 
   <section class="hero">
-  <video autoplay muted loop playsinline preload="none" id="hero-vid">
-  <source src="/videos/austin-aerial.mp4" type="video/mp4" />
-  </video>
+  <video class="bg-video" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
   <div class="hero-inner">
-  <p class="hero-eyebrow">Austin TX · Real Estate Investing 2026</p>
-  <h1>Investment Properties in Austin TX</h1>
+  <div class="hero-left">
+  <span class="hero-eyebrow">Austin TX · Real Estate Investing 2026</span>
+  <h1>Investment Properties in <em>Austin TX</em></h1>
   <p class="hero-sub">Cap rates, cash flow analysis, the best neighborhoods for long-term and short-term rentals, and how to find deals before they hit Zillow.</p>
-  <a href="#guide" class="hero-cta">Explore Investment Opportunities</a>
+  <a href="#guide" class="hero-cta">Explore the Guide</a>
+  </div>
+  <div class="hero-form">
+  <span class="hf-eye">Investor Strategy Call</span>
+  <h3>Talk Investment Strategy</h3>
+  <p>Free, no-pressure conversation about target cap rates, neighborhoods, and the deal flow Luke can surface for you.</p>
+  <form id="hero-contact-form">
+  <input type="hidden" name="source" value="investment-properties-hero" />
+  <input type="text" name="name" placeholder="Your name" required />
+  <input type="text" name="contact" placeholder="Email or phone" required />
+  <select name="strategy">
+  <option value="">Strategy</option>
+  <option value="ltr">Long-term rental</option>
+  <option value="str">Short-term rental (Airbnb)</option>
+  <option value="multifamily">Small multifamily</option>
+  <option value="brrrr">BRRRR / value-add</option>
+  <option value="commercial">Commercial / NNN</option>
+  <option value="exploring">Just exploring</option>
+  </select>
+  <textarea name="message" placeholder="Anything else? (capital, target submarkets, timeline)"></textarea>
+  <button type="submit">Get Started</button>
+  </form>
+  <div class="form-success" id="hero-form-success">Got it - I'll reply within 1 business day with next steps.</div>
+  <p class="hf-foot">Luke Allen · TREC #788149</p>
+  </div>
   </div>
   </section>
 
@@ -735,6 +825,23 @@
   btn.disabled = false;
   btn.textContent = 'Schedule My Investor Consultation';
   alert('Something went wrong. Please email Luke@austinmdg.com directly.');
+  }
+  });
+
+  document.getElementById('hero-contact-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn = form.querySelector('button[type=submit]');
+  const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Sending...';
+  const data = Object.fromEntries(new FormData(form));
+  try {
+  await fetch('/api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+  form.style.display = 'none';
+  document.getElementById('hero-form-success').style.display = 'block';
+  } catch (_) {
+  btn.disabled = false; btn.textContent = orig;
+  alert('Could not reach the server. Please email Luke@austinmdg.com directly.');
   }
   });
   </script>
