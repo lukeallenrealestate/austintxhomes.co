@@ -174,13 +174,18 @@ async function recoverR2FromBucket() {
   });
 
   // Chunk so we don't hold a single mega-transaction (node-sqlite3-wasm is single-threaded).
+  // Yield to the event loop between chunks — without this, ~14 chunks of 500 listings
+  // each (1000+ sync SQL ops per chunk) blocked HTTP responses for several minutes
+  // and made the public site unreachable while recovery ran.
   const allEntries = [...byListing.entries()];
-  const CHUNK = 500;
+  const CHUNK = 100;
   for (let i = 0; i < allEntries.length; i += CHUNK) {
     tx(allEntries.slice(i, i + CHUNK));
-    if ((i / CHUNK) % 10 === 0) {
+    if ((i / CHUNK) % 20 === 0) {
       console.log(`[R2-RECOVER] Updated ${updated} / ${byListing.size} listings...`);
     }
+    // Yield between chunks so HTTP traffic isn't starved.
+    await new Promise(r => setImmediate(r));
   }
 
   console.log(`[R2-RECOVER] Done. Updated ${updated} listings (${skipped} R2 keys had no DB row) in ${((Date.now() - t1) / 1000).toFixed(1)}s.`);
