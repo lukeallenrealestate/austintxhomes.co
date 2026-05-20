@@ -850,6 +850,7 @@ app.get('/ut-austin-tuition-savings-calculator', (_req, res) => res.sendFile(pat
 app.get('/condos-near-ut-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/condos-near-ut-austin.html')));
 app.get('/ut-austin-residency-checklist', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/ut-austin-residency-checklist.html')));
 app.get('/living-near-ut-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-near-ut-austin.html')));
+app.get('/ut-residency-guide', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/ut-residency-guide.html')));
 app.get('/austin-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-isd-homes-for-sale.html')));
 app.get('/leander-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/leander-isd-homes-for-sale.html')));
 app.get('/round-rock-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/round-rock-isd-homes-for-sale.html')));

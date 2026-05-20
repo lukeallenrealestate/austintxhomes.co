@@ -163,8 +163,63 @@
     .hero-image video.ready { opacity: 1; }
     .hero-image::after {
       content: ''; position: absolute; inset: 0;
-      background: linear-gradient(to right, rgba(15,15,14,.35) 0%, transparent 60%, rgba(250,248,244,.15) 100%);
+      background: linear-gradient(to right, rgba(15,15,14,.55) 0%, rgba(15,15,14,.15) 60%, rgba(250,248,244,.15) 100%);
       pointer-events: none;
+    }
+
+    /* Hero overlay form (sits over the video on the left side) */
+    .hero-form-overlay {
+      position: absolute; left: 40px; top: 50%; transform: translateY(-50%);
+      z-index: 3; width: 360px; max-width: calc(100% - 80px);
+      background: rgba(15,15,14,.82);
+      border: 1px solid rgba(184,147,90,.32);
+      border-radius: 8px;
+      padding: 28px 26px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 18px 50px rgba(0,0,0,.45);
+    }
+    .hero-form-overlay h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 400; line-height: 1.15;
+      color: #fff; margin-bottom: 4px;
+    }
+    .hero-form-overlay h3 em { font-style: italic; color: var(--gold-lt); }
+    .hero-form-overlay .hf-sub {
+      font-size: 12px; color: rgba(255,255,255,.6);
+      margin-bottom: 18px; line-height: 1.5;
+    }
+    .hero-form-overlay .hf-row { margin-bottom: 10px; }
+    .hero-form-overlay .hf-row label {
+      display: block; font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+      color: rgba(255,255,255,.5); margin-bottom: 4px;
+    }
+    .hero-form-overlay .hf-row input {
+      width: 100%; padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: var(--r);
+      font-family: 'Inter', sans-serif; font-size: 13px;
+      color: #fff; background: rgba(255,255,255,.07);
+      outline: none; transition: border-color .2s;
+    }
+    .hero-form-overlay .hf-row input::placeholder { color: rgba(255,255,255,.3); }
+    .hero-form-overlay .hf-row input:focus { border-color: var(--gold); }
+    .hero-form-overlay button {
+      width: 100%; background: var(--gold); color: #fff; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: .1em;
+      text-transform: uppercase; font-weight: 600;
+      padding: 12px; border-radius: var(--r); margin-top: 6px;
+      transition: background .2s;
+    }
+    .hero-form-overlay button:hover { background: var(--gold-lt); }
+    .hero-form-overlay .hf-note {
+      font-size: 10.5px; color: rgba(255,255,255,.4);
+      text-align: center; margin-top: 10px; font-style: italic;
+    }
+    .hero-form-overlay .hf-success {
+      text-align: center; padding: 24px 0;
+      font-family: 'Cormorant Garamond', serif; font-size: 18px;
+      font-style: italic; color: var(--gold-lt); line-height: 1.5;
+      display: none;
     }
     .hero-copy {
       background: var(--warm); padding: 80px 64px;
@@ -330,8 +385,9 @@
 
     @media (max-width: 900px) {
       .hero { grid-template-columns: 1fr; }
-      .hero-image { min-height: 320px; }
+      .hero-image { min-height: 560px; }
       .hero-copy { padding: 56px 32px; }
+      .hero-form-overlay { left: 50%; transform: translate(-50%, -50%); width: calc(100% - 48px); }
       .val-grid { grid-template-columns: 1fr; }
       .val-form { position: static; }
       .process-steps { grid-template-columns: 1fr 1fr; }
@@ -352,6 +408,28 @@
   <section class="hero">
     <div class="hero-image">
       <video id="sell-hv" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
+      <div class="hero-form-overlay">
+        <form id="sell-hero-form">
+          <h3>Sell Your Home<br><em>With Us</em></h3>
+          <p class="hf-sub">Free home valuation. No obligation. Response within 24 hours.</p>
+          <div class="hf-row">
+            <label>Name</label>
+            <input type="text" name="name" placeholder="Your name" required />
+          </div>
+          <div class="hf-row">
+            <label>Phone or Email</label>
+            <input type="text" name="contact" placeholder="Best way to reach you" required />
+          </div>
+          <div class="hf-row">
+            <label>Property Address</label>
+            <input type="text" name="address" placeholder="Street address (optional)" />
+          </div>
+          <input type="hidden" name="source" value="sell-hero" />
+          <button type="submit">Get My Home's Value &rarr;</button>
+          <p class="hf-note">Luke Allen &middot; TREC #788149</p>
+        </form>
+        <div class="hf-success" id="sell-hero-success">Got it &mdash; Luke will be in touch shortly.</div>
+      </div>
     </div>
     <div class="hero-copy">
       <p class="hero-eyebrow">Austin Home Seller</p>
@@ -632,10 +710,35 @@
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
         });
         if (res.ok) {
+          if (window.fbq) fbq('track', 'Lead');
           this.innerHTML = '<p style="text-align:center;padding:40px 0;font-family:\'Cormorant Garamond\',serif;font-size:22px;color:var(--gold)">Got it — I\'ll be in touch within 24 hours.</p>';
         }
       } catch {
         alert('Something went wrong. Please call or email directly.');
+      }
+    });
+
+    // Hero overlay form submission
+    document.getElementById('sell-hero-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = this.querySelector('button');
+      btn.disabled = true; btn.textContent = 'Sending…';
+      const data = Object.fromEntries(new FormData(this));
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+        });
+        if (res.ok) {
+          if (window.fbq) fbq('track', 'Lead');
+          this.style.display = 'none';
+          document.getElementById('sell-hero-success').style.display = 'block';
+        } else {
+          btn.disabled = false; btn.textContent = "Get My Home's Value →";
+          alert('Something went wrong. Please call or email directly.');
+        }
+      } catch {
+        btn.disabled = false; btn.textContent = "Get My Home's Value →";
+        alert('Network error. Please call or email directly.');
       }
     });
   </script>
