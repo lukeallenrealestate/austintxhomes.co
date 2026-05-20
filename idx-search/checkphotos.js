@@ -1,10 +1,10 @@
 require('dotenv').config();
-const { Database } = require('node-sqlite3-wasm');
+const Database = require('better-sqlite3');
 const fetch = require('node-fetch');
 const path = require('path');
 
-const db = new Database(path.join(__dirname, 'db/idx.db'));
-const row = db.get("SELECT photos FROM listings WHERE photos != '[]' AND photos IS NOT NULL LIMIT 1");
+const db = new Database(path.join(__dirname, 'db/idx.db'), { readonly: true });
+const row = db.prepare("SELECT photos FROM listings WHERE photos != '[]' AND photos IS NOT NULL LIMIT 1").get();
 const photos = JSON.parse(row.photos);
 console.log('Photo count:', photos.length);
 console.log('Sample URL:', photos[0]);

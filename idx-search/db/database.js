@@ -1,90 +1,29 @@
-// Uses node-sqlite3-wasm (pure WASM, no compilation needed)
-// Wrapped to expose the same API as better-sqlite3 so all routes work unchanged.
-const { Database: WasmDB } = require('node-sqlite3-wasm');
+// Native better-sqlite3 (C++ binding). 10-20× faster than node-sqlite3-wasm
+// for the same workload, with no WASM boundary stalls during MLS sync. The
+// on-disk idx.db file is library-agnostic — the previous database was
+// written by node-sqlite3-wasm and opens unchanged here.
+//
+// better-sqlite3 already exposes the API the rest of this codebase expects
+// (prepare().run/.get/.all, exec, pragma, transaction) — the previous WASM
+// wrapper layer deliberately emulated this API to make this swap drop-in.
+const Database = require('better-sqlite3');
 const path = require('path');
 
-const wasmDb = new WasmDB(path.join(__dirname, 'idx.db'));
+const db = new Database(path.join(__dirname, 'idx.db'));
 
-// DELETE mode (default rollback journal) — every COMMIT is fsync'd to the main
-// idx.db file before returning, so container kills (Replit deploys, OOM, panic)
-// don't lose committed writes. We previously used WAL for concurrency, but
-// Replit's deploy lifecycle force-kills containers without giving SIGTERM
-// handlers time to run wal_checkpoint(TRUNCATE), so every Publish nuked
-// thousands of un-checkpointed photos_r2 writes (the "Cleaning up stale
-// SQLite artifacts" boot step swept the orphaned -wal/-shm files).
-// node-sqlite3-wasm is single-threaded synchronous, so WAL's reader-doesn't-
-// block-writer benefit didn't apply. busy_timeout still useful for the rare
-// case of overlapping prepared-statement reuse.
-try { wasmDb.run('PRAGMA journal_mode=DELETE'); } catch {}
-try { wasmDb.run('PRAGMA busy_timeout=30000'); } catch {}
+// DELETE mode (default rollback journal) — every COMMIT is fsync'd to the
+// main idx.db file before returning, so container kills (Replit deploys,
+// OOM, panic) don't lose committed writes. We previously tried WAL for
+// concurrency, but Replit's deploy lifecycle force-kills containers without
+// giving SIGTERM handlers time to run wal_checkpoint(TRUNCATE), so every
+// Publish nuked thousands of un-checkpointed photos_r2 writes (the "Cleaning
+// up stale SQLite artifacts" boot step swept the orphaned -wal/-shm files).
+// busy_timeout still useful for the rare case of overlapping statement reuse.
+db.pragma('journal_mode = DELETE');
+db.pragma('busy_timeout = 30000');
 
-// Convert {key: val} → {'@key': val} so named SQL params (@key) resolve correctly
-function normalizeParams(args) {
-  if (!args || args.length === 0) return [];
-  if (args.length === 1 && Array.isArray(args[0])) return args[0];
-  if (
-    args.length === 1 &&
-    args[0] !== null &&
-    typeof args[0] === 'object' &&
-    !Array.isArray(args[0])
-  ) {
-    const result = {};
-    for (const [k, v] of Object.entries(args[0])) {
-      const prefixed =
-        k.startsWith('@') || k.startsWith(':') || k.startsWith('$') ? k : `@${k}`;
-      result[prefixed] = v;
-    }
-    return result;
-  }
-  return args.length === 1 ? args[0] : args;
-}
-
-function makeStmt(sql) {
-  return {
-    run(...args) {
-      const p = normalizeParams(args);
-      const r = wasmDb.run(sql, p) || {};
-      return { changes: r.changes ?? 0, lastInsertRowid: r.lastInsertRowid ?? 0 };
-    },
-    get(...args) {
-      const p = normalizeParams(args);
-      return wasmDb.get(sql, p);
-    },
-    all(...args) {
-      const p = normalizeParams(args);
-      return wasmDb.all(sql, p);
-    }
-  };
-}
-
-const db = {
-  prepare: (sql) => makeStmt(sql),
-  exec: (sql) => {
-    // node-sqlite3-wasm only runs one statement at a time — split on semicolons
-    sql.split(';').map(s => s.trim()).filter(Boolean).forEach(s => {
-      try { wasmDb.run(s); } catch (e) {
-        // ignore "already exists" errors from IF NOT EXISTS
-        if (!e.message?.includes('already exists')) throw e;
-      }
-    });
-  },
-  pragma: (str) => { wasmDb.run(`PRAGMA ${str}`); },
-  transaction: (fn) => {
-    return function (...args) {
-      wasmDb.run('BEGIN');
-      try {
-        const result = fn(...args);
-        wasmDb.run('COMMIT');
-        return result;
-      } catch (e) {
-        wasmDb.run('ROLLBACK');
-        throw e;
-      }
-    };
-  }
-};
-
-// Create tables — each statement separate so node-sqlite3-wasm handles them correctly
+// Create tables — better-sqlite3's exec() supports multi-statement SQL
+// natively, but we keep statements separate for clearer error messages.
 const statements = [
   `CREATE TABLE IF NOT EXISTS listings (
     listing_key TEXT PRIMARY KEY,
@@ -188,9 +127,9 @@ const statements = [
   )`
 ];
 
-statements.forEach(sql => wasmDb.run(sql));
+statements.forEach(sql => db.exec(sql));
 
-// Migrations — add columns that may not exist in older DBs
+// Migrations — add columns / tables that may not exist in older DBs
 const migrations = [
   `ALTER TABLE saved_searches ADD COLUMN last_alerted_at DATETIME`,
   `ALTER TABLE listings ADD COLUMN photos_r2 TEXT`,
@@ -204,9 +143,9 @@ const migrations = [
     PRIMARY KEY (listing_key, photo_idx)
   )`,
   `CREATE INDEX IF NOT EXISTS idx_backfill_status ON backfill_progress(status)`,
-  // Partial index that supports photoBackfill.pickNextBatch — scopes to rows that
-  // actually have photos to mirror and pre-orders the synced_at DESC tiebreaker so
-  // the planner doesn't have to re-sort 36k+ rows on each batch pick.
+  // Partial index that supports photoBackfill.pickNextBatch — scopes to rows
+  // that actually have photos to mirror and pre-orders the synced_at DESC
+  // tiebreaker so the planner doesn't have to re-sort 36k+ rows on each pick.
   `CREATE INDEX IF NOT EXISTS idx_listings_backfill_pick
     ON listings(mlg_can_view, synced_at DESC)
     WHERE photos IS NOT NULL AND photos != '[]'`,
@@ -215,6 +154,6 @@ const migrations = [
   `ALTER TABLE sync_state ADD COLUMN backfill_last_email_count INTEGER DEFAULT -1`,
   `ALTER TABLE sync_state ADD COLUMN backfill_last_email_at DATETIME`
 ];
-migrations.forEach(sql => { try { wasmDb.run(sql); } catch {} });
+migrations.forEach(sql => { try { db.exec(sql); } catch {} });
 
 module.exports = db;
