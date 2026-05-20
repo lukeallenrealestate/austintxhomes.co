@@ -2,6 +2,20 @@
  * AustinTXHomes — shared site navigation
  * Included by every page. Edit this ONE file to update the nav everywhere.
  */
+
+// ─── Meta (Facebook) Pixel ──────────────────────────────────
+// Pixel ID: 2215492562520453. Fires PageView on every page load.
+// To track custom events from any page: fbq('track', 'Lead'), fbq('track', 'Contact'), etc.
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '2215492562520453');
+fbq('track', 'PageView');
+
 (function () {
 
   // ─── SEARCH URL ─────────────────────────────────────────────
