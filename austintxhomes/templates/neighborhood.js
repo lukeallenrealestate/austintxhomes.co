@@ -39,6 +39,7 @@ module.exports = function renderNeighborhoodPage(n) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="facebook-domain-verification" content="95x8nbmaj8yii9ie0wsl3z7sgw6uqh" />
   <title>${n.title}</title>
   <meta name="description" content="${n.metaDescription}" />
   <link rel="canonical" href="https://austintxhomes.co/neighborhoods/${n.slug}" />

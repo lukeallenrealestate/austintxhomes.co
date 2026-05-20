@@ -80,6 +80,7 @@ module.exports = function renderBlogIndex(posts, options) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="facebook-domain-verification" content="95x8nbmaj8yii9ie0wsl3z7sgw6uqh" />
   <title>Austin TX Real Estate Blog | Market Updates &amp; Neighborhood Guides | Luke Allen</title>
   <meta name="description" content="Austin TX real estate insights from Luke Allen — neighborhood market updates, buyer tips, seller guides, and local Austin coverage. Updated weekly." />
   <link rel="canonical" href="https://austintxhomes.co/blog" />

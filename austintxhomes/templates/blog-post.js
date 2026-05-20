@@ -24,6 +24,7 @@ module.exports = function renderBlogPost(post) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="facebook-domain-verification" content="95x8nbmaj8yii9ie0wsl3z7sgw6uqh" />
   <title>${post.title} | Luke Allen Austin TX Realtor</title>
   <meta name="description" content="${post.excerpt}" />
   <link rel="canonical" href="https://austintxhomes.co/blog/${post.slug}" />

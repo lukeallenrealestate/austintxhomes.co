@@ -27,6 +27,7 @@ module.exports = function renderNeighborhoodHomesPage(n) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="facebook-domain-verification" content="95x8nbmaj8yii9ie0wsl3z7sgw6uqh" />
   <title>Homes for Sale in ${n.name} Austin TX | MLS Listings | Luke Allen</title>
   <meta name="description" content="Browse all homes for sale in ${n.name}, Austin TX. Live MLS listings updated daily — every active property in ${n.name}. Luke Allen, TREC #788149." />
   <link rel="canonical" href="https://austintxhomes.co/neighborhoods/${n.slug}/homes-for-sale" />

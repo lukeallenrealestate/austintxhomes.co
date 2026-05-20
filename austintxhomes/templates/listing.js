@@ -449,6 +449,7 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="facebook-domain-verification" content="95x8nbmaj8yii9ie0wsl3z7sgw6uqh" />
   <title>${title}</title>
   <meta name="description" content="${metaDesc.replace(/"/g,'&quot;').slice(0,160)}" />
   <link rel="canonical" href="${url}" />
