@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3002;
 let _expressApp = null;
 const _server = http.createServer((req, res) => {
   if (_expressApp) return _expressApp(req, res);
-  res.writeHead(200, { 'Content-Type': 'text/html', 'Retry-After': '5' });
+  res.writeHead(503, { 'Content-Type': 'text/html', 'Retry-After': '5' });
   res.end('<!DOCTYPE html><html><head><meta http-equiv="refresh" content="3"><style>body{font-family:Inter,sans-serif;text-align:center;padding:80px;color:#1a1918}h2{color:#b8935a}</style></head><body><h2>Loading Austin TX Homes...</h2><p>The server is starting up. This page will refresh automatically.</p></body></html>');
 });
 _server.listen(PORT, () => {
@@ -1107,8 +1107,12 @@ app.get('/round-rock/:slug', (req, res) => {
 // Serve all static files from /public
 app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: '7d',
+  etag: true,
+  lastModified: true,
   setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.html')) res.setHeader('Cache-Control', 'public, max-age=3600');
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
+    }
   }
 }));
 
@@ -1181,19 +1185,27 @@ setTimeout(() => {
   }
 }, 500);
 
-// MLS sync startup check
+// MLS sync startup check — deferred so it doesn't block the first HTTP requests
+// after _expressApp is assigned (WASM SQLite COUNT queries are synchronous and
+// can block the event loop for seconds on a cold start).
 const idxDb = require('../idx-search/db/database');
-const count = idxDb.prepare('SELECT COUNT(*) as n FROM listings').get().n;
-if (count < 5000) {
-  console.log(`[SYNC] Only ${count} listings — starting full initial import...`);
-  idxDb.prepare('UPDATE sync_state SET last_sync_timestamp = NULL WHERE id = 1').run();
-  syncListings(true).catch(console.error);
-} else {
-  console.log(`[SYNC] ${count} listings in DB. Starting incremental sync...`);
-  syncListings(false).catch(console.error);
-  // Photo refresh deliberately NOT run on startup — it takes 8-10 min
-  // and blocks the event loop. Runs once daily via cron instead.
-}
+setImmediate(() => {
+  try {
+    const count = idxDb.prepare('SELECT COUNT(*) as n FROM listings').get().n;
+    if (count < 5000) {
+      console.log(`[SYNC] Only ${count} listings — starting full initial import...`);
+      idxDb.prepare('UPDATE sync_state SET last_sync_timestamp = NULL WHERE id = 1').run();
+      syncListings(true).catch(console.error);
+    } else {
+      console.log(`[SYNC] ${count} listings in DB. Starting incremental sync...`);
+      syncListings(false).catch(console.error);
+      // Photo refresh deliberately NOT run on startup — it takes 8-10 min
+      // and blocks the event loop. Runs once daily via cron instead.
+    }
+  } catch (e) {
+    console.error('[SYNC] startup check failed:', e.message);
+  }
+});
 
 // Drain disk photo cache to R2 (background — uploads ~100 cached files per boot)
 if (r2Service.isEnabled()) {
@@ -1230,24 +1242,30 @@ if (r2Service.isEnabled()) {
   }, 30000);
 }
 
-// Sync closed lease comps for cash-flow algorithm (runs after main sync)
-const closedLeaseCount = idxDb.prepare(
-  `SELECT COUNT(*) as n FROM listings WHERE (property_type LIKE '%Lease%') AND standard_status = 'Closed'`
-).get().n;
-if (closedLeaseCount === 0) {
-  console.log('[LEASE-SYNC] No closed lease comps found — running initial closed lease sync...');
-  syncClosedLeases().catch(console.error);
-} else {
-  console.log(`[LEASE-SYNC] ${closedLeaseCount} closed lease comps in DB.`);
-}
+// Sync closed lease + sale comps — deferred so synchronous COUNT queries
+// don't block the event loop right after _expressApp is assigned.
+setTimeout(() => {
+  try {
+    const closedLeaseCount = idxDb.prepare(
+      `SELECT COUNT(*) as n FROM listings WHERE (property_type LIKE '%Lease%') AND standard_status = 'Closed'`
+    ).get().n;
+    if (closedLeaseCount === 0) {
+      console.log('[LEASE-SYNC] No closed lease comps found — running initial closed lease sync...');
+      syncClosedLeases().catch(console.error);
+    } else {
+      console.log(`[LEASE-SYNC] ${closedLeaseCount} closed lease comps in DB.`);
+    }
 
-// Sync closed sale comps for market report stats (sale-to-list ratio, closed count, etc.)
-const closedSaleCount = idxDb.prepare(
-  `SELECT COUNT(*) as n FROM listings WHERE (property_type = 'Residential' OR property_type = 'Residential Income') AND standard_status = 'Closed'`
-).get().n;
-if (closedSaleCount === 0) {
-  console.log('[SALES-SYNC] No closed sale comps found — running initial closed sale sync...');
-  setTimeout(() => syncClosedSales().catch(console.error), 10000); // offset 10s from lease sync to avoid API rate limits
-} else {
-  console.log(`[SALES-SYNC] ${closedSaleCount} closed sale comps in DB.`);
-}
+    const closedSaleCount = idxDb.prepare(
+      `SELECT COUNT(*) as n FROM listings WHERE (property_type = 'Residential' OR property_type = 'Residential Income') AND standard_status = 'Closed'`
+    ).get().n;
+    if (closedSaleCount === 0) {
+      console.log('[SALES-SYNC] No closed sale comps found — running initial closed sale sync...');
+      setTimeout(() => syncClosedSales().catch(console.error), 10000); // offset 10s from lease sync to avoid API rate limits
+    } else {
+      console.log(`[SALES-SYNC] ${closedSaleCount} closed sale comps in DB.`);
+    }
+  } catch (e) {
+    console.error('[COMPS-SYNC] startup check failed:', e.message);
+  }
+}, 2000);
