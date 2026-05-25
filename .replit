@@ -38,4 +38,4 @@ deploymentTarget = "gce"
 run = ["sh", "-c", "bash start.sh"]
 
 [nix]
-packages = ["sqlite", "python3", "gcc", "gnumake"]
+packages = ["sqlite", "python3", "gcc", "gnumake", "dig"]
