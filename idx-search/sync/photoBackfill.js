@@ -425,6 +425,7 @@ function estimateRemaining(photosTotal, photosCached) {
 }
 
 async function sendHourlyReport(reason = 'cron') {
+  if (process.env.BACKFILL_EMAILS_ENABLED !== '1') return;
   console.log(`[BACKFILL-EMAIL] sendHourlyReport called (reason=${reason})`);
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_FROM || process.env.EMAIL_USER;
   if (!adminEmail) {
@@ -533,6 +534,7 @@ async function sendHourlyReport(reason = 'cron') {
 // One-shot email at server startup so we know the email pipeline is alive.
 // If you stop seeing this on each redeploy, SMTP is broken (not the cron).
 async function sendStartupPing() {
+  if (process.env.BACKFILL_EMAILS_ENABLED !== '1') return;
   console.log('[BACKFILL-EMAIL] sendStartupPing called');
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_FROM || process.env.EMAIL_USER;
   if (!adminEmail) {
