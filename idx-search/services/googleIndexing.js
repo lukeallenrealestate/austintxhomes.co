@@ -10,7 +10,13 @@ const os = require('os');
 const INDEXING_ENDPOINT = 'https://indexing.googleapis.com/v3/urlNotifications:publish';
 const BATCH_ENDPOINT = 'https://indexing.googleapis.com/batch';
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
-const SITE_ORIGIN = process.env.SITE_URL?.replace(/\/$/, '') || 'https://austintxhomes.co';
+// SITE_URL in Replit is set without scheme ("austintxhomes.co"), which makes
+// Google's Indexing API reject every URL as "not in standard URL format".
+// Normalize to always include https:// regardless of how SITE_URL is configured.
+const SITE_ORIGIN = (() => {
+  const raw = (process.env.SITE_URL || 'https://austintxhomes.co').replace(/\/$/, '');
+  return /^https?:\/\//.test(raw) ? raw : `https://${raw}`;
+})();
 
 let clientId, clientSecret, refreshToken;
 let accessToken = null;

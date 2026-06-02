@@ -387,15 +387,15 @@ async function syncListings(isInitial = false) {
     console.log(`[INDEXING] Skipping — ${newListings.length} new listings exceeds 200/day quota`);
   }
 
-  // Kick the backfill once after sync completes so newly-arrived listings get
-  // their hero photos cached within ~1 minute instead of waiting for the next
-  // backfill cron tick or a user click. Lazy require to avoid startup-order issues.
-  try {
-    const photoBackfill = require('./photoBackfill');
-    photoBackfill.runBatch('post-sync').catch(err => console.warn('[BACKFILL]', err.message));
-  } catch (e) {
-    console.warn('[BACKFILL] post-sync hook failed to load:', e.message);
-  }
+  // Post-sync photo backfill hook is DISABLED. The hourly bulk URL refresh
+  // already handles fresh URLs, and the on-demand photo proxy + scheduled
+  // backfill cover the rest. The post-sync trigger was running for 30-60
+  // minutes per fire with ~95% failure rates against MLS's CDN, blocking
+  // the Node event loop long enough that the cron daemon missed multiple
+  // scheduled executions. See node-cron "missed execution" warnings in the
+  // logs around the time this hook fired. Newly-arrived listings still get
+  // hero photos within ~1 hour from the hourly cron — slight delay we
+  // accept in exchange for a responsive site.
 }
 
 let refreshRunning = false;

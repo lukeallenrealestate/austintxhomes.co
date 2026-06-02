@@ -22,7 +22,7 @@ const { throttle, isRecentlyRateLimited, recordMlsCall, isOverBackfillCap, getMl
 // ~30-min batch → 1.67 RPS during the batch (under MLS's 2 RPS hard limit) and
 // ~400 photos/hour averaged over the cycle, far below the 1000/hr self-cap.
 const BATCH_SIZE = 200;                // 200 photos per ~30-min batch = ~9.6k/day
-const FETCH_TIMEOUT_MS = 5000;
+const FETCH_TIMEOUT_MS = 3000;  // was 5000 — most dead URLs fail in <500ms; healthy fetches don't need 5s.
 const MAX_ATTEMPTS = 3;
 const RATE_LIMIT_BACKOFF_MS = 30000;   // 30s after a 429 before next photo
 const EXTRA_BACKFILL_DELAY_MS = 0;     // shared throttle() already enforces 600ms gap
@@ -314,15 +314,29 @@ async function fetchAndMirror(listingKey, photoIdx, photosJson) {
     // toward the hourly MLS cap, and has a 5-min per-listing cooldown — so this
     // path is bounded and can't re-trigger the suspension that originally got
     // it disabled. Converts wasted 400-failure batches into ~70%+ success.
+    let triedRefresh = false;
     if (!res.ok && res.status >= 400 && res.status < 500) {
+      triedRefresh = true;
       const fresh = await tryRefreshAndRefetch(listingKey, photoIdx, controller.signal);
       if (fresh) res = fresh;
     }
 
     if (!res.ok) {
-      const prior = getFailureCount.get([listingKey, photoIdx]);
-      const attempts = (prior?.attempts || 0) + 1;
-      const status = attempts >= MAX_ATTEMPTS ? 'failed_permanent' : 'failed_transient';
+      // If we already tried a fresh URL via on-demand refresh and that ALSO 4xx'd,
+      // the listing's photo is structurally dead (MLS returned no/bad URL on refresh).
+      // No point burning two more batch cycles on it — mark permanent now. This is
+      // what was previously chewing 30-60 minutes of event-loop time per batch:
+      // 200 photos × 3 batches × ~10s per failure = hours of wasted work for URLs
+      // that were never going to come back.
+      const isDead4xx = triedRefresh && res.status >= 400 && res.status < 500 && res.status !== 429;
+      let status;
+      if (isDead4xx) {
+        status = 'failed_permanent';
+      } else {
+        const prior = getFailureCount.get([listingKey, photoIdx]);
+        const attempts = (prior?.attempts || 0) + 1;
+        status = attempts >= MAX_ATTEMPTS ? 'failed_permanent' : 'failed_transient';
+      }
       recordFailure.run([listingKey, photoIdx, status, `HTTP ${res.status}`]);
       return { ok: false, code: `HTTP ${res.status}` };
     }
