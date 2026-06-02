@@ -325,9 +325,21 @@ async function syncListings(isInitial = false) {
         }
       }
 
-      const { visible, hidden } = batchUpsert(mapped);
-      totalSynced += visible;
-      totalHidden += hidden;
+      // Chunk into ~100-row sub-transactions with setImmediate yields between
+      // them. better-sqlite3 is synchronous, so a single 1000-row transaction
+      // blocked the Node event loop for several seconds — public pages were
+      // timing out every 30 min when this cron tick ran. Same pattern as
+      // refreshPhotos() below.
+      const TX_CHUNK = 100;
+      let pageVisible = 0, pageHidden = 0;
+      for (let i = 0; i < mapped.length; i += TX_CHUNK) {
+        const r = batchUpsert(mapped.slice(i, i + TX_CHUNK));
+        pageVisible += r.visible;
+        pageHidden += r.hidden;
+        await new Promise(r => setImmediate(r));
+      }
+      totalSynced += pageVisible;
+      totalHidden += pageHidden;
 
       for (const r of records) {
         if (r.ModificationTimestamp) {
@@ -505,8 +517,14 @@ async function syncClosedLeases() {
       if (!records.length) break;
 
       const mapped = records.map(mapListing);
-      const saved = batchUpsertLeaseComps(mapped);
-      totalSynced += saved;
+      // Chunk to keep the event loop responsive — see syncListings comment.
+      const TX_CHUNK = 100;
+      let pageSaved = 0;
+      for (let i = 0; i < mapped.length; i += TX_CHUNK) {
+        pageSaved += batchUpsertLeaseComps(mapped.slice(i, i + TX_CHUNK));
+        await new Promise(r => setImmediate(r));
+      }
+      totalSynced += pageSaved;
 
       url = data['@odata.nextLink'] || null;
     } catch (err) {
@@ -562,8 +580,14 @@ async function syncClosedSales({ daysBack = 180 } = {}) {
 
         // Reuse the lease-comp writer — it stores with mlg_can_view=0 so these are comps only
         const mapped = records.map(mapListing);
-        const saved = batchUpsertLeaseComps(mapped);
-        typeSynced += saved;
+        // Chunk to keep the event loop responsive — see syncListings comment.
+        const TX_CHUNK = 100;
+        let pageSaved = 0;
+        for (let i = 0; i < mapped.length; i += TX_CHUNK) {
+          pageSaved += batchUpsertLeaseComps(mapped.slice(i, i + TX_CHUNK));
+          await new Promise(r => setImmediate(r));
+        }
+        typeSynced += pageSaved;
 
         url = data['@odata.nextLink'] || null;
       } catch (err) {
