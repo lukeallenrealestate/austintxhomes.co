@@ -118,6 +118,20 @@ app.use((req, res, next) => {
   next();
 });
 
+// Edge-cache HTML pages at Cloudflare so visitors and Googlebot don't notice
+// origin sync windows. Browser caches 60s, CF caches 10min, serves
+// stale-while-revalidate for 24h. Excludes API, admin, account, search, listing
+// detail, and the CMS edit interface — all of which need live data per request.
+const UNCACHED_PREFIXES = ['/api', '/admin', '/account', '/search', '/property', '/edit'];
+app.use((req, res, next) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+  for (const p of UNCACHED_PREFIXES) {
+    if (req.path === p || req.path.startsWith(p + '/')) return next();
+  }
+  res.set('Cache-Control', 'public, max-age=60, s-maxage=600, stale-while-revalidate=86400');
+  next();
+});
+
 // Start scheduled alert checks (2-hour interval, first run after 10 min warmup)
 alertEngine.startScheduledChecks(dealEngine.getDeals);
 
@@ -714,6 +728,7 @@ app.get('/', (_req, res) => {
 
 // Clean URLs for main pages
 app.get('/about',         (_req, res) => res.sendFile(path.join(__dirname, 'public/site/about.html')));
+app.get('/privacy',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/privacy.html')));
 app.get('/sell',                    (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell.html')));
 app.get('/what-is-my-home-worth',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/what-is-my-home-worth.html')));
 app.get('/sell-midcentury-modern-home-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-midcentury-modern-home-austin.html')));
