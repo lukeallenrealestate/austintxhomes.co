@@ -8,8 +8,16 @@
 // wrapper layer deliberately emulated this API to make this swap drop-in.
 const Database = require('better-sqlite3');
 const path = require('path');
+const fs = require('fs');
 
-const db = new Database(path.join(__dirname, 'idx.db'));
+// DB_PATH override lets us point at a Render persistent-disk mount (e.g.
+// /var/data/idx.db) without changing code. Falls back to the original
+// in-repo location for Replit / local dev.
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'idx.db');
+const DB_DIR = path.dirname(DB_PATH);
+if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
+
+const db = new Database(DB_PATH);
 
 // DELETE mode (default rollback journal) — every COMMIT is fsync'd to the
 // main idx.db file before returning, so container kills (Replit deploys,

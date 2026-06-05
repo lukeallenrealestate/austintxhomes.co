@@ -1,0 +1,111 @@
+# Render Infrastructure-as-Code config for austintxhomes.co
+# Docs: https://render.com/docs/blueprint-spec
+#
+# This file gets picked up automatically when you connect your GitHub repo
+# to Render via the "Blueprint" flow. It defines:
+#   - A single Web Service running the merged austintxhomes + idx-search app
+#   - A 2 GB persistent disk mounted at /var/data for SQLite + cache + JSON state
+#   - Health check path and start command
+#
+# Environment variables are NOT defined here on purpose — they hold secrets.
+# Set them manually in the Render dashboard under Environment → Secret Files
+# (see migration-runbook.md in this repo for the full list).
+
+services:
+  - type: web
+    name: austintxhomes
+    runtime: node
+    plan: standard          # 2 GB RAM, 1 CPU, $25/mo — appropriate for MLS sync + IDX search workload
+    region: oregon          # change to dallas or virginia if you prefer closer-to-Austin latency
+
+    # Build: install deps in root, austintxhomes/, AND idx-search/
+    # (the app is a 3-package workspace)
+    buildCommand: |
+      npm install --omit=dev &&
+      cd austintxhomes && npm install --omit=dev && cd .. &&
+      cd idx-search && npm install --omit=dev && cd ..
+
+    # Start: run the pre-start hook (downloads idx.db from R2 if missing),
+    # then start the actual server.
+    startCommand: node scripts/render-boot.js && node austintxhomes/server.js
+
+    # Health check — Render calls this URL every 30s to verify the service.
+    # If it 5xx's repeatedly Render auto-restarts the container.
+    healthCheckPath: /api/config
+
+    # Persistent disk for SQLite DB + photo cache + JSON state files.
+    # Mounted at /var/data; env vars below point each path at a subdirectory.
+    disk:
+      name: austintxhomes-data
+      mountPath: /var/data
+      sizeGB: 2
+
+    # Non-secret env vars baked into the config. Secrets (API tokens, DB
+    # paths to mounted disk, OAuth refresh tokens) are set in the dashboard.
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "20.18.0"
+      - key: DB_PATH
+        value: /var/data/idx.db
+      - key: DATA_DIR
+        value: /var/data/json
+      - key: PHOTO_CACHE_DIR
+        value: /var/data/photo-cache
+      - key: SITE_URL
+        value: https://austintxhomes.co
+      - key: BACKFILL_EMAILS_ENABLED
+        value: "0"
+
+      # ── Secrets — set these in the Render dashboard, do NOT commit values ──
+      # The `sync: false` flag tells Render Blueprints "don't manage this from
+      # the file" — but listing them here documents what the dashboard needs.
+      - key: MLSGRID_ACCESS_TOKEN
+        sync: false
+      - key: MLSGRID_ORIGINATING_SYSTEM
+        sync: false
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET
+        sync: false
+      - key: R2_PUBLIC_URL
+        sync: false
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_PORT
+        sync: false
+      - key: EMAIL_SECURE
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: EMAIL_FROM_NAME
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REFRESH_TOKEN
+        sync: false
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: MAPBOX_PUBLIC_TOKEN
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: DEAL_RADAR_ADMIN_KEY
+        sync: false
+      - key: MORTGAGE_RATE
+        sync: false

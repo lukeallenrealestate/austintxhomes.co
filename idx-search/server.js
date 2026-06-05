@@ -28,8 +28,9 @@ process.on('unhandledRejection', (reason) => {
   console.error('[IDX] Unhandled promise rejection (server kept alive):', reason);
 });
 
-// Ensure photo cache directory exists
-fs.mkdirSync(path.join(__dirname, 'cache', 'photos'), { recursive: true });
+// Ensure photo cache directory exists. PHOTO_CACHE_DIR override lets Render
+// point this at a persistent-disk mount; falls back to in-repo for Replit/local.
+fs.mkdirSync(process.env.PHOTO_CACHE_DIR || path.join(__dirname, 'cache', 'photos'), { recursive: true });
 
 const app = express();
 

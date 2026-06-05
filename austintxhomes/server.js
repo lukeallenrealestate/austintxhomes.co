@@ -56,8 +56,10 @@ const IDX_PUBLIC = path.join(__dirname, '../idx-search/public');
 const { syncListings, refreshPhotos, syncClosedLeases, syncClosedSales } = require('../idx-search/sync/mlsSync');
 const { runAlertJob } = require('../idx-search/services/alertJob');
 const r2Service = require('../idx-search/services/r2');
-// Ensure idx-search photo cache directory exists
-const PHOTO_CACHE_DIR = path.join(__dirname, '../idx-search/cache/photos');
+// Ensure idx-search photo cache directory exists.
+// PHOTO_CACHE_DIR can be overridden by env so Render can point it at the
+// persistent disk mount. Falls back to in-repo path for Replit / local dev.
+const PHOTO_CACHE_DIR = process.env.PHOTO_CACHE_DIR || path.join(__dirname, '../idx-search/cache/photos');
 fs.mkdirSync(PHOTO_CACHE_DIR, { recursive: true });
 
 // Neighborhood page system
@@ -138,7 +140,10 @@ alertEngine.startScheduledChecks(dealEngine.getDeals);
 const cron = require('node-cron');
 
 // ── Cash Flow Subscribers ─────────────────────────────────────────────────────
-const CASH_FLOW_SUBS_FILE = path.join(__dirname, 'data/cash-flow-subscribers.json');
+// DATA_DIR can be overridden by env so Render persists state across deploys
+// on its mounted disk. Falls back to in-repo data/ for Replit / local dev.
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
+const CASH_FLOW_SUBS_FILE = path.join(DATA_DIR, 'cash-flow-subscribers.json');
 
 function loadCashFlowSubs() {
   try { return JSON.parse(fs.readFileSync(CASH_FLOW_SUBS_FILE, 'utf8')); } catch { return []; }

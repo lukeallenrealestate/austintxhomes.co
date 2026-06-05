@@ -23,7 +23,11 @@ let nodemailer;
 try { nodemailer = require('../../idx-search/node_modules/nodemailer'); }
 catch (_) { try { nodemailer = require('nodemailer'); } catch (__) {} }
 
-const REPORTS_FILE = path.join(__dirname, '../data/weekly-reports.json');
+// REPORTS_FILE uses DATA_DIR env so Render can keep the report log on its
+// persistent disk; defaults to in-repo path for Replit / local dev.
+const REPORTS_FILE = process.env.DATA_DIR
+  ? path.join(process.env.DATA_DIR, 'weekly-reports.json')
+  : path.join(__dirname, '../data/weekly-reports.json');
 const SITEMAP_FILE = path.join(__dirname, '../public/sitemap.xml');
 const IDX_API      = process.env.IDX_API_URL || `http://localhost:${process.env.PORT || 3002}`;
 const TO_EMAIL     = 'Luke@austinmdg.com';
