@@ -35,10 +35,13 @@ services:
 
     # Persistent disk for SQLite DB + photo cache + JSON state files.
     # Mounted at /var/data; env vars below point each path at a subdirectory.
+    # Sized for: 1.4 GB current idx.db + 30-50% SQLite journal headroom
+    # during big transactions + ~200 MB photo cache + room for 12-18 months
+    # of listing growth. Resize up later via the Render dashboard if needed.
     disk:
       name: austintxhomes-data
       mountPath: /var/data
-      sizeGB: 2
+      sizeGB: 4
 
     # Non-secret env vars baked into the config. Secrets (API tokens, DB
     # paths to mounted disk, OAuth refresh tokens) are set in the dashboard.
