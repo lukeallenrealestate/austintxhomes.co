@@ -14,3 +14,11 @@ node_modules/
 !austintxhomes/public/videos/hero-video.mp4
 .env
 austintxhomes/data/dealAlerts.json
+
+# Local-only junk that kept showing up in git status
+.DS_Store
+**/.DS_Store
+*.tmp
+**/*.html.tmp
+.claude/settings.local.json
+.claude/scheduled_tasks.lock

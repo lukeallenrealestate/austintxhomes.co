@@ -471,7 +471,10 @@
     var data = Object.fromEntries(new FormData(form));
     try {
       var r = await fetch('/api/contact', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
-      if (r.ok) { form.style.display='none'; document.getElementById('lead-success').style.display='block'; }
+      if (r.ok) {
+        if (window.fbq) fbq('track', 'Lead');
+        form.style.display='none'; document.getElementById('lead-success').style.display='block';
+      }
       else { btn.disabled=false; btn.textContent='Send Me the Guide'; }
     } catch { btn.disabled=false; btn.textContent='Send Me the Guide'; }
   });

@@ -1236,6 +1236,9 @@
       var originalText = btn.textContent;
       btn.disabled = true; btn.textContent = 'Sending…';
       var data = Object.fromEntries(new FormData(form));
+      // Combine first_name + last_name into a single `name` field for /api/contact
+      // (every other form on the site uses `name`; keep the two-field UX here)
+      data.name = ((data.first_name || '') + ' ' + (data.last_name || '')).trim();
       try {
         var r = await fetch('/api/contact', {
           method: 'POST',
