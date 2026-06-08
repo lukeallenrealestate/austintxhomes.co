@@ -111,10 +111,18 @@ app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Redirect non-canonical hostnames (e.g. replit.app subdomains) to the real domain
+// Redirect non-canonical hostnames (e.g. replit.app subdomains) to the real
+// domain. Allowlist: canonical austintxhomes.co, localhost/127.* for dev,
+// and *.onrender.com so we can test the Render deploy before DNS cutover
+// (after cutover this stays useful as a staging/backup URL).
 app.use((req, res, next) => {
   const host = req.hostname;
-  if (host && host !== 'austintxhomes.co' && host !== 'localhost' && !host.startsWith('127.')) {
+  const allowed = !host
+    || host === 'austintxhomes.co'
+    || host === 'localhost'
+    || host.startsWith('127.')
+    || host.endsWith('.onrender.com');
+  if (!allowed) {
     return res.redirect(301, `https://austintxhomes.co${req.originalUrl}`);
   }
   next();
