@@ -267,6 +267,25 @@ cron.schedule('30 * * * *', () => {
   runAlertJob().catch(console.error);
 });
 
+// Photo backfill — runs every hour at :22, in the quiet window after the
+// :05 URL refresh finishes (~:20) and before the :30 MLS sync starts.
+// The old post-sync hook in mlsSync.js stays disabled — we trigger backfill
+// from here instead so it's rate-limited independently and can't cascade.
+// Combined with the failure-fast logic (failed_permanent immediately when
+// the on-demand refresh ALSO 4xx's) and the 3s fetch timeout, this should
+// stay well under 30 min per batch even when MLS is slow.
+cron.schedule('22 * * * *', () => {
+  console.log('[BACKFILL] Scheduled hourly batch starting...');
+  try {
+    const photoBackfill = require('../idx-search/sync/photoBackfill');
+    photoBackfill.runBatch('scheduled').catch(err => {
+      console.warn('[BACKFILL] scheduled batch failed:', err.message);
+    });
+  } catch (e) {
+    console.warn('[BACKFILL] scheduled load failed:', e.message);
+  }
+});
+
 // Monthly scraper — runs on the 1st of each month at 7:00am server time
 cron.schedule('0 7 1 * *', () => {
   const { execFile } = require('child_process');
