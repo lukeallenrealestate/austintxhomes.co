@@ -75,7 +75,7 @@ input, select, textarea { font-family: inherit; }
 
 .header-search input {
   width: 100%;
-  padding: 10px 44px 10px 16px;
+  padding: 10px 76px 10px 16px;
   border: 1.5px solid var(--border);
   border-radius: 24px;
   font-size: 14px;
@@ -97,6 +97,36 @@ input, select, textarea { font-family: inherit; }
   color: var(--text-light);
   pointer-events: none;
 }
+
+/* Near-me geolocation button — sits in-line with the search icon. */
+.near-me-btn {
+  position: absolute;
+  right: 38px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  color: var(--text-light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color 0.18s, background 0.18s;
+}
+.near-me-btn:hover { color: var(--blue); background: rgba(24, 119, 242, 0.08); }
+.near-me-btn.loading .nm-icon { display: none; }
+.near-me-btn:not(.loading) .nm-spinner { display: none; }
+.nm-spinner {
+  width: 14px; height: 14px;
+  border: 2px solid var(--blue);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: nm-spin 0.7s linear infinite;
+}
+@keyframes nm-spin { to { transform: rotate(360deg); } }
 
 .header-actions {
   display: flex;
@@ -167,6 +197,27 @@ input, select, textarea { font-family: inherit; }
   border-top: 1px solid var(--border);
 }
 .ac-section-header:first-child { border-top: none; padding-top: 8px; }
+
+/* Recent searches: subtle visual distinction so users know these are
+ * personal history (not live results). */
+.recent-item .ac-item-icon { color: var(--text-light); }
+.recent-item .ac-item-content { color: var(--text); }
+.ac-recent-footer {
+  padding: 6px 14px 10px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+.btn-recent-clear {
+  background: none;
+  border: none;
+  padding: 4px 0;
+  color: var(--text-light);
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: underline;
+}
+.btn-recent-clear:hover { color: var(--blue); }
 
 .autocomplete-item {
   padding: 9px 14px;
@@ -330,6 +381,67 @@ input, select, textarea { font-family: inherit; }
 }
 .range-inputs input:focus { border-color: var(--blue); }
 .range-inputs span { color: var(--text-light); font-size: 13px; }
+
+/* Price range slider (dual-handle). Uses two stacked <input type=range>
+ * elements with pointer-events: none on the inputs and auto on thumbs so
+ * each thumb is individually grabbable. Step indices map to PRICE_STEPS
+ * in app.js — the slider exposes 40 indices that translate to natural
+ * real-estate price tiers ($0..$25M with more granularity below $1M). */
+.price-slider-wrap { padding: 6px 2px 4px; }
+.ps-labels {
+  display: flex; justify-content: space-between;
+  font-size: 13px; font-weight: 600;
+  color: var(--blue);
+  margin-bottom: 14px;
+}
+.ps-track-wrap {
+  position: relative;
+  height: 32px;
+  margin: 0 10px 4px;
+}
+.ps-track {
+  position: absolute; top: 14px; left: 0; right: 0; height: 4px;
+  background: #e5e7eb; border-radius: 2px;
+  pointer-events: none;
+}
+.ps-track-fill {
+  position: absolute; top: 14px; height: 4px;
+  background: var(--blue); border-radius: 2px;
+  pointer-events: none;
+  left: 0; right: 0; /* set by JS */
+}
+.ps-track-wrap input[type=range] {
+  position: absolute; top: 0; left: -10px; right: -10px;
+  width: calc(100% + 20px); height: 32px;
+  background: transparent;
+  -webkit-appearance: none; appearance: none;
+  pointer-events: none;
+  margin: 0;
+  outline: none;
+}
+.ps-track-wrap input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  pointer-events: auto;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--blue);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  cursor: grab;
+  margin-top: 0;
+}
+.ps-track-wrap input[type=range]::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.08); }
+.ps-track-wrap input[type=range]::-moz-range-thumb {
+  pointer-events: auto;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--blue);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  cursor: grab;
+}
+.ps-num-inputs {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.ps-num-inputs input { font-size: 12px; }
 
 .bed-bath-pills {
   display: flex;

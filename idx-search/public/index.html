@@ -61,6 +61,10 @@
   <div class="header-search">
     <input type="text" id="location-search" placeholder="Search by address, city, zip, or neighborhood..." autocomplete="off" />
     <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <button class="near-me-btn" id="near-me-btn" onclick="searchNearMe()" title="Search homes near me" aria-label="Search homes near me">
+      <svg class="nm-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3"/></svg>
+      <span class="nm-spinner"></span>
+    </button>
     <div class="autocomplete-dropdown" id="autocomplete-dropdown" style="display:none;"></div>
   </div>
 
@@ -138,9 +142,21 @@
   </div>
 </div>
 
-<div id="price-dropdown" class="filter-dropdown">
+<div id="price-dropdown" class="filter-dropdown" style="min-width:300px;">
   <h4>Price Range</h4>
-  <div class="range-inputs">
+  <div class="price-slider-wrap">
+    <div class="ps-labels">
+      <span id="ps-min-label" class="ps-label">Any</span>
+      <span id="ps-max-label" class="ps-label">Any</span>
+    </div>
+    <div class="ps-track-wrap">
+      <div class="ps-track"></div>
+      <div class="ps-track-fill" id="ps-fill"></div>
+      <input type="range" id="ps-min" min="0" max="40" value="0" step="1" aria-label="Minimum price" />
+      <input type="range" id="ps-max" min="0" max="40" value="40" step="1" aria-label="Maximum price" />
+    </div>
+  </div>
+  <div class="range-inputs ps-num-inputs">
     <input type="number" id="min-price" placeholder="Min" onchange="applyFilters()" step="10000" />
     <span>—</span>
     <input type="number" id="max-price" placeholder="Max" onchange="applyFilters()" step="10000" />

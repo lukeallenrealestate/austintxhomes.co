@@ -241,6 +241,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (currentView === 'map') loadGoogleMaps();
   applyFilters();
   setupPillListeners();
+  setupPriceSlider();
 
   // Init mobile map FAB visibility
   const fab = document.getElementById('mobile-map-fab');
@@ -482,6 +483,271 @@ function setListingType(type, btn) {
   applyFilters();
 }
 
+// Price tier mapping — 41 indices (0..40) translate to natural real-estate
+// price points. More granularity below $1M where most home shopping happens,
+// big jumps above $5M where price differences matter less for filter intent.
+// Index 40 = "Any" (no maxPrice filter applied).
+const PRICE_STEPS = [
+  0, 50_000, 100_000, 150_000, 200_000, 250_000, 300_000, 350_000, 400_000, 450_000,
+  500_000, 550_000, 600_000, 650_000, 700_000, 750_000, 800_000, 850_000, 900_000, 950_000,
+  1_000_000, 1_100_000, 1_200_000, 1_300_000, 1_500_000, 1_750_000, 2_000_000, 2_250_000, 2_500_000, 2_750_000,
+  3_000_000, 3_500_000, 4_000_000, 4_500_000, 5_000_000, 6_000_000, 7_500_000, 10_000_000, 15_000_000, 20_000_000, 25_000_000
+];
+
+function fmtPriceCompact(p) {
+  if (p >= 1_000_000) return '$' + (p / 1_000_000).toFixed(p >= 10_000_000 ? 0 : (p % 1_000_000 ? 1 : 0)) + 'M';
+  if (p >= 1000) return '$' + Math.round(p / 1000) + 'K';
+  return '$' + p;
+}
+
+// Map an arbitrary price to the nearest slider index. Used when the user
+// types a value into the number input directly — the slider thumb jumps
+// to match.
+function priceToIndex(price) {
+  if (!price) return 0;
+  let best = 0, bestDist = Infinity;
+  for (let i = 0; i < PRICE_STEPS.length; i++) {
+    const d = Math.abs(PRICE_STEPS[i] - price);
+    if (d < bestDist) { bestDist = d; best = i; }
+  }
+  return best;
+}
+
+let priceFilterDebounce = null;
+
+function setupPriceSlider() {
+  const minSlider = document.getElementById('ps-min');
+  const maxSlider = document.getElementById('ps-max');
+  const minNum = document.getElementById('min-price');
+  const maxNum = document.getElementById('max-price');
+  const minLabel = document.getElementById('ps-min-label');
+  const maxLabel = document.getElementById('ps-max-label');
+  const fill = document.getElementById('ps-fill');
+  if (!minSlider || !maxSlider) return;
+
+  // Visual update only — does NOT trigger applyFilters. Called on every
+  // 'input' event (during drag) so users see immediate feedback.
+  const updateVisuals = () => {
+    let minIdx = parseInt(minSlider.value, 10);
+    let maxIdx = parseInt(maxSlider.value, 10);
+    // Prevent thumbs from crossing
+    if (minIdx > maxIdx) {
+      // If user dragged min past max, push max forward (or vice versa)
+      if (document.activeElement === minSlider) maxSlider.value = minIdx;
+      else minSlider.value = maxIdx;
+      minIdx = parseInt(minSlider.value, 10);
+      maxIdx = parseInt(maxSlider.value, 10);
+    }
+    const minPrice = PRICE_STEPS[minIdx];
+    const maxPrice = PRICE_STEPS[maxIdx];
+    const maxStepIdx = PRICE_STEPS.length - 1;
+    minLabel.textContent = minIdx === 0 ? 'Any' : fmtPriceCompact(minPrice);
+    maxLabel.textContent = maxIdx === maxStepIdx ? 'Any' : fmtPriceCompact(maxPrice);
+    const minPct = (minIdx / 40) * 100;
+    const maxPct = (maxIdx / 40) * 100;
+    fill.style.left = minPct + '%';
+    fill.style.right = (100 - maxPct) + '%';
+    // Mirror to number inputs (silently — .value = doesn't fire change)
+    minNum.value = minIdx === 0 ? '' : minPrice;
+    maxNum.value = maxIdx === maxStepIdx ? '' : maxPrice;
+  };
+
+  // Slider commit (release) — debounced so a fast drag from $0 → $2M
+  // doesn't fire 30 API requests on the way.
+  const commitSlider = () => {
+    clearTimeout(priceFilterDebounce);
+    priceFilterDebounce = setTimeout(() => {
+      const minIdx = parseInt(minSlider.value, 10);
+      const maxIdx = parseInt(maxSlider.value, 10);
+      const maxStepIdx = PRICE_STEPS.length - 1;
+      if (minIdx === 0) delete currentFilters.minPrice;
+      else currentFilters.minPrice = PRICE_STEPS[minIdx];
+      if (maxIdx === maxStepIdx) delete currentFilters.maxPrice;
+      else currentFilters.maxPrice = PRICE_STEPS[maxIdx];
+      updatePriceBtnLabel();
+      currentPage = 1;
+      applyFilters();
+    }, 220);
+  };
+
+  minSlider.addEventListener('input', updateVisuals);
+  maxSlider.addEventListener('input', updateVisuals);
+  minSlider.addEventListener('change', commitSlider);
+  maxSlider.addEventListener('change', commitSlider);
+
+  // Number input edits → sync slider position. The inputs already have
+  // onchange="applyFilters()" inline, so we just reposition the thumbs.
+  minNum.addEventListener('input', () => {
+    const v = parseInt(minNum.value, 10) || 0;
+    minSlider.value = priceToIndex(v);
+    updateVisuals();
+  });
+  maxNum.addEventListener('input', () => {
+    const v = parseInt(maxNum.value, 10) || PRICE_STEPS[PRICE_STEPS.length - 1];
+    maxSlider.value = priceToIndex(v);
+    updateVisuals();
+  });
+
+  updateVisuals();
+}
+
+// ─── Recent searches ─────────────────────────────────────────────────
+// Auto-tracked snapshots of meaningful filter combinations. Shown in the
+// autocomplete dropdown when the search box is focused but empty, so users
+// can jump back to a previous search in one click.
+const RECENT_SEARCHES_KEY = 'recentSearches';
+const MAX_RECENT_SEARCHES = 5;
+let recentSaveDebounce = null;
+
+function getRecentSearches() {
+  try { return JSON.parse(localStorage.getItem(RECENT_SEARCHES_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function saveRecentSearchDebounced() {
+  clearTimeout(recentSaveDebounce);
+  recentSaveDebounce = setTimeout(saveRecentSearch, 1500);
+}
+
+function saveRecentSearch() {
+  // Strip bbox params (these come from map idle every time the user pans
+  // and would otherwise generate noise). Also strip polygon since it's
+  // a huge serialized path that doesn't render to a usable label.
+  const f = { ...currentFilters };
+  ['north', 'south', 'east', 'west', 'polygon'].forEach(k => delete f[k]);
+
+  const parts = [];
+  if (f.minPrice || f.maxPrice) {
+    const min = f.minPrice ? fmtPriceCompact(Number(f.minPrice)) : 'Any';
+    const max = f.maxPrice ? fmtPriceCompact(Number(f.maxPrice)) : 'Any';
+    parts.push(`${min}–${max}`);
+  }
+  if (f.minBeds)  parts.push(f.minBeds + 'BR+');
+  if (f.minBaths) parts.push(f.minBaths + 'BA+');
+  if (f.city)         parts.push(f.city.split(',')[0]);
+  if (f.zip)          parts.push(f.zip.split(',')[0]);
+  if (f.neighborhood) parts.push(f.neighborhood);
+  if (f.schoolDistrict) parts.push(f.schoolDistrict);
+  if (f.keyword)      parts.push('"' + f.keyword + '"');
+  if (f.pool === 'true')             parts.push('Pool');
+  if (f.waterfront === 'true')       parts.push('Waterfront');
+  if (f.newConstruction === 'true')  parts.push('New');
+  if (f.forRent === 'true')          parts.push('Rentals');
+  if (!parts.length) return;  // nothing meaningful to save
+
+  const label = parts.join(' · ');
+  let recent = getRecentSearches();
+  recent = recent.filter(r => r.label !== label);  // dedupe
+  recent.unshift({ label, filters: f, ts: Date.now() });
+  recent = recent.slice(0, MAX_RECENT_SEARCHES);
+  try { localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(recent)); }
+  catch {}
+}
+
+function clearRecentSearches() {
+  try { localStorage.removeItem(RECENT_SEARCHES_KEY); } catch {}
+  hideAutocomplete();
+  showToast('Recent searches cleared');
+}
+
+function showRecentSearches() {
+  const recent = getRecentSearches();
+  const dropdown = document.getElementById('autocomplete-dropdown');
+  if (!dropdown || !recent.length) { hideAutocomplete(); return; }
+
+  const clockIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+  let html = `<div class="ac-section-header">Recent Searches</div>`;
+  recent.forEach((r, i) => {
+    html += `<div class="autocomplete-item recent-item" onclick="applyRecentSearch(${i})">
+      <span class="ac-item-icon">${clockIcon}</span>
+      <span class="ac-item-content">${escapeHtml(r.label)}</span>
+    </div>`;
+  });
+  html += `<div class="ac-recent-footer"><button type="button" class="btn-recent-clear" onclick="clearRecentSearches(); event.stopPropagation();">Clear recent searches</button></div>`;
+  dropdown.innerHTML = html;
+  dropdown.style.display = 'block';
+}
+
+function applyRecentSearch(idx) {
+  const recent = getRecentSearches();
+  const r = recent[idx];
+  if (!r) return;
+  // Build URL params from the saved filters and route through the existing
+  // applyUrlParams() mechanism — it already knows how to write filter values
+  // back into the right DOM controls (pills, checkboxes, inputs).
+  const params = new URLSearchParams();
+  Object.entries(r.filters).forEach(([k, v]) => {
+    if (v != null && v !== '') params.set(k, String(v));
+  });
+  // Wipe everything first, then replay
+  clearAllFilters();
+  try { history.replaceState(null, '', '?' + params.toString()); } catch {}
+  applyUrlParams();
+  // Reposition the price slider since applyUrlParams only writes number inputs
+  const minSlider = document.getElementById('ps-min');
+  const maxSlider = document.getElementById('ps-max');
+  if (minSlider && maxSlider) {
+    const maxStepIdx = PRICE_STEPS.length - 1;
+    minSlider.value = r.filters.minPrice ? priceToIndex(Number(r.filters.minPrice)) : 0;
+    maxSlider.value = r.filters.maxPrice ? priceToIndex(Number(r.filters.maxPrice)) : maxStepIdx;
+    minSlider.dispatchEvent(new Event('input'));
+  }
+  hideAutocomplete();
+  applyFilters();
+}
+
+// Geolocation: zoom map to user's current location. Switches to map view
+// if the user is on the list, requests browser geolocation, centers map,
+// and sets a viewport-aware bbox filter via the existing idle handler.
+function searchNearMe() {
+  if (!navigator.geolocation) {
+    showToast('Your browser does not support location services.');
+    return;
+  }
+  const btn = document.getElementById('near-me-btn');
+  if (btn) btn.classList.add('loading');
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      if (btn) btn.classList.remove('loading');
+      const { latitude: lat, longitude: lng } = pos.coords;
+      // Switch to map view if not already there — near-me only makes sense
+      // when the user can see the map.
+      if (currentView !== 'map') switchView('map');
+      // Map may still be loading. Retry briefly until googleMap is ready.
+      const tries = { n: 0 };
+      const center = () => {
+        if (googleMap) {
+          googleMap.setCenter({ lat, lng });
+          googleMap.setZoom(13);
+          showToast('Showing homes near you');
+          return;
+        }
+        if (tries.n++ < 30) setTimeout(center, 200);
+      };
+      center();
+    },
+    err => {
+      if (btn) btn.classList.remove('loading');
+      const msg = err.code === err.PERMISSION_DENIED
+        ? 'Location access denied. Enable it in browser settings to use this feature.'
+        : 'Could not determine your location. Please try again.';
+      showToast(msg);
+    },
+    { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+  );
+}
+
+function updatePriceBtnLabel() {
+  const min = currentFilters.minPrice;
+  const max = currentFilters.maxPrice;
+  let label = 'Price';
+  if (min && max) label = `${fmtPriceCompact(min)}-${fmtPriceCompact(max)}`;
+  else if (min) label = `${fmtPriceCompact(min)}+`;
+  else if (max) label = `Up to ${fmtPriceCompact(max)}`;
+  updateFilterBtnLabel('price-btn', label);
+}
+
 function setupPillListeners() {
   document.querySelectorAll('#beds-pills .pill').forEach(pill => {
     pill.addEventListener('click', () => {
@@ -556,6 +822,7 @@ function applyFilters() {
   updateFilterButtons();
   saveSearchState();
   syncUrlFromFilters();
+  saveRecentSearchDebounced();
 
   if (currentView === 'list') {
     loadListings();
@@ -755,6 +1022,14 @@ function setupDraggableSheet(sheetSelector, handleSelector) {
 function clearPriceFilter() {
   document.getElementById('min-price').value = '';
   document.getElementById('max-price').value = '';
+  const minSlider = document.getElementById('ps-min');
+  const maxSlider = document.getElementById('ps-max');
+  if (minSlider && maxSlider) {
+    minSlider.value = 0;
+    maxSlider.value = 40;
+    // Re-run visual update through the slider's input listener
+    minSlider.dispatchEvent(new Event('input'));
+  }
   delete currentFilters.minPrice;
   delete currentFilters.maxPrice;
   updateFilterBtnLabel('price-btn', 'Price');
@@ -792,6 +1067,14 @@ function clearAllFilters() {
   document.getElementById('location-search').value = '';
   document.querySelectorAll('#beds-pills .pill, #baths-pills .pill').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('#type-dropdown input').forEach(i => i.checked = false);
+  // Reset the price slider thumbs (number inputs already cleared above)
+  const minSlider = document.getElementById('ps-min');
+  const maxSlider = document.getElementById('ps-max');
+  if (minSlider && maxSlider) {
+    minSlider.value = 0;
+    maxSlider.value = 40;
+    minSlider.dispatchEvent(new Event('input'));
+  }
   updateFilterBtnLabel('price-btn', 'Price');
   updateFilterBtnLabel('beds-btn', 'Beds');
   updateFilterBtnLabel('baths-btn', 'Baths');
@@ -832,10 +1115,16 @@ function setupAutocomplete() {
     clearTimeout(autocompleteDebounce);
     const q = input.value.trim();
     if (q.length < 2) {
-      hideAutocomplete();
+      // Show recent searches instead of hiding — gives the user a path
+      // back to a prior search with no typing.
+      showRecentSearches();
       return;
     }
     autocompleteDebounce = setTimeout(() => fetchAutocomplete(q), 250);
+  });
+
+  input.addEventListener('focus', () => {
+    if (!input.value.trim()) showRecentSearches();
   });
 
   input.addEventListener('keydown', e => {
