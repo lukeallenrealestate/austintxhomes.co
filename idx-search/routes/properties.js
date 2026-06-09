@@ -375,6 +375,9 @@ router.get('/search', (req, res) => {
       return { ...r, photos: resolvePhotos(photos, r.listing_key, r2Photos) };
     });
 
+    // 5 min CDN/browser cache. Polygon searches use a shorter TTL because the
+    // query string is effectively unique per drawn shape.
+    res.set('Cache-Control', (hasPolygon && polygonArr.length > 2) ? 'public, max-age=60' : 'public, max-age=300');
     res.json({
       total,
       page: Number(page),
@@ -464,10 +467,14 @@ router.get('/map-pins', (req, res) => {
     }
 
     const where = conditions.join(' AND ');
+    // /map-pins is only used for bounds-fitting (zoomMapToFilter) — it needs
+    // lat/lon but not photos. Pull a slim column set and skip the photo
+    // resolution work entirely. Compared to /map-bundle this is the simpler
+    // fast path for fit-to-results.
     let pins = db.prepare(`
       SELECT listing_key, list_price, latitude, longitude, standard_status,
              bedrooms_total, bathrooms_total, living_area, unparsed_address,
-             city, postal_code, photos, photos_r2
+             city, postal_code
       FROM listings WHERE ${where} LIMIT 5000
     `).all(values);
 
@@ -480,11 +487,10 @@ router.get('/map-pins', (req, res) => {
       } catch {}
     }
 
-    res.json(pins.map(p => {
-      const photos = tryParse(p.photos, []);
-      const r2Photos = tryParse(p.photos_r2, []);
-      return { ...p, photos: resolvePhotos(photos, p.listing_key, r2Photos) };
-    }));
+    // 5 min CDN/browser cache — same filter set served repeatedly across
+    // a session typically returns identical pins.
+    res.set('Cache-Control', 'public, max-age=300');
+    res.json(pins);
   } catch (err) {
     console.error('[MAP-PINS]', err);
     res.status(500).json({ error: err.message });
@@ -618,6 +624,9 @@ router.get('/map-bundle', (req, res) => {
       res.set('X-Map-Cache', 'MISS');
     }
 
+    // 5 min CDN/browser cache. Polygon searches set a shorter window because
+    // the URL signature is effectively unique per draw and rarely re-served.
+    res.set('Cache-Control', hasPolygon ? 'public, max-age=60' : 'public, max-age=300');
     res.json(payload);
   } catch (err) {
     console.error('[MAP-BUNDLE]', err);
@@ -661,6 +670,9 @@ router.get('/autocomplete', (req, res) => {
 
   const results = [...addresses, ...cities, ...zips, ...hoods, ...schools].filter(r => r.value);
   acCache.set(qKey, { results, ts: Date.now() });
+  // 10 min cache matches server-side TTL — keystrokes that repeat across users
+  // hit the CDN edge instead of round-tripping.
+  res.set('Cache-Control', 'public, max-age=600');
   res.json(results);
 });
 

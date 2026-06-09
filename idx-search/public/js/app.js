@@ -290,7 +290,7 @@ async function loadGoogleMaps() {
   clusterScript.onload = () => {
     // Re-cluster if map pins are already rendered (cluster script loaded after initMap)
     if (googleMap && mapMarkers.length && !mcInstance && window.markerClusterer?.MarkerClusterer) {
-      mcInstance = new window.markerClusterer.MarkerClusterer({ map: googleMap, markers: mapMarkers });
+      mcInstance = new window.markerClusterer.MarkerClusterer({ map: googleMap, markers: mapMarkers, renderer: clusterRenderer });
     }
   };
   document.head.appendChild(clusterScript);
@@ -1059,10 +1059,33 @@ async function zoomMapToFilter() {
 }
 
 // ---- Load Listings (List View) ----
+// AbortController for in-flight search requests. Rapid filter changes (user
+// clicks 3+ in 200ms) used to race — the latest request might finish first,
+// then a slower earlier one would overwrite the grid with stale results.
+let listingsAbort = null;
+let mapBundleAbort = null;
+
+// Skeleton card markup — N grey placeholders that match the real listings
+// grid layout. Replaces the centered spinner so the page doesn't reflow on
+// every filter change and users see the eventual card geometry immediately.
+function renderListingsSkeleton(count = 12) {
+  const cards = Array.from({ length: count }, () =>
+    `<div class="skeleton-card"><div class="sk-img"></div><div class="sk-line sk-line-lg"></div><div class="sk-line sk-line-md"></div><div class="sk-line sk-line-sm"></div></div>`
+  ).join('');
+  return `<div class="listings-grid skeleton-grid">${cards}</div>`;
+}
+
 async function loadListings() {
   const container = document.getElementById('listings-container');
   const paginationEl = document.getElementById('pagination');
-  container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading listings...</p></div>';
+
+  // Cancel any in-flight request before showing skeleton — prevents a slow
+  // earlier response from clobbering the current grid.
+  if (listingsAbort) listingsAbort.abort();
+  listingsAbort = new AbortController();
+  const signal = listingsAbort.signal;
+
+  container.innerHTML = renderListingsSkeleton();
 
   try {
     const params = new URLSearchParams({
@@ -1071,8 +1094,9 @@ async function loadListings() {
       limit: 24
     });
 
-    const res = await fetch(`/api/properties/search?${params}`);
+    const res = await fetch(`/api/properties/search?${params}`, { signal });
     const data = await res.json();
+    if (signal.aborted) return; // safety: response arrived after a newer request started
     totalResults = data.total;
 
     // Update count
@@ -1104,6 +1128,7 @@ async function loadListings() {
     // Scroll to top of results
     document.getElementById('view-controls').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } catch (err) {
+    if (err.name === 'AbortError') return; // expected when a newer filter change supersedes
     container.innerHTML = `<div class="empty-state"><h3>Error loading listings</h3><p>${err.message}</p></div>`;
   }
 }
@@ -1116,8 +1141,25 @@ function goToPage(page) {
 // ---- Map View ----
 // Single combined fetch replaces the old dual /map-pins + /search calls —
 // backend runs one WHERE clause and returns pins + cards + total.
+//
+// Skeleton cards render into the sidebar while the response is in flight,
+// so panning the map shows immediate visual feedback instead of a stale list
+// hanging around until the new fetch completes.
+function renderMapCardsSkeleton(count = 6) {
+  return Array.from({ length: count }, () =>
+    `<div class="map-card skeleton-mapcard"><div class="sk-img"></div><div class="sk-line sk-line-lg"></div><div class="sk-line sk-line-md"></div><div class="sk-line sk-line-sm"></div></div>`
+  ).join('');
+}
+
 async function loadMapPins() {
   if (!googleMap) return;
+
+  if (mapBundleAbort) mapBundleAbort.abort();
+  mapBundleAbort = new AbortController();
+  const signal = mapBundleAbort.signal;
+
+  const listEl = document.getElementById('map-cards-list');
+  if (listEl) listEl.innerHTML = renderMapCardsSkeleton();
 
   const params = new URLSearchParams({
     ...currentFilters,
@@ -1125,54 +1167,102 @@ async function loadMapPins() {
     limit: 50
   });
 
-  const res = await fetch(`/api/properties/map-bundle?${params}`);
-  const data = await res.json();
+  try {
+    const res = await fetch(`/api/properties/map-bundle?${params}`, { signal });
+    const data = await res.json();
+    if (signal.aborted) return;
 
-  mapPins = data.pins || [];
-  renderMapMarkers(mapPins);
+    mapPins = data.pins || [];
+    renderMapMarkers(mapPins);
 
-  const countEl = document.getElementById('results-count');
-  if (countEl) countEl.innerHTML = `<strong>${data.total.toLocaleString()}</strong> homes found`;
+    const countEl = document.getElementById('results-count');
+    if (countEl) countEl.innerHTML = `<strong>${data.total.toLocaleString()}</strong> homes found`;
 
-  const mapCount = document.getElementById('map-count');
-  if (mapCount) mapCount.textContent = `${data.total.toLocaleString()} homes`;
+    const mapCount = document.getElementById('map-count');
+    if (mapCount) mapCount.textContent = `${data.total.toLocaleString()} homes`;
 
-  const listEl = document.getElementById('map-cards-list');
-  if (listEl) listEl.innerHTML = (data.listings || []).map(renderMapCard).join('');
+    if (listEl) listEl.innerHTML = (data.listings || []).map(renderMapCard).join('');
+  } catch (err) {
+    if (err.name === 'AbortError') return;
+    console.error('[loadMapPins]', err);
+    if (listEl) listEl.innerHTML = `<div class="empty-state" style="padding:24px"><h3 style="font-size:14px">Error loading map data</h3><p style="font-size:12px">${err.message}</p></div>`;
+  }
 }
 
 // Merged into loadMapPins — kept as a no-op so existing paired call sites still compile.
 async function loadMapCards() {}
 
+// Format a list price as a short label: 1850000 → "$1.9M", 825000 → "$825K".
+function fmtPriceShort(p) {
+  if (!p) return '';
+  if (p >= 10000000) return '$' + Math.round(p / 1000000) + 'M';
+  if (p >= 1000000) return '$' + (p / 1000000).toFixed(1) + 'M';
+  return '$' + Math.round(p / 1000) + 'K';
+}
+
+// Build a price-pill SVG icon for a single listing. Pulled into a helper so
+// the size/font scales cleanly per zoom tier.
+function pillIcon(label, fill, width, height, fontSize) {
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="${width}" height="${height}" rx="${height / 2}" fill="${fill}" stroke="white" stroke-width="1.2"/><text x="${width / 2}" y="${Math.round(height * 0.69)}" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="${fontSize}" font-weight="bold">${label}</text></svg>`
+    )}`,
+    scaledSize: new google.maps.Size(width, height),
+    anchor: new google.maps.Point(width / 2, height / 2)
+  };
+}
+
+// Marker icon by zoom. Price labels stay visible at every useful zoom level —
+// matching the Zillow pattern where you can read prices on the metro view.
+// Previously dropped to a 14px dot below zoom 14, which forced users to zoom
+// in just to see what listings cost.
 function markerIcon(pin, zoom, hovered = false) {
   const fill = hovered ? '#f97316' : (pin.standard_status === 'Active' ? '#1877F2' : '#374151');
-  if (zoom >= 14) {
-    const price = pin.list_price;
-    const label = price >= 1000000
-      ? '$' + (price / 1000000).toFixed(1) + 'M'
-      : '$' + Math.round(price / 1000) + 'K';
-    return {
-      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="72" height="26">
-          <rect width="72" height="26" rx="13" fill="${fill}"/>
-          <text x="36" y="17" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="11" font-weight="bold">${label}</text>
-        </svg>`
-      )}`,
-      scaledSize: new google.maps.Size(72, 26),
-      anchor: new google.maps.Point(36, 13)
-    };
-  } else {
-    return {
-      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14">
-          <circle cx="7" cy="7" r="6" fill="${fill}" stroke="white" stroke-width="1.5"/>
-        </svg>`
-      )}`,
-      scaledSize: new google.maps.Size(14, 14),
-      anchor: new google.maps.Point(7, 7)
-    };
-  }
+  const label = fmtPriceShort(pin.list_price);
+
+  if (zoom >= 14) return pillIcon(label, fill, 72, 26, 11);
+  if (zoom >= 12) return pillIcon(label, fill, 64, 22, 10);
+  if (zoom >= 10) return pillIcon(label, fill, 54, 19, 9);
+  // Very zoomed-out view (county-level): tiny dot, labels would overlap.
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><circle cx="7" cy="7" r="6" fill="${fill}" stroke="white" stroke-width="1.5"/></svg>`
+    )}`,
+    scaledSize: new google.maps.Size(14, 14),
+    anchor: new google.maps.Point(7, 7)
+  };
 }
+
+// Custom cluster renderer. Computes the median price of the cluster's
+// underlying listings and renders a circular badge with the count + median.
+// Falls back to default styling if MarkerClusterer's renderer API isn't
+// available on the loaded library version.
+const clusterRenderer = {
+  render({ count, position, markers }) {
+    const prices = (markers || [])
+      .map(m => m._pin?.list_price)
+      .filter(Boolean)
+      .sort((a, b) => a - b);
+    const median = prices.length ? prices[Math.floor(prices.length / 2)] : 0;
+    const medianLabel = fmtPriceShort(median);
+
+    const size = count >= 100 ? 56 : count >= 25 ? 48 : 40;
+    const radius = size / 2;
+    const fill = '#1877F2';
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><circle cx="${radius}" cy="${radius}" r="${radius - 2}" fill="${fill}" stroke="white" stroke-width="2" opacity="0.95"/><text x="${radius}" y="${Math.round(size * 0.46)}" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="${count >= 100 ? 14 : 13}" font-weight="700">${count}</text><text x="${radius}" y="${Math.round(size * 0.74)}" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="${count >= 100 ? 10 : 9}" font-weight="600" opacity="0.9">${medianLabel}</text></svg>`;
+
+    return new google.maps.Marker({
+      position,
+      icon: {
+        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+        scaledSize: new google.maps.Size(size, size),
+        anchor: new google.maps.Point(radius, radius)
+      },
+      zIndex: 1000 + count
+    });
+  }
+};
 
 function mapEventToLatLng(e) {
   const rect = document.getElementById('map').getBoundingClientRect();
@@ -1216,7 +1306,7 @@ function renderMapMarkers(pins) {
   // Cluster markers — library exports to window.markerClusterer.MarkerClusterer (lowercase namespace)
   if (window.markerClusterer?.MarkerClusterer) {
     if (mcInstance) { mcInstance.clearMarkers(); mcInstance = null; }
-    mcInstance = new window.markerClusterer.MarkerClusterer({ map: googleMap, markers: mapMarkers });
+    mcInstance = new window.markerClusterer.MarkerClusterer({ map: googleMap, markers: mapMarkers, renderer: clusterRenderer });
   }
 }
 
