@@ -57,8 +57,41 @@ function renderHeartBtn(listingKey) {
     </button>`;
 }
 
+// Carousel render — at most 5 photos per card to cap network cost. All photos
+// after the first get loading="lazy" + data-src so they don't fetch until the
+// user actually swipes/clicks to them. Scroll-snap-x makes horizontal swipe
+// gestures snap to whole-image positions natively (no JS swipe handler needed).
+function renderCardCarousel(listing, photos) {
+  if (!photos.length) {
+    return `<div class="no-photo">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <span>No Photo</span>
+    </div>`;
+  }
+  const capped = photos.slice(0, 5);
+  const alt = (listing.unparsed_address || '').replace(/"/g, '&quot;');
+  const slides = capped.map((url, i) => {
+    if (i === 0) {
+      return `<img class="carousel-slide" src="${url}" alt="${alt}" loading="lazy" />`;
+    }
+    return `<img class="carousel-slide" data-src="${url}" alt="" loading="lazy" />`;
+  }).join('');
+  const dots = capped.length > 1
+    ? `<div class="carousel-dots">${capped.map((_, i) => `<span class="dot${i === 0 ? ' active' : ''}"></span>`).join('')}</div>`
+    : '';
+  const navButtons = capped.length > 1
+    ? `<button class="carousel-prev" aria-label="Previous photo" onclick="carouselNav(event, -1)">&#8249;</button>
+       <button class="carousel-next" aria-label="Next photo" onclick="carouselNav(event, 1)">&#8250;</button>`
+    : '';
+  return `
+    <div class="carousel-track" data-photos="${capped.length}" data-total="${photos.length}">${slides}</div>
+    ${navButtons}
+    ${dots}
+  `;
+}
+
 function renderPropertyCard(listing) {
-  const photo = getFirstPhoto(listing.photos);
+  const photos = listing.photos || [];
   const statusClass = getStatusClass(listing.standard_status);
   const tags = [];
   if (listing.new_construction_yn) tags.push('New Construction');
@@ -68,16 +101,10 @@ function renderPropertyCard(listing) {
 
   return `
     <article class="property-card" onclick="goToListing('${listing.listing_key}')">
-      <div class="card-image">
-        ${photo
-          ? `<img src="${photo}" alt="${listing.unparsed_address || ''}" loading="lazy" onerror="this.outerHTML='<div class=\\'no-photo\\'><svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'40\\' height=\\'40\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'/><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'/><polyline points=\\'21 15 16 10 5 21\\'/></svg><span>No Photo</span></div>'" />`
-          : `<div class="no-photo">
-               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-               <span>No Photo</span>
-             </div>`
-        }
+      <div class="card-image card-carousel">
+        ${renderCardCarousel(listing, photos)}
         <span class="card-status ${statusClass}">${getStatusLabel(listing.standard_status)}</span>
-        ${listing.photos?.length > 1 ? `<span class="card-photo-count"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> ${listing.photos.length}</span>` : ''}
+        ${photos.length > 1 ? `<span class="card-photo-count"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> ${photos.length}</span>` : ''}
         ${renderHeartBtn(listing.listing_key)}
       </div>
       <div class="card-body">
@@ -93,6 +120,47 @@ function renderPropertyCard(listing) {
         ${tags.length ? `<div class="card-tags">${tags.map(t => `<span class="card-tag" data-tag="${t}">${t}</span>`).join('')}</div>` : ''}
       </div>
     </article>`;
+}
+
+// Carousel navigation. Stops propagation so clicking arrow doesn't navigate
+// to the listing. Lazy-loads next image just-in-time as the user swipes.
+function carouselNav(event, dir) {
+  event.stopPropagation();
+  event.preventDefault();
+  const btn = event.currentTarget;
+  const track = btn.parentElement.querySelector('.carousel-track');
+  if (!track) return;
+  track.scrollBy({ left: dir * track.clientWidth, behavior: 'smooth' });
+}
+
+// Lazy-load adjacent images and keep dots in sync. Called once after cards
+// render. Uses scroll event with passive listener so it doesn't block touch.
+function attachCarouselListeners(container) {
+  const root = container || document;
+  root.querySelectorAll('.card-carousel').forEach(carousel => {
+    if (carousel.dataset.listenerAttached) return;
+    carousel.dataset.listenerAttached = '1';
+    const track = carousel.querySelector('.carousel-track');
+    const dots = carousel.querySelectorAll('.carousel-dots .dot');
+    if (!track) return;
+
+    const loadAdjacent = (idx) => {
+      const imgs = track.querySelectorAll('img.carousel-slide');
+      [idx, idx + 1, idx - 1].forEach(i => {
+        const img = imgs[i];
+        if (img && img.dataset.src) {
+          img.src = img.dataset.src;
+          delete img.dataset.src;
+        }
+      });
+    };
+
+    track.addEventListener('scroll', () => {
+      const idx = Math.round(track.scrollLeft / track.clientWidth);
+      if (dots.length) dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      loadAdjacent(idx);
+    }, { passive: true });
+  });
 }
 
 function renderMapCard(listing) {

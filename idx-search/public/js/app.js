@@ -685,6 +685,21 @@ function escHtml(s) {
 
 // ---- Draggable bottom sheet (mobile only) ----
 // Tap the handle to toggle expanded/collapsed, drag down to collapse, drag up to expand.
+// Full-screen map toggle (mobile). Switches the bottom sheet between visible
+// (whether peek-collapsed or fully expanded) and fully hidden. When hidden,
+// the user gets a true edge-to-edge map. The toggle button label/icon
+// updates via a class on itself so the same button serves both states.
+function toggleMapSidebar() {
+  const sheet = document.querySelector('.map-sidebar');
+  const btn = document.getElementById('sheet-toggle-btn');
+  if (!sheet || !btn) return;
+  const hidden = sheet.classList.toggle('hidden');
+  btn.classList.toggle('sidebar-hidden', hidden);
+  // If we're un-hiding, also drop the collapsed state so the user sees the
+  // expanded list (matches user intent — they tapped "Show list").
+  if (!hidden) sheet.classList.remove('collapsed');
+}
+
 function setupDraggableSheet(sheetSelector, handleSelector) {
   if (window.innerWidth > 640) return;
   const sheet = document.querySelector(sheetSelector);
@@ -1122,6 +1137,7 @@ async function loadListings() {
     grid.innerHTML = data.listings.map(renderPropertyCard).join('');
     container.innerHTML = '';
     container.appendChild(grid);
+    attachCarouselListeners(grid);
 
     paginationEl.innerHTML = renderPagination(data.page, data.pages, 'goToPage');
 
@@ -1181,7 +1197,10 @@ async function loadMapPins() {
     const mapCount = document.getElementById('map-count');
     if (mapCount) mapCount.textContent = `${data.total.toLocaleString()} homes`;
 
-    if (listEl) listEl.innerHTML = (data.listings || []).map(renderMapCard).join('');
+    if (listEl) {
+      listEl.innerHTML = (data.listings || []).map(renderMapCard).join('');
+      attachCarouselListeners(listEl);
+    }
   } catch (err) {
     if (err.name === 'AbortError') return;
     console.error('[loadMapPins]', err);
@@ -1214,22 +1233,23 @@ function pillIcon(label, fill, width, height, fontSize) {
 
 // Marker icon by zoom. Price labels stay visible at every useful zoom level —
 // matching the Zillow pattern where you can read prices on the metro view.
-// Previously dropped to a 14px dot below zoom 14, which forced users to zoom
-// in just to see what listings cost.
+// Minimum sizes are tuned for finger touch on mobile: smallest pill is 22px
+// tall and the no-label dot is 20px wide so neither feels fiddly to tap.
 function markerIcon(pin, zoom, hovered = false) {
   const fill = hovered ? '#f97316' : (pin.standard_status === 'Active' ? '#1877F2' : '#374151');
   const label = fmtPriceShort(pin.list_price);
 
   if (zoom >= 14) return pillIcon(label, fill, 72, 26, 11);
-  if (zoom >= 12) return pillIcon(label, fill, 64, 22, 10);
-  if (zoom >= 10) return pillIcon(label, fill, 54, 19, 9);
-  // Very zoomed-out view (county-level): tiny dot, labels would overlap.
+  if (zoom >= 12) return pillIcon(label, fill, 64, 24, 10);
+  if (zoom >= 10) return pillIcon(label, fill, 58, 22, 10);
+  // Very zoomed-out view (county-level): dot only, labels would overlap.
+  // 20px diameter is the recommended minimum touch target.
   return {
     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><circle cx="7" cy="7" r="6" fill="${fill}" stroke="white" stroke-width="1.5"/></svg>`
+      `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="8" fill="${fill}" stroke="white" stroke-width="2"/></svg>`
     )}`,
-    scaledSize: new google.maps.Size(14, 14),
-    anchor: new google.maps.Point(7, 7)
+    scaledSize: new google.maps.Size(20, 20),
+    anchor: new google.maps.Point(10, 10)
   };
 }
 

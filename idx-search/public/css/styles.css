@@ -523,13 +523,6 @@ input, select, textarea { font-family: inherit; }
   object-fit: cover;
   transition: transform 0.3s;
 }
-.card-image img::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.12) 0%, transparent 40%);
-}
-.property-card:hover .card-image img { transform: scale(1.03); }
 .card-image .no-photo {
   width: 100%;
   height: 100%;
@@ -541,6 +534,87 @@ input, select, textarea { font-family: inherit; }
   flex-direction: column;
   gap: 8px;
   background: #f3f4f6;
+}
+
+/* ── Photo carousel on listing cards ─────────────────────────────────
+ * Horizontal scroll-snap container. Native swipe gestures work on touch
+ * devices because we never preventDefault — the scroll-snap CSS handles
+ * the physics. Prev/Next buttons appear on hover (desktop) and stay
+ * visible at all times on touch. Dots track scroll position via JS. */
+.card-carousel { position: relative; overflow: hidden; }
+.carousel-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+}
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.carousel-prev, .carousel-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.18s, background 0.18s;
+  padding: 0 0 2px;
+}
+.carousel-prev { left: 8px; }
+.carousel-next { right: 8px; }
+.property-card:hover .carousel-prev,
+.property-card:hover .carousel-next {
+  opacity: 1;
+}
+.carousel-prev:hover, .carousel-next:hover { background: rgba(0,0,0,0.75); }
+.carousel-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  z-index: 3;
+  padding: 4px 8px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 12px;
+  pointer-events: none;
+}
+.carousel-dots .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.55);
+  transition: background 0.2s, transform 0.2s;
+}
+.carousel-dots .dot.active {
+  background: #fff;
+  transform: scale(1.15);
+}
+
+/* Touch devices: arrow buttons always visible so users discover them
+ * without needing a hover state */
+@media (hover: none) and (pointer: coarse) {
+  .carousel-prev, .carousel-next { opacity: 1; }
 }
 
 .card-status {
@@ -1590,6 +1664,9 @@ input, select, textarea { font-family: inherit; }
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
+
+/* Sheet toggle — only shown on mobile-map view (media query enables flex) */
+.sheet-toggle-btn { display: none; }
 .mobile-map-fab:active {
   transform: translateX(-50%) scale(0.96);
 }
@@ -1973,6 +2050,11 @@ input, select, textarea { font-family: inherit; }
   .map-sidebar.collapsed {
     transform: translateY(calc(100% - 48px));
   }
+  /* Full-screen map: sheet fully off-screen so user gets edge-to-edge map */
+  .map-sidebar.hidden {
+    transform: translateY(100%);
+    pointer-events: none;
+  }
   .map-sidebar-header {
     cursor: grab;
     touch-action: none;
@@ -2030,6 +2112,50 @@ input, select, textarea { font-family: inherit; }
   .mobile-map-fab {
     display: flex;
   }
+
+  /* --- Sheet toggle (full-screen map mode) --- */
+  .sheet-toggle-btn {
+    display: flex;
+    position: absolute;
+    bottom: calc(55vh + 12px); /* sits just above the expanded sheet */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 11;
+    background: #fff;
+    color: #1f2937;
+    border: 1px solid #e5e7eb;
+    border-radius: 22px;
+    padding: 7px 14px 7px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: bottom 0.25s ease;
+    white-space: nowrap;
+  }
+  /* When sheet is collapsed (48px peek), move toggle just above the peek */
+  .map-sidebar.collapsed ~ .sheet-toggle-btn,
+  #map-container .sheet-toggle-btn { /* button lives inside map-container */
+    bottom: calc(55vh + 12px);
+  }
+  /* When sheet is hidden entirely, anchor toggle to bottom */
+  body:has(.map-sidebar.hidden) .sheet-toggle-btn {
+    bottom: 20px;
+  }
+  /* Same effect via JS-applied class on the button itself, for browsers
+   * without :has() support */
+  .sheet-toggle-btn.sidebar-hidden {
+    bottom: 20px;
+  }
+  .sheet-toggle-btn .ts-icon-up,
+  .sheet-toggle-btn .ts-label-show { display: none; }
+  .sheet-toggle-btn.sidebar-hidden .ts-icon-down,
+  .sheet-toggle-btn.sidebar-hidden .ts-label-hide { display: none; }
+  .sheet-toggle-btn.sidebar-hidden .ts-icon-up,
+  .sheet-toggle-btn.sidebar-hidden .ts-label-show { display: inline; }
+  .sheet-toggle-btn svg { flex-shrink: 0; }
 
   /* --- View toggle: more prominent on mobile --- */
   .view-toggle {
