@@ -636,12 +636,12 @@
 <div class="sort-bar">
   <div class="sort-bar-inner">
     <div class="sort-bar-selects">
-      <select class="sort-select" id="sort-select">
+      <select class="sort-select" id="sort-select" aria-label="Sort listings by">
         <option value="newest">Sort: Newest &#9660;</option>
         <option value="price_asc">Price Low &rarr; High</option>
         <option value="price_desc">Price High &rarr; Low</option>
       </select>
-      <select class="sort-select" id="beds-select">
+      <select class="sort-select" id="beds-select" aria-label="Minimum bedrooms">
         <option value="">Min Beds: Any &#9660;</option>
         <option value="1">1+ bd</option>
         <option value="2">2+ bd</option>
@@ -649,7 +649,7 @@
         <option value="4">4+ bd</option>
         <option value="5">5+ bd</option>
       </select>
-      <select class="sort-select" id="minprice-select">
+      <select class="sort-select" id="minprice-select" aria-label="Minimum price">
         <option value="">Min Price: Any &#9660;</option>
         <option value="500000">$500K+</option>
         <option value="750000">$750K+</option>
@@ -657,7 +657,7 @@
         <option value="1250000">$1.25M+</option>
         <option value="1500000">$1.5M+</option>
       </select>
-      <select class="sort-select" id="maxprice-select">
+      <select class="sort-select" id="maxprice-select" aria-label="Maximum price">
         <option value="">Max Price: Any &#9660;</option>
         <option value="700000">Up to $700K</option>
         <option value="900000">Up to $900K</option>
@@ -760,7 +760,7 @@
           <form class="contact-form" id="brentwood-homes-form">
             <input type="text" name="name" placeholder="Your name" required />
             <input type="text" name="contact" placeholder="Phone or email" required />
-            <select name="intent">
+            <select name="intent" aria-label="What are you looking to do?">
               <option value="">Intent</option>
               <option value="Buy in Brentwood">Buy in Brentwood</option>
               <option value="Sell in Brentwood">Sell in Brentwood</option>
@@ -768,7 +768,7 @@
               <option value="Investment">Investment</option>
               <option value="Just exploring">Just exploring</option>
             </select>
-            <select name="budget">
+            <select name="budget" aria-label="Budget">
               <option value="">Budget range</option>
               <option value="$575K-$700K">$575K&ndash;$700K</option>
               <option value="$700K-$900K">$700K&ndash;$900K</option>

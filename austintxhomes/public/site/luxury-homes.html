@@ -406,21 +406,21 @@
   <div class="search-card">
   <form class="search-row" id="luxury-search-form">
   <input class="search-input" type="text" id="luxury-location" placeholder="Neighborhood, address, or price range…" />
-  <select class="search-select" id="luxury-minprice">
+  <select class="search-select" id="luxury-minprice" aria-label="Luxury minprice">
   <option value="1000000">Min $1M</option>
   <option value="1500000">Min $1.5M</option>
   <option value="2000000">Min $2M</option>
   <option value="3000000">Min $3M</option>
   <option value="5000000">Min $5M+</option>
   </select>
-  <select class="search-select" id="luxury-maxprice">
+  <select class="search-select" id="luxury-maxprice" aria-label="Luxury maxprice">
   <option value="">No max</option>
   <option value="2000000">Up to $2M</option>
   <option value="3000000">Up to $3M</option>
   <option value="5000000">Up to $5M</option>
   <option value="10000000">Up to $10M</option>
   </select>
-  <select class="search-select" id="luxury-type">
+  <select class="search-select" id="luxury-type" aria-label="Luxury type">
   <option value="">Any type</option>
   <option value="estate">Estate / Acreage</option>
   <option value="lakefront">Lakefront</option>
@@ -472,7 +472,7 @@
   <h2 class="listings-title">Luxury Homes <em>For Sale</em></h2>
   <div class="sort-row">
   <span class="sort-label">Sort by</span>
-  <select class="sort-select" id="sort-select">
+  <select class="sort-select" id="sort-select" aria-label="Sort listings by">
   <option value="price_desc">Price: High to Low</option>
   <option value="price_asc">Price: Low to High</option>
   <option value="newest">Newest</option>
@@ -673,7 +673,7 @@
   </div>
   <div class="form-group">
   <label>Budget Range</label>
-  <select name="budget">
+  <select name="budget" aria-label="Budget">
   <option value="">Select…</option>
   <option>$1M – $2M</option>
   <option>$2M – $3M</option>

@@ -494,7 +494,7 @@ module.exports = function renderBlogPost(post) {
           <div class="form-group"><input type="text" name="name" placeholder="Your name" required /></div>
           <div class="form-group"><input type="text" name="contact" placeholder="Phone or email" required /></div>
           <div class="form-group">
-            <select name="intent">
+            <select name="intent" aria-label="What are you looking to do?">
               <option value="">What are you looking for?</option>
               <option value="buy">Buy a home in Austin</option>
               <option value="sell">Sell my home</option>

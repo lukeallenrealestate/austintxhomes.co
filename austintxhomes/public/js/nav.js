@@ -127,13 +127,13 @@ fbq('track', 'PageView');
   const nav = document.createElement('nav');
   nav.id = 'site-nav';
   nav.innerHTML = `
-    <a href="/" class="sn-logo"><img src="/images/logo.png" alt="Luke Allen — Austin Marketing + Development Group" /></a>
+    <a href="/" class="sn-logo"><img src="/images/logo.png" alt="Luke Allen — Austin Marketing + Development Group" width="675" height="145" /></a>
     <ul class="sn-links">
       ${links.map(l => `<li><a href="${l.href}"${isActive(l.href) ? ' class="active"' : ''}>${l.label}</a></li>`).join('')}
     </ul>
     <div class="sn-right">
-      <a href="${SEARCH_URL}" class="sn-search" target="_blank" rel="noopener">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <a href="${SEARCH_URL}" class="sn-search" target="_blank" rel="noopener" aria-label="Search Listings">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <span class="sn-search-label">Search Listings</span>
       </a>
       <a href="/about#contact" class="sn-cta">Talk to Luke</a>

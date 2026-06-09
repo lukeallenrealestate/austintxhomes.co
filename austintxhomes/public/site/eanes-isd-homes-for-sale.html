@@ -816,14 +816,14 @@
         <form class="contact-form" id="eanes-contact" onsubmit="submitForm(event)">
           <input type="text" name="name" placeholder="Your name" required />
           <input type="text" name="contact" placeholder="Phone or email" required />
-          <select name="goal">
+          <select name="goal" aria-label="What are you looking to do?">
             <option value="">What are you looking to do?</option>
             <option>Buy a home in Eanes ISD</option>
             <option>Sell my home in Eanes ISD</option>
             <option>Just researching the area</option>
             <option>Compare Eanes ISD to other districts</option>
           </select>
-          <select name="timeline">
+          <select name="timeline" aria-label="Timeline">
             <option value="">Timeline</option>
             <option>Ready now</option>
             <option>1–3 months</option>
@@ -831,7 +831,7 @@
             <option>6–12 months</option>
             <option>Just researching</option>
           </select>
-          <select name="budget">
+          <select name="budget" aria-label="Budget">
             <option value="">Approximate budget</option>
             <option>Under $1M</option>
             <option>$1M–$1.5M</option>

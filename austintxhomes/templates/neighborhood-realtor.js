@@ -491,7 +491,7 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   </div>
   </div>
   <div class="hero-photo">
-  <img src="/images/luke-allen.jpg" alt="Luke Allen, ${n.name}${n.city && n.city === n.name ? ' TX' : ' Austin TX'} Realtor - TREC #788149" loading="eager" />
+  <img src="/images/luke-allen.jpg" width="800" height="1187" alt="Luke Allen, ${n.name}${n.city && n.city === n.name ? ' TX' : ' Austin TX'} Realtor - TREC #788149" loading="eager" />
   <p class="hero-photo-caption">Luke Allen &middot; TREC #788149</p>
   </div>
   </div>
@@ -655,7 +655,7 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   <div class="form-group"><input type="text" name="name" placeholder="Your name" required /></div>
   <div class="form-group"><input type="text" name="contact" placeholder="Phone or email" required /></div>
   <div class="form-group">
-  <select name="intent">
+  <select name="intent" aria-label="What are you looking to do?">
   <option value="">I'm looking to…</option>
   <option value="buy">Buy in ${n.name}</option>
   <option value="sell">Sell in ${n.name}</option>
@@ -665,7 +665,7 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   </select>
   </div>
   <div class="form-group">
-  <select name="budget">
+  <select name="budget" aria-label="Budget">
   <option value="">Budget range</option>
   <option value="under-500k">Under $500K</option>
   <option value="500-750k">$500K – $750K</option>

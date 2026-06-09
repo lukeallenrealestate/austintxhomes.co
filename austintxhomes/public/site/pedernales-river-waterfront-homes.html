@@ -223,12 +223,12 @@ section.content.dark p strong{color:#fff}
     <h2>Pedernales <em>frontage on the market now</em>.</h2>
     <div class="filter-bar" style="position:static;padding:18px 0;background:transparent;border-bottom:none">
       <div class="filter-bar-inner">
-        <select id="sort-select">
+        <select id="sort-select" aria-label="Sort listings by">
           <option value="newest">Sort: Newest</option>
           <option value="price_desc">Price: High to Low</option>
           <option value="price_asc">Price: Low to High</option>
         </select>
-        <select id="beds-select">
+        <select id="beds-select" aria-label="Minimum bedrooms">
           <option value="">Any Beds</option>
           <option value="3">3+ Beds</option>
           <option value="4">4+ Beds</option>
@@ -303,7 +303,7 @@ section.content.dark p strong{color:#fff}
       <div class="lf-group"><input type="text" name="name" placeholder="Your name" required /></div>
       <div class="lf-group"><input type="text" name="contact" placeholder="Phone or email" required /></div>
       <div class="lf-group">
-        <select name="intent">
+        <select name="intent" aria-label="What are you looking to do?">
           <option value="">I am looking to...</option>
           <option>Buy along the Pedernales</option>
           <option>Sell my Pedernales property</option>

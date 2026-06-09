@@ -408,7 +408,7 @@
   <div class="search-card">
   <form class="search-row" id="condo-search-form">
   <input class="search-input" type="text" id="condo-location" placeholder="Neighborhood, building, or zip…" />
-  <select class="search-select" id="condo-maxprice">
+  <select class="search-select" id="condo-maxprice" aria-label="Condo maxprice">
   <option value="">Any price</option>
   <option value="300000">Up to $300K</option>
   <option value="400000">Up to $400K</option>
@@ -416,7 +416,7 @@
   <option value="750000">Up to $750K</option>
   <option value="1000000">Up to $1M</option>
   </select>
-  <select class="search-select" id="condo-beds">
+  <select class="search-select" id="condo-beds" aria-label="Condo beds">
   <option value="">Any beds</option>
   <option value="0">Studio</option>
   <option value="1">1 bed+</option>
@@ -443,7 +443,7 @@
   <input type="hidden" name="source" value="condos-hero" />
   <input type="text" name="name" placeholder="Your name" required />
   <input type="text" name="contact" placeholder="Email or phone" required />
-  <select name="building">
+  <select name="building" aria-label="Building">
   <option value="">Building / area of interest</option>
   <option value="austonian">The Austonian</option>
   <option value="modern">The Modern</option>
@@ -493,7 +493,7 @@
   <h2 class="listings-title">Austin Condos <em>For Sale</em></h2>
   <div class="sort-row">
   <span class="sort-label">Sort by</span>
-  <select class="sort-select" id="sort-select">
+  <select class="sort-select" id="sort-select" aria-label="Sort listings by">
   <option value="newest">Newest</option>
   <option value="price_asc">Price: Low to High</option>
   <option value="price_desc">Price: High to Low</option>
@@ -688,7 +688,7 @@
   </div>
   <div class="form-group">
   <label>Budget Range</label>
-  <select name="budget">
+  <select name="budget" aria-label="Budget">
   <option value="">Select…</option>
   <option>Under $300K</option>
   <option>$300K – $500K</option>

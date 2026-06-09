@@ -201,19 +201,19 @@
 <div class="sort-bar">
   <div class="sort-bar-inner">
   <div class="sort-bar-selects">
-  <select class="sort-select" id="sort-select">
+  <select class="sort-select" id="sort-select" aria-label="Sort listings by">
   <option value="newest">Sort: Newest &#9660;</option>
   <option value="price_asc">Price Low &rarr; High</option>
   <option value="price_desc">Price High &rarr; Low</option>
   </select>
-  <select class="sort-select" id="beds-select">
+  <select class="sort-select" id="beds-select" aria-label="Minimum bedrooms">
   <option value="">Min Beds: Any &#9660;</option>
   <option value="2">2+ bd</option>
   <option value="3">3+ bd</option>
   <option value="4">4+ bd</option>
   <option value="5">5+ bd</option>
   </select>
-  <select class="sort-select" id="minprice-select">
+  <select class="sort-select" id="minprice-select" aria-label="Minimum price">
   <option value="">Min Price: Any &#9660;</option>
   <option value="450000">$450K+</option>
   <option value="600000">$600K+</option>
@@ -221,7 +221,7 @@
   <option value="1000000">$1M+</option>
   <option value="1500000">$1.5M+</option>
   </select>
-  <select class="sort-select" id="maxprice-select">
+  <select class="sort-select" id="maxprice-select" aria-label="Maximum price">
   <option value="">Max Price: Any &#9660;</option>
   <option value="600000">Up to $600K</option>
   <option value="800000">Up to $800K</option>
@@ -320,7 +320,7 @@
   <form class="contact-form" id="dripping-springs-homes-form">
   <input type="text" name="name" placeholder="Your name" required />
   <input type="text" name="contact" placeholder="Phone or email" required />
-  <select name="intent">
+  <select name="intent" aria-label="What are you looking to do?">
   <option value="">Intent</option>
   <option value="Buy in Dripping Springs">Buy in Dripping Springs</option>
   <option value="Sell in Dripping Springs">Sell in Dripping Springs</option>
@@ -330,7 +330,7 @@
   <option value="Investment">Investment</option>
   <option value="Just exploring">Just exploring</option>
   </select>
-  <select name="budget">
+  <select name="budget" aria-label="Budget">
   <option value="">Budget range</option>
   <option value="$425K-$600K">$425K&ndash;$600K</option>
   <option value="$600K-$800K">$600K&ndash;$800K</option>

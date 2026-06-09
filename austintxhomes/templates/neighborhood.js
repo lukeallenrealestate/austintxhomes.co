@@ -418,7 +418,7 @@ module.exports = function renderNeighborhoodPage(n) {
   <!-- AUTHOR / E-E-A-T BLOCK - visible author signal Google's helpful-content system rewards -->
   <section style="background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:28px 32px;">
   <div style="max-width:var(--w);margin:0 auto;display:flex;gap:18px;align-items:center;flex-wrap:wrap;">
-  <img src="/images/luke-allen.jpg" alt="Luke Allen, Licensed Austin TX Realtor specializing in ${n.name}" loading="lazy"
+  <img src="/images/luke-allen.jpg" width="800" height="1187" alt="Luke Allen, Licensed Austin TX Realtor specializing in ${n.name}" loading="lazy"
   style="width:64px;height:64px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid var(--border);" />
   <div style="flex:1;min-width:260px;">
   <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;">Written By</div>
@@ -473,7 +473,7 @@ module.exports = function renderNeighborhoodPage(n) {
   <div class="form-group"><input type="text" name="name" placeholder="Your name" required /></div>
   <div class="form-group"><input type="text" name="contact" placeholder="Phone or email" required /></div>
   <div class="form-group">
-  <select name="intent">
+  <select name="intent" aria-label="What are you looking to do?">
   <option value="">I'm looking to…</option>
   <option>Buy in ${n.name}</option>
   <option>Sell in ${n.name}</option>

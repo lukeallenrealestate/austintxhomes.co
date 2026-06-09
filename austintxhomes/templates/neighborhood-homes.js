@@ -474,12 +474,12 @@ module.exports = function renderNeighborhoodHomesPage(n) {
   <!-- FILTER BAR -->
   <div class="filter-bar">
     <div class="filter-bar-inner">
-      <select id="sort-select">
+      <select id="sort-select" aria-label="Sort listings by">
         <option value="newest">Sort: Newest ▾</option>
         <option value="price_asc">Price: Low to High</option>
         <option value="price_desc">Price: High to Low</option>
       </select>
-      <select id="beds-select">
+      <select id="beds-select" aria-label="Minimum bedrooms">
         <option value="">Min Beds: Any ▾</option>
         <option value="1">1+ Beds</option>
         <option value="2">2+ Beds</option>
@@ -487,7 +487,7 @@ module.exports = function renderNeighborhoodHomesPage(n) {
         <option value="4">4+ Beds</option>
         <option value="5">5+ Beds</option>
       </select>
-      <select id="minprice-select">
+      <select id="minprice-select" aria-label="Minimum price">
         <option value="">Min Price: Any ▾</option>
         <option value="300000">$300K+</option>
         <option value="500000">$500K+</option>
@@ -496,7 +496,7 @@ module.exports = function renderNeighborhoodHomesPage(n) {
         <option value="1500000">$1.5M+</option>
         <option value="2000000">$2M+</option>
       </select>
-      <select id="maxprice-select">
+      <select id="maxprice-select" aria-label="Maximum price">
         <option value="">Max Price: Any ▾</option>
         <option value="500000">Under $500K</option>
         <option value="750000">Under $750K</option>
@@ -623,7 +623,7 @@ module.exports = function renderNeighborhoodHomesPage(n) {
           <div class="form-group"><input type="text" name="name" placeholder="Your name" required /></div>
           <div class="form-group"><input type="text" name="contact" placeholder="Phone or email" required /></div>
           <div class="form-group">
-            <select name="intent">
+            <select name="intent" aria-label="What are you looking to do?">
               <option value="">I'm looking to…</option>
               <option value="buy">Buy in ${n.name}</option>
               <option value="sell">Sell in ${n.name}</option>
@@ -633,7 +633,7 @@ module.exports = function renderNeighborhoodHomesPage(n) {
             </select>
           </div>
           <div class="form-group">
-            <select name="budget">
+            <select name="budget" aria-label="Budget">
               <option value="">Budget range…</option>
               <option value="under-500k">Under $500K</option>
               <option value="500k-750k">$500K–$750K</option>

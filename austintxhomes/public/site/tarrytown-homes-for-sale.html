@@ -539,7 +539,7 @@
 <div class="sort-bar" id="listings">
   <div class="sort-bar-inner">
     <span class="sort-bar-count" id="listing-count">Loading...</span>
-    <select class="sort-select" id="sort-select" onchange="changeSort(this.value)">
+    <select class="sort-select" id="sort-select" onchange="changeSort(this.value)" aria-label="Sort listings by">
       <option value="newest">Newest</option>
       <option value="price_desc">Price High &rarr; Low</option>
       <option value="price_asc">Price Low &rarr; High</option>
@@ -633,14 +633,14 @@
         <form class="contact-form" id="tarrytown-contact" onsubmit="submitForm(event)">
           <input type="text" name="name" placeholder="Your name" required />
           <input type="text" name="contact" placeholder="Phone or email" required />
-          <select name="goal">
+          <select name="goal" aria-label="What are you looking to do?">
             <option value="">What are you looking to do?</option>
             <option>Buy a home in Tarrytown</option>
             <option>Sell my home in Tarrytown</option>
             <option>Just researching the area</option>
             <option>Compare neighborhoods</option>
           </select>
-          <select name="budget">
+          <select name="budget" aria-label="Budget">
             <option value="">Budget range</option>
             <option>$500K&ndash;$750K</option>
             <option>$750K&ndash;$1M</option>

@@ -958,14 +958,14 @@
             <input type="hidden" name="source" value="google-relocation-hero" />
             <input type="text" name="name" placeholder="Your name" required />
             <input type="text" name="contact" placeholder="Email or phone" required />
-            <select name="budget">
+            <select name="budget" aria-label="Budget">
               <option value="">Budget range</option>
               <option>$500K–$750K</option>
               <option>$750K–$1M</option>
               <option>$1M–$1.5M</option>
               <option>$1.5M+</option>
             </select>
-            <select name="timeline">
+            <select name="timeline" aria-label="Timeline">
               <option value="">When are you moving?</option>
               <option>Within 30 days</option>
               <option>1–3 months</option>
@@ -1002,7 +1002,7 @@
         <div class="form-row">
           <div class="form-group">
             <label>Budget</label>
-            <select name="budget">
+            <select name="budget" aria-label="Budget">
               <option value="">Select range</option>
               <option>Under $400k</option>
               <option>$400k – $600k</option>
@@ -1013,7 +1013,7 @@
           </div>
           <div class="form-group">
             <label>Start Date</label>
-            <select name="timeline">
+            <select name="timeline" aria-label="Timeline">
               <option value="">When?</option>
               <option>Already moved</option>
               <option>Next 30 days</option>
@@ -1493,7 +1493,7 @@
             <div class="form-row">
               <div class="form-group">
                 <label for="budget">Budget Range</label>
-                <select id="budget" name="budget">
+                <select id="budget" name="budget" aria-label="Budget">
                   <option value="">Select…</option>
                   <option>Under $500K</option>
                   <option>$500K–$700K</option>
@@ -1504,7 +1504,7 @@
               </div>
               <div class="form-group">
                 <label for="family">Family Situation</label>
-                <select id="family" name="family">
+                <select id="family" name="family" aria-label="Family">
                   <option value="">Select…</option>
                   <option>Just me</option>
                   <option>Me + partner</option>

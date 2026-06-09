@@ -412,7 +412,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
         <input type="hidden" name="source" value="round-rock-${escHtml(n.slug)}-hub" />
         <input type="text" name="name" placeholder="Your name" required />
         <input type="text" name="contact" placeholder="Email or phone" required />
-        <select name="intent">
+        <select name="intent" aria-label="What are you looking to do?">
           <option value="">I'm interested in...</option>
           <option>Buying in ${escHtml(n.name)}</option>
           <option>Renting in ${escHtml(n.name)}</option>
@@ -557,7 +557,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
         <input type="hidden" name="source" value="round-rock-${escHtml(n.slug)}-sale" />
         <input type="text" name="name" placeholder="Your name" required />
         <input type="text" name="contact" placeholder="Email or phone" required />
-        <select name="budget">
+        <select name="budget" aria-label="Budget">
           <option value="">Budget range</option>
           <option>Under $400K</option>
           <option>$400K–$550K</option>
@@ -671,7 +671,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
         <input type="hidden" name="source" value="round-rock-${escHtml(n.slug)}-rent" />
         <input type="text" name="name" placeholder="Your name" required />
         <input type="text" name="contact" placeholder="Email or phone" required />
-        <select name="moveIn">
+        <select name="moveIn" aria-label="MoveIn">
           <option value="">Move-in timeline</option>
           <option>Within 30 days</option>
           <option>1–3 months</option>
@@ -788,7 +788,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
         <input type="hidden" name="source" value="round-rock-${escHtml(n.slug)}-realtor" />
         <input type="text" name="name" placeholder="Your name" required />
         <input type="text" name="contact" placeholder="Email or phone" required />
-        <select name="intent">
+        <select name="intent" aria-label="What are you looking to do?">
           <option value="">I want to...</option>
           <option>Buy in ${escHtml(n.name)}</option>
           <option>Sell in ${escHtml(n.name)}</option>
@@ -817,7 +817,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
     <p class="section-eye">About Luke</p>
     <h2 class="section-title">Your ${escHtml(n.name)} <em>Local Realtor</em></h2>
     <div class="agent-card">
-      <img src="/images/luke-allen.jpg" alt="Luke Allen, Round Rock Realtor" class="agent-photo" />
+      <img src="/images/luke-allen.jpg" width="800" height="1187" alt="Luke Allen, Round Rock Realtor" class="agent-photo" />
       <div class="agent-info">
         <h3>Luke Allen</h3>
         <p>Licensed Texas Realtor · TREC #788149 · Austin Marketing + Development Group · Serving Round Rock buyers, sellers, and renters.</p>

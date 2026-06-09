@@ -447,19 +447,19 @@
 <div class="sort-bar">
   <div class="sort-bar-inner">
     <div class="sort-bar-selects">
-      <select class="sort-select" id="sort-select">
+      <select class="sort-select" id="sort-select" aria-label="Sort listings by">
         <option value="newest">Sort: Newest &#9660;</option>
         <option value="price_asc">Price Low &rarr; High</option>
         <option value="price_desc">Price High &rarr; Low</option>
       </select>
-      <select class="sort-select" id="beds-select">
+      <select class="sort-select" id="beds-select" aria-label="Minimum bedrooms">
         <option value="">Min Beds: Any &#9660;</option>
         <option value="2">2+ bd</option>
         <option value="3">3+ bd</option>
         <option value="4">4+ bd</option>
         <option value="5">5+ bd</option>
       </select>
-      <select class="sort-select" id="maxprice-select">
+      <select class="sort-select" id="maxprice-select" aria-label="Maximum price">
         <option value="">Max Price: Any &#9660;</option>
         <option value="350000">Up to $350K</option>
         <option value="450000">Up to $450K</option>
@@ -669,14 +669,14 @@
           <form class="contact-form" id="tesla-homes-form">
             <input type="text" name="name" placeholder="Your name" required />
             <input type="text" name="contact" placeholder="Phone or email" required />
-            <select name="area">
+            <select name="area" aria-label="Area">
               <option value="">Preferred area</option>
               <option value="Del Valle (78617)">Del Valle &mdash; closest to Giga TX</option>
               <option value="SE Austin (78744)">SE Austin &mdash; urban access</option>
               <option value="Manor (78653)">Manor &mdash; most land per dollar</option>
               <option value="Open to all areas">Open to all areas</option>
             </select>
-            <select name="budget">
+            <select name="budget" aria-label="Budget">
               <option value="">Budget range</option>
               <option value="$280K-$350K">$280K&ndash;$350K</option>
               <option value="$350K-$450K">$350K&ndash;$450K</option>
@@ -684,7 +684,7 @@
               <option value="$600K-$800K">$600K&ndash;$800K</option>
               <option value="$800K+">$800K+</option>
             </select>
-            <select name="timeline">
+            <select name="timeline" aria-label="Timeline">
               <option value="">Move-in timeline</option>
               <option value="ASAP">ASAP</option>
               <option value="1-3 months">1&ndash;3 months</option>
