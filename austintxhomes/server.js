@@ -923,6 +923,7 @@ app.get('/brentwood-homes-for-sale', (_req, res) => res.sendFile(path.join(__dir
 app.get('/tarrytown-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-realtor.html')));
 app.get('/tarrytown-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-homes-for-sale.html')));
 app.get('/tarrytown-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-market-report.html')));
+app.get('/barton-hills-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/barton-hills-market-report.html')));
 app.get('/living-in-tarrytown-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-tarrytown-austin.html')));
 app.get('/sell-home-tarrytown-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-tarrytown-austin.html')));
 // Horseshoe Bay TX — Lake LBJ resort city web
