@@ -160,8 +160,103 @@ const migrations = [
   // Track the last "fully cached" listing count emailed so we can suppress
   // duplicate hourly reports once backfill reaches steady state.
   `ALTER TABLE sync_state ADD COLUMN backfill_last_email_count INTEGER DEFAULT -1`,
-  `ALTER TABLE sync_state ADD COLUMN backfill_last_email_at DATETIME`
+  `ALTER TABLE sync_state ADD COLUMN backfill_last_email_at DATETIME`,
+
+  // ─── Sprint 2: query performance ─────────────────────────────────────
+  // Composite indexes for the multi-filter searches users actually run.
+  // The existing idx_listings_active_date covers status+sort but combinations
+  // like (active + city + price) still scan post-index. These add direct
+  // index hits for the top filter patterns.
+  `CREATE INDEX IF NOT EXISTS idx_listings_active_price
+    ON listings(mlg_can_view, standard_status, list_price)`,
+  `CREATE INDEX IF NOT EXISTS idx_listings_active_city_price
+    ON listings(mlg_can_view, standard_status, city, list_price)`,
+  `CREATE INDEX IF NOT EXISTS idx_listings_active_zip_price
+    ON listings(mlg_can_view, standard_status, postal_code, list_price)`,
+
+  // R-Tree spatial index for map bounding-box queries. Previously map
+  // endpoints did latitude BETWEEN + longitude BETWEEN, which SQLite has to
+  // evaluate row-by-row even with the lat/lon compound index. R-Tree gives
+  // true O(log n) spatial lookup. Triggers below keep it aligned with the
+  // listings.rowid.
+  `CREATE VIRTUAL TABLE IF NOT EXISTS listings_rtree USING rtree(
+    id,
+    minlat, maxlat,
+    minlon, maxlon
+  )`,
+  `CREATE TRIGGER IF NOT EXISTS listings_rtree_ai
+     AFTER INSERT ON listings
+     WHEN NEW.latitude IS NOT NULL AND NEW.longitude IS NOT NULL
+   BEGIN
+     INSERT OR REPLACE INTO listings_rtree(id, minlat, maxlat, minlon, maxlon)
+     VALUES (NEW.rowid, NEW.latitude, NEW.latitude, NEW.longitude, NEW.longitude);
+   END`,
+  `CREATE TRIGGER IF NOT EXISTS listings_rtree_au
+     AFTER UPDATE OF latitude, longitude ON listings
+   BEGIN
+     DELETE FROM listings_rtree WHERE id = NEW.rowid;
+     INSERT INTO listings_rtree(id, minlat, maxlat, minlon, maxlon)
+     SELECT NEW.rowid, NEW.latitude, NEW.latitude, NEW.longitude, NEW.longitude
+     WHERE NEW.latitude IS NOT NULL AND NEW.longitude IS NOT NULL;
+   END`,
+  `CREATE TRIGGER IF NOT EXISTS listings_rtree_ad
+     AFTER DELETE ON listings
+   BEGIN
+     DELETE FROM listings_rtree WHERE id = OLD.rowid;
+   END`,
+
+  // FTS5 trigram index for autocomplete + keyword search. Replaces 5 LIKE
+  // table scans per keystroke (~100ms total) with single MATCH queries
+  // (<10ms). content='listings' means FTS5 indexes into the live columns by
+  // rowid — no text duplication. Trigram tokenizer supports infix matching
+  // (so "Thornton" finds rows with "1234 Thornton St" mid-string), unlike
+  // the default unicode61 tokenizer which is prefix-only.
+  `CREATE VIRTUAL TABLE IF NOT EXISTS listings_fts USING fts5(
+    unparsed_address, city, postal_code, subdivision_name, school_district,
+    content='listings',
+    content_rowid='rowid',
+    tokenize='trigram'
+  )`,
+  `CREATE TRIGGER IF NOT EXISTS listings_fts_ai AFTER INSERT ON listings BEGIN
+     INSERT INTO listings_fts(rowid, unparsed_address, city, postal_code, subdivision_name, school_district)
+     VALUES (NEW.rowid, NEW.unparsed_address, NEW.city, NEW.postal_code, NEW.subdivision_name, NEW.school_district);
+   END`,
+  `CREATE TRIGGER IF NOT EXISTS listings_fts_ad AFTER DELETE ON listings BEGIN
+     INSERT INTO listings_fts(listings_fts, rowid, unparsed_address, city, postal_code, subdivision_name, school_district)
+     VALUES ('delete', OLD.rowid, OLD.unparsed_address, OLD.city, OLD.postal_code, OLD.subdivision_name, OLD.school_district);
+   END`,
+  `CREATE TRIGGER IF NOT EXISTS listings_fts_au AFTER UPDATE ON listings BEGIN
+     INSERT INTO listings_fts(listings_fts, rowid, unparsed_address, city, postal_code, subdivision_name, school_district)
+     VALUES ('delete', OLD.rowid, OLD.unparsed_address, OLD.city, OLD.postal_code, OLD.subdivision_name, OLD.school_district);
+     INSERT INTO listings_fts(rowid, unparsed_address, city, postal_code, subdivision_name, school_district)
+     VALUES (NEW.rowid, NEW.unparsed_address, NEW.city, NEW.postal_code, NEW.subdivision_name, NEW.school_district);
+   END`
 ];
 migrations.forEach(sql => { try { db.exec(sql); } catch {} });
+
+// One-time backfill of the new R-Tree + FTS5 indexes. Idempotent — once
+// user_version reaches CURRENT_SCHEMA_VERSION we skip the work. Triggers
+// handle ongoing INSERT/UPDATE/DELETE maintenance going forward.
+const CURRENT_SCHEMA_VERSION = 2;
+const currentVersion = db.pragma('user_version', { simple: true });
+if (currentVersion < CURRENT_SCHEMA_VERSION) {
+  const t0 = Date.now();
+  try {
+    console.log(`[db] Migrating schema ${currentVersion} -> ${CURRENT_SCHEMA_VERSION}: backfilling R-Tree + FTS5`);
+    db.exec(`INSERT OR REPLACE INTO listings_rtree(id, minlat, maxlat, minlon, maxlon)
+             SELECT rowid, latitude, latitude, longitude, longitude
+             FROM listings WHERE latitude IS NOT NULL AND longitude IS NOT NULL`);
+    // FTS5 'rebuild' drops and rebuilds the entire index from the content=
+    // table in one pass — far faster than incremental inserts for 40k+ rows.
+    db.exec(`INSERT INTO listings_fts(listings_fts) VALUES('rebuild')`);
+    db.pragma(`user_version = ${CURRENT_SCHEMA_VERSION}`);
+    console.log(`[db] Schema migration complete in ${Date.now() - t0}ms`);
+  } catch (err) {
+    // If the SQLite build lacks rtree or fts5 trigram support, log loudly
+    // but don't crash boot. Routes have LIKE fallbacks for autocomplete and
+    // the BETWEEN fallback for spatial queries below.
+    console.error('[db] Sprint 2 migration failed (continuing without new indexes):', err.message);
+  }
+}
 
 module.exports = db;
