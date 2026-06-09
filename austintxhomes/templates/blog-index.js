@@ -105,6 +105,14 @@ module.exports = function renderBlogIndex(posts, options) {
     "url": "https://austintxhomes.co",
     "telephone": "+12547182567",
     "email": "Luke@austinmdg.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "1401 West Ave Suite B",
+      "addressLocality": "Austin",
+      "addressRegion": "TX",
+      "postalCode": "78701",
+      "addressCountry": "US"
+    },
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "5.0",
