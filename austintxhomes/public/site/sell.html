@@ -154,104 +154,63 @@
 
     body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.6; }
 
-    /* HERO */
+    /* HERO — mirrors buy page structure: full-width dark hero, video bg, text-left, form-right */
     .hero {
-      margin-top: 68px;
-      display: grid; grid-template-columns: 1fr 1fr; min-height: 600px;
-    }
-    .hero-image {
-      position: relative; overflow: hidden; min-height: 500px;
+      min-height: 92vh; display: flex; align-items: center;
       background: var(--ink);
+      padding-top: 68px; position: relative; overflow: hidden;
     }
-    .hero-image video {
+    .hero video {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       object-fit: cover;
       opacity: 0; transition: opacity 1.4s ease;
     }
-    .hero-image video.ready { opacity: 1; }
-    .hero-image::after {
+    .hero video.ready { opacity: 1; }
+    .hero::before {
       content: ''; position: absolute; inset: 0;
-      background: linear-gradient(to right, rgba(15,15,14,.55) 0%, rgba(15,15,14,.15) 60%, rgba(250,248,244,.15) 100%);
-      pointer-events: none;
+      background: linear-gradient(135deg, rgba(15,15,14,.82) 0%, rgba(26,20,16,.75) 50%, rgba(15,15,14,.82) 100%);
+      z-index: 1;
     }
-
-    /* Hero overlay form (sits over the video on the left side) */
-    .hero-form-overlay {
-      position: absolute; left: 40px; top: 50%; transform: translateY(-50%);
-      z-index: 3; width: 360px; max-width: calc(100% - 80px);
-      background: rgba(15,15,14,.82);
-      border: 1px solid rgba(184,147,90,.32);
-      border-radius: 8px;
-      padding: 28px 26px;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 18px 50px rgba(0,0,0,.45);
-    }
-    .hero-form-overlay h3 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 26px; font-weight: 400; line-height: 1.15;
-      color: #fff; margin-bottom: 4px;
-    }
-    .hero-form-overlay h3 em { font-style: italic; color: var(--gold-lt); }
-    .hero-form-overlay .hf-sub {
-      font-size: 12px; color: rgba(255,255,255,.6);
-      margin-bottom: 18px; line-height: 1.5;
-    }
-    .hero-form-overlay .hf-row { margin-bottom: 10px; }
-    .hero-form-overlay .hf-row label {
-      display: block; font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
-      color: rgba(255,255,255,.5); margin-bottom: 4px;
-    }
-    .hero-form-overlay .hf-row input {
-      width: 100%; padding: 10px 12px;
-      border: 1px solid rgba(255,255,255,.16);
-      border-radius: var(--r);
-      font-family: 'Inter', sans-serif; font-size: 13px;
-      color: #fff; background: rgba(255,255,255,.07);
-      outline: none; transition: border-color .2s;
-    }
-    .hero-form-overlay .hf-row input::placeholder { color: rgba(255,255,255,.3); }
-    .hero-form-overlay .hf-row input:focus { border-color: var(--gold); }
-    .hero-form-overlay button {
-      width: 100%; background: var(--gold); color: #fff; border: none; cursor: pointer;
-      font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: .1em;
-      text-transform: uppercase; font-weight: 600;
-      padding: 12px; border-radius: var(--r); margin-top: 6px;
-      transition: background .2s;
-    }
-    .hero-form-overlay button:hover { background: var(--gold-lt); }
-    .hero-form-overlay .hf-note {
-      font-size: 10.5px; color: rgba(255,255,255,.4);
-      text-align: center; margin-top: 10px; font-style: italic;
-    }
-    .hero-form-overlay .hf-success {
-      text-align: center; padding: 24px 0;
-      font-family: 'Cormorant Garamond', serif; font-size: 18px;
-      font-style: italic; color: var(--gold-lt); line-height: 1.5;
-      display: none;
-    }
-    .hero-copy {
-      background: var(--warm); padding: 80px 64px;
-      display: flex; flex-direction: column; justify-content: center;
+    .hero-inner {
+      max-width: var(--w); margin: 0 auto; padding: 5rem 2rem;
+      display: grid; grid-template-columns: 1fr 420px; gap: 5rem; align-items: center;
+      position: relative; z-index: 2; width: 100%;
     }
     .hero-eyebrow {
-      font-size: 11px; letter-spacing: .15em; text-transform: uppercase;
-      color: var(--gold); margin-bottom: 20px;
+      font-size: .75rem; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.25rem;
     }
-    .hero-copy h1 {
+    .hero-content h1 {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(42px, 5vw, 62px); font-weight: 400; line-height: 1.1;
-      color: var(--ink); margin-bottom: 24px;
+      font-size: clamp(2.8rem, 5vw, 4.2rem); font-weight: 300;
+      color: #fff; line-height: 1.1; margin-bottom: 1.5rem;
     }
-    .hero-copy h1 em { font-style: italic; color: var(--gold); }
-    .hero-copy p { font-size: 15px; color: var(--mid); line-height: 1.75; margin-bottom: 36px; max-width: 440px; }
-    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+    .hero-content h1 em { font-style: italic; color: var(--gold-lt); }
+    .hero-content > p {
+      color: rgba(255,255,255,.72); font-size: 1.05rem; line-height: 1.75;
+      max-width: 520px; margin-bottom: 2.5rem;
+    }
+    .hero-content > p a { color: var(--gold-lt); text-decoration: none; border-bottom: 1px solid rgba(184,147,90,.4); }
+    .hero-content > p a:hover { color: var(--gold); border-bottom-color: var(--gold); }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
     .btn-primary {
-      background: var(--gold); color: #fff; border: none; cursor: pointer;
-      font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
-      padding: 14px 28px; border-radius: var(--r); text-decoration: none; transition: background .2s; display: inline-block;
+      background: var(--gold); color: #fff; padding: .85rem 2rem;
+      border-radius: 2px; text-decoration: none; font-size: .88rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      transition: background .2s; display: inline-block; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif;
     }
     .btn-primary:hover { background: var(--gold-lt); }
+    .btn-outline {
+      border: 1px solid rgba(184,147,90,.5); color: var(--gold);
+      padding: .85rem 2rem; border-radius: 2px; text-decoration: none;
+      font-size: .88rem; letter-spacing: .1em; text-transform: uppercase;
+      transition: all .2s; display: inline-block; background: transparent;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-outline:hover { border-color: var(--gold); background: rgba(184,147,90,.08); color: var(--gold-lt); }
+    /* Legacy btn-ghost kept for any non-hero callers */
     .btn-ghost {
       background: transparent; color: var(--ink); cursor: pointer;
       font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
@@ -259,6 +218,50 @@
       border: 1px solid var(--border); transition: border-color .2s; display: inline-block;
     }
     .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* HERO FORM CARD (right side, mirrors buy page) */
+    .hero-form {
+      background: rgba(255,255,255,.04); border: 1px solid rgba(184,147,90,.2);
+      border-radius: 4px; padding: 2.5rem 2rem;
+    }
+    .hero-form h3 {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 400;
+      color: #fff; margin-bottom: .4rem;
+    }
+    .hero-form h3 em { font-style: italic; color: var(--gold-lt); }
+    .hero-form > p { color: rgba(255,255,255,.6); font-size: .85rem; margin-bottom: 1.75rem; }
+    .hero-form .form-group { margin-bottom: 1rem; }
+    .hero-form .form-group label {
+      display: block; font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;
+      color: rgba(255,255,255,.5); margin-bottom: .4rem;
+    }
+    .hero-form .form-group input,
+    .hero-form .form-group select {
+      width: 100%; padding: .75rem 1rem;
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 2px; color: #fff; font-family: 'Inter', sans-serif; font-size: .9rem;
+      transition: border-color .2s; outline: none;
+    }
+    .hero-form .form-group input::placeholder { color: rgba(255,255,255,.3); }
+    .hero-form .form-group input:focus,
+    .hero-form .form-group select:focus { border-color: var(--gold); }
+    .hero-form .form-group select option { background: #1a1410; }
+    .hero-form .form-submit {
+      width: 100%; background: var(--gold); color: #fff; border: none;
+      padding: .9rem; border-radius: 2px; font-family: 'Inter', sans-serif;
+      font-size: .88rem; letter-spacing: .1em; text-transform: uppercase;
+      cursor: pointer; transition: background .2s; margin-top: .5rem;
+    }
+    .hero-form .form-submit:hover { background: var(--gold-lt); }
+    .hero-form .form-note {
+      font-size: .72rem; color: rgba(255,255,255,.35);
+      text-align: center; margin-top: .75rem;
+    }
+    .hero-form .hf-success {
+      display: none; text-align: center; padding: 1.5rem 0;
+      font-family: 'Cormorant Garamond', serif; font-size: 1.15rem;
+      font-style: italic; color: var(--gold-lt); line-height: 1.5;
+    }
 
     /* TRUST BAR */
     .trust-bar {
@@ -393,10 +396,7 @@
     .footer-legal a { color: rgba(255,255,255,.4); text-decoration: none; }
 
     @media (max-width: 900px) {
-      .hero { grid-template-columns: 1fr; }
-      .hero-image { min-height: 560px; }
-      .hero-copy { padding: 56px 32px; }
-      .hero-form-overlay { left: 50%; transform: translate(-50%, -50%); width: calc(100% - 48px); }
+      .hero-inner { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 2rem; }
       .val-grid { grid-template-columns: 1fr; }
       .val-form { position: static; }
       .process-steps { grid-template-columns: 1fr 1fr; }
@@ -415,38 +415,51 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-image">
-      <video id="sell-hv" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
-      <div class="hero-form-overlay">
+    <video id="sell-hv" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
+    <div class="hero-inner">
+      <div class="hero-content">
+        <p class="hero-eyebrow">Austin, TX Home Seller</p>
+        <h1>Sell Smart. <em>Walk Away</em> Winning.</h1>
+        <p>Austin's real estate market rewards sellers who are prepared. I handle everything &mdash; pricing strategy, professional photography, targeted marketing, and tough negotiations &mdash; so you net the most from your sale. Selling a specific property type? See the guides for <a href="/sell-luxury-home-austin">luxury homes</a>, <a href="/sell-condo-austin">condos</a>, and <a href="/sell-midcentury-modern-home-austin">mid-century modern</a>.</p>
+        <div class="hero-actions">
+          <a href="#valuation" class="btn-primary">Get My Home's Value</a>
+          <a href="#process" class="btn-outline">See the Process</a>
+        </div>
+      </div>
+
+      <!-- LEAD FORM -->
+      <div class="hero-form">
+        <h3>Sell Your Home <em>With Luke</em></h3>
+        <p>Free home valuation. No obligation. Response within 24 hours.</p>
         <form id="sell-hero-form">
-          <h3>Sell Your Home<br><em>With Us</em></h3>
-          <p class="hf-sub">Free home valuation. No obligation. Response within 24 hours.</p>
-          <div class="hf-row">
-            <label>Name</label>
-            <input type="text" name="name" placeholder="Your name" required />
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" name="name" placeholder="Jane Smith" required />
           </div>
-          <div class="hf-row">
+          <div class="form-group">
             <label>Phone or Email</label>
             <input type="text" name="contact" placeholder="Best way to reach you" required />
           </div>
-          <div class="hf-row">
+          <div class="form-group">
             <label>Property Address</label>
             <input type="text" name="address" placeholder="Street address (optional)" />
           </div>
+          <div class="form-group">
+            <label>Timeline</label>
+            <select name="timeline" aria-label="Timeline">
+              <option value="">When are you thinking of selling?</option>
+              <option>ASAP</option>
+              <option>1&ndash;3 months</option>
+              <option>3&ndash;6 months</option>
+              <option>6+ months</option>
+              <option>Just exploring</option>
+            </select>
+          </div>
           <input type="hidden" name="source" value="sell-hero" />
-          <button type="submit">Get My Home's Value &rarr;</button>
-          <p class="hf-note">Luke Allen &middot; TREC #788149</p>
+          <button type="submit" class="form-submit">Get My Home's Value &rarr;</button>
+          <p class="form-note">Luke Allen &middot; TREC #788149 &middot; Luke@austinmdg.com</p>
         </form>
         <div class="hf-success" id="sell-hero-success">Got it &mdash; Luke will be in touch shortly.</div>
-      </div>
-    </div>
-    <div class="hero-copy">
-      <p class="hero-eyebrow">Austin Home Seller</p>
-      <h1>Sell Smart.<br><em>Walk Away Winning.</em></h1>
-      <p>Austin's real estate market rewards sellers who are prepared. I handle everything — pricing strategy, professional photography, targeted marketing, and tough negotiations — so you net the most from your sale. Selling a specific property type? See the guides for <a href="/sell-luxury-home-austin" style="color:var(--gold)">luxury homes</a>, <a href="/sell-condo-austin" style="color:var(--gold)">condos</a>, and <a href="/sell-midcentury-modern-home-austin" style="color:var(--gold)">mid-century modern</a>.</p>
-      <div class="hero-actions">
-        <a href="#valuation" class="btn-primary">Get My Home's Value</a>
-        <a href="#process" class="btn-ghost">See the Process</a>
       </div>
     </div>
   </section>
