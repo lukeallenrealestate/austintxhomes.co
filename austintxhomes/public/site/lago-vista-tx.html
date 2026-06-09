@@ -136,28 +136,26 @@
   /* ── Hero ── */
   .hero {
   min-height: 92vh;
-  background: #050810;
+  background: #050810 url('/images/lago-vista-hero.jpg') center/cover no-repeat;
   display: flex; align-items: center; justify-content: center;
   text-align: center; padding: 120px 24px 80px;
   position: relative; overflow: hidden;
   }
+  /* Darkening + tint overlay — keeps headline/sub readable over the bright
+   * sky portion of the photo while preserving the warm sunset palette */
   .hero::before {
   content: '';
   position: absolute; inset: 0;
   background:
-  radial-gradient(ellipse 80% 35% at 50% 75%, rgba(20,60,120,0.22) 0%, transparent 65%),
-  radial-gradient(ellipse 55% 45% at 50% 35%, rgba(184,154,90,0.07) 0%, transparent 65%);
+  linear-gradient(180deg, rgba(5,8,16,0.62) 0%, rgba(5,8,16,0.28) 38%, rgba(5,8,16,0.72) 100%),
+  radial-gradient(ellipse 55% 45% at 50% 38%, rgba(184,154,90,0.08) 0%, transparent 70%);
   pointer-events: none;
   }
-  /* Water ripple texture */
+  /* Subtle vertical lift on the lower third so the CTA buttons pop */
   .hero::after {
   content: '';
   position: absolute; inset: 0;
-  background: repeating-linear-gradient(
-  180deg,
-  transparent 0px, transparent 28px,
-  rgba(30,80,150,0.03) 28px, rgba(30,80,150,0.03) 30px
-  );
+  background: linear-gradient(180deg, transparent 55%, rgba(5,8,16,0.35) 100%);
   pointer-events: none;
   }
   .hero-inner { position: relative; z-index: 1; max-width: 840px; }

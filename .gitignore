@@ -11,6 +11,7 @@ node_modules/
 !austintxhomes/public/favicon.svg
 !austintxhomes/public/images/logo.png
 !austintxhomes/public/images/luke-allen.jpg
+!austintxhomes/public/images/lago-vista-hero.jpg
 !austintxhomes/public/videos/hero-video.mp4
 .env
 austintxhomes/data/dealAlerts.json
