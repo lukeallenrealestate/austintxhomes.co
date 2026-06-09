@@ -106,7 +106,7 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   "aggregateRating": {
   "@type": "AggregateRating",
   "ratingValue": "5.0",
-  "reviewCount": "15",
+  "reviewCount": "22",
   "bestRating": "5",
   "worstRating": "1"
   },
