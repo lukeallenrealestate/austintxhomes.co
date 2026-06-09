@@ -19,7 +19,7 @@
   <meta name="geo.placename" content="Austin, Texas" />
 
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"RealEstateAgent","name":"Austin TX Homes | Luke Allen","url":"https://austintxhomes.co","telephone":"+12547182567","email":"luke@austintxhomes.co","description":"Licensed Austin TX Realtor specializing in luxury homes, buyer and seller representation, condos, new construction, and investment properties.","areaServed":{"@type":"City","name":"Austin","sameAs":"https://www.wikidata.org/wiki/Q16559"},"address":{"@type":"PostalAddress","addressLocality":"Austin","addressRegion":"TX","addressCountry":"US"},"hasCredential":{"@type":"EducationalOccupationalCredential","credentialCategory":"license","recognizedBy":{"@type":"Organization","name":"Texas Real Estate Commission"},"identifier":"788149"}}
+  {"@context":"https://schema.org","@type":"RealEstateAgent","name":"Austin TX Homes | Luke Allen","url":"https://austintxhomes.co","telephone":"+12547182567","email":"Luke@austinmdg.com","description":"Licensed Austin TX Realtor specializing in luxury homes, buyer and seller representation, condos, new construction, and investment properties.","areaServed":{"@type":"City","name":"Austin","sameAs":"https://www.wikidata.org/wiki/Q16559"},"address":{"@type":"PostalAddress","addressLocality":"Austin","addressRegion":"TX","addressCountry":"US"},"hasCredential":{"@type":"EducationalOccupationalCredential","credentialCategory":"license","recognizedBy":{"@type":"Organization","name":"Texas Real Estate Commission"},"identifier":"788149"}}
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1000,7 +1000,7 @@
         <div class="c-icon">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         </div>
-        <div><div class="c-lbl">Email</div><div class="c-val"><a href="mailto:luke@austintxhomes.co">luke@austintxhomes.co</a></div></div>
+        <div><div class="c-lbl">Email</div><div class="c-val"><a href="mailto:Luke@austinmdg.com">Luke@austinmdg.com</a></div></div>
       </div>
       <div class="c-detail">
         <div class="c-icon">
@@ -1195,7 +1195,7 @@ async function doContact(e) {
     const res = await fetch('/api/contact', {
       method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
     });
-    showToast(res.ok ? 'Message sent! Luke will be in touch soon.' : 'Something went wrong — please email luke@austintxhomes.co');
+    showToast(res.ok ? 'Message sent! Luke will be in touch soon.' : 'Something went wrong — please email Luke@austinmdg.com');
     if (res.ok) f.reset();
   } catch { showToast('Could not send — please call (254) 718-2567.'); }
   btn.textContent = 'Send Message'; btn.disabled = false;

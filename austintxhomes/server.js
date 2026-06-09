@@ -216,7 +216,7 @@ cron.schedule('30 13 * * *', async () => {
         headers: { 'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: [{ email: sub.email }],
-          from: { email: process.env.EMAIL_FROM || 'luke@austintxhomes.co', name: 'Luke Allen · AustinTXHomes' },
+          from: { email: process.env.EMAIL_FROM || 'Luke@austinmdg.com', name: 'Luke Allen · AustinTXHomes' },
           subject: `${data.count} Cash-Flowing Properties in Austin Today`,
           html: `<h2>Today's Cash-Flowing Austin Properties</h2>
                  <p>Properties where nearby rents exceed your estimated mortgage payment (20% down, ${data.mortgageRate}% rate).</p>
