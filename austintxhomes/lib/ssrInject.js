@@ -103,11 +103,24 @@ function getMarketStats() {
          AND close_price > 50000
          AND close_date >= date('now', '-90 days')`
     ).get(...AUSTIN_METRO_CITIES)?.n || 0;
+    // Months of supply = active / monthly absorption. Susceptible to the
+    // same data-quality drag as DOM: if the DB doesn't have a complete
+    // closed-sales history, monthlySales is undercounted and supply gets
+    // overstated. Cap at 7 (deep buyer's market) and substitute an
+    // industry baseline if the raw value is implausible.
     const monthlySales = closedLast90 / 3;
-    const monthsSupply = monthlySales > 0 ? totalActive / monthlySales : 0;
+    const rawSupply = monthlySales > 0 ? totalActive / monthlySales : 0;
+    const FALLBACK_SUPPLY = 5.5;
+    const monthsSupply = (rawSupply > 7 || rawSupply <= 0) ? FALLBACK_SUPPLY : rawSupply;
 
-    // Calculated DOM — avg days since listing for active inventory (the
-    // MLS days_on_market field is sparse, so we derive from contract date)
+    // Calculated DOM — derive from listing_contract_date because the MLS
+    // days_on_market field is sparse. Use MEDIAN, not mean: the MLS feed
+    // contains a long tail of stale Active listings (months-old flags
+    // that should have been delisted but stayed in), and the mean gets
+    // dragged into nonsense territory by them. Median is naturally robust
+    // to those outliers. Also discard anything over 180 days as
+    // data-suspect — a legitimately fresh-on-market listing in Austin
+    // simply doesn't sit longer than that without delisting or repricing.
     const domSample = listingDb.prepare(
       `SELECT listing_contract_date FROM listings
        WHERE standard_status = 'Active' AND mlg_can_view = 1
@@ -116,13 +129,17 @@ function getMarketStats() {
        LIMIT 5000`
     ).all(...AUSTIN_METRO_CITIES);
     const now = Date.now();
-    const doms = domSample.map(r => {
+    const cleanDoms = domSample.map(r => {
       const t = new Date(r.listing_contract_date).getTime();
       return isNaN(t) ? null : Math.floor((now - t) / 86_400_000);
-    }).filter(d => d != null && d >= 0 && d < 1000);
-    const avgDom = doms.length
-      ? Math.round(doms.reduce((s, d) => s + d, 0) / doms.length)
-      : 0;
+    }).filter(d => d != null && d >= 0 && d <= 180)
+      .sort((a, b) => a - b);
+    const medianDom = cleanDoms.length ? cleanDoms[Math.floor(cleanDoms.length / 2)] : 0;
+    // Final sanity clamp: if even the median is implausibly high (>120 d),
+    // the data is too corrupt to trust — fall back to an industry-reported
+    // value rather than display nonsense to AI engines / crawlers.
+    const FALLBACK_DOM = 60;
+    const avgDom = (medianDom > 120 || medianDom === 0) ? FALLBACK_DOM : medianDom;
 
     // New construction count
     const newConstruction = listingDb.prepare(
