@@ -527,6 +527,13 @@ app.get('/api/neighborhood-counts', (_req, res) => {
   }
 });
 
+// SSR injection: bakes live MLS numbers into the homepage / neighborhoods /
+// buyer's-vs-seller's HTML at request time so crawlers + AI engines that
+// don't run JS see real values instead of "Loading…" placeholders. Loaded
+// here (above /api/market-stats) because the market-stats endpoint reuses
+// the same source of truth for the new buyer/seller signals.
+const ssrInject = require('./lib/ssrInject');
+
 app.get('/api/market-stats', async (_req, res) => {
   try {
     // Serve cached stats if fresh (< 1 hour)
@@ -582,18 +589,40 @@ app.get('/api/market-stats', async (_req, res) => {
     const under500k = prices.filter(p => p < 500000).length;
     const pctUnder500 = prices.length ? Math.round((under500k / prices.length) * 100) : 0;
 
+    // Merge in the SSR-derived buyer/seller signals (price reduction rate,
+    // in-escrow ratio, list-to-close ratio, sanity-clamped DOM + months
+    // supply). Same source of truth as the SSR-rendered HTML, so the
+    // client-side refresh doesn't disagree with the crawler-visible values.
+    let signals = {};
+    try {
+      const s = ssrInject.getMarketStats();
+      signals = {
+        avgDom: s.avgDom,
+        monthsSupply: s.monthsSupply,
+        reductionRate: s.reductionRate,
+        avgReduction: s.avgReduction,
+        escrowCount: s.escrowCount,
+        escrowRatio: s.escrowRatio,
+        l2cPct: s.l2cPct,
+        l2cSampleSize: s.l2cSampleSize
+      };
+    } catch (e) {
+      console.warn('[market-stats] ssrInject signals unavailable:', e.message);
+    }
+
     const stats = {
       totalActive: total,
       sampleSize: all.length,
       medianPrice: median,
       avgPrice: avg,
-      avgDom: 38, // industry-reported Austin average for 2025-26
+      avgDom: signals.avgDom || 38, // SSR-derived; falls back to industry baseline
       pctUnder500,
       tiers,
       topCities,
       newConstruction,
       condos,
       singleFamily,
+      ...signals,
       updated: new Date().toISOString()
     };
 
@@ -754,11 +783,6 @@ app.get('/api/config', (_req, res) => {
 });
 
 // Homepage route
-// SSR injection: bakes live MLS numbers into the homepage / neighborhoods /
-// buyer's-vs-seller's HTML at request time so crawlers + AI engines that
-// don't run JS see real values instead of "Loading…" placeholders.
-const ssrInject = require('./lib/ssrInject');
-
 app.get('/', (_req, res) => {
   try {
     res.set('Content-Type', 'text/html; charset=utf-8');

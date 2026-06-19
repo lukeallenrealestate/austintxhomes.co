@@ -149,6 +149,92 @@ function getMarketStats() {
          AND city IN (${cityPlaceholders})`
     ).get(...AUSTIN_METRO_CITIES)?.n || 0;
 
+    // ─── PRICE-REDUCTION RATE ───────────────────────────────────
+    // What share of active listings have cut their original asking price.
+    // Strongest single signal of seller capitulation — when >40% have
+    // reduced, sellers as a class have lost pricing confidence. Uses
+    // SQLite's json_extract() to pull OriginalListPrice from the raw RETS
+    // JSON without parsing every full row in Node (which would be ~50 MB
+    // of JSON to parse). Sample 1500 freshest listings — large enough for
+    // a stable percentage, small enough to stay sub-100ms.
+    const reductionRows = listingDb.prepare(
+      `SELECT json_extract(raw_data, '$.OriginalListPrice') AS orig, list_price
+       FROM listings
+       WHERE standard_status = 'Active' AND mlg_can_view = 1
+         AND city IN (${cityPlaceholders})
+         AND raw_data IS NOT NULL
+         AND list_price > 50000
+       ORDER BY listing_contract_date DESC
+       LIMIT 1500`
+    ).all(...AUSTIN_METRO_CITIES);
+    let reductionSample = 0, reducedCount = 0, reductionSum = 0;
+    for (const r of reductionRows) {
+      if (r.orig && r.orig > 0 && r.list_price > 0) {
+        reductionSample++;
+        if (r.orig > r.list_price) {
+          reducedCount++;
+          reductionSum += (r.orig - r.list_price) / r.orig;
+        }
+      }
+    }
+    const reductionRate = reductionSample > 0
+      ? Math.round((reducedCount / reductionSample) * 100)
+      : 0;
+    const avgReduction = reducedCount > 0
+      ? (reductionSum / reducedCount) * 100
+      : 0;
+
+    // ─── IN-ESCROW PIPELINE ─────────────────────────────────────
+    // Pending + Active Under Contract gives a real demand snapshot — how
+    // much current inventory has already been spoken for. Ratio against
+    // active is the absorption signal: > 30% = strong demand (seller
+    // territory), < 15% = weak demand (buyer territory).
+    const escrowCount = listingDb.prepare(
+      `SELECT COUNT(*) AS n FROM listings
+       WHERE standard_status IN ('Pending', 'Active Under Contract')
+         AND mlg_can_view = 1
+         AND city IN (${cityPlaceholders})
+         AND list_price > 50000`
+    ).get(...AUSTIN_METRO_CITIES)?.n || 0;
+    const escrowRatio = totalActive > 0
+      ? Math.round((escrowCount / totalActive) * 100)
+      : 0;
+
+    // ─── LIST-TO-CLOSE RATIO (last 90 days) ─────────────────────
+    // Sealed historical truth — for closed sales, what % of the ORIGINAL
+    // asking price did houses actually transact at. The only stat that
+    // reflects what buyers actually paid, not what sellers wanted. Use
+    // OriginalListPrice (not current list_price) so we don't get fooled
+    // by sellers who reduced just before closing — that masks buyer
+    // leverage. > 100% = bidding wars (seller); 96-99% = balanced; < 96%
+    // = buyers winning negotiations.
+    const closedRows = listingDb.prepare(
+      `SELECT close_price, json_extract(raw_data, '$.OriginalListPrice') AS orig
+       FROM listings
+       WHERE standard_status = 'Closed'
+         AND city IN (${cityPlaceholders})
+         AND close_date >= date('now', '-90 days')
+         AND close_price > 50000
+         AND raw_data IS NOT NULL
+       LIMIT 3000`
+    ).all(...AUSTIN_METRO_CITIES);
+    const closeRatios = [];
+    for (const r of closedRows) {
+      if (r.orig && r.orig > 0 && r.close_price > 0) {
+        closeRatios.push(r.close_price / r.orig);
+      }
+    }
+    closeRatios.sort((a, b) => a - b);
+    const rawL2c = closeRatios.length ? closeRatios[Math.floor(closeRatios.length / 2)] : 0;
+    // Sanity clamp: ratio should be between 0.8 and 1.10 in a realistic
+    // market. Anything outside that is data-suspect — fall back to 0.97
+    // (balanced default).
+    const l2cMedian = (rawL2c < 0.80 || rawL2c > 1.10)
+      ? 0.97
+      : rawL2c;
+    const l2cPct = (l2cMedian * 100).toFixed(1);
+    const l2cSampleSize = closeRatios.length;
+
     // Verdict & composite score. Months of supply is the canonical signal:
     // < 4 mo = seller's market, 4–6 = balanced, > 6 = buyer's market. The
     // composite score nudges around 50 (perfectly balanced) by ±10 per
@@ -176,6 +262,10 @@ function getMarketStats() {
     return {
       totalActive, medianPrice, avgPrice, avgDom,
       monthsSupply, under500, newConstruction, closedLast90,
+      // Sprint 6B+ buyer/seller signals
+      reductionRate, avgReduction,
+      escrowCount, escrowRatio,
+      l2cMedian, l2cPct, l2cSampleSize,
       score, verdict, verdictClass, verdictIcon, verdictDesc,
       updated: new Date()
     };
@@ -284,6 +374,62 @@ function renderHomepage(filePath) {
   });
 }
 
+// Each stat card has an outer signal class (.buyer-signal / .seller-signal
+// / .neutral-signal) that colors the top border, plus a footer chip with
+// the matching color. These tiny helpers compute signal + label for each
+// stat type using industry-standard thresholds.
+function domSignal(d) {
+  if (d < 30) return { cls: 'seller', label: '↓ Seller signal' };
+  if (d > 60) return { cls: 'buyer', label: '↑ Buyer signal' };
+  return { cls: 'neutral', label: '→ Balanced' };
+}
+function supplySignal(m) {
+  if (m < 4) return { cls: 'seller', label: '↓ Seller signal' };
+  if (m > 6) return { cls: 'buyer', label: '↑ Buyer signal' };
+  return { cls: 'neutral', label: '→ Balanced' };
+}
+function reductionSignal(pct) {
+  if (pct >= 40) return { cls: 'buyer', label: '↑ Strong buyer leverage' };
+  if (pct >= 25) return { cls: 'buyer', label: '↑ Buyer signal' };
+  if (pct < 15) return { cls: 'seller', label: '↓ Sellers holding firm' };
+  return { cls: 'neutral', label: '→ Balanced' };
+}
+function escrowSignal(pct) {
+  if (pct > 30) return { cls: 'seller', label: '↓ Strong demand' };
+  if (pct < 15) return { cls: 'buyer', label: '↑ Weak demand' };
+  return { cls: 'neutral', label: '→ Balanced demand' };
+}
+function l2cSignal(pct) {
+  if (pct >= 100) return { cls: 'seller', label: '↓ Bidding wars' };
+  if (pct < 96) return { cls: 'buyer', label: '↑ Buyers winning' };
+  return { cls: 'neutral', label: '→ Balanced' };
+}
+function activeSignal(n) {
+  if (n > 12000) return { cls: 'buyer', label: '↑ Elevated inventory' };
+  if (n < 6000) return { cls: 'seller', label: '↓ Tight inventory' };
+  return { cls: 'neutral', label: '→ Moderate inventory' };
+}
+
+// Swap the signal class (.buyer-signal/.seller-signal/.neutral-signal) on
+// a stat-card whose outer wrapper carries id="card-X". Attribute order in
+// the source HTML is class-then-id (`<div class="stat-card X" id="card-Y">`),
+// so the regex matches the class attr first and asserts the matching id
+// on the lookahead to avoid clobbering the wrong card.
+function setSignalClass(html, cardId, cls) {
+  const re = new RegExp(
+    `(<div\\b[^>]*\\bclass="[^"]*?\\bstat-card\\b)\\s+(buyer|seller|neutral)-signal([^"]*"[^>]*\\bid="${cardId}"[^>]*>)`,
+    ''
+  );
+  return html.replace(re, `$1 ${cls}-signal$3`);
+}
+function setSignalChipClass(html, signalId, cls) {
+  const re = new RegExp(
+    `(<div[^>]*class="[^"]*?\\bstat-signal\\b)\\s+(buyer|seller|neutral)([^"]*"[^>]*id="${signalId}")`,
+    ''
+  );
+  return html.replace(re, `$1 ${cls}$3`);
+}
+
 function renderBuyersSellers(filePath) {
   return renderWithCache(filePath, html => {
     const s = getMarketStats();
@@ -297,13 +443,50 @@ function renderBuyersSellers(filePath) {
     html = replaceById(html, 'meter-score', `${s.score} / 100`);
     html = replaceById(html, 'meter-score-note',
       `Composite buyer/seller score based on active inventory (${fmtThousands(s.totalActive)}), median days on market (${s.avgDom}), and months of supply (${s.monthsSupply.toFixed(1)}) across greater Austin. Scores below 40 indicate buyer-favorable conditions; 40-60 is balanced; above 60 is seller-favorable.`);
-    // Stat cards
+    // ── Stat card values
     html = replaceById(html, 'stat-active', fmtThousands(s.totalActive));
     html = replaceById(html, 'stat-median', fmtPriceCompact(s.medianPrice));
     html = replaceById(html, 'stat-dom', `${s.avgDom} days`);
     html = replaceById(html, 'stat-supply', `${s.monthsSupply.toFixed(1)} mo`);
-    html = replaceById(html, 'stat-under500', fmtThousands(s.under500));
-    html = replaceById(html, 'stat-newconst', fmtThousands(s.newConstruction));
+    html = replaceById(html, 'stat-reduction',
+      s.avgReduction > 0
+        ? `${s.reductionRate}<span> (avg -${s.avgReduction.toFixed(1)}%)</span>`
+        : `${s.reductionRate}<span>%</span>`);
+    html = replaceById(html, 'stat-escrow',
+      `${s.escrowRatio}<span>% (${fmtThousands(s.escrowCount)} in escrow)</span>`);
+    html = replaceById(html, 'stat-l2c',
+      `${s.l2cPct}<span>%</span>`);
+    // ── Per-stat signal classes + chip labels
+    const aSig = activeSignal(s.totalActive);
+    html = setSignalClass(html, 'card-active', aSig.cls);
+    html = setSignalChipClass(html, 'stat-active-signal', aSig.cls);
+    html = replaceById(html, 'stat-active-signal', aSig.label);
+
+    const dSig = domSignal(s.avgDom);
+    html = setSignalClass(html, 'card-dom', dSig.cls);
+    html = setSignalChipClass(html, 'stat-dom-signal', dSig.cls);
+    html = replaceById(html, 'stat-dom-signal', dSig.label);
+
+    const mSig = supplySignal(s.monthsSupply);
+    html = setSignalClass(html, 'card-supply', mSig.cls);
+    html = setSignalChipClass(html, 'stat-supply-signal', mSig.cls);
+    html = replaceById(html, 'stat-supply-signal', mSig.label);
+
+    const rSig = reductionSignal(s.reductionRate);
+    html = setSignalClass(html, 'card-reduction', rSig.cls);
+    html = setSignalChipClass(html, 'stat-reduction-signal', rSig.cls);
+    html = replaceById(html, 'stat-reduction-signal', rSig.label);
+
+    const eSig = escrowSignal(s.escrowRatio);
+    html = setSignalClass(html, 'card-escrow', eSig.cls);
+    html = setSignalChipClass(html, 'stat-escrow-signal', eSig.cls);
+    html = replaceById(html, 'stat-escrow-signal', eSig.label);
+
+    const lSig = l2cSignal(parseFloat(s.l2cPct));
+    html = setSignalClass(html, 'card-l2c', lSig.cls);
+    html = setSignalChipClass(html, 'stat-l2c-signal', lSig.cls);
+    html = replaceById(html, 'stat-l2c-signal', lSig.label);
+
     // Last-updated stamp under the verdict card
     html = injectLastUpdated(html, s.updated);
     return html;

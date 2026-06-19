@@ -642,39 +642,51 @@
   </p>
 
   <div class="stats-grid" id="stats-grid">
-  <!-- SSR-safe defaults for crawlers/AI engines. Skeleton placeholders
-   * worked for users (JS swaps them) but rendered as blank for bots.
-   * Real numbers below are realistic snapshot values; JS overwrites on
-   * page load with live MLS data. -->
-  <div class="stat-card neutral-signal">
-  <div class="stat-card-label">Active Listings</div>
+  <!-- 7-card buyer/seller indicator grid. Sprint 6A: SSR fallbacks for
+   * crawlers. Sprint 6B: live MLS numbers injected at request time. Each
+   * card has stable IDs so server-side injection and client-side refresh
+   * both target the same elements (no full innerHTML rebuilds). -->
+  <div class="stat-card neutral-signal" id="card-active">
+  <div class="stat-card-label">Active Listings (Austin Metro)</div>
   <div class="stat-card-value" id="stat-active">~8,500</div>
-  <div class="stat-card-desc">Single-family homes actively listed across greater Austin metro.</div>
+  <div class="stat-card-desc">Total residential listings currently active on MLS across greater Austin.</div>
+  <div class="stat-signal neutral" id="stat-active-signal">→ Reference metric</div>
   </div>
-  <div class="stat-card neutral-signal">
+  <div class="stat-card neutral-signal" id="card-median">
   <div class="stat-card-label">Median List Price</div>
   <div class="stat-card-value" id="stat-median">$550K</div>
-  <div class="stat-card-desc">Austin metro single-family median list price.</div>
+  <div class="stat-card-desc">Median asking price for active residential listings across the metro. Central Austin trades above; suburbs pull the median down.</div>
+  <div class="stat-signal neutral">→ Reference metric</div>
   </div>
-  <div class="stat-card neutral-signal">
-  <div class="stat-card-label">Avg. Days on Market</div>
+  <div class="stat-card neutral-signal" id="card-dom">
+  <div class="stat-card-label">Median Days on Market</div>
   <div class="stat-card-value" id="stat-dom">58 days</div>
-  <div class="stat-card-desc">Median time from listing to pending across active inventory.</div>
+  <div class="stat-card-desc">Median time on market across active inventory. Under 30 days = seller's; 30-60 = balanced; over 60 = buyer's.</div>
+  <div class="stat-signal neutral" id="stat-dom-signal">→ Balanced</div>
   </div>
-  <div class="stat-card neutral-signal">
+  <div class="stat-card neutral-signal" id="card-supply">
   <div class="stat-card-label">Months of Supply</div>
-  <div class="stat-card-value" id="stat-supply">4.2 mo</div>
-  <div class="stat-card-desc">Months to absorb current inventory at recent sales pace. 4-6 is balanced.</div>
+  <div class="stat-card-value" id="stat-supply">5.5 mo</div>
+  <div class="stat-card-desc">Months to absorb current inventory at recent sales pace. Under 4 = seller's; 4-6 = balanced; over 6 = buyer's.</div>
+  <div class="stat-signal neutral" id="stat-supply-signal">→ Balanced</div>
   </div>
-  <div class="stat-card neutral-signal">
-  <div class="stat-card-label">Homes Under $500K</div>
-  <div class="stat-card-value" id="stat-under500">~3,200</div>
-  <div class="stat-card-desc">Active inventory at or below the metro median price point.</div>
+  <div class="stat-card buyer-signal" id="card-reduction">
+  <div class="stat-card-label">% with Price Reduction</div>
+  <div class="stat-card-value" id="stat-reduction">32%</div>
+  <div class="stat-card-desc">Share of active listings that have cut their original asking price. High = seller capitulation. Over 40% = strong buyer leverage; under 20% = sellers holding firm.</div>
+  <div class="stat-signal buyer" id="stat-reduction-signal">↑ Buyer signal</div>
   </div>
-  <div class="stat-card neutral-signal">
-  <div class="stat-card-label">New Construction</div>
-  <div class="stat-card-value" id="stat-newconst">~1,400</div>
-  <div class="stat-card-desc">New-build inventory available across greater Austin suburbs.</div>
+  <div class="stat-card neutral-signal" id="card-escrow">
+  <div class="stat-card-label">In-Escrow Ratio (Pending+AUC / Active)</div>
+  <div class="stat-card-value" id="stat-escrow">22%</div>
+  <div class="stat-card-desc">Listings currently in escrow as a share of active inventory — a direct demand signal. Over 30% = strong demand; under 15% = weak demand.</div>
+  <div class="stat-signal neutral" id="stat-escrow-signal">→ Balanced demand</div>
+  </div>
+  <div class="stat-card neutral-signal" id="card-l2c">
+  <div class="stat-card-label">List-to-Close Ratio (90-day)</div>
+  <div class="stat-card-value" id="stat-l2c">97.5%</div>
+  <div class="stat-card-desc">For closed sales in the last 90 days, median percentage of <em>original</em> asking price that homes actually sold for. Over 100% = bidding wars; 96-99% = balanced; under 96% = buyers winning negotiations.</div>
+  <div class="stat-signal neutral" id="stat-l2c-signal">→ Balanced</div>
   </div>
   </div>
   </div>
@@ -1224,98 +1236,96 @@
   Calculated from days on market (${dom} days avg.) and active listing count (${activeCount.toLocaleString()} homes).
   Score reflects conditions across the greater Austin metro; individual neighborhoods vary.`;
 
-  // ── Build Stats Grid ──────────────────────────────────────
-  const grid = document.getElementById('stats-grid');
-  if (!grid) return;
-
+  // ── Update Stats Grid (per-id, NOT innerHTML rebuild) ─────
+  // The SSR layer in lib/ssrInject.js renders the full 7-card grid at
+  // request time so crawlers see real values. JS here just refreshes the
+  // text content and signal classes on top of that — no full rebuild,
+  // so AI-crawler-visible HTML survives client hydration. New (Sprint
+  // 6B+) cards: % with price reduction, in-escrow ratio, list-to-close
+  // ratio. Demoted: under-$500K, new-construction (still on the page
+  // narrative but no longer in the verdict-driving grid).
   const fmt = (n) => n >= 1000000
-  ? '$' + (n / 1000000).toFixed(2) + 'M'
-  : n >= 1000
-  ? '$' + Math.round(n / 1000) + 'K'
-  : n.toString();
+    ? '$' + (n / 1000000).toFixed(2) + 'M'
+    : n >= 1000
+    ? '$' + Math.round(n / 1000) + 'K'
+    : n.toString();
 
-  // Estimated months of supply (active / estimated monthly closings)
-  // Industry rule of thumb: monthly closings ≈ total_active / avg_dom * 30
-  const estMonthlyClosings = activeCount > 0 ? Math.round(activeCount / dom * 30) : 0;
-  const monthsSupply = estMonthlyClosings > 0
-  ? (activeCount / estMonthlyClosings).toFixed(1)
-  : ' - ';
-  const monthsNum = parseFloat(monthsSupply) || 0;
-  const monthsSignal = monthsNum < 3.5 ? 'seller' : monthsNum > 5 ? 'buyer' : 'neutral';
-  const monthsLabel = monthsNum < 3.5 ? 'Seller signal' : monthsNum > 5 ? 'Buyer signal' : 'Balanced';
+  const setCard = (cardId, valueId, signalId, value, signalCls, signalLabel) => {
+    const card = document.getElementById(cardId);
+    if (card) card.className = `stat-card ${signalCls}-signal`;
+    const v = document.getElementById(valueId);
+    if (v) v.innerHTML = value;
+    const sig = document.getElementById(signalId);
+    if (sig) {
+      sig.className = `stat-signal ${signalCls}`;
+      sig.textContent = signalLabel;
+    }
+  };
 
-  const domSignal = dom < 20 ? 'seller' : dom > 35 ? 'buyer' : 'neutral';
-  const domLabel = dom < 20 ? 'Seller signal' : dom > 35 ? 'Buyer signal' : 'Balanced';
+  // Active inventory signal
+  const activeSig = activeCount > 12000 ? 'buyer'
+    : activeCount < 6000 ? 'seller' : 'neutral';
+  const activeLabel = activeCount > 12000 ? '↑ Elevated inventory'
+    : activeCount < 6000 ? '↓ Tight inventory' : '→ Moderate inventory';
+  setCard('card-active', 'stat-active', 'stat-active-signal',
+    activeCount.toLocaleString(), activeSig, activeLabel);
 
-  const pctUnder500 = d.pctUnder500 || 0;
-  const newConst = d.newConstruction || 0;
-  const newConstPct = d.sampleSize > 0 ? Math.round((newConst / d.sampleSize) * 100) : 0;
+  // Median price — always neutral (context metric)
+  const medianEl = document.getElementById('stat-median');
+  if (medianEl) medianEl.textContent = fmt(d.medianPrice || 0);
 
-  grid.innerHTML = `
-  <div class="stat-card ${activeCount > 4000 ? 'buyer' : activeCount < 2000 ? 'seller' : 'neutral'}-signal">
-  <div class="stat-card-label">Active Listings (Austin Metro)</div>
-  <div class="stat-card-value">${activeCount.toLocaleString()}</div>
-  <div class="stat-card-desc">
-  Total residential listings currently active on MLS across greater Austin.
-  ${activeCount > 4000 ? 'Elevated inventory - buyer leverage.' : activeCount < 2000 ? 'Tight inventory - seller conditions.' : 'Moderate inventory - balanced market.'}
-  </div>
-  <div class="stat-signal ${activeCount > 4000 ? 'buyer' : activeCount < 2000 ? 'seller' : 'neutral'}">
-  ${activeCount > 4000 ? '↑ Buyer signal' : activeCount < 2000 ? '↓ Seller signal' : '→ Balanced'}
-  </div>
-  </div>
+  // DOM signal (med DOM thresholds: <30 seller, >60 buyer)
+  const domSig = dom < 30 ? 'seller' : dom > 60 ? 'buyer' : 'neutral';
+  const domLabel = dom < 30 ? '↓ Seller signal' : dom > 60 ? '↑ Buyer signal' : '→ Balanced';
+  setCard('card-dom', 'stat-dom', 'stat-dom-signal',
+    `${dom}<span> days</span>`, domSig, domLabel);
 
-  <div class="stat-card ${domSignal}-signal">
-  <div class="stat-card-label">Avg. Days on Market</div>
-  <div class="stat-card-value">${dom}<span> days</span></div>
-  <div class="stat-card-desc">
-  Average time from list date to accepted offer across greater Austin.
-  ${dom > 35 ? 'Extended DOM gives buyers time to evaluate and negotiate.' : dom < 20 ? 'Fast absorption - seller\'s conditions.' : 'Moderate pace - balanced market.'}
-  </div>
-  <div class="stat-signal ${domSignal}">${domLabel}</div>
-  </div>
+  // Months of supply — read from server when present, else estimate
+  const monthsSupplyNum = d.monthsSupply != null
+    ? Number(d.monthsSupply)
+    : (dom > 0 ? activeCount / Math.round(activeCount / dom * 30) : 0);
+  const monthsSig = monthsSupplyNum < 4 ? 'seller' : monthsSupplyNum > 6 ? 'buyer' : 'neutral';
+  const monthsLabel = monthsSig === 'seller' ? '↓ Seller signal'
+    : monthsSig === 'buyer' ? '↑ Buyer signal' : '→ Balanced';
+  setCard('card-supply', 'stat-supply', 'stat-supply-signal',
+    `${monthsSupplyNum.toFixed(1)}<span> mo</span>`, monthsSig, monthsLabel);
 
-  <div class="stat-card ${monthsSignal}-signal">
-  <div class="stat-card-label">Estimated Months of Supply</div>
-  <div class="stat-card-value">${monthsSupply}<span> mo.</span></div>
-  <div class="stat-card-desc">
-  How long it would take to sell all active listings at the current absorption rate.
-  Under 4 months = seller's; 4–6 = balanced; over 6 = buyer's.
-  </div>
-  <div class="stat-signal ${monthsSignal}">${monthsLabel}</div>
-  </div>
+  // ── New buyer/seller signal stats (Sprint 6B+) ───────────
+  // Price reduction rate — % of active with price cut
+  if (d.reductionRate != null) {
+    const r = d.reductionRate;
+    const sig = r >= 40 ? 'buyer' : r >= 25 ? 'buyer' : r < 15 ? 'seller' : 'neutral';
+    const label = r >= 40 ? '↑ Strong buyer leverage'
+      : r >= 25 ? '↑ Buyer signal'
+      : r < 15 ? '↓ Sellers holding firm'
+      : '→ Balanced';
+    const value = d.avgReduction > 0
+      ? `${r}<span> (avg -${Number(d.avgReduction).toFixed(1)}%)</span>`
+      : `${r}<span>%</span>`;
+    setCard('card-reduction', 'stat-reduction', 'stat-reduction-signal',
+      value, sig, label);
+  }
 
-  <div class="stat-card neutral-signal">
-  <div class="stat-card-label">Median List Price</div>
-  <div class="stat-card-value">${fmt(d.medianPrice || 0)}</div>
-  <div class="stat-card-desc">
-  Median asking price for active residential listings across the metro.
-  Central Austin trades significantly above this figure; suburbs pull the median down.
-  </div>
-  <div class="stat-signal neutral">→ Reference metric</div>
-  </div>
+  // In-escrow ratio
+  if (d.escrowRatio != null) {
+    const e = d.escrowRatio;
+    const sig = e > 30 ? 'seller' : e < 15 ? 'buyer' : 'neutral';
+    const label = e > 30 ? '↓ Strong demand' : e < 15 ? '↑ Weak demand' : '→ Balanced demand';
+    const value = d.escrowCount != null
+      ? `${e}<span>% (${Number(d.escrowCount).toLocaleString()} in escrow)</span>`
+      : `${e}<span>%</span>`;
+    setCard('card-escrow', 'stat-escrow', 'stat-escrow-signal',
+      value, sig, label);
+  }
 
-  <div class="stat-card ${pctUnder500 > 40 ? 'seller' : 'neutral'}-signal">
-  <div class="stat-card-label">% of Listings Under $500K</div>
-  <div class="stat-card-value">${pctUnder500}<span>%</span></div>
-  <div class="stat-card-desc">
-  Share of active listings priced below $500K. This segment is the most competitive  - 
-  first-time buyers, investors, and move-up buyers all compete here.
-  </div>
-  <div class="stat-signal ${pctUnder500 > 40 ? 'seller' : 'neutral'}">
-  ${pctUnder500 > 40 ? 'Most competitive segment' : '→ Moderate share'}
-  </div>
-  </div>
-
-  <div class="stat-card neutral-signal">
-  <div class="stat-card-label">New Construction Listings</div>
-  <div class="stat-card-value">${newConst.toLocaleString()}<span> (${newConstPct}%)</span></div>
-  <div class="stat-card-desc">
-  Active new-build listings. High new construction supply adds to buyer inventory,
-  especially in suburbs. Builders are offering concessions and rate buydowns.
-  </div>
-  <div class="stat-signal neutral">→ Adds buyer inventory</div>
-  </div>
-  `;
+  // List-to-close ratio
+  if (d.l2cPct != null) {
+    const pct = Number(d.l2cPct);
+    const sig = pct >= 100 ? 'seller' : pct < 96 ? 'buyer' : 'neutral';
+    const label = pct >= 100 ? '↓ Bidding wars' : pct < 96 ? '↑ Buyers winning' : '→ Balanced';
+    setCard('card-l2c', 'stat-l2c', 'stat-l2c-signal',
+      `${pct.toFixed(1)}<span>%</span>`, sig, label);
+  }
 
   } catch (err) {
   console.warn('[market-conditions] Failed to load stats:', err.message);
