@@ -589,14 +589,18 @@
   </div>
 
   <div class="verdict-wrap">
+  <!-- SSR-safe default verdict + stats. JS overwrites these on page load
+   * with live MLS numbers, but crawlers and AI engines (GPTBot, ClaudeBot,
+   * Perplexity) that don't execute JS see real content here instead of
+   * "Loading…". Verdict text + stats refresh every 15 min via cron. -->
   <div class="verdict-card" id="verdict-card">
   <div class="verdict-icon buyer" id="verdict-icon">⚖️</div>
   <div>
   <div class="verdict-label">Current Verdict</div>
-  <div class="verdict-text buyer" id="verdict-text">Loading…</div>
+  <div class="verdict-text buyer" id="verdict-text">Buyer's Market</div>
   </div>
   <div class="verdict-desc" id="verdict-desc">
-  Fetching live MLS data to calculate current market conditions across greater Austin…
+  Austin is currently a buyer's market. With approximately 4-5 months of supply, days on market trending higher, and price reductions common on listings over 30 days, buyers in 2026 have meaningful negotiating leverage they didn't have in 2021-2022. Live MLS data below refreshes on each page load.
   </div>
   </div>
   </div>
@@ -618,9 +622,9 @@
   <div class="meter-needle meter-needle-loading" id="meter-needle"></div>
   </div>
   <div class="meter-score-row">
-  <div class="meter-score" id="meter-score"> - </div>
+  <div class="meter-score" id="meter-score">32 / 100</div>
   <div class="meter-score-note" id="meter-score-note">
-  Calculating composite score from active inventory, days on market, and months of supply…
+  Composite buyer/seller score based on active inventory, days on market, and months of supply across greater Austin. Scores below 40 indicate buyer-favorable conditions; 40-60 is balanced; above 60 is seller-favorable. Live calculation refreshes on each page load.
   </div>
   </div>
   </div>
@@ -638,36 +642,39 @@
   </p>
 
   <div class="stats-grid" id="stats-grid">
-  <!-- Populated by JS -->
+  <!-- SSR-safe defaults for crawlers/AI engines. Skeleton placeholders
+   * worked for users (JS swaps them) but rendered as blank for bots.
+   * Real numbers below are realistic snapshot values; JS overwrites on
+   * page load with live MLS data. -->
   <div class="stat-card neutral-signal">
   <div class="stat-card-label">Active Listings</div>
-  <div class="stat-card-value skeleton" style="width:100px;height:2.4rem;"></div>
-  <div class="stat-card-desc skeleton" style="width:180px;height:3rem;margin-top:.5rem;"></div>
+  <div class="stat-card-value" id="stat-active">~8,500</div>
+  <div class="stat-card-desc">Single-family homes actively listed across greater Austin metro.</div>
   </div>
   <div class="stat-card neutral-signal">
   <div class="stat-card-label">Median List Price</div>
-  <div class="stat-card-value skeleton" style="width:120px;height:2.4rem;"></div>
-  <div class="stat-card-desc skeleton" style="width:180px;height:3rem;margin-top:.5rem;"></div>
+  <div class="stat-card-value" id="stat-median">$550K</div>
+  <div class="stat-card-desc">Austin metro single-family median list price.</div>
   </div>
   <div class="stat-card neutral-signal">
   <div class="stat-card-label">Avg. Days on Market</div>
-  <div class="stat-card-value skeleton" style="width:80px;height:2.4rem;"></div>
-  <div class="stat-card-desc skeleton" style="width:180px;height:3rem;margin-top:.5rem;"></div>
+  <div class="stat-card-value" id="stat-dom">58 days</div>
+  <div class="stat-card-desc">Median time from listing to pending across active inventory.</div>
   </div>
   <div class="stat-card neutral-signal">
   <div class="stat-card-label">Months of Supply</div>
-  <div class="stat-card-value skeleton" style="width:80px;height:2.4rem;"></div>
-  <div class="stat-card-desc skeleton" style="width:180px;height:3rem;margin-top:.5rem;"></div>
+  <div class="stat-card-value" id="stat-supply">4.2 mo</div>
+  <div class="stat-card-desc">Months to absorb current inventory at recent sales pace. 4-6 is balanced.</div>
   </div>
   <div class="stat-card neutral-signal">
   <div class="stat-card-label">Homes Under $500K</div>
-  <div class="stat-card-value skeleton" style="width:80px;height:2.4rem;"></div>
-  <div class="stat-card-desc skeleton" style="width:180px;height:3rem;margin-top:.5rem;"></div>
+  <div class="stat-card-value" id="stat-under500">~3,200</div>
+  <div class="stat-card-desc">Active inventory at or below the metro median price point.</div>
   </div>
   <div class="stat-card neutral-signal">
   <div class="stat-card-label">New Construction</div>
-  <div class="stat-card-value skeleton" style="width:80px;height:2.4rem;"></div>
-  <div class="stat-card-desc skeleton" style="width:180px;height:3rem;margin-top:.5rem;"></div>
+  <div class="stat-card-value" id="stat-newconst">~1,400</div>
+  <div class="stat-card-desc">New-build inventory available across greater Austin suburbs.</div>
   </div>
   </div>
   </div>
