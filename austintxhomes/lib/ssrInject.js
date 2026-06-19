@@ -157,6 +157,11 @@ function getMarketStats() {
     // JSON without parsing every full row in Node (which would be ~50 MB
     // of JSON to parse). Sample 1500 freshest listings — large enough for
     // a stable percentage, small enough to stay sub-100ms.
+    // Sample listings that have been on market at least 14 days — fresh
+    // listings haven't had time to reduce yet, so sampling them would
+    // produce a deceptively low reduction rate. The 14-day floor catches
+    // the meaningful seller-capitulation signal. Limit 3000 is enough for
+    // a stable percentage across Austin metro.
     const reductionRows = listingDb.prepare(
       `SELECT json_extract(raw_data, '$.OriginalListPrice') AS orig, list_price
        FROM listings
@@ -164,8 +169,9 @@ function getMarketStats() {
          AND city IN (${cityPlaceholders})
          AND raw_data IS NOT NULL
          AND list_price > 50000
-       ORDER BY listing_contract_date DESC
-       LIMIT 1500`
+         AND listing_contract_date IS NOT NULL
+         AND date(listing_contract_date) <= date('now', '-14 days')
+       LIMIT 3000`
     ).all(...AUSTIN_METRO_CITIES);
     let reductionSample = 0, reducedCount = 0, reductionSum = 0;
     for (const r of reductionRows) {
