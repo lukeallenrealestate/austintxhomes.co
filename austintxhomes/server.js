@@ -754,8 +754,18 @@ app.get('/api/config', (_req, res) => {
 });
 
 // Homepage route
+// SSR injection: bakes live MLS numbers into the homepage / neighborhoods /
+// buyer's-vs-seller's HTML at request time so crawlers + AI engines that
+// don't run JS see real values instead of "Loading…" placeholders.
+const ssrInject = require('./lib/ssrInject');
+
 app.get('/', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'public/site/home.html'));
+  try {
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.send(ssrInject.renderHomepage(path.join(__dirname, 'public/site/home.html')));
+  } catch (e) {
+    res.sendFile(path.join(__dirname, 'public/site/home.html'));
+  }
 });
 
 // Clean URLs for main pages
@@ -812,7 +822,14 @@ app.get('/rental-properties-for-sale-austin', (_req, res) => res.sendFile(path.j
 app.get('/cash-flowing-properties-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/cash-flowing-properties-austin.html')));
 app.get('/buy',           (_req, res) => res.sendFile(path.join(__dirname, 'public/site/buy.html')));
 app.get('/rentals',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/rentals.html')));
-app.get('/neighborhoods',     (_req, res) => res.sendFile(path.join(__dirname, 'public/site/neighborhoods.html')));
+app.get('/neighborhoods',     (_req, res) => {
+  try {
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.send(ssrInject.renderNeighborhoods(path.join(__dirname, 'public/site/neighborhoods.html')));
+  } catch (e) {
+    res.sendFile(path.join(__dirname, 'public/site/neighborhoods.html'));
+  }
+});
 app.get('/moving-to-austin',  (_req, res) => res.sendFile(path.join(__dirname, 'public/site/moving-to-austin.html')));
 app.get('/market-report',     (_req, res) => res.sendFile(path.join(__dirname, 'public/site/market-report.html')));
 app.get('/austin-multifamily-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-multifamily-market-report.html')));
@@ -884,7 +901,14 @@ app.get('/employer-relocation-austin', (_req, res) => res.sendFile(path.join(__d
 app.get('/divorce-realtor-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/divorce-realtor-austin.html')));
 app.get('/sell-home-during-divorce-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-during-divorce-austin.html')));
 app.get('/buying-home-after-divorce-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/buying-home-after-divorce-austin.html')));
-app.get('/austin-buyers-or-sellers-market', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-buyers-or-sellers-market.html')));
+app.get('/austin-buyers-or-sellers-market', (_req, res) => {
+  try {
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.send(ssrInject.renderBuyersSellers(path.join(__dirname, 'public/site/austin-buyers-or-sellers-market.html')));
+  } catch (e) {
+    res.sendFile(path.join(__dirname, 'public/site/austin-buyers-or-sellers-market.html'));
+  }
+});
 app.get('/austin-home-prices-falling', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-home-prices-falling.html')));
 app.get('/sienna-at-the-thompson-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sienna-at-the-thompson-austin.html')));
 app.get('/condos-for-sale-in-the-austonian', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/condos-for-sale-in-the-austonian.html')));
