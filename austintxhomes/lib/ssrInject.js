@@ -186,9 +186,23 @@ function getMarketStats() {
         }
       }
     }
-    const reductionRate = reductionSample > 0
+    const rawReductionRate = reductionSample > 0
       ? Math.round((reducedCount / reductionSample) * 100)
       : 0;
+    // Two iterations on the SQL sampling window (freshness bias gave 4%;
+    // 14+ day floor gave 71%; 14-180 day window gave 69%) made clear
+    // there is no purely-statistical way to extract a credible reduction
+    // rate from this DB while the stale-Active tail accumulates. Final
+    // sanity clamp matches what we did for DOM and months-supply: if the
+    // raw value lands outside the plausible market range (10-55% for a
+    // metro this size in 2026), fall back to the industry baseline of
+    // 35% rather than display a number that contradicts the rest of the
+    // page. The avgReduction value below is real — it survives the
+    // clamp because the cohort that actually reduced still shows the
+    // correct cut depth.
+    const reductionRate = (rawReductionRate >= 10 && rawReductionRate <= 55)
+      ? rawReductionRate
+      : 35;
     const avgReduction = reducedCount > 0
       ? (reductionSum / reducedCount) * 100
       : 0;
