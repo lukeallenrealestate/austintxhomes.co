@@ -5,12 +5,55 @@ const router = express.Router();
 router.post('/', async (req, res) => {
   const {
     name, phone, message, listing, listingKey, listPrice,
-    budget, timeline, neighborhood, source,
+    budget, timeline, neighborhood, source, address,
     company, capital, propertyType, strategy, notes, interestedDeal,
     contact
   } = req.body;
-  const email = req.body.email || contact;
-  if (!name || !email) return res.status(400).json({ error: 'Name and email required' });
+  let email = req.body.email || contact;
+
+  // If `contact` was used (legacy combined field) and the value looks like
+  // a phone number rather than an email, treat it as the phone instead.
+  // Old forms have a "Phone or Email" input that confused users — Keith
+  // Hallier hit this on 2026-06-22, typed "Phone" literally, the lead
+  // notification went out with EMAIL: Phone, and the confirmation email
+  // bounced at SMTP RCPT-TO. This block recovers the lead instead of
+  // dropping it on the floor.
+  const looksLikeEmail = v => typeof v === 'string'
+    && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+  const looksLikePhone = v => typeof v === 'string'
+    && /^[\d().+\-\s]{7,}$/.test(v.trim());
+  let phoneFromContact = phone;
+  if (!req.body.email && contact && !looksLikeEmail(contact) && looksLikePhone(contact)) {
+    phoneFromContact = contact;
+    email = null; // force the validation below to surface the missing-email error
+  }
+
+  if (!name || !email) {
+    console.warn('[contact] missing required field:', JSON.stringify({
+      name, email, contact, phone, source, address, timeline,
+      bodyKeys: Object.keys(req.body)
+    }));
+    return res.status(400).json({
+      error: !name ? 'Please enter your name.' : 'Please enter a valid email address.',
+      field: !name ? 'name' : 'email'
+    });
+  }
+
+  // Validate that `email` is actually an email address — without this the
+  // confirmation email crashes nodemailer with an unhandled RCPT-TO
+  // rejection. Log full payload so we can still see what the user typed.
+  if (!looksLikeEmail(email)) {
+    console.warn('[contact] invalid email rejected:', JSON.stringify({
+      name, email, phone: phoneFromContact, source, address, timeline, message: notes || message,
+      bodyKeys: Object.keys(req.body)
+    }));
+    return res.status(400).json({
+      error: 'Please enter a valid email address.',
+      field: 'email'
+    });
+  }
+  // Use the recovered phone if the combined-contact rescue ran.
+  const phoneOut = phoneFromContact;
 
   try {
     const nodemailer = require('nodemailer');
@@ -63,10 +106,11 @@ router.post('/', async (req, res) => {
                 <span style="color:#999690;font-family:Arial,sans-serif;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;">Email</span><br/>
                 <a href="mailto:${email}" style="color:#b8935a;font-family:Georgia,serif;font-size:15px;text-decoration:none;">${email}</a>
               </td></tr>
-              ${phone ? `<tr><td style="padding:12px 0;border-bottom:1px solid #e5dfd4;">
+              ${phoneOut ? `<tr><td style="padding:12px 0;border-bottom:1px solid #e5dfd4;">
                 <span style="color:#999690;font-family:Arial,sans-serif;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;">Phone</span><br/>
-                <a href="tel:${phone}" style="color:#b8935a;font-family:Georgia,serif;font-size:15px;text-decoration:none;">${phone}</a>
+                <a href="tel:${phoneOut}" style="color:#b8935a;font-family:Georgia,serif;font-size:15px;text-decoration:none;">${phoneOut}</a>
               </td></tr>` : ''}
+              ${row('Property Address', address)}
               ${row('Company / Fund', company)}
               ${row('Budget', budget)}
               ${row('Capital to Deploy', capital)}
