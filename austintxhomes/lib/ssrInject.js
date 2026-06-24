@@ -527,6 +527,124 @@ function renderNeighborhoods(filePath) {
   });
 }
 
+// ─── Per-neighborhood listings (for /neighborhoods/:slug SSR) ────────
+// Pulls the first N active listings matching a neighborhood definition
+// from neighborhoods.js — same filter logic the client-side fetch uses,
+// just executed server-side so crawlers see real cards instead of
+// "Loading listings…". Cached for 15 min; client JS still runs after
+// hydration and replaces the SSR cards with a live fetch, so a stale
+// cache only ever affects the pre-JS view (crawlers, slow devices).
+function getNeighborhoodListings(n, limit = 6) {
+  if (!n || (!n.searchParam && !n.mlsSearch)) return [];
+  return cached(`nbhd-listings:${n.slug || n.mlsSearch}`, STATS_TTL, () => {
+    const conditions = [
+      `standard_status = 'Active'`,
+      `mlg_can_view = 1`,
+      `list_price > 50000`,
+      `latitude IS NOT NULL`,
+      `longitude IS NOT NULL`
+    ];
+    const values = [];
+
+    if (n.searchParam) {
+      // Re-parse the same query string the client JS would have sent so
+      // the SSR cards match what the page would have rendered after hydration.
+      const p = new URLSearchParams(n.searchParam);
+      const zip = p.get('zip');
+      const city = p.get('city');
+      const nbhd = p.get('neighborhood');
+      if (zip) {
+        const zips = zip.split(',').map(s => s.trim()).filter(Boolean);
+        conditions.push(`postal_code IN (${zips.map(() => '?').join(',')})`);
+        values.push(...zips);
+      }
+      if (city) {
+        const cities = city.split(',').map(s => decodeURIComponent(s).trim()).filter(Boolean);
+        conditions.push(`city IN (${cities.map(() => '?').join(',')})`);
+        values.push(...cities);
+      }
+      if (nbhd) {
+        conditions.push(`subdivision_name LIKE ?`);
+        values.push(`%${decodeURIComponent(nbhd)}%`);
+      }
+      if (p.get('forRent') === 'false') {
+        conditions.push(`property_type NOT LIKE '%Lease%'`);
+      }
+    } else {
+      conditions.push(`subdivision_name LIKE ?`);
+      values.push(`%${n.mlsSearch}%`);
+    }
+
+    try {
+      // Order by listing_contract_date DESC so the freshest listings show
+      // first — matches the default sort on the IDX search page.
+      const sql = `
+        SELECT listing_key, list_price, unparsed_address, city,
+               bedrooms_total, bathrooms_total, living_area, photos
+        FROM listings
+        WHERE ${conditions.join(' AND ')}
+        ORDER BY listing_contract_date DESC NULLS LAST
+        LIMIT ?
+      `;
+      const rows = listingDb.prepare(sql).all(...values, limit);
+      // Hydrate the photos array to a proxied URL the browser can hit
+      return rows.map(r => {
+        let photos = [];
+        try { photos = r.photos ? JSON.parse(r.photos) : []; } catch {}
+        const firstPhoto = photos.length
+          ? `/api/properties/photos/${r.listing_key}/0`
+          : null;
+        return { ...r, firstPhoto };
+      });
+    } catch (err) {
+      console.error('[ssrInject getNeighborhoodListings]', n.slug, err.message);
+      return [];
+    }
+  });
+}
+
+// Render a stretch of <a class="listing-card"> HTML for the cards grid.
+// Format matches the client-side renderer in templates/neighborhood.js
+// closely enough that there's no visible flicker when JS swaps them out.
+function escAttr(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function slugify(s) {
+  return String(s || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-');
+}
+function renderNeighborhoodListingCardsHtml(listings, fallbackName) {
+  if (!listings || !listings.length) return '';
+  return listings.map(l => {
+    const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : 'Price N/A';
+    const addr = l.unparsed_address || `${fallbackName || 'Austin'}, TX`;
+    const beds = l.bedrooms_total ?? ' - ';
+    const baths = l.bathrooms_total ?? ' - ';
+    const sqft = l.living_area ? Number(l.living_area).toLocaleString() : ' - ';
+    const addrSlug = slugify(l.unparsed_address);
+    const citySlug = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
+    const href = l.listing_key
+      ? (addrSlug ? `/property/${addrSlug}-${citySlug}-tx-${l.listing_key}` : `/property/${l.listing_key}`)
+      : '#';
+    const imgTag = l.firstPhoto
+      ? `<img src="${escAttr(l.firstPhoto)}" alt="${escAttr(addr)}" loading="lazy" />`
+      : '';
+    return `<a class="listing-card" href="${escAttr(href)}">` +
+      `<div class="card-img">${imgTag}<span class="card-badge">For Sale</span></div>` +
+      `<div class="card-body">` +
+        `<div class="card-price">${escAttr(price)}</div>` +
+        `<div class="card-address">${escAttr(addr)}</div>` +
+        `<div class="card-details">` +
+          `<span><strong>${escAttr(beds)}</strong> beds</span>` +
+          `<span><strong>${escAttr(baths)}</strong> baths</span>` +
+          `<span><strong>${escAttr(sqft)}</strong> sqft</span>` +
+        `</div>` +
+      `</div>` +
+      `</a>`;
+  }).join('\n');
+}
+
 // Manual cache bust — useful from a /admin/refresh-ssr endpoint or after
 // an MLS sync if the operator wants the new numbers immediately.
 function invalidateAll() {
@@ -537,6 +655,7 @@ function invalidateAll() {
 module.exports = {
   renderHomepage, renderBuyersSellers, renderNeighborhoods,
   getMarketStats, getNeighborhoodCounts,
+  getNeighborhoodListings, renderNeighborhoodListingCardsHtml,
   invalidateAll,
   fmtTimestamp
 };

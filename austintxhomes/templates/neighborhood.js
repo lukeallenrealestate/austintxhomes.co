@@ -1,7 +1,25 @@
 // Server-side renderer for neighborhood pages
 // Returns a full HTML string with unique SEO meta per neighborhood
 
+const ssrInject = require('../lib/ssrInject');
+
 module.exports = function renderNeighborhoodPage(n) {
+  // ── SSR listings ─────────────────────────────────────────────────
+  // Bake the first 6 active listings into the HTML so crawlers (and
+  // pre-hydration page paints) see real cards instead of "Loading...".
+  // Client JS still runs an hour later and replaces them with a fresh
+  // fetch — see the bottom of this file. Wrapped in try/catch because
+  // a DB hiccup here must NOT break the whole neighborhood page render.
+  let ssrListings = [];
+  let ssrCardsHtml = '';
+  let ssrCount = null;
+  try {
+    ssrListings = ssrInject.getNeighborhoodListings(n, 6);
+    ssrCardsHtml = ssrInject.renderNeighborhoodListingCardsHtml(ssrListings, n.name);
+    ssrCount = ssrListings.length;
+  } catch (e) {
+    console.error('[neighborhood SSR listings] fallback to client-only:', n.slug, e.message);
+  }
   // Today's ISO date - neighborhood listings refresh from MLS continuously, so this
   // accurately reflects freshness for AI search engines and Google's recency signals.
   const today = new Date().toISOString().slice(0, 10);
@@ -357,7 +375,7 @@ module.exports = function renderNeighborhoodPage(n) {
   <div class="hpc-stat"><span class="hpc-stat-label">Schools</span><span class="hpc-stat-val">${n.schools}</span></div>
   <div class="hpc-stat"><span class="hpc-stat-label">Commute</span><span class="hpc-stat-val">${n.commute}</span></div>
   <div class="hpc-stat"><span class="hpc-stat-label">Vibe</span><span class="hpc-stat-val">${n.vibe}</span></div>
-  <div class="hpc-stat"><span class="hpc-stat-label">Active listings</span><span class="hpc-stat-val live" id="listing-count">Loading…</span></div>
+  <div class="hpc-stat"><span class="hpc-stat-label">Active listings</span><span class="hpc-stat-val live" id="listing-count">${ssrCount != null ? ssrCount : 'Loading…'}</span></div>
   </div>
   </div>
   </div>
@@ -373,7 +391,7 @@ module.exports = function renderNeighborhoodPage(n) {
   <li>&middot; Schools: ${n.schools}.</li>
   <li>&middot; Commute: ${n.commute}.</li>
   <li>&middot; Walk Score: <strong>${n.walkScore || ' - '}</strong>; vibe: ${n.vibe}.</li>
-  <li>&middot; <strong id="tldr-listing-count"> - </strong> active MLS listings in ${n.name} as of ${todayHuman}.</li>
+  <li>&middot; <strong id="tldr-listing-count">${ssrCount != null ? ssrCount : ' - '}</strong> active MLS listings in ${n.name} as of ${todayHuman}.</li>
   </ul>
   </div>
   </section>
@@ -385,7 +403,7 @@ module.exports = function renderNeighborhoodPage(n) {
   <h2 class="section-title">Homes for Sale in <em>${n.name}</em></h2>
   <p class="section-sub">Updated daily from Austin MLS. Every active listing in ${n.name} - no sign-up required.</p>
   <div class="listings-grid" id="listings-grid">
-  <div class="listings-loading">Loading listings…</div>
+  ${ssrCardsHtml || '<div class="listings-loading">Loading listings…</div>'}
   </div>
   <a href="${n.searchParam ? '/search?' + n.searchParam : '/search?neighborhood=' + encodeURIComponent(n.mlsSearch)}" target="_blank" rel="noopener" class="view-all">View all ${n.name} listings in search →</a>
   </div>

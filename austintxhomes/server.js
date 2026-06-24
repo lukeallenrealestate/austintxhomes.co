@@ -438,9 +438,20 @@ app.get('/api/deal-radar/:id', async (req, res) => {
 
 // ── End Deal Radar API ───────────────────────────────────────────────────────
 
-// /search serves the idx-search SPA directly (no localhost redirect)
-app.get('/search', (_req, res) => {
-  res.sendFile(path.join(IDX_PUBLIC, 'index.html'));
+// /search serves the idx-search SPA with query-aware SEO meta injection.
+// The HTML shell is identical client-side, but title/description/canonical/
+// robots are stamped based on req.query so each filter permutation can rank
+// as its own landing page (see lib/searchSeo.js).
+const searchSeo = require('./lib/searchSeo');
+app.get('/search', (req, res) => {
+  try {
+    const html = searchSeo.renderSearchHtml(req.query);
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.send(html);
+  } catch (err) {
+    console.error('searchSeo render failed, falling back to static:', err && err.message);
+    res.sendFile(path.join(IDX_PUBLIC, 'index.html'));
+  }
 });
 
 // /account — logged-in users' dashboard (saved searches, favorites)

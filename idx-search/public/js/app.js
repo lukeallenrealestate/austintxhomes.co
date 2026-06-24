@@ -233,7 +233,15 @@ function applyUrlParams() {
 // ---- Init ----
 document.addEventListener('DOMContentLoaded', async () => {
   setupAutocomplete();
-  restoreSearchState();
+  // Auto-restore the prior session's filters ONLY on back/forward navigation
+  // and only when the URL has no search params of its own. A fresh visit to
+  // /search (typed URL, bookmark, homepage link, crawler) shows the default
+  // Austin-wide state — that matches what the (now query-aware) <title> /
+  // canonical / robots meta is telling search engines they will see.
+  const hasUrlParams = window.location.search.length > 1;
+  const navEntry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+  const isBackForward = navEntry && navEntry.type === 'back_forward';
+  if (!hasUrlParams && isBackForward) restoreSearchState();
   applyUrlParams();   // override with URL params from homepage neighborhood links
   document.getElementById('view-controls').style.display = 'flex';
   // Only load Google Maps up-front if the user is landing directly on map view
