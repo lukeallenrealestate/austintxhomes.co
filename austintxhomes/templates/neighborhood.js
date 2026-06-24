@@ -7,16 +7,18 @@ module.exports = function renderNeighborhoodPage(n) {
   // ── SSR listings ─────────────────────────────────────────────────
   // Bake the first 6 active listings into the HTML so crawlers (and
   // pre-hydration page paints) see real cards instead of "Loading...".
-  // Client JS still runs an hour later and replaces them with a fresh
-  // fetch — see the bottom of this file. Wrapped in try/catch because
-  // a DB hiccup here must NOT break the whole neighborhood page render.
-  let ssrListings = [];
+  // ssrInject.getNeighborhoodListings returns { listings, total } where
+  // `total` is the precise active count for the neighborhood — drives
+  // both the "Active listings" stat block and the TL;DR count. Client
+  // JS still runs after hydration and replaces the SSR cards with a
+  // fresh fetch. Wrapped in try/catch because a DB hiccup here must
+  // NOT break the whole neighborhood page render.
   let ssrCardsHtml = '';
   let ssrCount = null;
   try {
-    ssrListings = ssrInject.getNeighborhoodListings(n, 6);
-    ssrCardsHtml = ssrInject.renderNeighborhoodListingCardsHtml(ssrListings, n.name);
-    ssrCount = ssrListings.length;
+    const { listings = [], total = 0 } = ssrInject.getNeighborhoodListings(n, 6) || {};
+    ssrCardsHtml = ssrInject.renderNeighborhoodListingCardsHtml(listings, n.name);
+    ssrCount = total;
   } catch (e) {
     console.error('[neighborhood SSR listings] fallback to client-only:', n.slug, e.message);
   }

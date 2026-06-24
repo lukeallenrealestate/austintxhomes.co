@@ -528,79 +528,177 @@ function renderNeighborhoods(filePath) {
 }
 
 // ─── Per-neighborhood listings (for /neighborhoods/:slug SSR) ────────
-// Pulls the first N active listings matching a neighborhood definition
-// from neighborhoods.js — same filter logic the client-side fetch uses,
-// just executed server-side so crawlers see real cards instead of
-// "Loading listings…". Cached for 15 min; client JS still runs after
-// hydration and replaces the SSR cards with a live fetch, so a stale
-// cache only ever affects the pre-JS view (crawlers, slow devices).
-function getNeighborhoodListings(n, limit = 6) {
-  if (!n || (!n.searchParam && !n.mlsSearch)) return [];
-  return cached(`nbhd-listings:${n.slug || n.mlsSearch}`, STATS_TTL, () => {
-    const conditions = [
-      `standard_status = 'Active'`,
-      `mlg_can_view = 1`,
-      `list_price > 50000`,
-      `latitude IS NOT NULL`,
-      `longitude IS NOT NULL`
-    ];
-    const values = [];
+// Returns { listings, total } where:
+//   - listings: first N (default 6) active listings for the neighborhood
+//   - total:    full count of active matches (drives the displayed
+//               "Active listings" stat)
+//
+// Filter precedence:
+//   1. austin-neighborhoods.json polygon (most accurate — actual city
+//      boundary GeoJSON; used wherever a slug matches a polygon key).
+//      Each neighborhood gets a UNIQUE listing set, so /tarrytown and
+//      /clarksville don't show the same 78703 listings and trip
+//      duplicate-content flags.
+//   2. n.searchParam (zip / city / forRent fields) — used by the few
+//      neighborhood entries already configured this way.
+//   3. subdivision_name LIKE n.mlsSearch — the legacy fallback for
+//      master-planned subdivisions where the MLS field IS reliable
+//      (Mueller, Sorento, Crystal Falls, etc.).
+//
+// Polygon path: SQL pre-filters by lat/lng bbox (cheap), then a Node
+// ray-casting check per row (~100µs each on small candidate sets) gives
+// the precise boundary cut. Cached 15 min; falls back gracefully to the
+// next strategy if anything throws.
+const nbhdPolyData = (() => {
+  try {
+    return JSON.parse(fs.readFileSync(
+      path.join(__dirname, '..', '..', 'idx-search', 'data', 'austin-neighborhoods.json'),
+      'utf8'
+    ));
+  } catch (e) {
+    console.warn('[ssrInject] austin-neighborhoods.json not loaded:', e.message);
+    return {};
+  }
+})();
 
-    if (n.searchParam) {
-      // Re-parse the same query string the client JS would have sent so
-      // the SSR cards match what the page would have rendered after hydration.
-      const p = new URLSearchParams(n.searchParam);
-      const zip = p.get('zip');
-      const city = p.get('city');
-      const nbhd = p.get('neighborhood');
-      if (zip) {
-        const zips = zip.split(',').map(s => s.trim()).filter(Boolean);
-        conditions.push(`postal_code IN (${zips.map(() => '?').join(',')})`);
-        values.push(...zips);
-      }
-      if (city) {
-        const cities = city.split(',').map(s => decodeURIComponent(s).trim()).filter(Boolean);
-        conditions.push(`city IN (${cities.map(() => '?').join(',')})`);
-        values.push(...cities);
-      }
-      if (nbhd) {
-        conditions.push(`subdivision_name LIKE ?`);
-        values.push(`%${decodeURIComponent(nbhd)}%`);
-      }
-      if (p.get('forRent') === 'false') {
-        conditions.push(`property_type NOT LIKE '%Lease%'`);
-      }
-    } else {
-      conditions.push(`subdivision_name LIKE ?`);
-      values.push(`%${n.mlsSearch}%`);
+// Normalize a slug ('hyde-park') to the JSON key format ('hyde park').
+// Returns an array of polygons (each polygon is an array of {lat,lng}).
+// MultiPolygon → array of outer rings, one per disjoint region.
+function polygonsForSlug(slug) {
+  if (!slug) return null;
+  const key = String(slug).replace(/-/g, ' ').toLowerCase().trim();
+  const g = nbhdPolyData[key];
+  if (!g) return null;
+  // GeoJSON puts longitude first: [lng, lat]. Our ray-casting helper
+  // expects {lat, lng} so we swap on extraction.
+  if (g.type === 'Polygon') {
+    return [g.coordinates[0].map(([lng, lat]) => ({ lat, lng }))];
+  }
+  if (g.type === 'MultiPolygon') {
+    return g.coordinates.map(poly => poly[0].map(([lng, lat]) => ({ lat, lng })));
+  }
+  return null;
+}
+
+// Standard ray-casting point-in-polygon. Mirrors idx-search/routes/properties.js
+// so SSR and live-fetch filtering produce identical sets.
+function pointInPolygon(lat, lng, polygon) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].lat, yi = polygon[i].lng;
+    const xj = polygon[j].lat, yj = polygon[j].lng;
+    if (((yi > lng) !== (yj > lng)) && (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi)) {
+      inside = !inside;
     }
+  }
+  return inside;
+}
+function pointInAnyPolygon(lat, lng, polys) {
+  for (const p of polys) if (pointInPolygon(lat, lng, p)) return true;
+  return false;
+}
 
+function getNeighborhoodListings(n, limit = 6) {
+  if (!n) return { listings: [], total: 0 };
+  return cached(`nbhd-listings:${n.slug || n.mlsSearch}`, STATS_TTL, () => {
     try {
-      // Order by listing_contract_date DESC so the freshest listings show
-      // first — matches the default sort on the IDX search page.
-      const sql = `
+      // ── Strategy 1: polygon (preferred — true neighborhood boundary) ──
+      const polys = polygonsForSlug(n.slug);
+      if (polys && polys.length) {
+        // Combined bbox across all polygons (MultiPolygon support)
+        let north = -Infinity, south = Infinity, east = -Infinity, west = Infinity;
+        for (const poly of polys) for (const p of poly) {
+          if (p.lat > north) north = p.lat;
+          if (p.lat < south) south = p.lat;
+          if (p.lng > east)  east  = p.lng;
+          if (p.lng < west)  west  = p.lng;
+        }
+        const rows = listingDb.prepare(`
+          SELECT listing_key, list_price, unparsed_address, city, postal_code,
+                 bedrooms_total, bathrooms_total, living_area, photos,
+                 latitude, longitude
+          FROM listings
+          WHERE standard_status = 'Active' AND mlg_can_view = 1
+            AND list_price > 50000
+            AND latitude IS NOT NULL AND longitude IS NOT NULL
+            AND latitude BETWEEN ? AND ?
+            AND longitude BETWEEN ? AND ?
+            AND property_type NOT LIKE '%Lease%'
+          ORDER BY listing_contract_date DESC NULLS LAST
+        `).all(south, north, west, east);
+        const inside = rows.filter(r => pointInAnyPolygon(r.latitude, r.longitude, polys));
+        return {
+          listings: inside.slice(0, limit).map(hydratePhoto),
+          total: inside.length
+        };
+      }
+
+      // ── Strategy 2: searchParam (zip / city based) ──
+      // ── Strategy 3: subdivision_name LIKE (legacy) ──
+      const conditions = [
+        `standard_status = 'Active'`,
+        `mlg_can_view = 1`,
+        `list_price > 50000`,
+        `latitude IS NOT NULL`,
+        `longitude IS NOT NULL`
+      ];
+      const values = [];
+
+      if (n.searchParam) {
+        const p = new URLSearchParams(n.searchParam);
+        const zip = p.get('zip');
+        const city = p.get('city');
+        const nbhd = p.get('neighborhood');
+        if (zip) {
+          const zips = zip.split(',').map(s => s.trim()).filter(Boolean);
+          conditions.push(`postal_code IN (${zips.map(() => '?').join(',')})`);
+          values.push(...zips);
+        }
+        if (city) {
+          const cities = city.split(',').map(s => decodeURIComponent(s).trim()).filter(Boolean);
+          conditions.push(`city IN (${cities.map(() => '?').join(',')})`);
+          values.push(...cities);
+        }
+        if (nbhd) {
+          conditions.push(`subdivision_name LIKE ?`);
+          values.push(`%${decodeURIComponent(nbhd)}%`);
+        }
+        if (p.get('forRent') === 'false') {
+          conditions.push(`property_type NOT LIKE '%Lease%'`);
+        }
+      } else if (n.mlsSearch) {
+        conditions.push(`subdivision_name LIKE ?`);
+        values.push(`%${n.mlsSearch}%`);
+      } else {
+        return { listings: [], total: 0 };
+      }
+
+      const baseSql = `FROM listings WHERE ${conditions.join(' AND ')}`;
+      const total = listingDb.prepare(`SELECT COUNT(*) AS n ${baseSql}`).get(...values)?.n || 0;
+      const rows = listingDb.prepare(`
         SELECT listing_key, list_price, unparsed_address, city,
                bedrooms_total, bathrooms_total, living_area, photos
-        FROM listings
-        WHERE ${conditions.join(' AND ')}
+        ${baseSql}
         ORDER BY listing_contract_date DESC NULLS LAST
         LIMIT ?
-      `;
-      const rows = listingDb.prepare(sql).all(...values, limit);
-      // Hydrate the photos array to a proxied URL the browser can hit
-      return rows.map(r => {
-        let photos = [];
-        try { photos = r.photos ? JSON.parse(r.photos) : []; } catch {}
-        const firstPhoto = photos.length
-          ? `/api/properties/photos/${r.listing_key}/0`
-          : null;
-        return { ...r, firstPhoto };
-      });
+      `).all(...values, limit);
+
+      return { listings: rows.map(hydratePhoto), total };
     } catch (err) {
       console.error('[ssrInject getNeighborhoodListings]', n.slug, err.message);
-      return [];
+      return { listings: [], total: 0 };
     }
   });
+}
+
+// Add a browser-reachable photo URL from the stored MLSGrid Media keys.
+function hydratePhoto(r) {
+  let photos = [];
+  try { photos = r.photos ? JSON.parse(r.photos) : []; } catch {}
+  const firstPhoto = photos.length
+    ? `/api/properties/photos/${r.listing_key}/0`
+    : null;
+  return { ...r, firstPhoto };
 }
 
 // Render a stretch of <a class="listing-card"> HTML for the cards grid.
