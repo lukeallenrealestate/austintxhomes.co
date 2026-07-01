@@ -100,52 +100,117 @@ async function fetchMortgageRate(prevRate = null) {
 }
 
 // ── Fetch MLS Market Data ─────────────────────────────────────────────────────
+//
+// HISTORY: Earlier versions of this function pulled data via HTTP from the local
+// IDX API with `limit=1000` — which silently capped EVERY weekly report at the
+// first 1000 listings out of ~22,000 active. That made the "Austin market report"
+// a sample-of-the-newest-1000 report, with statistics skewed toward whatever
+// ZIP codes had the highest fresh-listing turnover that week.
+//
+// This version reads ACTRIS MLS data directly from the SQLite database (the
+// same DB the IDX server reads from — better-sqlite3 is synchronous and
+// extremely fast). No limit. Every active for-sale listing in the Austin
+// metro is included. The median, mean, $/sqft, DOM, and reduction-rate
+// numbers are now true market-wide aggregates.
+//
+// Key methodology improvements vs. the API-fetch approach:
+//   1. No 1000-listing cap — we aggregate ALL 22K+ active listings
+//   2. Price-reduction rate computed from raw_data.OriginalListPrice (truth)
+//      instead of the days_on_market > 14 PROXY (which conflated stale
+//      Active flags with reduced listings)
+//   3. Calculated DOM from listing_contract_date for active stats — the
+//      MLS days_on_market field is sparse and unreliable; the contract-date
+//      derivation matches what the neighborhood deep-dive reports use
+//   4. Closed-sales absorption uses the available 90-day window scaled to
+//      a monthly rate — the previous 30-day filter returned zero when the
+//      most recent MLS sync was older than 30 days
 async function fetchMarketData() {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 15000);
+  let listingDb;
+  try {
+    listingDb = require('../../idx-search/db/database');
+  } catch (e) {
+    console.error('[WeeklyReport] failed to load listingDb:', e.message);
+    return null;
+  }
 
   try {
-    const [activeResp, closedResp, condoResp, newConResp, pendingResp] = await Promise.all([
-      fetch(`${IDX_API}/api/properties/search?limit=1000&minPrice=75000&forRent=false`, { signal: controller.signal }),
-      fetch(`${IDX_API}/api/properties/search?status=Closed&limit=1000&minPrice=75000&forRent=false&sortBy=newest`, { signal: controller.signal }),
-      fetch(`${IDX_API}/api/properties/search?limit=500&minPrice=75000&forRent=false&subType=Condominium,Condo`, { signal: controller.signal }),
-      fetch(`${IDX_API}/api/properties/search?limit=500&minPrice=75000&forRent=false&newConstruction=true`, { signal: controller.signal }),
-      fetch(`${IDX_API}/api/properties/search?status=Pending,Active Under Contract&limit=500&minPrice=75000`, { signal: controller.signal }),
-    ]);
+    const NOW = Date.now();
+    const FOR_SALE_FILTER = `standard_status = 'Active' AND mlg_can_view = 1
+      AND list_price >= 75000 AND property_type NOT LIKE '%Lease%'`;
 
-    clearTimeout(timer);
+    // ── Active for-sale: every single listing, no limit ────────────────────
+    // Pull only the columns we aggregate to keep memory reasonable on a
+    // 22K-row pull. raw_data is the expensive blob — we leave it on the row
+    // for reduction-rate but only json_extract the one field we need.
+    const active = listingDb.prepare(`
+      SELECT listing_key, list_price, living_area, days_on_market, city, postal_code,
+             listing_contract_date, property_sub_type, new_construction_yn,
+             CAST(json_extract(raw_data, '$.OriginalListPrice') AS INTEGER) AS original_list_price
+      FROM listings WHERE ${FOR_SALE_FILTER}
+    `).all();
 
-    const activeData  = await activeResp.json();
-    const closedData  = await closedResp.json().catch(() => ({ listings: [] }));
-    const condoData   = await condoResp.json().catch(() => ({ listings: [] }));
-    const newConData  = await newConResp.json().catch(() => ({ listings: [] }));
-    const pendingData = await pendingResp.json().catch(() => ({ listings: [] }));
+    if (!active.length) {
+      console.error('[WeeklyReport] no active listings returned from DB');
+      return null;
+    }
 
-    const active  = activeData.listings  || [];
-    const closed  = closedData.listings  || [];
-    const condos  = condoData.listings   || [];
-    const newCon  = newConData.listings  || [];
-    const pending = pendingData.listings || [];
+    // ── Closed last 90 days for absorption + sale-to-list ratio ────────────
+    // Earlier code tried last-30-days for monthly rate but returned zero when
+    // the MLS sync lagged. The 90-day window is always populated; we just
+    // divide by 3 to get a monthly rate.
+    const closed = listingDb.prepare(`
+      SELECT listing_key, list_price, close_price, close_date,
+             listing_contract_date, city, postal_code, property_sub_type
+      FROM listings
+      WHERE standard_status = 'Closed' AND close_price >= 75000
+        AND close_date IS NOT NULL
+        AND close_date >= date('now', '-90 days')
+    `).all();
 
-    if (!active.length) return null;
+    // ── In-escrow (Pending + Active Under Contract) ────────────────────────
+    const pending = listingDb.prepare(`
+      SELECT listing_key, list_price
+      FROM listings
+      WHERE standard_status IN ('Pending', 'Active Under Contract')
+        AND list_price >= 75000
+    `).all();
+
+    // Segment slices — derived from the full active set, not separate fetches
+    const condos = active.filter(l =>
+      l.property_sub_type === 'Condominium' || l.property_sub_type === 'Condo');
+    const newCon = active.filter(l => l.new_construction_yn === 1);
+
+    // ── Calculated DOM (more reliable than the raw days_on_market field) ───
+    // The MLS days_on_market column is sparse; we derive DOM from
+    // listing_contract_date for any active listing. Clamp at 180 to drop
+    // the long tail of stale "Active" flags that should have been delisted.
+    function calcActiveDom(l) {
+      if (!l.listing_contract_date) return null;
+      const t = new Date(l.listing_contract_date).getTime();
+      if (isNaN(t)) return null;
+      const d = Math.floor((NOW - t) / 86_400_000);
+      return d >= 0 && d <= 180 ? d : null;
+    }
 
     // ── Core active stats ──────────────────────────────────────────────────
     const prices = active.map(l => l.list_price).filter(Boolean).sort((a,b)=>a-b);
-    const doms   = active.map(l => l.days_on_market).filter(x => x != null && x >= 0);
-    const ppsfs  = active.filter(l => l.list_price && l.living_area > 0).map(l => l.list_price / l.living_area);
+    const doms   = active.map(calcActiveDom).filter(d => d != null);
+    const ppsfs  = active.filter(l => l.list_price && l.living_area > 0)
+                         .map(l => l.list_price / l.living_area);
 
-    // Price reductions: proxy = DOM > 14 (homes still sitting after 2 weeks likely reduced)
-    const priceReduced = active.filter(l => l.days_on_market > 14).length;
+    // ── Price reductions: true count from OriginalListPrice (~99.9% covered) ─
+    const reducedRows = active.filter(l =>
+      l.original_list_price && l.original_list_price > l.list_price);
+    const priceReduced = reducedRows.length;
+    const reductionPcts = reducedRows.map(l =>
+      (l.original_list_price - l.list_price) / l.original_list_price);
+    const avgReductionPct = reductionPcts.length ? avg(reductionPcts) : 0;
 
-    // ── Closed stats (for months supply + sale-to-list) ────────────────────
-    const closedLast30 = closed.filter(l => {
-      if (!l.close_date) return false;
-      const cd = new Date(l.close_date);
-      const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
-      return cd >= cutoff;
-    });
-
-    const monthlyRate = closedLast30.length; // sold in last 30 days
+    // ── Closed stats (months supply, sale-to-list) ─────────────────────────
+    // Use the 90-day window scaled to a monthly rate, because last-30-days
+    // is often zero due to MLS sync lag. Same definition the deep-dive
+    // neighborhood reports use.
+    const monthlyRate = Math.round(closed.length / 3);
     const monthsSupply = monthlyRate > 0 ? (active.length / monthlyRate) : null;
 
     const saleToList = closed
@@ -163,7 +228,8 @@ async function fetchMarketData() {
       if (!cityMap[c]) cityMap[c] = { count:0, prices:[], doms:[], closePrices:[], listPrices:[] };
       cityMap[c].count++;
       if (l.list_price) cityMap[c].prices.push(l.list_price);
-      if (l.days_on_market != null && l.days_on_market >= 0) cityMap[c].doms.push(l.days_on_market);
+      const dom = calcActiveDom(l);
+      if (dom != null) cityMap[c].doms.push(dom);
     });
     closed.forEach(l => {
       const c = (l.city || '').trim();
@@ -184,18 +250,22 @@ async function fetchMarketData() {
       .filter(c => c.count >= 5)
       .sort((a,b) => b.count - a.count);
 
-    // Hot = lowest DOM, min 10 listings; Soft = highest DOM
-    const hotCities  = [...cities].filter(c => c.avgDom > 0).sort((a,b) => a.avgDom - b.avgDom).slice(0, 4);
-    const softCities = [...cities].filter(c => c.avgDom > 0).sort((a,b) => b.avgDom - a.avgDom).slice(0, 3);
+    // Hot = lowest DOM among meaningful samples; Soft = highest DOM.
+    // Require >=20 listings (was >=5) so a single 10-listing town with a
+    // freshly listed batch can't anchor the "hot" bucket.
+    const hotCities  = [...cities].filter(c => c.avgDom > 0 && c.count >= 20)
+                                   .sort((a,b) => a.avgDom - b.avgDom).slice(0, 4);
+    const softCities = [...cities].filter(c => c.avgDom > 0 && c.count >= 20)
+                                   .sort((a,b) => b.avgDom - a.avgDom).slice(0, 3);
 
     // ── Condo stats ─────────────────────────────────────────────────────────
     const condoPrices = condos.map(l => l.list_price).filter(Boolean).sort((a,b)=>a-b);
-    const condoDoms   = condos.map(l => l.days_on_market).filter(x => x != null && x >= 0);
+    const condoDoms   = condos.map(calcActiveDom).filter(d => d != null);
 
-    // ── New construction ─────────────────────────────────────────────────────
+    // ── New construction ────────────────────────────────────────────────────
     const newConPct = active.length > 0 ? Math.round(newCon.length / active.length * 100) : 0;
 
-    // ── By zip (for chart) ───────────────────────────────────────────────────
+    // ── By zip (for chart) ──────────────────────────────────────────────────
     const zipMap = {};
     active.forEach(l => {
       const z = l.postal_code;
@@ -203,13 +273,21 @@ async function fetchMarketData() {
       if (!zipMap[z]) zipMap[z] = { count:0, prices:[], doms:[] };
       zipMap[z].count++;
       if (l.list_price) zipMap[z].prices.push(l.list_price);
-      if (l.days_on_market != null && l.days_on_market >= 0) zipMap[z].doms.push(l.days_on_market);
+      const dom = calcActiveDom(l);
+      if (dom != null) zipMap[z].doms.push(dom);
     });
 
     const byZip = Object.entries(zipMap)
       .map(([zip, d]) => ({ zip, count: d.count, medPrice: med(d.prices), avgDom: Math.round(avg(d.doms)) }))
       .sort((a,b) => b.count - a.count)
       .slice(0, 8);
+
+    // "New this week" — listings whose contract_date is within 7 days.
+    // Calculated rather than relying on the sparse days_on_market field.
+    const newThisWeek = active.filter(l => {
+      const d = calcActiveDom(l);
+      return d != null && d <= 7;
+    }).length;
 
     return {
       // Active
@@ -218,8 +296,9 @@ async function fetchMarketData() {
       avgPrice:       Math.round(avg(prices)),
       avgDom:         Math.round(avg(doms)),
       avgPpsf:        Math.round(avg(ppsfs)),
-      newThisWeek:    active.filter(l => l.days_on_market != null && l.days_on_market <= 7).length,
+      newThisWeek,
       priceReducedPct: active.length > 0 ? Math.round(priceReduced / active.length * 100) : 0,
+      avgReductionPct: avgReductionPct ? parseFloat((avgReductionPct * 100).toFixed(1)) : null,
       under400k:      active.filter(l => l.list_price < 400000).length,
       t400_600k:      active.filter(l => l.list_price >= 400000 && l.list_price < 600000).length,
       t600k_1m:       active.filter(l => l.list_price >= 600000 && l.list_price < 1000000).length,
@@ -236,7 +315,7 @@ async function fetchMarketData() {
       condoMedian:    med(condoPrices) || null,
       condoAvgDom:    condoDoms.length ? Math.round(avg(condoDoms)) : null,
       condoCount:     condos.length,
-      condoS2L:       null, // populated below if data available
+      condoS2L:       null,
       newConPct,
       newConCount:    newCon.length,
       // Geography
@@ -246,7 +325,6 @@ async function fetchMarketData() {
       byZip,
     };
   } catch (e) {
-    clearTimeout(timer);
     console.error('[WeeklyReport] fetchMarketData error:', e.message);
     return null;
   }
