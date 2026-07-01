@@ -321,12 +321,21 @@ app.delete('/api/cash-flow/subscribe/:id', (req, res) => {
 });
 
 // ── Weekly report manual trigger (must come BEFORE the generic /api proxy) ───
+// Options in body:
+//   targetDate   — YYYY-MM-DD to regenerate a specific week in place. Existing
+//                  reports with the same slug are REPLACED (not duplicated),
+//                  so the public /blog/{slug} URL preserves its indexing.
+//   sendEmail    — set to false to skip Luke's notification email on backfills.
 app.post('/api/weekly-report/generate', async (req, res) => {
   if (req.headers['x-admin-key'] !== ADMIN_KEY) return res.status(401).json({ error: 'Unauthorized' });
   try {
-    const post = await generateWeeklyReport(weeklyReports);
+    const opts = {
+      targetDate: req.body && req.body.targetDate,
+      sendEmail: req.body && req.body.sendEmail
+    };
+    const post = await generateWeeklyReport(weeklyReports, opts);
     if (!post) return res.status(503).json({ error: 'No MLS data available — is the idx-search server running?' });
-    res.json({ ok: true, slug: post.slug, url: `https://austintxhomes.co/blog/${post.slug}` });
+    res.json({ ok: true, slug: post.slug, url: `https://austintxhomes.co/blog/${post.slug}`, backfilled: !!opts.targetDate });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

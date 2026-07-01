@@ -696,14 +696,31 @@ function appendSitemap(slug) {
 }
 
 // ── Main export ───────────────────────────────────────────────────────────────
-module.exports = async function generateWeeklyReport(weeklyReportsRef = []) {
-  const now     = new Date();
-  const angle   = getISOWeek(now) % 4;
-  const wLabel  = weekRange(now);
-  const dateFmt = dateFormatted(now);
-  const slug    = `austin-market-report-${slugDate(now)}`;
+//
+// Options:
+//   targetDate  — optional ISO date string (YYYY-MM-DD). When provided, the
+//                 report's slug, week-range label, and displayed date are
+//                 derived from that date instead of today. Used to regenerate
+//                 a specific week's report after a bug-fix. If a stored
+//                 report already exists with the resulting slug, it is
+//                 REPLACED IN PLACE (preserving array position) instead of
+//                 unshifting a duplicate — so the public /blog/{slug} URL
+//                 keeps its Google indexing and any inbound links.
+//   sendEmail   — set to false to skip the notification email. Useful for
+//                 backfill regenerations where Luke doesn't need another
+//                 email for a week he's already been briefed on.
+module.exports = async function generateWeeklyReport(weeklyReportsRef = [], opts = {}) {
+  const targetDate = opts.targetDate ? new Date(opts.targetDate + 'T12:00:00Z') : new Date();
+  if (isNaN(targetDate.getTime())) {
+    console.warn('[WeeklyReport] Invalid targetDate — aborting:', opts.targetDate);
+    return null;
+  }
+  const angle   = getISOWeek(targetDate) % 4;
+  const wLabel  = weekRange(targetDate);
+  const dateFmt = dateFormatted(targetDate);
+  const slug    = `austin-market-report-${slugDate(targetDate)}`;
 
-  console.log(`[WeeklyReport] Generating — ${wLabel} (angle ${angle})`);
+  console.log(`[WeeklyReport] Generating — ${wLabel} (angle ${angle})${opts.targetDate ? ' [BACKFILL]' : ''}`);
 
   // Pull previous rate from most recent stored report for week-over-week diff
   const prevRate = weeklyReportsRef.length > 0 && weeklyReportsRef[0].mortgageRate
@@ -725,17 +742,25 @@ module.exports = async function generateWeeklyReport(weeklyReportsRef = []) {
   const gbpBlurb = generateGbpBlurb(data, rate, wLabel);
   const blogPost = generateBlogPost(data, rate, angle, wLabel, dateFmt, slug);
 
-  // Persist
+  // Persist — replace in place if the slug already exists (backfill case)
   try {
-    weeklyReportsRef.unshift(blogPost);
-    if (weeklyReportsRef.length > 52) weeklyReportsRef.splice(52);
+    const existingIdx = weeklyReportsRef.findIndex(p => p.slug === slug);
+    if (existingIdx >= 0) {
+      weeklyReportsRef[existingIdx] = blogPost;
+      console.log(`[WeeklyReport] Replaced existing post at index ${existingIdx}`);
+    } else {
+      weeklyReportsRef.unshift(blogPost);
+      if (weeklyReportsRef.length > 52) weeklyReportsRef.splice(52);
+    }
     fs.writeFileSync(REPORTS_FILE, JSON.stringify(weeklyReportsRef, null, 2));
   } catch (e) { console.error('[WeeklyReport] Save failed:', e.message); }
 
   appendSitemap(slug);
 
-  try { await sendEmail(gbpBlurb, blogPost, wLabel); }
-  catch (e) { console.error('[WeeklyReport] Email failed:', e.message); }
+  if (opts.sendEmail !== false) {
+    try { await sendEmail(gbpBlurb, blogPost, wLabel); }
+    catch (e) { console.error('[WeeklyReport] Email failed:', e.message); }
+  }
 
   return blogPost;
 };
