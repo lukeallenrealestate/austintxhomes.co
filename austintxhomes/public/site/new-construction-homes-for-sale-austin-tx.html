@@ -84,62 +84,79 @@
     .hero-stats .stat-num { font-family: var(--serif); font-size: 1.8rem; color: var(--gold-lt); line-height: 1; }
     .hero-stats .stat-label { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.5); margin-top: 4px; }
 
-    /* Filter bar */
-    .filter-bar { background: var(--warm); border-bottom: 1px solid var(--border); padding: 1.5rem 2rem; position: sticky; top: 64px; z-index: 90; }
-    .filter-inner { max-width: var(--w); margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    /* Filter bar — sits above the split view, controls both map and sidebar */
+    .filter-bar { background: var(--warm); border-bottom: 1px solid var(--border); padding: 1.1rem 1.5rem; position: sticky; top: 64px; z-index: 90; }
+    .filter-inner { max-width: 100%; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .filter-bar label { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--mid); margin-right: 4px; }
     .filter-bar select { padding: 8px 14px; border: 1px solid var(--border); border-radius: 4px; font-family: var(--sans); font-size: 13px; background: #fff; color: var(--text); cursor: pointer; }
     .filter-bar .count { margin-left: auto; font-size: 13px; color: var(--mid); }
+    .filter-bar .count strong { color: var(--text); font-weight: 600; }
+    .filter-bar .redo-btn {
+      display: none; background: var(--ink); color: #fff; padding: 8px 16px; border-radius: 999px;
+      font-size: 12px; font-weight: 500; letter-spacing: .04em;
+      border: none; cursor: pointer;
+    }
+    .filter-bar .redo-btn.show { display: inline-flex; align-items: center; gap: 6px; }
+    .filter-bar .redo-btn::before { content: '↻'; font-size: 14px; }
 
-    /* Listings grid */
-    main { padding: 2rem; max-width: var(--w); margin: 0 auto; }
-
-    /* Map — shows only the listings currently visible on this page */
-    .listings-map-wrap { position: relative; margin-bottom: 24px; }
-    #listings-map {
-      width: 100%; height: 420px; border-radius: var(--r);
-      border: 1px solid var(--border); background: var(--cream);
-      overflow: hidden;
+    /* Split layout: sidebar list on left, map on right */
+    .split-layout {
+      display: grid;
+      grid-template-columns: 480px 1fr;
+      height: calc(100vh - 64px - 62px); /* below nav + filter bar */
+      min-height: 560px;
     }
-    .map-caption {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 12px; padding: 0 4px 10px;
-      font-size: 12px; color: var(--mid);
+    .listings-sidebar {
+      overflow-y: auto; overflow-x: hidden;
+      background: var(--bg);
+      border-right: 1px solid var(--border);
+      position: relative;
     }
-    .map-caption strong { color: var(--text); font-weight: 600; }
-    .map-empty {
-      display: flex; align-items: center; justify-content: center;
-      height: 100%; color: var(--mid); font-size: 14px; padding: 20px; text-align: center;
+    .sidebar-header {
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      background: var(--bg); position: sticky; top: 0; z-index: 5;
+      font-size: 12px; color: var(--mid); line-height: 1.5;
     }
-    @media (max-width: 640px) {
-      #listings-map { height: 300px; }
-    }
-
-    .listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; }
-    .listing-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; text-decoration: none; color: inherit; display: block; transition: box-shadow .2s, transform .2s; }
-    .listing-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,.1); transform: translateY(-2px); }
-    .listing-img { width: 100%; height: 210px; object-fit: cover; background: var(--cream); }
-    .listing-body { padding: 18px; }
-    .listing-price { font-family: var(--serif); font-size: 24px; color: var(--ink); margin-bottom: 4px; font-weight: 500; }
+    .sidebar-header strong { color: var(--text); font-weight: 600; }
+    .listings-grid { display: grid; grid-template-columns: 1fr; gap: 14px; padding: 16px 20px 40px; }
+    .listing-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; text-decoration: none; color: inherit; display: block; transition: box-shadow .2s, transform .15s, border-color .2s; }
+    .listing-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.09); transform: translateY(-1px); border-color: var(--gold); }
+    .listing-card.hover-from-map { border-color: var(--gold); box-shadow: 0 4px 16px rgba(184,147,90,.22); }
+    .listing-img { width: 100%; height: 200px; object-fit: cover; background: var(--cream); display: block; }
+    .listing-img-fallback { display: flex; align-items: center; justify-content: center; height: 200px; background: linear-gradient(135deg, var(--warm), var(--cream)); color: var(--light); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+    .listing-body { padding: 14px 16px 16px; }
+    .listing-price { font-family: var(--serif); font-size: 22px; color: var(--ink); margin-bottom: 3px; font-weight: 500; }
     .listing-addr { font-size: 13px; color: var(--mid); margin-bottom: 10px; line-height: 1.4; }
     .listing-stats { font-size: 12px; color: var(--light); display: flex; gap: 14px; padding-top: 10px; border-top: 1px solid var(--border); }
     .listing-stats strong { color: var(--text); font-weight: 500; }
-    .listing-badge { display: inline-block; background: var(--gold); color: #fff; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; margin-bottom: 8px; }
+    .listing-badge { display: inline-block; background: var(--gold); color: #fff; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 2px; margin-bottom: 6px; font-weight: 500; }
+    .load-more-row { grid-column: 1/-1; text-align: center; padding: 8px 0 20px; }
+    .load-more-btn { background: var(--warm); border: 1px solid var(--border); color: var(--text); padding: 10px 22px; border-radius: 4px; font-size: 13px; cursor: pointer; }
+    .load-more-btn:hover { border-color: var(--gold); color: var(--gold); }
 
-    /* Pagination */
-    .pagination { display: flex; justify-content: center; gap: 8px; margin: 3rem 0 2rem; flex-wrap: wrap; }
-    .pagination button { padding: 8px 14px; border: 1px solid var(--border); background: #fff; font-family: var(--sans); font-size: 13px; border-radius: 4px; cursor: pointer; transition: all .2s; }
-    .pagination button:hover { border-color: var(--gold); color: var(--gold); }
-    .pagination button.active { background: var(--gold); color: #fff; border-color: var(--gold); }
-    .pagination button:disabled { opacity: .4; cursor: not-allowed; }
+    /* Map side */
+    .map-panel { position: relative; background: var(--cream); }
+    #listings-map { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .map-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--mid); font-size: 14px; padding: 20px; text-align: center; }
+
+    /* Sidebar empty state */
+    .sidebar-empty { grid-column: 1/-1; text-align: center; padding: 60px 24px; color: var(--mid); font-size: 14px; line-height: 1.6; }
+    .sidebar-empty strong { color: var(--text); display: block; font-size: 15px; margin-bottom: 8px; }
+    .loading { grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--light); font-size: 14px; }
+
+    /* Mobile / tablet layout — stack with map above list, allow user to toggle */
+    @media (max-width: 900px) {
+      .split-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; min-height: 0; }
+      .map-panel { height: 340px; order: 1; }
+      .listings-sidebar { order: 2; border-right: none; height: auto; overflow: visible; }
+      .listings-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    }
 
     /* CTA band */
-    .cta-band { background: var(--ink); padding: 4rem 2rem; text-align: center; margin-top: 3rem; }
+    .cta-band { background: var(--ink); padding: 4rem 2rem; text-align: center; margin-top: 0; }
     .cta-band h2 { font-family: var(--serif); font-size: clamp(26px, 3vw, 36px); color: #fff; margin-bottom: 12px; font-weight: 400; }
     .cta-band p { color: rgba(255,255,255,.65); font-size: 15px; margin-bottom: 26px; max-width: 520px; margin-left: auto; margin-right: auto; }
     .cta-btn { display: inline-block; background: var(--gold); color: #fff; padding: 14px 32px; border-radius: var(--r); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; font-weight: 600; }
-
-    .loading { grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--light); font-size: 14px; }
   </style>
 </head>
 <body>
@@ -160,17 +177,17 @@
   </div>
 </section>
 
-<!-- FILTER BAR -->
+<!-- FILTER BAR — sits above split view, controls both sides -->
 <div class="filter-bar">
   <div class="filter-inner">
     <label>Sort</label>
-    <select id="f-sort" aria-label="F sort">
+    <select id="f-sort" aria-label="Sort">
       <option value="newest">Newest Listed</option>
       <option value="price_asc">Price: Low to High</option>
       <option value="price_desc">Price: High to Low</option>
     </select>
     <label>Price</label>
-    <select id="f-price" aria-label="F price">
+    <select id="f-price" aria-label="Price">
       <option value="">Any price</option>
       <option value="0-500000">Under $500K</option>
       <option value="500000-750000">$500K – $750K</option>
@@ -180,31 +197,32 @@
       <option value="3000000-99999999">$3M+</option>
     </select>
     <label>Beds</label>
-    <select id="f-beds" aria-label="F beds">
+    <select id="f-beds" aria-label="Beds">
       <option value="">Any</option>
       <option value="2">2+</option>
       <option value="3">3+</option>
       <option value="4">4+</option>
       <option value="5">5+</option>
     </select>
-    <span class="count" id="results-count">Loading...</span>
+    <button type="button" id="redo-search-btn" class="redo-btn" title="Refit map to show all matching homes">Redo search here</button>
+    <span class="count" id="results-count">Loading…</span>
   </div>
 </div>
 
-<!-- LISTINGS -->
-<main>
-  <div class="listings-map-wrap">
-    <div class="map-caption">
-      <span>Map shows the <strong id="map-page-count">this page's</strong> homes below &mdash; hover a marker for price, click for details.</span>
-      <span id="map-page-badge" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);font-weight:600;">Page 1</span>
+<!-- SPLIT LAYOUT: list on left, live map on right -->
+<div class="split-layout">
+  <aside class="listings-sidebar" id="listings-sidebar">
+    <div class="sidebar-header">
+      <strong id="visible-count">—</strong> of <span id="total-count">—</span> new construction homes shown in the map area · scroll or pan the map to update
     </div>
+    <div id="listings-grid" class="listings-grid">
+      <div class="loading">Loading new construction homes…</div>
+    </div>
+  </aside>
+  <div class="map-panel">
     <div id="listings-map"><div class="map-empty">Loading map…</div></div>
   </div>
-  <div id="listings-grid" class="listings-grid">
-    <div class="loading">Loading new construction homes…</div>
-  </div>
-  <div class="pagination" id="pagination"></div>
-</main>
+</div>
 
 <!-- CTA -->
 <div class="cta-band">
@@ -215,143 +233,51 @@
 
 <script src="/js/footer.js" defer></script>
 <script>
-const PAGE_SIZE = 24;
-let currentPage = 1;
+// ─────────────────────────────────────────────────────────────────────
+// Map-driven new construction browser
+//
+// Design (Zillow / Redfin pattern):
+//   1. Fetch ALL matching new-construction listings once at page load
+//      via /api/properties/map-pins (lightweight — 268 pins ≈ 70KB vs
+//      the full search endpoint's 1MB with photos and remarks)
+//   2. Drop a marker for every listing on the map
+//   3. Fit map bounds to show every marker
+//   4. Sidebar renders only the listings whose lat/lng fall inside the
+//      current map viewport
+//   5. On pan/zoom, re-filter the sidebar client-side (no server call)
+//   6. On filter change (sort/price/beds), refetch pins → re-render all
+//      markers → refit bounds → sidebar shows all in-view again
+//   7. First N (INITIAL_CARDS) cards render immediately; scrolling past
+//      the last card auto-loads the next batch (avoids DOM bloat when
+//      a wide-zoom viewport shows all 268)
+// ─────────────────────────────────────────────────────────────────────
 
-// ── Map state ───────────────────────────────────────────────────────
-// Google Maps loads asynchronously; loadListings() may complete before
-// the map is ready. We buffer the most recent listing set in
-// `pendingMapListings` so whichever finishes second (map init OR
-// listings fetch) can render markers using the latest data.
-let gmap = null;
-let mapMarkers = [];
-let mapInfoWindow = null;
-let mapReady = false;
-let pendingMapListings = null;
-
-// Center default: downtown Austin — auto-fit bounds once markers land.
-const DEFAULT_CENTER = { lat: 30.2672, lng: -97.7431 };
+const INITIAL_CARDS = 30;          // First render batch — enough to fill sidebar height
+const INCREMENTAL_CARDS = 30;      // Each "Show more" tap / scroll-load
+const DEFAULT_CENTER = { lat: 30.2672, lng: -97.7431 }; // Downtown Austin
 const GOLD = '#b8935a';
 
-function clearMarkers() {
-  mapMarkers.forEach(m => m.setMap(null));
-  mapMarkers = [];
-  if (mapInfoWindow) mapInfoWindow.close();
-}
+// Full dataset for the current filter set. Never mutated between filter
+// changes — we compute the visible subset by testing each pin against the
+// current map bounds. Sort is applied to this array when the user changes
+// the sort dropdown, so index order = display order in the sidebar.
+let allPins = [];
 
-// Render markers for exactly the listings currently displayed on the page.
-// Called once from loadListings() every time the results change (filter,
-// sort, or pagination). Buffers to pendingMapListings if the map hasn't
-// finished loading yet.
-function updateMapMarkers(listings) {
-  if (!mapReady) { pendingMapListings = listings; return; }
-  clearMarkers();
-  const mapEl = document.getElementById('listings-map');
-  if (!listings || !listings.length) {
-    mapEl.innerHTML = '<div class="map-empty">No mappable homes on this page. Try a different filter.</div>';
-    return;
-  }
-  // Re-attach the map div if the empty state was previously rendered.
-  if (!mapEl.querySelector('div')) {
-    // gmap keeps its DOM if never empty-stated; nothing to do
-  } else if (mapEl.querySelector('.map-empty')) {
-    mapEl.innerHTML = '';
-    gmap = new google.maps.Map(mapEl, {
-      center: DEFAULT_CENTER, zoom: 10, mapTypeControl: false,
-      streetViewControl: false, fullscreenControl: false,
-      styles: [{ featureType: 'poi', stylers: [{ visibility: 'off' }] }]
-    });
-  }
+// Google Maps state
+let gmap = null;
+let mapReady = false;
+let markers = [];               // parallel array to allPins — markers[i] pins allPins[i]
+let mapInfoWindow = null;
+let visibleCount = INITIAL_CARDS;
+let boundsChangeTimer = null;   // debounce for bounds_changed
+let programmaticBoundsChange = false; // suppress "redo search" chip when we fitBounds ourselves
 
-  const bounds = new google.maps.LatLngBounds();
-  let plotted = 0;
-  mapInfoWindow = new google.maps.InfoWindow();
+// Race-safety: if the first fetch finishes before the map is ready, buffer
+// the pins so the map init callback can render them.
+let pendingPinsForMap = null;
 
-  listings.forEach(l => {
-    if (l.latitude == null || l.longitude == null) return;
-    const pos = { lat: l.latitude, lng: l.longitude };
-    const marker = new google.maps.Marker({
-      position: pos, map: gmap,
-      icon: {
-        path: google.maps.SymbolPath.CIRCLE,
-        scale: 8, fillColor: GOLD, fillOpacity: 0.92,
-        strokeColor: '#fff', strokeWeight: 2
-      }
-    });
-    const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : 'Contact for price';
-    const addr = l.unparsed_address || 'Address unavailable';
-    const beds = l.bedrooms_total != null ? `${l.bedrooms_total} bd` : '';
-    const baths = l.bathrooms_total != null ? `${l.bathrooms_total} ba` : '';
-    const sqft = l.living_area ? `${Number(l.living_area).toLocaleString()} sqft` : '';
-    const meta = [beds, baths, sqft].filter(Boolean).join(' · ');
-    const url = '/property/' + l.listing_key;
-    marker.addListener('mouseover', () => {
-      mapInfoWindow.setContent(
-        `<div style="font-family:Inter,sans-serif;padding:2px 4px;max-width:220px">
-           <div style="font-size:15px;font-weight:600;color:#0f0f0e">${price}</div>
-           <div style="font-size:12px;color:#5c5b57;margin-top:4px;line-height:1.4">${addr}</div>
-           ${meta ? `<div style="font-size:11px;color:#999;margin-top:4px">${meta}</div>` : ''}
-         </div>`
-      );
-      mapInfoWindow.open(gmap, marker);
-    });
-    marker.addListener('mouseout', () => mapInfoWindow.close());
-    marker.addListener('click', () => { window.location.href = url; });
-    mapMarkers.push(marker);
-    bounds.extend(pos);
-    plotted++;
-  });
-
-  if (plotted === 1) {
-    // Single marker: zoom in but don't max out
-    gmap.setCenter(mapMarkers[0].getPosition());
-    gmap.setZoom(14);
-  } else if (plotted > 1) {
-    gmap.fitBounds(bounds, 40);
-    // Cap max zoom so a tight cluster doesn't become a street-view close-up
-    google.maps.event.addListenerOnce(gmap, 'bounds_changed', () => {
-      if (gmap.getZoom() > 15) gmap.setZoom(15);
-    });
-  } else {
-    // No lat/lng on any listing (rare) — leave centered on Austin
-    gmap.setCenter(DEFAULT_CENTER);
-    gmap.setZoom(10);
-  }
-}
-
-async function initListingsMap() {
-  try {
-    const configRes = await fetch('/api/config');
-    const config = await configRes.json();
-    if (!config.googleMapsKey) return;
-    window.__renderListingsMap = () => {
-      const mapEl = document.getElementById('listings-map');
-      mapEl.innerHTML = '';
-      gmap = new google.maps.Map(mapEl, {
-        center: DEFAULT_CENTER, zoom: 10, mapTypeControl: false,
-        streetViewControl: false, fullscreenControl: false,
-        styles: [{ featureType: 'poi', stylers: [{ visibility: 'off' }] }]
-      });
-      mapReady = true;
-      if (pendingMapListings) { updateMapMarkers(pendingMapListings); pendingMapListings = null; }
-    };
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${config.googleMapsKey}&callback=__renderListingsMap`;
-    script.async = true; script.defer = true;
-    document.head.appendChild(script);
-  } catch (e) {
-    const mapEl = document.getElementById('listings-map');
-    if (mapEl) mapEl.innerHTML = '<div class="map-empty">Map unavailable right now.</div>';
-  }
-}
-
-async function loadListings() {
-  const grid = document.getElementById('listings-grid');
-  const pagEl = document.getElementById('pagination');
-  const countEl = document.getElementById('results-count');
-
-  grid.innerHTML = '<div class="loading">Loading new construction homes…</div>';
-
+// ── Data fetch ──────────────────────────────────────────────────────
+async function fetchAllPins() {
   const sort = document.getElementById('f-sort').value;
   const priceRange = document.getElementById('f-price').value;
   const beds = document.getElementById('f-beds').value;
@@ -361,9 +287,7 @@ async function loadListings() {
     minYear: '2026',
     newConstruction: 'true',
     minPrice: '200000',
-    sortBy: sort,
-    limit: PAGE_SIZE,
-    page: currentPage
+    forRent: 'false'
   });
   if (priceRange) {
     const [min, max] = priceRange.split('-');
@@ -373,93 +297,285 @@ async function loadListings() {
   if (beds) params.set('minBeds', beds);
 
   try {
-    const res = await fetch('/api/properties/search?' + params);
-    const data = await res.json();
-
-    const total = data.total || 0;
-    countEl.textContent = total.toLocaleString() + ' homes';
-    if (currentPage === 1) {
-      document.getElementById('hero-count').textContent = total;
-      if (data.listings && data.listings.length) {
-        const prices = data.listings.map(l => l.list_price).filter(Boolean).sort((a,b) => a-b);
-        if (prices.length) {
-          const median = prices[Math.floor(prices.length/2)];
-          document.getElementById('hero-median').textContent = '$' + Math.round(median/1000) + 'K';
-        }
-      }
-    }
-
-    if (!data.listings || !data.listings.length) {
-      grid.innerHTML = '<div class="loading">No new construction homes match your filters.</div>';
-      pagEl.innerHTML = '';
-      updateMapMarkers([]);
-      return;
-    }
-
-    // Update the map with markers for the exact 24 (max) listings this page
-    // is currently rendering — not the full-metro set. Uses the lat/lng
-    // already present on each listing (search API returns them by default).
-    updateMapMarkers(data.listings);
-    document.getElementById('map-page-count').textContent = data.listings.length;
-    document.getElementById('map-page-badge').textContent = 'Page ' + currentPage;
-
-    grid.innerHTML = '';
-    data.listings.forEach(l => {
-      const photo = l.photos && l.photos[0] ? `/api/properties/photos/${l.listing_key}/0` : '';
-      const price = '$' + (l.list_price || 0).toLocaleString();
-      const addr = l.unparsed_address || 'Address unavailable';
-      const city = [l.city, l.postal_code].filter(Boolean).join(', ');
-      const card = document.createElement('a');
-      card.className = 'listing-card';
-      card.href = '/property/' + l.listing_key;
-      card.innerHTML = `
-        ${photo ? `<img class="listing-img" src="${photo}" alt="${addr}" loading="lazy" onerror="this.style.display='none'" />` : '<div class="listing-img"></div>'}
-        <div class="listing-body">
-          <span class="listing-badge">New 2026</span>
-          <div class="listing-price">${price}</div>
-          <div class="listing-addr">${addr}<br>${city}</div>
-          <div class="listing-stats">
-            <span><strong>${l.bedrooms_total || '—'}</strong> bd</span>
-            <span><strong>${l.bathrooms_total || '—'}</strong> ba</span>
-            <span><strong>${l.living_area ? l.living_area.toLocaleString() : '—'}</strong> sqft</span>
-          </div>
-        </div>`;
-      grid.appendChild(card);
-    });
-
-    // Pagination
-    const totalPages = Math.ceil(total / PAGE_SIZE);
-    if (totalPages > 1) {
-      let html = `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&larr; Prev</button>`;
-      const maxShow = 5;
-      let startP = Math.max(1, currentPage - 2);
-      let endP = Math.min(totalPages, startP + maxShow - 1);
-      if (endP - startP < maxShow - 1) startP = Math.max(1, endP - maxShow + 1);
-      if (startP > 1) html += `<button onclick="changePage(1)">1</button>${startP > 2 ? '<span style="padding:8px;">…</span>' : ''}`;
-      for (let p = startP; p <= endP; p++) {
-        html += `<button class="${p === currentPage ? 'active' : ''}" onclick="changePage(${p})">${p}</button>`;
-      }
-      if (endP < totalPages) html += `${endP < totalPages - 1 ? '<span style="padding:8px;">…</span>' : ''}<button onclick="changePage(${totalPages})">${totalPages}</button>`;
-      html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next &rarr;</button>`;
-      pagEl.innerHTML = html;
-    } else { pagEl.innerHTML = ''; }
-  } catch {
-    grid.innerHTML = '<div class="loading">Unable to load listings. Please try again.</div>';
+    const res = await fetch('/api/properties/map-pins?' + params);
+    const pins = await res.json();
+    // Sort client-side to match the user's chosen sort. map-pins doesn't
+    // apply sortBy, so we do it here.
+    return sortPins(pins || [], sort);
+  } catch (e) {
+    console.error('[map-pins] fetch failed:', e);
+    return [];
   }
 }
 
-function changePage(page) {
-  currentPage = page;
-  loadListings();
-  document.querySelector('main').scrollIntoView({ behavior: 'smooth', block: 'start' });
+function sortPins(pins, sort) {
+  const copy = pins.slice();
+  if (sort === 'price_asc') copy.sort((a,b) => (a.list_price||0) - (b.list_price||0));
+  else if (sort === 'price_desc') copy.sort((a,b) => (b.list_price||0) - (a.list_price||0));
+  // 'newest' — map-pins already returns in a reasonable order; leave as-is
+  return copy;
 }
 
-document.getElementById('f-sort').addEventListener('change', () => { currentPage = 1; loadListings(); });
-document.getElementById('f-price').addEventListener('change', () => { currentPage = 1; loadListings(); });
-document.getElementById('f-beds').addEventListener('change', () => { currentPage = 1; loadListings(); });
+// ── Map init ────────────────────────────────────────────────────────
+async function initMap() {
+  try {
+    const configRes = await fetch('/api/config');
+    const config = await configRes.json();
+    if (!config.googleMapsKey) return;
 
-initListingsMap();
-loadListings();
+    window.__renderNCMap = () => {
+      const mapEl = document.getElementById('listings-map');
+      mapEl.innerHTML = '';
+      gmap = new google.maps.Map(mapEl, {
+        center: DEFAULT_CENTER, zoom: 10,
+        mapTypeControl: false, streetViewControl: false, fullscreenControl: true,
+        styles: [{ featureType: 'poi', stylers: [{ visibility: 'off' }] }],
+        gestureHandling: 'greedy'
+      });
+      mapInfoWindow = new google.maps.InfoWindow();
+      mapReady = true;
+
+      // Every pan/zoom re-filters the sidebar. Debounced so a fluid drag
+      // doesn't fire 40 updates per second.
+      gmap.addListener('bounds_changed', () => {
+        if (boundsChangeTimer) clearTimeout(boundsChangeTimer);
+        boundsChangeTimer = setTimeout(() => {
+          renderSidebar();
+          // Only show the "Redo search here" chip when the USER moved the map,
+          // not when our own fitBounds() call fired the event.
+          if (!programmaticBoundsChange) toggleRedoChip(true);
+          programmaticBoundsChange = false;
+        }, 140);
+      });
+
+      // If pins arrived before the map, render them now
+      if (pendingPinsForMap) {
+        renderMarkers(pendingPinsForMap);
+        pendingPinsForMap = null;
+      }
+    };
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${config.googleMapsKey}&callback=__renderNCMap`;
+    script.async = true; script.defer = true;
+    document.head.appendChild(script);
+  } catch (e) {
+    const mapEl = document.getElementById('listings-map');
+    if (mapEl) mapEl.innerHTML = '<div class="map-empty">Map unavailable right now.</div>';
+  }
+}
+
+// ── Marker rendering ────────────────────────────────────────────────
+function clearMarkers() {
+  markers.forEach(m => m && m.setMap(null));
+  markers = [];
+  if (mapInfoWindow) mapInfoWindow.close();
+}
+
+function renderMarkers(pins) {
+  if (!mapReady) { pendingPinsForMap = pins; return; }
+  clearMarkers();
+  const bounds = new google.maps.LatLngBounds();
+  let plotted = 0;
+
+  pins.forEach((p, idx) => {
+    if (p.latitude == null || p.longitude == null) {
+      markers.push(null); return;
+    }
+    const pos = { lat: p.latitude, lng: p.longitude };
+    const marker = new google.maps.Marker({
+      position: pos, map: gmap,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 7, fillColor: GOLD, fillOpacity: 0.9,
+        strokeColor: '#fff', strokeWeight: 1.6
+      }
+    });
+    const priceLabel = p.list_price ? '$' + Number(p.list_price).toLocaleString() : 'Contact';
+    const addr = p.unparsed_address || 'Address unavailable';
+    const beds = p.bedrooms_total != null ? `${p.bedrooms_total} bd` : '';
+    const baths = p.bathrooms_total != null ? `${p.bathrooms_total} ba` : '';
+    const sqft = p.living_area ? `${Number(p.living_area).toLocaleString()} sqft` : '';
+    const meta = [beds, baths, sqft].filter(Boolean).join(' · ');
+
+    marker.addListener('mouseover', () => {
+      mapInfoWindow.setContent(
+        `<div style="font-family:Inter,sans-serif;padding:2px 4px;max-width:220px">
+           <div style="font-size:15px;font-weight:600;color:#0f0f0e">${priceLabel}</div>
+           <div style="font-size:12px;color:#5c5b57;margin-top:4px;line-height:1.4">${addr}</div>
+           ${meta ? `<div style="font-size:11px;color:#999;margin-top:4px">${meta}</div>` : ''}
+         </div>`
+      );
+      mapInfoWindow.open(gmap, marker);
+      highlightSidebarCard(p.listing_key, true);
+    });
+    marker.addListener('mouseout', () => {
+      mapInfoWindow.close();
+      highlightSidebarCard(p.listing_key, false);
+    });
+    marker.addListener('click', () => { window.location.href = '/property/' + p.listing_key; });
+
+    markers.push(marker);
+    bounds.extend(pos);
+    plotted++;
+  });
+
+  if (plotted > 1) {
+    programmaticBoundsChange = true;
+    gmap.fitBounds(bounds, 40);
+    google.maps.event.addListenerOnce(gmap, 'bounds_changed', () => {
+      if (gmap.getZoom() > 14) gmap.setZoom(14);
+      // Sidebar renders on the debounced bounds_changed handler
+    });
+  } else if (plotted === 1) {
+    programmaticBoundsChange = true;
+    gmap.setCenter(markers.find(m => m).getPosition());
+    gmap.setZoom(13);
+  } else {
+    programmaticBoundsChange = true;
+    gmap.setCenter(DEFAULT_CENTER);
+    gmap.setZoom(10);
+  }
+  toggleRedoChip(false);
+}
+
+// Faint highlight on the corresponding sidebar card when hovering a
+// map marker — helps users tie the two views together.
+function highlightSidebarCard(listingKey, on) {
+  const card = document.querySelector(`.listing-card[data-key="${listingKey}"]`);
+  if (!card) return;
+  card.classList.toggle('hover-from-map', on);
+  if (on) card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+// ── Sidebar rendering ───────────────────────────────────────────────
+function currentlyVisible() {
+  if (!mapReady || !gmap.getBounds()) return allPins.slice(); // pre-map-ready
+  const b = gmap.getBounds();
+  return allPins.filter(p => p.latitude != null && p.longitude != null &&
+    b.contains(new google.maps.LatLng(p.latitude, p.longitude)));
+}
+
+function renderSidebar() {
+  const grid = document.getElementById('listings-grid');
+  const totalEl = document.getElementById('total-count');
+  const visibleEl = document.getElementById('visible-count');
+
+  const visible = currentlyVisible();
+  totalEl.textContent = allPins.length.toLocaleString();
+  visibleEl.textContent = visible.length.toLocaleString();
+
+  if (!allPins.length) {
+    grid.innerHTML = `<div class="sidebar-empty"><strong>No new construction homes match your filters.</strong>Try a different price range or bedroom count.</div>`;
+    return;
+  }
+  if (!visible.length) {
+    grid.innerHTML = `<div class="sidebar-empty"><strong>None of the ${allPins.length} homes are in your current map area.</strong>Zoom out or drag the map to see homes.</div>`;
+    return;
+  }
+
+  const slice = visible.slice(0, visibleCount);
+  const fragments = slice.map(p => cardHTML(p)).join('');
+  const moreCount = visible.length - slice.length;
+  const loadMore = moreCount > 0
+    ? `<div class="load-more-row"><button type="button" class="load-more-btn" id="load-more-btn">Show ${Math.min(INCREMENTAL_CARDS, moreCount)} more (${moreCount} still hidden)</button></div>`
+    : '';
+  grid.innerHTML = fragments + loadMore;
+
+  const loadMoreBtn = document.getElementById('load-more-btn');
+  if (loadMoreBtn) loadMoreBtn.addEventListener('click', () => {
+    visibleCount += INCREMENTAL_CARDS;
+    renderSidebar();
+  });
+}
+
+function cardHTML(p) {
+  const photo = `/api/properties/photos/${p.listing_key}/0`;
+  const price = p.list_price ? '$' + Number(p.list_price).toLocaleString() : 'Contact for price';
+  const addr = escapeHtml(p.unparsed_address || 'Address unavailable');
+  const city = [p.city, p.postal_code].filter(Boolean).join(', ');
+  const beds = p.bedrooms_total != null ? p.bedrooms_total : '—';
+  const baths = p.bathrooms_total != null ? p.bathrooms_total : '—';
+  const sqft = p.living_area ? Number(p.living_area).toLocaleString() : '—';
+  return `<a class="listing-card" data-key="${escapeHtml(p.listing_key)}" href="/property/${escapeHtml(p.listing_key)}">
+    <img class="listing-img" src="${photo}" alt="${addr}" loading="lazy"
+      onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'listing-img-fallback',textContent:'Photo coming soon'}))" />
+    <div class="listing-body">
+      <span class="listing-badge">New 2026</span>
+      <div class="listing-price">${price}</div>
+      <div class="listing-addr">${addr}<br>${escapeHtml(city)}</div>
+      <div class="listing-stats">
+        <span><strong>${beds}</strong> bd</span>
+        <span><strong>${baths}</strong> ba</span>
+        <span><strong>${sqft}</strong> sqft</span>
+      </div>
+    </div>
+  </a>`;
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ── Filter change: refetch everything ───────────────────────────────
+async function applyFilters() {
+  const countEl = document.getElementById('results-count');
+  countEl.textContent = 'Loading…';
+  document.getElementById('listings-grid').innerHTML = '<div class="loading">Loading new construction homes…</div>';
+  visibleCount = INITIAL_CARDS;
+
+  allPins = await fetchAllPins();
+
+  countEl.innerHTML = `<strong>${allPins.length.toLocaleString()}</strong> homes match your filters`;
+
+  // Update the hero stats (only meaningful on initial load, but keep them
+  // in sync if filters change too — user gets a real feel for the current
+  // filter's scale)
+  document.getElementById('hero-count').textContent = allPins.length;
+  if (allPins.length) {
+    const prices = allPins.map(p => p.list_price).filter(Boolean).sort((a,b) => a-b);
+    if (prices.length) {
+      const median = prices[Math.floor(prices.length/2)];
+      document.getElementById('hero-median').textContent = '$' + Math.round(median/1000) + 'K';
+    }
+  }
+
+  renderMarkers(allPins);
+  renderSidebar();
+}
+
+// "Redo search here" — user has moved the map away from the initial fit;
+// this fits back to only the pins currently in view. Actually a no-op for
+// this simple version because we already show all pins as markers —
+// clicking it just re-fits to the visible subset for a cleaner view.
+function toggleRedoChip(show) {
+  document.getElementById('redo-search-btn').classList.toggle('show', show);
+}
+
+document.getElementById('redo-search-btn').addEventListener('click', () => {
+  const visible = currentlyVisible();
+  if (!visible.length || !mapReady) return;
+  const b = new google.maps.LatLngBounds();
+  visible.forEach(p => b.extend(new google.maps.LatLng(p.latitude, p.longitude)));
+  programmaticBoundsChange = true;
+  gmap.fitBounds(b, 40);
+  toggleRedoChip(false);
+});
+
+// Sort changes just re-sort the existing dataset (no fetch needed) but we
+// re-render the sidebar so the visible order matches.
+document.getElementById('f-sort').addEventListener('change', () => {
+  allPins = sortPins(allPins, document.getElementById('f-sort').value);
+  visibleCount = INITIAL_CARDS;
+  renderSidebar();
+});
+document.getElementById('f-price').addEventListener('change', applyFilters);
+document.getElementById('f-beds').addEventListener('change', applyFilters);
+
+initMap();
+applyFilters();
 </script>
 </body>
 </html>
