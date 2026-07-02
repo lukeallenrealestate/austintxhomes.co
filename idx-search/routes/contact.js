@@ -1,6 +1,85 @@
 const express = require('express');
 const router = express.Router();
 
+// ── Realtor OS CRM forwarder ──────────────────────────────────────────────────
+// Every completed lead is ALSO POSTed to the CRM's webhook so it appears in
+// the New Leads column instantly. Best-effort: a failed CRM POST never blocks
+// the email response or the visitor confirmation. Set REALTOR_OS_WEBHOOK_TOKEN
+// in the environment to append ?token=... (the CRM's optional shared secret).
+//
+// URL is overridable via env for staging or if the CRM ever moves off Replit.
+const CRM_WEBHOOK_URL = process.env.REALTOR_OS_WEBHOOK_URL
+  || 'https://realtor-os.replit.app/api/leads/webhook';
+
+async function forwardLeadToCrm(payload) {
+  try {
+    const token = process.env.REALTOR_OS_WEBHOOK_TOKEN;
+    const url = token
+      ? `${CRM_WEBHOOK_URL}?token=${encodeURIComponent(token)}`
+      : CRM_WEBHOOK_URL;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(10000)
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      console.warn('[CRM webhook] non-2xx response:',
+        res.status, text.slice(0, 200));
+      return { ok: false, status: res.status };
+    }
+    return { ok: true, status: res.status };
+  } catch (e) {
+    console.warn('[CRM webhook] POST failed:', e.message || e);
+    return { ok: false, error: e.message || String(e) };
+  }
+}
+
+// Derive Buyer vs Seller from the form's source/context. Explicit hint from
+// req.body.type wins; otherwise look at page slug + intent keywords. Falls
+// back to Buyer because the site's default lead pool is buyers.
+function deriveLeadType(body) {
+  const explicit = (body.type || body.leadType || '').toString().trim();
+  if (explicit) return explicit;
+  const hay = [body.source, body.intent, body.strategy, body.form]
+    .filter(Boolean).join(' ').toLowerCase();
+  if (/\b(sell(er|ing|-home)?|list(ing)?-my-home|home-valuation|cma)\b/.test(hay)) return 'Seller';
+  if (/\b(invest|str|rental|fund|capital|deal|1031)\b/.test(hay)) return 'Investor';
+  return 'Buyer';
+}
+
+// Combine everything the visitor gave us into the `notes` field so nothing
+// gets lost in translation to the CRM's simpler schema. The CRM stores this
+// verbatim so Luke sees the same detail he'd see in the lead email.
+function buildRichNotes(body, phoneOut) {
+  const lines = [];
+  const primary = body.notes || body.message;
+  if (primary) lines.push(primary);
+  const extras = [
+    ['Listing', body.listing],
+    ['Property URL', body.listingKey ? `https://austintxhomes.co/property/${body.listingKey}` : null],
+    ['List Price', body.listPrice ? '$' + Number(body.listPrice).toLocaleString() : null],
+    ['Property Address', body.address],
+    ['Budget', body.budget],
+    ['Capital', body.capital],
+    ['Timeline', body.timeline],
+    ['Neighborhood', body.neighborhood],
+    ['Property Type', body.propertyType],
+    ['Strategy', body.strategy],
+    ['Company / Fund', body.company],
+    ['Interested Deal', body.interestedDeal],
+    ['Intent', body.intent]
+  ].filter(([, v]) => v);
+  if (extras.length) {
+    if (lines.length) lines.push('');
+    lines.push('── Additional detail ──');
+    extras.forEach(([label, value]) => lines.push(`${label}: ${value}`));
+  }
+  if (phoneOut && !body.phone) lines.push(`(Phone recovered from combined "contact" field: ${phoneOut})`);
+  return lines.join('\n');
+}
+
 // POST /api/contact
 router.post('/', async (req, res) => {
   const {
@@ -189,7 +268,21 @@ router.post('/', async (req, res) => {
     const looksLikeEmail = /.+@.+\..+/.test(email || '');
     const sendConfirm = looksLikeEmail ? confirmEmailPromise : Promise.resolve({ skipped: true });
 
-    const [leadResult, confirmResult] = await Promise.allSettled([leadEmailPromise, sendConfirm]);
+    // Forward to Realtor OS CRM in parallel with the emails. Best-effort — if
+    // the CRM is down or rate-limited, the lead still lands in Luke's inbox.
+    // Errors are logged only; the response never surfaces CRM failures.
+    const crmPromise = forwardLeadToCrm({
+      name,
+      email,
+      phone: phoneOut || '',
+      type: deriveLeadType(req.body),
+      source: source || 'austintxhomes.co',
+      notes: buildRichNotes(req.body, phoneOut)
+    });
+
+    const [leadResult, confirmResult, crmResult] = await Promise.allSettled([
+      leadEmailPromise, sendConfirm, crmPromise
+    ]);
 
     if (leadResult.status === 'rejected') {
       console.error('[CONTACT] lead email failed:', leadResult.reason?.message || leadResult.reason);
@@ -198,10 +291,18 @@ router.post('/', async (req, res) => {
     if (confirmResult.status === 'rejected') {
       console.warn('[CONTACT] confirmation email failed (lead still delivered):', confirmResult.reason?.message || confirmResult.reason);
     }
+    if (crmResult.status === 'fulfilled' && crmResult.value?.ok) {
+      console.log('[CRM webhook] lead forwarded ok:', name, '(' + email + ')');
+    }
+    // Non-ok CRM results already logged by forwardLeadToCrm itself.
 
     const isHtmlForm = req.headers['content-type']?.includes('application/x-www-form-urlencoded');
     if (isHtmlForm) return res.redirect(303, (req.headers.referer || '/') + '?submitted=1');
-    res.json({ ok: true, confirmationSent: confirmResult.status === 'fulfilled' && !confirmResult.value?.skipped });
+    res.json({
+      ok: true,
+      confirmationSent: confirmResult.status === 'fulfilled' && !confirmResult.value?.skipped,
+      crmForwarded: crmResult.status === 'fulfilled' && crmResult.value?.ok === true
+    });
   } catch (err) {
     console.error('[CONTACT]', err.message);
     res.status(500).json({ error: 'Failed to send email' });
