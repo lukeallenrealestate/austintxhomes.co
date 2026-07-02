@@ -99,13 +99,37 @@
     .filter-bar .redo-btn.show { display: inline-flex; align-items: center; gap: 6px; }
     .filter-bar .redo-btn::before { content: '↻'; font-size: 14px; }
 
-    /* Split layout: sidebar list on left, map on right */
+    /* View-mode toggle — Map View vs Grid View */
+    .view-toggle {
+      display: inline-flex; border: 1px solid var(--border); border-radius: 4px;
+      overflow: hidden; margin-right: 4px; background: #fff;
+    }
+    .view-toggle button {
+      background: #fff; border: none; padding: 8px 14px;
+      font-family: var(--sans); font-size: 12px; letter-spacing: .06em;
+      color: var(--mid); cursor: pointer; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .view-toggle button + button { border-left: 1px solid var(--border); }
+    .view-toggle button.active { background: var(--ink); color: #fff; }
+    .view-toggle button:hover:not(.active) { color: var(--gold); }
+    .view-toggle svg { width: 13px; height: 13px; }
+
+    /* Split layout: sidebar list on left, map on right.
+       Sidebar takes 60% (3fr) so the map stays under the middle line.
+       On huge screens (>1600px) both stay reasonable widths. */
     .split-layout {
       display: grid;
-      grid-template-columns: 480px 1fr;
+      grid-template-columns: 3fr 2fr;
       height: calc(100vh - 64px - 62px); /* below nav + filter bar */
       min-height: 560px;
     }
+    .split-layout.grid-mode { grid-template-columns: 1fr; }
+    .split-layout.grid-mode .map-panel { display: none; }
+    .split-layout.grid-mode { height: auto; min-height: 0; }
+    .split-layout.grid-mode .listings-sidebar { height: auto; overflow: visible; border-right: none; }
+    .split-layout.grid-mode .sidebar-header { display: none; }
+
     .listings-sidebar {
       overflow-y: auto; overflow-x: hidden;
       background: var(--bg);
@@ -118,21 +142,53 @@
       font-size: 12px; color: var(--mid); line-height: 1.5;
     }
     .sidebar-header strong { color: var(--text); font-weight: 600; }
-    .listings-grid { display: grid; grid-template-columns: 1fr; gap: 14px; padding: 16px 20px 40px; }
+
+    /* Two-column grid inside the sidebar (map view). Wide-screen listings
+       page (>=1500px sidebar) can host three; auto-fill handles that. */
+    .listings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 14px;
+      padding: 16px 20px 40px;
+    }
+    /* Grid mode: use full page width with roomier cards */
+    .grid-mode .listings-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 24px 32px 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
     .listing-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; text-decoration: none; color: inherit; display: block; transition: box-shadow .2s, transform .15s, border-color .2s; }
     .listing-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.09); transform: translateY(-1px); border-color: var(--gold); }
     .listing-card.hover-from-map { border-color: var(--gold); box-shadow: 0 4px 16px rgba(184,147,90,.22); }
-    .listing-img { width: 100%; height: 200px; object-fit: cover; background: var(--cream); display: block; }
-    .listing-img-fallback { display: flex; align-items: center; justify-content: center; height: 200px; background: linear-gradient(135deg, var(--warm), var(--cream)); color: var(--light); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
-    .listing-body { padding: 14px 16px 16px; }
-    .listing-price { font-family: var(--serif); font-size: 22px; color: var(--ink); margin-bottom: 3px; font-weight: 500; }
-    .listing-addr { font-size: 13px; color: var(--mid); margin-bottom: 10px; line-height: 1.4; }
-    .listing-stats { font-size: 12px; color: var(--light); display: flex; gap: 14px; padding-top: 10px; border-top: 1px solid var(--border); }
+    /* Compact photo for 2-col map-view cards; larger for grid mode */
+    .listing-img { width: 100%; height: 160px; object-fit: cover; background: var(--cream); display: block; }
+    .grid-mode .listing-img { height: 210px; }
+    .listing-img-fallback { display: flex; align-items: center; justify-content: center; height: 160px; background: linear-gradient(135deg, var(--warm), var(--cream)); color: var(--light); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+    .grid-mode .listing-img-fallback { height: 210px; }
+    .listing-body { padding: 12px 14px 14px; }
+    .grid-mode .listing-body { padding: 18px; }
+    .listing-price { font-family: var(--serif); font-size: 20px; color: var(--ink); margin-bottom: 3px; font-weight: 500; }
+    .grid-mode .listing-price { font-size: 24px; }
+    .listing-addr { font-size: 12.5px; color: var(--mid); margin-bottom: 8px; line-height: 1.4; }
+    .grid-mode .listing-addr { font-size: 13px; margin-bottom: 10px; }
+    .listing-stats { font-size: 11.5px; color: var(--light); display: flex; gap: 10px; padding-top: 8px; border-top: 1px solid var(--border); }
+    .grid-mode .listing-stats { font-size: 12px; gap: 14px; padding-top: 10px; }
     .listing-stats strong { color: var(--text); font-weight: 500; }
-    .listing-badge { display: inline-block; background: var(--gold); color: #fff; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 2px; margin-bottom: 6px; font-weight: 500; }
+    .listing-badge { display: inline-block; background: var(--gold); color: #fff; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; margin-bottom: 6px; font-weight: 500; }
     .load-more-row { grid-column: 1/-1; text-align: center; padding: 8px 0 20px; }
     .load-more-btn { background: var(--warm); border: 1px solid var(--border); color: var(--text); padding: 10px 22px; border-radius: 4px; font-size: 13px; cursor: pointer; }
     .load-more-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* Pagination (grid mode) */
+    .pagination { display: none; justify-content: center; gap: 8px; margin: 2rem 0 3rem; flex-wrap: wrap; }
+    .grid-mode .pagination { display: flex; }
+    .pagination button { padding: 8px 14px; border: 1px solid var(--border); background: #fff; font-family: var(--sans); font-size: 13px; border-radius: 4px; cursor: pointer; transition: all .2s; }
+    .pagination button:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+    .pagination button.active { background: var(--gold); color: #fff; border-color: var(--gold); }
+    .pagination button:disabled { opacity: .4; cursor: not-allowed; }
 
     /* Map side */
     .map-panel { position: relative; background: var(--cream); }
@@ -144,12 +200,12 @@
     .sidebar-empty strong { color: var(--text); display: block; font-size: 15px; margin-bottom: 8px; }
     .loading { grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--light); font-size: 14px; }
 
-    /* Mobile / tablet layout — stack with map above list, allow user to toggle */
+    /* Mobile / tablet layout — stack with map above list */
     @media (max-width: 900px) {
       .split-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; min-height: 0; }
       .map-panel { height: 340px; order: 1; }
       .listings-sidebar { order: 2; border-right: none; height: auto; overflow: visible; }
-      .listings-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+      .listings-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
     }
 
     /* CTA band */
@@ -180,6 +236,16 @@
 <!-- FILTER BAR — sits above split view, controls both sides -->
 <div class="filter-bar">
   <div class="filter-inner">
+    <div class="view-toggle" role="tablist" aria-label="View mode">
+      <button type="button" id="mode-map" class="active" role="tab" aria-selected="true" title="Map + list side-by-side">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 8 3 16 6 23 3 23 18 16 21 8 18 1 21 1 6"/><line x1="8" y1="3" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="21"/></svg>
+        Map
+      </button>
+      <button type="button" id="mode-grid" role="tab" aria-selected="false" title="Paginated grid without map">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Grid
+      </button>
+    </div>
     <label>Sort</label>
     <select id="f-sort" aria-label="Sort">
       <option value="newest">Newest Listed</option>
@@ -209,8 +275,9 @@
   </div>
 </div>
 
-<!-- SPLIT LAYOUT: list on left, live map on right -->
-<div class="split-layout">
+<!-- SPLIT LAYOUT: list on left (60%), live map on right (40%).
+     In grid-mode class, map is hidden and sidebar spans full width. -->
+<div id="split-layout" class="split-layout">
   <aside class="listings-sidebar" id="listings-sidebar">
     <div class="sidebar-header">
       <strong id="visible-count">—</strong> of <span id="total-count">—</span> new construction homes shown in the map area · scroll or pan the map to update
@@ -218,6 +285,7 @@
     <div id="listings-grid" class="listings-grid">
       <div class="loading">Loading new construction homes…</div>
     </div>
+    <div id="pagination" class="pagination"></div>
   </aside>
   <div class="map-panel">
     <div id="listings-map"><div class="map-empty">Loading map…</div></div>
@@ -254,8 +322,13 @@
 
 const INITIAL_CARDS = 30;          // First render batch — enough to fill sidebar height
 const INCREMENTAL_CARDS = 30;      // Each "Show more" tap / scroll-load
+const GRID_PAGE_SIZE = 24;         // Cards per page in Grid view (classic pagination)
 const DEFAULT_CENTER = { lat: 30.2672, lng: -97.7431 }; // Downtown Austin
 const GOLD = '#b8935a';
+const VIEW_MODE_KEY = 'ncViewMode'; // localStorage key — 'map' or 'grid'
+
+let viewMode = 'map';              // Set from localStorage in initViewMode()
+let gridPage = 1;                  // Current pagination page in grid mode
 
 // Full dataset for the current filter set. Never mutated between filter
 // changes — we compute the visible subset by testing each pin against the
@@ -335,15 +408,16 @@ async function initMap() {
       mapInfoWindow = new google.maps.InfoWindow();
       mapReady = true;
 
-      // Every pan/zoom re-filters the sidebar. Debounced so a fluid drag
-      // doesn't fire 40 updates per second.
+      // Every pan/zoom re-filters the sidebar (only in map mode — grid mode
+      // shows all listings paginated regardless of viewport). Debounced so
+      // a fluid drag doesn't fire 40 updates per second.
       gmap.addListener('bounds_changed', () => {
         if (boundsChangeTimer) clearTimeout(boundsChangeTimer);
         boundsChangeTimer = setTimeout(() => {
-          renderSidebar();
+          if (viewMode === 'map') renderSidebar();
           // Only show the "Redo search here" chip when the USER moved the map,
           // not when our own fitBounds() call fired the event.
-          if (!programmaticBoundsChange) toggleRedoChip(true);
+          if (!programmaticBoundsChange && viewMode === 'map') toggleRedoChip(true);
           programmaticBoundsChange = false;
         }, 140);
       });
@@ -448,12 +522,20 @@ function highlightSidebarCard(listingKey, on) {
   if (on) card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
-// ── Sidebar rendering ───────────────────────────────────────────────
+// ── Sidebar rendering (Map mode) ───────────────────────────────────
 function currentlyVisible() {
   if (!mapReady || !gmap.getBounds()) return allPins.slice(); // pre-map-ready
   const b = gmap.getBounds();
   return allPins.filter(p => p.latitude != null && p.longitude != null &&
     b.contains(new google.maps.LatLng(p.latitude, p.longitude)));
+}
+
+// Called from both renderSidebar (map mode) and renderGrid (grid mode).
+// Dispatches on the current viewMode so the toggle "just works" without
+// each event handler having to know the difference.
+function renderResults() {
+  if (viewMode === 'grid') renderGrid();
+  else renderSidebar();
 }
 
 function renderSidebar() {
@@ -487,6 +569,93 @@ function renderSidebar() {
     visibleCount += INCREMENTAL_CARDS;
     renderSidebar();
   });
+}
+
+// ── Grid rendering (no map, paginated) ─────────────────────────────
+// The classic pre-map layout: show 24 cards at a time with numbered
+// pagination. Uses the same allPins dataset — no server call per page,
+// just client-side slicing.
+function renderGrid() {
+  const grid = document.getElementById('listings-grid');
+  const pagEl = document.getElementById('pagination');
+
+  if (!allPins.length) {
+    grid.innerHTML = `<div class="sidebar-empty"><strong>No new construction homes match your filters.</strong>Try a different price range or bedroom count.</div>`;
+    pagEl.innerHTML = '';
+    return;
+  }
+
+  const totalPages = Math.max(1, Math.ceil(allPins.length / GRID_PAGE_SIZE));
+  if (gridPage > totalPages) gridPage = 1;
+  const start = (gridPage - 1) * GRID_PAGE_SIZE;
+  const slice = allPins.slice(start, start + GRID_PAGE_SIZE);
+  grid.innerHTML = slice.map(p => cardHTML(p)).join('');
+
+  // Pagination controls — Prev · [1] 2 3 … N · Next
+  if (totalPages <= 1) { pagEl.innerHTML = ''; return; }
+  const btn = (page, label, opts = {}) => {
+    const cls = opts.active ? ' class="active"' : '';
+    const disabled = opts.disabled ? ' disabled' : '';
+    return `<button type="button" data-page="${page}"${cls}${disabled}>${label}</button>`;
+  };
+  const ellipsis = '<span style="padding:8px;color:var(--light)">…</span>';
+
+  let html = btn(gridPage - 1, '&larr; Prev', { disabled: gridPage === 1 });
+  const maxShow = 5;
+  let startP = Math.max(1, gridPage - 2);
+  let endP = Math.min(totalPages, startP + maxShow - 1);
+  if (endP - startP < maxShow - 1) startP = Math.max(1, endP - maxShow + 1);
+  if (startP > 1) { html += btn(1, '1'); if (startP > 2) html += ellipsis; }
+  for (let p = startP; p <= endP; p++) html += btn(p, String(p), { active: p === gridPage });
+  if (endP < totalPages) { if (endP < totalPages - 1) html += ellipsis; html += btn(totalPages, String(totalPages)); }
+  html += btn(gridPage + 1, 'Next &rarr;', { disabled: gridPage === totalPages });
+  pagEl.innerHTML = html;
+
+  pagEl.querySelectorAll('button[data-page]').forEach(b => {
+    b.addEventListener('click', () => {
+      const p = Number(b.getAttribute('data-page'));
+      if (p >= 1 && p <= totalPages && p !== gridPage) {
+        gridPage = p;
+        renderGrid();
+        // Smooth-scroll back to the top of the grid
+        document.getElementById('listings-sidebar').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+}
+
+// ── View-mode toggle ───────────────────────────────────────────────
+function initViewMode() {
+  try { viewMode = localStorage.getItem(VIEW_MODE_KEY) || 'map'; }
+  catch { viewMode = 'map'; }
+  if (viewMode !== 'map' && viewMode !== 'grid') viewMode = 'map';
+  applyViewMode();
+}
+
+function applyViewMode() {
+  const layout = document.getElementById('split-layout');
+  layout.classList.toggle('grid-mode', viewMode === 'grid');
+  document.getElementById('mode-map').classList.toggle('active', viewMode === 'map');
+  document.getElementById('mode-grid').classList.toggle('active', viewMode === 'grid');
+  document.getElementById('mode-map').setAttribute('aria-selected', viewMode === 'map');
+  document.getElementById('mode-grid').setAttribute('aria-selected', viewMode === 'grid');
+}
+
+function setViewMode(mode) {
+  if (mode !== 'map' && mode !== 'grid') return;
+  if (mode === viewMode) return;
+  viewMode = mode;
+  try { localStorage.setItem(VIEW_MODE_KEY, mode); } catch {}
+  applyViewMode();
+  gridPage = 1;
+  visibleCount = INITIAL_CARDS;
+  renderResults();
+  // If we just switched TO map view, the map may need a resize event
+  // because it was hidden (display:none) — Google Maps mishandles that
+  // and can render blank tiles otherwise.
+  if (mode === 'map' && mapReady && gmap) {
+    setTimeout(() => { google.maps.event.trigger(gmap, 'resize'); }, 60);
+  }
 }
 
 function cardHTML(p) {
@@ -543,7 +712,9 @@ async function applyFilters() {
   }
 
   renderMarkers(allPins);
-  renderSidebar();
+  gridPage = 1;
+  visibleCount = INITIAL_CARDS;
+  renderResults();
 }
 
 // "Redo search here" — user has moved the map away from the initial fit;
@@ -564,16 +735,21 @@ document.getElementById('redo-search-btn').addEventListener('click', () => {
   toggleRedoChip(false);
 });
 
-// Sort changes just re-sort the existing dataset (no fetch needed) but we
-// re-render the sidebar so the visible order matches.
+// Sort changes just re-sort the existing dataset (no fetch needed).
 document.getElementById('f-sort').addEventListener('change', () => {
   allPins = sortPins(allPins, document.getElementById('f-sort').value);
   visibleCount = INITIAL_CARDS;
-  renderSidebar();
+  gridPage = 1;
+  renderResults();
 });
 document.getElementById('f-price').addEventListener('change', applyFilters);
 document.getElementById('f-beds').addEventListener('change', applyFilters);
 
+// View-mode toggle
+document.getElementById('mode-map').addEventListener('click', () => setViewMode('map'));
+document.getElementById('mode-grid').addEventListener('click', () => setViewMode('grid'));
+
+initViewMode();
 initMap();
 applyFilters();
 </script>
