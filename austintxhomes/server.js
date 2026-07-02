@@ -1234,8 +1234,13 @@ app.get('/round-rock/:slug', (req, res) => {
 app.use((req, res, next) => {
   // /site/foo.html  →  /foo   (canonical clean URL)
   // /foo.html       →  /foo   (same treatment for direct .html requests)
+  // Special case: /site/home.html and /home.html canonicalize to `/`,
+  // not `/home` — the homepage is served at the root, and `/home` is a 404.
   const m = req.path.match(/^\/(?:site\/)?([a-z0-9][a-z0-9-]*)\.html$/i);
-  if (m) return res.redirect(301, '/' + m[1]);
+  if (m) {
+    const slug = m[1].toLowerCase();
+    return res.redirect(301, slug === 'home' || slug === 'index' ? '/' : '/' + slug);
+  }
   next();
 });
 
