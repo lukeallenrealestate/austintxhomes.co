@@ -164,7 +164,7 @@
   </style>
 </head>
 <body>
-<script src="/js/nav.js"></script>
+<script src="/js/nav.js" defer></script>
 
 <section class="hero">
   <video class="bg-video" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
@@ -259,7 +259,7 @@
   </div>
 </section>
 
-<script src="/js/footer.js"></script>
+<script src="/js/footer.js" defer></script>
 <script>
   document.querySelectorAll('.faq-q').forEach(q => q.addEventListener('click', () => { const a = q.nextElementSibling; const open = q.getAttribute('aria-expanded') === 'true'; q.setAttribute('aria-expanded', !open); a.classList.toggle('open'); }));
 </script>

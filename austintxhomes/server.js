@@ -1222,6 +1222,23 @@ app.get('/round-rock/:slug', (req, res) => {
   res.send(roundRockTemplates.renderHub(nbhd));
 });
 
+// Block/redirect /site/*.html and bare /*.html URLs — these are the raw
+// filesystem paths under public/site/. Any Google-discovered URL like
+// /site/hyde-park-realtor.html or /hyde-park-realtor.html is a duplicate
+// of the canonical clean URL (/hyde-park-realtor). Left unredirected they
+// were quietly indexable as ghost URLs (each self-canonicalizes correctly,
+// but they still fragment PageRank distribution and consume crawl budget).
+// 301 to the clean URL so any discovered duplicate consolidates to the
+// canonical target. Must be registered BEFORE the static middleware below,
+// which would otherwise serve these paths as HTML.
+app.use((req, res, next) => {
+  // /site/foo.html  →  /foo   (canonical clean URL)
+  // /foo.html       →  /foo   (same treatment for direct .html requests)
+  const m = req.path.match(/^\/(?:site\/)?([a-z0-9][a-z0-9-]*)\.html$/i);
+  if (m) return res.redirect(301, '/' + m[1]);
+  next();
+});
+
 // Serve all static files from /public
 app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: '7d',
