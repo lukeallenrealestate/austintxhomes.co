@@ -93,6 +93,28 @@
 
     /* Listings grid */
     main { padding: 2rem; max-width: var(--w); margin: 0 auto; }
+
+    /* Map — shows only the listings currently visible on this page */
+    .listings-map-wrap { position: relative; margin-bottom: 24px; }
+    #listings-map {
+      width: 100%; height: 420px; border-radius: var(--r);
+      border: 1px solid var(--border); background: var(--cream);
+      overflow: hidden;
+    }
+    .map-caption {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 0 4px 10px;
+      font-size: 12px; color: var(--mid);
+    }
+    .map-caption strong { color: var(--text); font-weight: 600; }
+    .map-empty {
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; color: var(--mid); font-size: 14px; padding: 20px; text-align: center;
+    }
+    @media (max-width: 640px) {
+      #listings-map { height: 300px; }
+    }
+
     .listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; }
     .listing-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; text-decoration: none; color: inherit; display: block; transition: box-shadow .2s, transform .2s; }
     .listing-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,.1); transform: translateY(-2px); }
@@ -171,6 +193,13 @@
 
 <!-- LISTINGS -->
 <main>
+  <div class="listings-map-wrap">
+    <div class="map-caption">
+      <span>Map shows the <strong id="map-page-count">this page's</strong> homes below &mdash; hover a marker for price, click for details.</span>
+      <span id="map-page-badge" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);font-weight:600;">Page 1</span>
+    </div>
+    <div id="listings-map"><div class="map-empty">Loading map…</div></div>
+  </div>
   <div id="listings-grid" class="listings-grid">
     <div class="loading">Loading new construction homes…</div>
   </div>
@@ -188,6 +217,133 @@
 <script>
 const PAGE_SIZE = 24;
 let currentPage = 1;
+
+// ── Map state ───────────────────────────────────────────────────────
+// Google Maps loads asynchronously; loadListings() may complete before
+// the map is ready. We buffer the most recent listing set in
+// `pendingMapListings` so whichever finishes second (map init OR
+// listings fetch) can render markers using the latest data.
+let gmap = null;
+let mapMarkers = [];
+let mapInfoWindow = null;
+let mapReady = false;
+let pendingMapListings = null;
+
+// Center default: downtown Austin — auto-fit bounds once markers land.
+const DEFAULT_CENTER = { lat: 30.2672, lng: -97.7431 };
+const GOLD = '#b8935a';
+
+function clearMarkers() {
+  mapMarkers.forEach(m => m.setMap(null));
+  mapMarkers = [];
+  if (mapInfoWindow) mapInfoWindow.close();
+}
+
+// Render markers for exactly the listings currently displayed on the page.
+// Called once from loadListings() every time the results change (filter,
+// sort, or pagination). Buffers to pendingMapListings if the map hasn't
+// finished loading yet.
+function updateMapMarkers(listings) {
+  if (!mapReady) { pendingMapListings = listings; return; }
+  clearMarkers();
+  const mapEl = document.getElementById('listings-map');
+  if (!listings || !listings.length) {
+    mapEl.innerHTML = '<div class="map-empty">No mappable homes on this page. Try a different filter.</div>';
+    return;
+  }
+  // Re-attach the map div if the empty state was previously rendered.
+  if (!mapEl.querySelector('div')) {
+    // gmap keeps its DOM if never empty-stated; nothing to do
+  } else if (mapEl.querySelector('.map-empty')) {
+    mapEl.innerHTML = '';
+    gmap = new google.maps.Map(mapEl, {
+      center: DEFAULT_CENTER, zoom: 10, mapTypeControl: false,
+      streetViewControl: false, fullscreenControl: false,
+      styles: [{ featureType: 'poi', stylers: [{ visibility: 'off' }] }]
+    });
+  }
+
+  const bounds = new google.maps.LatLngBounds();
+  let plotted = 0;
+  mapInfoWindow = new google.maps.InfoWindow();
+
+  listings.forEach(l => {
+    if (l.latitude == null || l.longitude == null) return;
+    const pos = { lat: l.latitude, lng: l.longitude };
+    const marker = new google.maps.Marker({
+      position: pos, map: gmap,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 8, fillColor: GOLD, fillOpacity: 0.92,
+        strokeColor: '#fff', strokeWeight: 2
+      }
+    });
+    const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : 'Contact for price';
+    const addr = l.unparsed_address || 'Address unavailable';
+    const beds = l.bedrooms_total != null ? `${l.bedrooms_total} bd` : '';
+    const baths = l.bathrooms_total != null ? `${l.bathrooms_total} ba` : '';
+    const sqft = l.living_area ? `${Number(l.living_area).toLocaleString()} sqft` : '';
+    const meta = [beds, baths, sqft].filter(Boolean).join(' · ');
+    const url = '/property/' + l.listing_key;
+    marker.addListener('mouseover', () => {
+      mapInfoWindow.setContent(
+        `<div style="font-family:Inter,sans-serif;padding:2px 4px;max-width:220px">
+           <div style="font-size:15px;font-weight:600;color:#0f0f0e">${price}</div>
+           <div style="font-size:12px;color:#5c5b57;margin-top:4px;line-height:1.4">${addr}</div>
+           ${meta ? `<div style="font-size:11px;color:#999;margin-top:4px">${meta}</div>` : ''}
+         </div>`
+      );
+      mapInfoWindow.open(gmap, marker);
+    });
+    marker.addListener('mouseout', () => mapInfoWindow.close());
+    marker.addListener('click', () => { window.location.href = url; });
+    mapMarkers.push(marker);
+    bounds.extend(pos);
+    plotted++;
+  });
+
+  if (plotted === 1) {
+    // Single marker: zoom in but don't max out
+    gmap.setCenter(mapMarkers[0].getPosition());
+    gmap.setZoom(14);
+  } else if (plotted > 1) {
+    gmap.fitBounds(bounds, 40);
+    // Cap max zoom so a tight cluster doesn't become a street-view close-up
+    google.maps.event.addListenerOnce(gmap, 'bounds_changed', () => {
+      if (gmap.getZoom() > 15) gmap.setZoom(15);
+    });
+  } else {
+    // No lat/lng on any listing (rare) — leave centered on Austin
+    gmap.setCenter(DEFAULT_CENTER);
+    gmap.setZoom(10);
+  }
+}
+
+async function initListingsMap() {
+  try {
+    const configRes = await fetch('/api/config');
+    const config = await configRes.json();
+    if (!config.googleMapsKey) return;
+    window.__renderListingsMap = () => {
+      const mapEl = document.getElementById('listings-map');
+      mapEl.innerHTML = '';
+      gmap = new google.maps.Map(mapEl, {
+        center: DEFAULT_CENTER, zoom: 10, mapTypeControl: false,
+        streetViewControl: false, fullscreenControl: false,
+        styles: [{ featureType: 'poi', stylers: [{ visibility: 'off' }] }]
+      });
+      mapReady = true;
+      if (pendingMapListings) { updateMapMarkers(pendingMapListings); pendingMapListings = null; }
+    };
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${config.googleMapsKey}&callback=__renderListingsMap`;
+    script.async = true; script.defer = true;
+    document.head.appendChild(script);
+  } catch (e) {
+    const mapEl = document.getElementById('listings-map');
+    if (mapEl) mapEl.innerHTML = '<div class="map-empty">Map unavailable right now.</div>';
+  }
+}
 
 async function loadListings() {
   const grid = document.getElementById('listings-grid');
@@ -236,8 +392,16 @@ async function loadListings() {
     if (!data.listings || !data.listings.length) {
       grid.innerHTML = '<div class="loading">No new construction homes match your filters.</div>';
       pagEl.innerHTML = '';
+      updateMapMarkers([]);
       return;
     }
+
+    // Update the map with markers for the exact 24 (max) listings this page
+    // is currently rendering — not the full-metro set. Uses the lat/lng
+    // already present on each listing (search API returns them by default).
+    updateMapMarkers(data.listings);
+    document.getElementById('map-page-count').textContent = data.listings.length;
+    document.getElementById('map-page-badge').textContent = 'Page ' + currentPage;
 
     grid.innerHTML = '';
     data.listings.forEach(l => {
@@ -294,6 +458,7 @@ document.getElementById('f-sort').addEventListener('change', () => { currentPage
 document.getElementById('f-price').addEventListener('change', () => { currentPage = 1; loadListings(); });
 document.getElementById('f-beds').addEventListener('change', () => { currentPage = 1; loadListings(); });
 
+initListingsMap();
 loadListings();
 </script>
 </body>
