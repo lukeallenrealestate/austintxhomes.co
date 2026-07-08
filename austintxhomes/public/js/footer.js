@@ -142,6 +142,12 @@
   <li><a href="/fix-and-flip-calculator-austin">Fix &amp; Flip Calculator</a></li>
   <li><a href="/rental-properties-for-sale-austin">Rental Properties Austin</a></li>
   <li><a href="/austin-tx-realtor">Austin TX Realtor</a></li>
+  <li><a href="/best-real-estate-agents-austin-tx">Best Real Estate Agents Austin TX</a></li>
+  <li><a href="/top-austin-real-estate-agencies">Top Austin Real Estate Agencies</a></li>
+  <li><a href="/top-producing-realtors-austin">Top Producing Realtors Austin</a></li>
+  <li><a href="/best-real-estate-agents-first-time-buyers-austin">First-Time Buyer Agents Austin</a></li>
+  <li><a href="/austin-relocation-real-estate-agent">Austin Relocation Agent</a></li>
+  <li><a href="/luxury-real-estate-agents-austin-tx">Luxury Austin Real Estate Agents</a></li>
   <li><a href="/commercial-real-estate-austin">Commercial Real Estate</a></li>
   <li><a href="/1031-exchange-austin">1031 Exchange Austin</a></li>
   <li><a href="/brrrr-method-austin">BRRRR Method Austin</a></li>

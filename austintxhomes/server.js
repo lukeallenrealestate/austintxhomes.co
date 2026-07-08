@@ -1052,6 +1052,14 @@ app.get('/sell-home-mueller-austin', (_req, res) => res.sendFile(path.join(__dir
 app.get('/east-austin-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/east-austin-realtor.html')));
 app.get('/east-austin-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/east-austin-homes-for-sale.html')));
 app.get('/east-austin-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/east-austin-market-report.html')));
+
+// ── Money-keyword landing pages (SEO — targets specific high-intent Austin agent searches) ──
+app.get('/best-real-estate-agents-austin-tx',                    (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-real-estate-agents-austin-tx.html')));
+app.get('/top-austin-real-estate-agencies',                       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/top-austin-real-estate-agencies.html')));
+app.get('/top-producing-realtors-austin',                         (_req, res) => res.sendFile(path.join(__dirname, 'public/site/top-producing-realtors-austin.html')));
+app.get('/best-real-estate-agents-first-time-buyers-austin',      (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-real-estate-agents-first-time-buyers-austin.html')));
+app.get('/austin-relocation-real-estate-agent',                   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-relocation-real-estate-agent.html')));
+app.get('/luxury-real-estate-agents-austin-tx',                   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/luxury-real-estate-agents-austin-tx.html')));
 app.get('/living-in-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-east-austin.html')));
 app.get('/sell-home-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-east-austin.html')));
 app.get('/homes-for-sale-near-tesla-gigafactory', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-tesla-gigafactory.html')));
