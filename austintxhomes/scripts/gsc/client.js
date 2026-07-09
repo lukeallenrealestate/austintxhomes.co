@@ -1,4 +1,4 @@
-// Shared GSC API client — use in every audit script.
+// Shared GSC API client, use in every audit script.
 const fs = require('fs');
 const path = require('path');
 const os = require('os');

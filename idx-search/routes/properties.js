@@ -11,502 +11,502 @@ const PHOTO_CACHE_DIR = path.join(__dirname, '../cache/photos');
 // signed-URL expiration error. Fetches fresh URLs from MLS GRID for just this
 // one listing, writes them to the DB, and returns the updated URL list.
 //
-// Safety gates (must all be in place — bypassing any one suspended us before):
-//   1. In-flight dedup (_refreshingNow): two concurrent requests for the same
-//      listing share one MLS API call.
-//   2. Per-listing cooldown (_lastRefreshAt): never re-refresh the same listing
-//      within 5 min, even after the in-flight promise resolves.
-//   3. Shared throttle() (600ms gap across ALL MLS-bound calls, defined in
-//      sync/throttle.js): keeps sustained RPS at 1.667.
-//   4. recordMlsCall() so this counts toward the 1000/hr hourly cap shared with
-//      backfill + photo proxy.
+// Safety gates (must all be in place, bypassing any one suspended us before):
+// 1. In-flight dedup (_refreshingNow): two concurrent requests for the same
+// listing share one MLS API call.
+// 2. Per-listing cooldown (_lastRefreshAt): never re-refresh the same listing
+// within 5 min, even after the in-flight promise resolves.
+// 3. Shared throttle() (600ms gap across ALL MLS-bound calls, defined in
+// sync/throttle.js): keeps sustained RPS at 1.667.
+// 4. recordMlsCall() so this counts toward the 1000/hr hourly cap shared with
+// backfill + photo proxy.
 const _refreshingNow = new Map();
 const _lastRefreshAt = new Map();
 const REFRESH_COOLDOWN_MS = 5 * 60 * 1000;
 async function refreshListingPhotos(listingKey) {
-  if (_refreshingNow.has(listingKey)) return _refreshingNow.get(listingKey);
-  if (Date.now() - (_lastRefreshAt.get(listingKey) || 0) < REFRESH_COOLDOWN_MS) return null;
-  const MLS_TOKEN = process.env.MLSGRID_ACCESS_TOKEN;
-  const SYSTEM = process.env.MLSGRID_ORIGINATING_SYSTEM || 'actris';
-  if (!MLS_TOKEN) return null;
+ if (_refreshingNow.has(listingKey)) return _refreshingNow.get(listingKey);
+ if (Date.now() - (_lastRefreshAt.get(listingKey) || 0) < REFRESH_COOLDOWN_MS) return null;
+ const MLS_TOKEN = process.env.MLSGRID_ACCESS_TOKEN;
+ const SYSTEM = process.env.MLSGRID_ORIGINATING_SYSTEM || 'actris';
+ if (!MLS_TOKEN) return null;
 
-  const promise = (async () => {
-    try {
-      const filter = encodeURIComponent(
-        `OriginatingSystemName eq '${SYSTEM}' and ListingKey eq '${listingKey}'`
-      );
-      const url = `https://api.mlsgrid.com/v2/Property?$filter=${filter}&$expand=Media&$top=1`;
-      await _throttle();
-      _recordCall();
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${MLS_TOKEN}`, 'Accept-Encoding': 'gzip' } });
-      if (res.status === 429) { _recordLimit(); return null; }
-      if (!res.ok) return null;
-      const data = await res.json();
-      const record = (data.value || [])[0];
-      if (!record?.Media?.length) return null;
-      const urls = record.Media
-        .filter(m => m.MediaCategory === 'Photo' || !m.MediaCategory)
-        .sort((a, b) => (a.Order || 0) - (b.Order || 0))
-        .map(m => m.MediaURL)
-        .filter(Boolean);
-      if (!urls.length) return null;
-      db.prepare('UPDATE listings SET photos = ? WHERE listing_key = ?')
-        .run(JSON.stringify(urls), listingKey);
-      // Cooldown only fires on SUCCESS — a failed refresh (429, transient
-      // network error, MLS hiccup) shouldn't lock the listing out of retries
-      // for 5 min. The in-flight dedup + shared throttle already bound the
-      // call rate; a failed refresh just lets the next photo's retry take
-      // another shot at the bat.
-      _lastRefreshAt.set(listingKey, Date.now());
-      console.log('[PHOTO] On-demand refresh succeeded:', listingKey, urls.length, 'URLs');
-      return urls;
-    } catch (e) {
-      console.warn('[PHOTO] On-demand refresh failed:', listingKey, e.message);
-      return null;
-    } finally {
-      setTimeout(() => _refreshingNow.delete(listingKey), 500);
-    }
-  })();
-  _refreshingNow.set(listingKey, promise);
-  return promise;
+ const promise = (async () => {
+ try {
+ const filter = encodeURIComponent(
+ `OriginatingSystemName eq '${SYSTEM}' and ListingKey eq '${listingKey}'`
+ );
+ const url = `https://api.mlsgrid.com/v2/Property?$filter=${filter}&$expand=Media&$top=1`;
+ await _throttle();
+ _recordCall();
+ const res = await fetch(url, { headers: { Authorization: `Bearer ${MLS_TOKEN}`, 'Accept-Encoding': 'gzip' } });
+ if (res.status === 429) { _recordLimit(); return null; }
+ if (!res.ok) return null;
+ const data = await res.json();
+ const record = (data.value || [])[0];
+ if (!record?.Media?.length) return null;
+ const urls = record.Media
+ .filter(m => m.MediaCategory === 'Photo' || !m.MediaCategory)
+ .sort((a, b) => (a.Order || 0) - (b.Order || 0))
+ .map(m => m.MediaURL)
+ .filter(Boolean);
+ if (!urls.length) return null;
+ db.prepare('UPDATE listings SET photos = ? WHERE listing_key = ?')
+ .run(JSON.stringify(urls), listingKey);
+ // Cooldown only fires on SUCCESS, a failed refresh (429, transient
+ // network error, MLS hiccup) shouldn't lock the listing out of retries
+ // for 5 min. The in-flight dedup + shared throttle already bound the
+ // call rate; a failed refresh just lets the next photo's retry take
+ // another shot at the bat.
+ _lastRefreshAt.set(listingKey, Date.now());
+ console.log('[PHOTO] On-demand refresh succeeded:', listingKey, urls.length, 'URLs');
+ return urls;
+ } catch (e) {
+ console.warn('[PHOTO] On-demand refresh failed:', listingKey, e.message);
+ return null;
+ } finally {
+ setTimeout(() => _refreshingNow.delete(listingKey), 500);
+ }
+ })();
+ _refreshingNow.set(listingKey, promise);
+ return promise;
 }
 
 // Local neighborhood boundary overrides (City of Austin ArcGIS + manual)
 // Generated by: node scripts/fetch-austin-neighborhoods.js
 let neighborhoodOverrides = {};
 try {
-  neighborhoodOverrides = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '../data/austin-neighborhoods.json'), 'utf8')
-  );
+ neighborhoodOverrides = JSON.parse(
+ fs.readFileSync(path.join(__dirname, '../data/austin-neighborhoods.json'), 'utf8')
+ );
 } catch (_) {} // file absent → Nominatim fallback still works
 
-// All columns except raw_data (MLS raw JSON, never displayed, ~5–50 KB per row)
+// All columns except raw_data (MLS raw JSON, never displayed, ~5 to 50 KB per row)
 const SEARCH_COLUMNS = [
-  'listing_key','listing_id','standard_status','property_type','property_sub_type',
-  'list_price','bedrooms_total','bathrooms_total','bathrooms_full','bathrooms_half',
-  'living_area','lot_size_acres','lot_size_sqft','year_built','garage_spaces',
-  'unparsed_address','street_number','street_name','unit_number','city',
-  'state_or_province','postal_code','county','subdivision_name',
-  'latitude','longitude','public_remarks',
-  'list_agent_full_name','list_agent_direct_phone','list_agent_email','list_office_name',
-  'elementary_school','middle_school','high_school','school_district',
-  'days_on_market','listing_contract_date','close_date','close_price',
-  'modification_timestamp','mlg_can_view','photos','photos_r2',
-  'pool_features','waterfront_yn','new_construction_yn','stories','parking_total',
-  'association_fee','association_fee_frequency','tax_annual_amount'
+ 'listing_key','listing_id','standard_status','property_type','property_sub_type',
+ 'list_price','bedrooms_total','bathrooms_total','bathrooms_full','bathrooms_half',
+ 'living_area','lot_size_acres','lot_size_sqft','year_built','garage_spaces',
+ 'unparsed_address','street_number','street_name','unit_number','city',
+ 'state_or_province','postal_code','county','subdivision_name',
+ 'latitude','longitude','public_remarks',
+ 'list_agent_full_name','list_agent_direct_phone','list_agent_email','list_office_name',
+ 'elementary_school','middle_school','high_school','school_district',
+ 'days_on_market','listing_contract_date','close_date','close_price',
+ 'modification_timestamp','mlg_can_view','photos','photos_r2',
+ 'pool_features','waterfront_yn','new_construction_yn','stories','parking_total',
+ 'association_fee','association_fee_frequency','tax_annual_amount'
 ].join(', ');
 
 // Return R2 URLs where available (direct Cloudflare edge), else fall back to local proxy
 function resolvePhotos(photos, listingKey, r2Photos) {
-  if (!photos || !photos.length) return [];
-  return photos.map((_, idx) => {
-    if (r2Photos && r2Photos[idx]) return r2Photos[idx];
-    return `/api/properties/photos/${listingKey}/${idx}`;
-  });
+ if (!photos || !photos.length) return [];
+ return photos.map((_, idx) => {
+ if (r2Photos && r2Photos[idx]) return r2Photos[idx];
+ return `/api/properties/photos/${listingKey}/${idx}`;
+ });
 }
 
 // Point-in-polygon (ray casting)
 function pointInPolygon(lat, lng, polygon) {
-  let inside = false;
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].lat, yi = polygon[i].lng;
-    const xj = polygon[j].lat, yj = polygon[j].lng;
-    if (((yi > lng) !== (yj > lng)) && (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi)) {
-      inside = !inside;
-    }
-  }
-  return inside;
+ let inside = false;
+ for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+ const xi = polygon[i].lat, yi = polygon[i].lng;
+ const xj = polygon[j].lat, yj = polygon[j].lng;
+ if (((yi > lng) !== (yj > lng)) && (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi)) {
+ inside = !inside;
+ }
+ }
+ return inside;
 }
 
-// Count cache: key → { total, ts } — avoids repeated COUNT(*) on page 2+
+// Count cache: key → { total, ts }, avoids repeated COUNT(*) on page 2+
 const countCache = new Map();
 const COUNT_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-// Shared WHERE-clause builder — mirrors /search logic so /map-bundle returns
+// Shared WHERE-clause builder, mirrors /search logic so /map-bundle returns
 // identical result sets for pins and cards in a single pass.
 function buildSearchWhere(q) {
-  const {
-    status, propertyType, subType, forRent,
-    minPrice, maxPrice, minBeds, maxBeds, minBaths,
-    minSqft, maxSqft, minYear, maxYear,
-    city, zip, neighborhood, schoolDistrict, keyword,
-    pool, waterfront, newConstruction,
-    north, south, east, west
-  } = q;
+ const {
+ status, propertyType, subType, forRent,
+ minPrice, maxPrice, minBeds, maxBeds, minBaths,
+ minSqft, maxSqft, minYear, maxYear,
+ city, zip, neighborhood, schoolDistrict, keyword,
+ pool, waterfront, newConstruction,
+ north, south, east, west
+ } = q;
 
-  const conditions = ['mlg_can_view = 1', 'latitude IS NOT NULL', 'longitude IS NOT NULL'];
-  const values = [];
+ const conditions = ['mlg_can_view = 1', 'latitude IS NOT NULL', 'longitude IS NOT NULL'];
+ const values = [];
 
-  if (status) {
-    const statuses = status.split(',').map(s => s.trim());
-    conditions.push(`standard_status IN (${statuses.map(() => '?').join(',')})`);
-    values.push(...statuses);
-  } else if (forRent === 'true') {
-    conditions.push(`(property_type LIKE '%Lease%' OR standard_status = 'Active')`);
-  } else {
-    conditions.push(`standard_status = 'Active'`);
-  }
+ if (status) {
+ const statuses = status.split(',').map(s => s.trim());
+ conditions.push(`standard_status IN (${statuses.map(() => '?').join(',')})`);
+ values.push(...statuses);
+ } else if (forRent === 'true') {
+ conditions.push(`(property_type LIKE '%Lease%' OR standard_status = 'Active')`);
+ } else {
+ conditions.push(`standard_status = 'Active'`);
+ }
 
-  if (forRent === 'true') {
-    conditions.push(`(property_type LIKE '%Lease%' OR property_type LIKE '%Rental%')`);
-  } else if (forRent === 'false') {
-    conditions.push(`property_type NOT LIKE '%Lease%'`);
-  }
+ if (forRent === 'true') {
+ conditions.push(`(property_type LIKE '%Lease%' OR property_type LIKE '%Rental%')`);
+ } else if (forRent === 'false') {
+ conditions.push(`property_type NOT LIKE '%Lease%'`);
+ }
 
-  if (propertyType) { conditions.push('property_type = ?'); values.push(propertyType); }
-  if (subType) {
-    const types = subType.split(',').map(s => s.trim());
-    conditions.push(`property_sub_type IN (${types.map(() => '?').join(',')})`);
-    values.push(...types);
-  }
-  if (minPrice) { conditions.push('list_price >= ?'); values.push(Number(minPrice)); }
-  if (maxPrice) { conditions.push('list_price <= ?'); values.push(Number(maxPrice)); }
-  if (minBeds)  { conditions.push('bedrooms_total >= ?'); values.push(Number(minBeds)); }
-  if (maxBeds)  { conditions.push('bedrooms_total <= ?'); values.push(Number(maxBeds)); }
-  if (minBaths) { conditions.push('bathrooms_total >= ?'); values.push(Number(minBaths)); }
-  if (minSqft)  { conditions.push('living_area >= ?'); values.push(Number(minSqft)); }
-  if (maxSqft)  { conditions.push('living_area <= ?'); values.push(Number(maxSqft)); }
-  if (minYear)  { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
-  if (maxYear)  { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
+ if (propertyType) { conditions.push('property_type = ?'); values.push(propertyType); }
+ if (subType) {
+ const types = subType.split(',').map(s => s.trim());
+ conditions.push(`property_sub_type IN (${types.map(() => '?').join(',')})`);
+ values.push(...types);
+ }
+ if (minPrice) { conditions.push('list_price >= ?'); values.push(Number(minPrice)); }
+ if (maxPrice) { conditions.push('list_price <= ?'); values.push(Number(maxPrice)); }
+ if (minBeds) { conditions.push('bedrooms_total >= ?'); values.push(Number(minBeds)); }
+ if (maxBeds) { conditions.push('bedrooms_total <= ?'); values.push(Number(maxBeds)); }
+ if (minBaths) { conditions.push('bathrooms_total >= ?'); values.push(Number(minBaths)); }
+ if (minSqft) { conditions.push('living_area >= ?'); values.push(Number(minSqft)); }
+ if (maxSqft) { conditions.push('living_area <= ?'); values.push(Number(maxSqft)); }
+ if (minYear) { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
+ if (maxYear) { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
 
-  if (city) {
-    const cities = city.split(',').map(s => s.trim());
-    conditions.push(`city IN (${cities.map(() => '?').join(',')})`);
-    values.push(...cities);
-  }
-  if (zip) {
-    const zips = zip.split(',').map(s => s.trim());
-    conditions.push(`postal_code IN (${zips.map(() => '?').join(',')})`);
-    values.push(...zips);
-  }
-  if (neighborhood)   { conditions.push(`subdivision_name LIKE ?`); values.push(`%${neighborhood}%`); }
-  if (schoolDistrict) { conditions.push(`school_district LIKE ?`);  values.push(`%${schoolDistrict}%`); }
+ if (city) {
+ const cities = city.split(',').map(s => s.trim());
+ conditions.push(`city IN (${cities.map(() => '?').join(',')})`);
+ values.push(...cities);
+ }
+ if (zip) {
+ const zips = zip.split(',').map(s => s.trim());
+ conditions.push(`postal_code IN (${zips.map(() => '?').join(',')})`);
+ values.push(...zips);
+ }
+ if (neighborhood) { conditions.push(`subdivision_name LIKE ?`); values.push(`%${neighborhood}%`); }
+ if (schoolDistrict) { conditions.push(`school_district LIKE ?`); values.push(`%${schoolDistrict}%`); }
 
-  if (keyword) {
-    conditions.push(`(
-      unparsed_address LIKE ? OR city LIKE ? OR postal_code LIKE ?
-      OR subdivision_name LIKE ? OR school_district LIKE ?
-      OR elementary_school LIKE ? OR high_school LIKE ?
-      OR public_remarks LIKE ?
-    )`);
-    const kw = `%${keyword}%`;
-    values.push(kw, kw, kw, kw, kw, kw, kw, kw);
-  }
+ if (keyword) {
+ conditions.push(`(
+ unparsed_address LIKE ? OR city LIKE ? OR postal_code LIKE ?
+ OR subdivision_name LIKE ? OR school_district LIKE ?
+ OR elementary_school LIKE ? OR high_school LIKE ?
+ OR public_remarks LIKE ?
+ )`);
+ const kw = `%${keyword}%`;
+ values.push(kw, kw, kw, kw, kw, kw, kw, kw);
+ }
 
-  if (pool === 'true')             conditions.push(`pool_features IS NOT NULL AND pool_features != ''`);
-  if (waterfront === 'true')       conditions.push(`waterfront_yn = 1`);
-  if (newConstruction === 'true')  conditions.push(`new_construction_yn = 1`);
+ if (pool === 'true') conditions.push(`pool_features IS NOT NULL AND pool_features != ''`);
+ if (waterfront === 'true') conditions.push(`waterfront_yn = 1`);
+ if (newConstruction === 'true') conditions.push(`new_construction_yn = 1`);
 
-  if (north && south && east && west) {
-    // Use the R-Tree spatial index for the bbox filter. The subquery returns
-    // rowids of listings whose lat/lon points fall inside the viewport — O(log n)
-    // versus the O(n) BETWEEN scan SQLite was doing before. Triggers on the
-    // listings table keep the rtree synced; if the index is missing for any
-    // reason the query just returns zero rows and the page shows "No homes
-    // found" — preferable to a 500.
-    conditions.push(`rowid IN (
-      SELECT id FROM listings_rtree
-      WHERE minlat BETWEEN ? AND ? AND minlon BETWEEN ? AND ?
-    )`);
-    values.push(Number(south), Number(north), Number(west), Number(east));
-  }
+ if (north && south && east && west) {
+ // Use the R-Tree spatial index for the bbox filter. The subquery returns
+ // rowids of listings whose lat/lon points fall inside the viewport, O(log n)
+ // versus the O(n) BETWEEN scan SQLite was doing before. Triggers on the
+ // listings table keep the rtree synced; if the index is missing for any
+ // reason the query just returns zero rows and the page shows "No homes
+ // found", preferable to a 500.
+ conditions.push(`rowid IN (
+ SELECT id FROM listings_rtree
+ WHERE minlat BETWEEN ? AND ? AND minlon BETWEEN ? AND ?
+ )`);
+ values.push(Number(south), Number(north), Number(west), Number(east));
+ }
 
-  return { where: conditions.join(' AND '), values };
+ return { where: conditions.join(' AND '), values };
 }
 
 // GET /api/properties/search
 router.get('/search', (req, res) => {
-  try {
-    const {
-      status, propertyType, subType, forRent,
-      minPrice, maxPrice, minBeds, maxBeds, minBaths,
-      minSqft, maxSqft, minYear, maxYear,
-      city, zip, neighborhood, schoolDistrict, keyword,
-      pool, waterfront, newConstruction,
-      sortBy, page = 1, limit = 24,
-      // Map bounds
-      north, south, east, west,
-      // Polygon (JSON string of [{lat,lng},...])
-      polygon
-    } = req.query;
+ try {
+ const {
+ status, propertyType, subType, forRent,
+ minPrice, maxPrice, minBeds, maxBeds, minBaths,
+ minSqft, maxSqft, minYear, maxYear,
+ city, zip, neighborhood, schoolDistrict, keyword,
+ pool, waterfront, newConstruction,
+ sortBy, page = 1, limit = 24,
+ // Map bounds
+ north, south, east, west,
+ // Polygon (JSON string of [{lat,lng}...])
+ polygon
+ } = req.query;
 
-    const conditions = ['mlg_can_view = 1', 'latitude IS NOT NULL', 'longitude IS NOT NULL'];
-    const values = [];
+ const conditions = ['mlg_can_view = 1', 'latitude IS NOT NULL', 'longitude IS NOT NULL'];
+ const values = [];
 
-    // Status
-    if (status) {
-      const statuses = status.split(',').map(s => s.trim());
-      conditions.push(`standard_status IN (${statuses.map(() => '?').join(',')})`);
-      values.push(...statuses);
-    } else if (forRent === 'true') {
-      conditions.push(`(property_type LIKE '%Lease%' OR standard_status = 'Active')`);
-    } else {
-      // Default: active listings
-      conditions.push(`standard_status = 'Active'`);
-    }
+ // Status
+ if (status) {
+ const statuses = status.split(',').map(s => s.trim());
+ conditions.push(`standard_status IN (${statuses.map(() => '?').join(',')})`);
+ values.push(...statuses);
+ } else if (forRent === 'true') {
+ conditions.push(`(property_type LIKE '%Lease%' OR standard_status = 'Active')`);
+ } else {
+ // Default: active listings
+ conditions.push(`standard_status = 'Active'`);
+ }
 
-    // For rent vs for sale
-    if (forRent === 'true') {
-      conditions.push(`(property_type LIKE '%Lease%' OR property_type LIKE '%Rental%')`);
-    } else if (forRent === 'false') {
-      conditions.push(`property_type NOT LIKE '%Lease%'`);
-    }
+ // For rent vs for sale
+ if (forRent === 'true') {
+ conditions.push(`(property_type LIKE '%Lease%' OR property_type LIKE '%Rental%')`);
+ } else if (forRent === 'false') {
+ conditions.push(`property_type NOT LIKE '%Lease%'`);
+ }
 
-    // Property type / sub type
-    if (propertyType) {
-      conditions.push(`property_type = ?`);
-      values.push(propertyType);
-    }
-    if (subType) {
-      const types = subType.split(',').map(s => s.trim());
-      conditions.push(`property_sub_type IN (${types.map(() => '?').join(',')})`);
-      values.push(...types);
-    }
+ // Property type / sub type
+ if (propertyType) {
+ conditions.push(`property_type = ?`);
+ values.push(propertyType);
+ }
+ if (subType) {
+ const types = subType.split(',').map(s => s.trim());
+ conditions.push(`property_sub_type IN (${types.map(() => '?').join(',')})`);
+ values.push(...types);
+ }
 
-    // Price
-    if (minPrice) { conditions.push('list_price >= ?'); values.push(Number(minPrice)); }
-    if (maxPrice) { conditions.push('list_price <= ?'); values.push(Number(maxPrice)); }
+ // Price
+ if (minPrice) { conditions.push('list_price >= ?'); values.push(Number(minPrice)); }
+ if (maxPrice) { conditions.push('list_price <= ?'); values.push(Number(maxPrice)); }
 
-    // Beds
-    if (minBeds) { conditions.push('bedrooms_total >= ?'); values.push(Number(minBeds)); }
-    if (maxBeds) { conditions.push('bedrooms_total <= ?'); values.push(Number(maxBeds)); }
+ // Beds
+ if (minBeds) { conditions.push('bedrooms_total >= ?'); values.push(Number(minBeds)); }
+ if (maxBeds) { conditions.push('bedrooms_total <= ?'); values.push(Number(maxBeds)); }
 
-    // Baths
-    if (minBaths) { conditions.push('bathrooms_total >= ?'); values.push(Number(minBaths)); }
+ // Baths
+ if (minBaths) { conditions.push('bathrooms_total >= ?'); values.push(Number(minBaths)); }
 
-    // Sqft
-    if (minSqft) { conditions.push('living_area >= ?'); values.push(Number(minSqft)); }
-    if (maxSqft) { conditions.push('living_area <= ?'); values.push(Number(maxSqft)); }
+ // Sqft
+ if (minSqft) { conditions.push('living_area >= ?'); values.push(Number(minSqft)); }
+ if (maxSqft) { conditions.push('living_area <= ?'); values.push(Number(maxSqft)); }
 
-    // Year built
-    if (minYear) { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
-    if (maxYear) { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
+ // Year built
+ if (minYear) { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
+ if (maxYear) { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
 
-    // Location
-    if (city) {
-      const cities = city.split(',').map(s => s.trim());
-      conditions.push(`city IN (${cities.map(() => '?').join(',')})`);
-      values.push(...cities);
-    }
-    if (zip) {
-      const zips = zip.split(',').map(s => s.trim());
-      conditions.push(`postal_code IN (${zips.map(() => '?').join(',')})`);
-      values.push(...zips);
-    }
-    if (neighborhood) {
-      conditions.push(`subdivision_name LIKE ?`);
-      values.push(`%${neighborhood}%`);
-    }
-    if (schoolDistrict) {
-      conditions.push(`school_district LIKE ?`);
-      values.push(`%${schoolDistrict}%`);
-    }
+ // Location
+ if (city) {
+ const cities = city.split(',').map(s => s.trim());
+ conditions.push(`city IN (${cities.map(() => '?').join(',')})`);
+ values.push(...cities);
+ }
+ if (zip) {
+ const zips = zip.split(',').map(s => s.trim());
+ conditions.push(`postal_code IN (${zips.map(() => '?').join(',')})`);
+ values.push(...zips);
+ }
+ if (neighborhood) {
+ conditions.push(`subdivision_name LIKE ?`);
+ values.push(`%${neighborhood}%`);
+ }
+ if (schoolDistrict) {
+ conditions.push(`school_district LIKE ?`);
+ values.push(`%${schoolDistrict}%`);
+ }
 
-    // Keyword search
-    if (keyword) {
-      conditions.push(`(
-        unparsed_address LIKE ? OR city LIKE ? OR postal_code LIKE ?
-        OR subdivision_name LIKE ? OR school_district LIKE ?
-        OR elementary_school LIKE ? OR high_school LIKE ?
-        OR public_remarks LIKE ?
-      )`);
-      const kw = `%${keyword}%`;
-      values.push(kw, kw, kw, kw, kw, kw, kw, kw);
-    }
+ // Keyword search
+ if (keyword) {
+ conditions.push(`(
+ unparsed_address LIKE ? OR city LIKE ? OR postal_code LIKE ?
+ OR subdivision_name LIKE ? OR school_district LIKE ?
+ OR elementary_school LIKE ? OR high_school LIKE ?
+ OR public_remarks LIKE ?
+ )`);
+ const kw = `%${keyword}%`;
+ values.push(kw, kw, kw, kw, kw, kw, kw, kw);
+ }
 
-    // Features
-    if (pool === 'true') { conditions.push(`pool_features IS NOT NULL AND pool_features != ''`); }
-    if (waterfront === 'true') { conditions.push(`waterfront_yn = 1`); }
-    if (newConstruction === 'true') { conditions.push(`new_construction_yn = 1`); }
+ // Features
+ if (pool === 'true') { conditions.push(`pool_features IS NOT NULL AND pool_features != ''`); }
+ if (waterfront === 'true') { conditions.push(`waterfront_yn = 1`); }
+ if (newConstruction === 'true') { conditions.push(`new_construction_yn = 1`); }
 
-    // Map bounds (bounding box)
-    if (north && south && east && west) {
-      conditions.push('latitude BETWEEN ? AND ?');
-      values.push(Number(south), Number(north));
-      conditions.push('longitude BETWEEN ? AND ?');
-      values.push(Number(west), Number(east));
-    }
+ // Map bounds (bounding box)
+ if (north && south && east && west) {
+ conditions.push('latitude BETWEEN ? AND ?');
+ values.push(Number(south), Number(north));
+ conditions.push('longitude BETWEEN ? AND ?');
+ values.push(Number(west), Number(east));
+ }
 
-    // Sort
-    const sortMap = {
-      price_asc: 'list_price ASC',
-      price_desc: 'list_price DESC',
-      newest: 'listing_contract_date DESC',
-      oldest: 'listing_contract_date ASC',
-      beds_desc: 'bedrooms_total DESC',
-      sqft_desc: 'living_area DESC',
-      dom_asc: 'days_on_market ASC'
-    };
-    const orderBy = sortMap[sortBy] || 'listing_contract_date DESC';
+ // Sort
+ const sortMap = {
+ price_asc: 'list_price ASC',
+ price_desc: 'list_price DESC',
+ newest: 'listing_contract_date DESC',
+ oldest: 'listing_contract_date ASC',
+ beds_desc: 'bedrooms_total DESC',
+ sqft_desc: 'living_area DESC',
+ dom_asc: 'days_on_market ASC'
+ };
+ const orderBy = sortMap[sortBy] || 'listing_contract_date DESC';
 
-    const where = conditions.join(' AND ');
+ const where = conditions.join(' AND ');
 
-    // Get total count (cached for 5 min so page 2+ requests skip the COUNT(*))
-    const countKey = where + JSON.stringify(values);
-    let total;
-    const cached = countCache.get(countKey);
-    if (cached && Date.now() - cached.ts < COUNT_CACHE_TTL) {
-      total = cached.total;
-      res.set('X-Cache', 'HIT');
-    } else {
-      total = db.prepare(`SELECT COUNT(*) as total FROM listings WHERE ${where}`).get(values).total;
-      countCache.set(countKey, { total, ts: Date.now() });
-      res.set('X-Cache', 'MISS');
-    }
+ // Get total count (cached for 5 min so page 2+ requests skip the COUNT(*))
+ const countKey = where + JSON.stringify(values);
+ let total;
+ const cached = countCache.get(countKey);
+ if (cached && Date.now() - cached.ts < COUNT_CACHE_TTL) {
+ total = cached.total;
+ res.set('X-Cache', 'HIT');
+ } else {
+ total = db.prepare(`SELECT COUNT(*) as total FROM listings WHERE ${where}`).get(values).total;
+ countCache.set(countKey, { total, ts: Date.now() });
+ res.set('X-Cache', 'MISS');
+ }
 
-    // If polygon search, we need all results in bounds then filter — skip SQL pagination
-    const hasPolygon = polygon && polygon !== '[]';
-    let polygonArr = [];
-    if (hasPolygon) {
-      try { polygonArr = JSON.parse(polygon); } catch {}
-    }
+ // If polygon search, we need all results in bounds then filter, skip SQL pagination
+ const hasPolygon = polygon && polygon !== '[]';
+ let polygonArr = [];
+ if (hasPolygon) {
+ try { polygonArr = JSON.parse(polygon); } catch {}
+ }
 
-    let rows;
-    if (hasPolygon && polygonArr.length > 2) {
-      // Get all within bounds (already constrained by bbox above), then filter by polygon
-      rows = db.prepare(`SELECT ${SEARCH_COLUMNS} FROM listings WHERE ${where} ORDER BY ${orderBy}`).all(values);
-      rows = rows.filter(r => pointInPolygon(r.latitude, r.longitude, polygonArr));
-      total = rows.length;
-      // Manual pagination
-      const offset = (Number(page) - 1) * Number(limit);
-      rows = rows.slice(offset, offset + Number(limit));
-    } else {
-      const offset = (Number(page) - 1) * Number(limit);
-      rows = db.prepare(`SELECT ${SEARCH_COLUMNS} FROM listings WHERE ${where} ORDER BY ${orderBy} LIMIT ? OFFSET ?`)
-        .all([...values, Number(limit), offset]);
-    }
+ let rows;
+ if (hasPolygon && polygonArr.length > 2) {
+ // Get all within bounds (already constrained by bbox above), then filter by polygon
+ rows = db.prepare(`SELECT ${SEARCH_COLUMNS} FROM listings WHERE ${where} ORDER BY ${orderBy}`).all(values);
+ rows = rows.filter(r => pointInPolygon(r.latitude, r.longitude, polygonArr));
+ total = rows.length;
+ // Manual pagination
+ const offset = (Number(page) - 1) * Number(limit);
+ rows = rows.slice(offset, offset + Number(limit));
+ } else {
+ const offset = (Number(page) - 1) * Number(limit);
+ rows = db.prepare(`SELECT ${SEARCH_COLUMNS} FROM listings WHERE ${where} ORDER BY ${orderBy} LIMIT ? OFFSET ?`)
+ .all([...values, Number(limit), offset]);
+ }
 
-    rows = rows.map(r => {
-      const photos = tryParse(r.photos, []);
-      const r2Photos = tryParse(r.photos_r2, []);
-      return { ...r, photos: resolvePhotos(photos, r.listing_key, r2Photos) };
-    });
+ rows = rows.map(r => {
+ const photos = tryParse(r.photos, []);
+ const r2Photos = tryParse(r.photos_r2, []);
+ return { ...r, photos: resolvePhotos(photos, r.listing_key, r2Photos) };
+ });
 
-    // 5 min CDN/browser cache. Polygon searches use a shorter TTL because the
-    // query string is effectively unique per drawn shape.
-    res.set('Cache-Control', (hasPolygon && polygonArr.length > 2) ? 'public, max-age=60' : 'public, max-age=300');
-    res.json({
-      total,
-      page: Number(page),
-      pages: Math.ceil(total / Number(limit)),
-      listings: rows
-    });
+ // 5 min CDN/browser cache. Polygon searches use a shorter TTL because the
+ // query string is effectively unique per drawn shape.
+ res.set('Cache-Control', (hasPolygon && polygonArr.length > 2) ? 'public, max-age=60' : 'public, max-age=300');
+ res.json({
+ total,
+ page: Number(page),
+ pages: Math.ceil(total / Number(limit)),
+ listings: rows
+ });
 
-  } catch (err) {
-    console.error('[SEARCH]', err);
-    res.status(500).json({ error: err.message });
-  }
+ } catch (err) {
+ console.error('[SEARCH]', err);
+ res.status(500).json({ error: err.message });
+ }
 });
 
-// GET /api/properties/map-pins — lightweight for map rendering
+// GET /api/properties/map-pins, lightweight for map rendering
 router.get('/map-pins', (req, res) => {
-  try {
-    const { north, south, east, west, polygon, status, forRent, minPrice, maxPrice,
-            minBeds, minBaths, propertyType, subType,
-            city, zip, neighborhood, schoolDistrict,
-            minSqft, maxSqft, minYear, maxYear, pool, waterfront, newConstruction, keyword } = req.query;
+ try {
+ const { north, south, east, west, polygon, status, forRent, minPrice, maxPrice,
+ minBeds, minBaths, propertyType, subType,
+ city, zip, neighborhood, schoolDistrict,
+ minSqft, maxSqft, minYear, maxYear, pool, waterfront, newConstruction, keyword } = req.query;
 
-    const conditions = ['mlg_can_view = 1', 'latitude IS NOT NULL', 'longitude IS NOT NULL'];
-    const values = [];
+ const conditions = ['mlg_can_view = 1', 'latitude IS NOT NULL', 'longitude IS NOT NULL'];
+ const values = [];
 
-    if (status) {
-      const statuses = status.split(',');
-      conditions.push(`standard_status IN (${statuses.map(() => '?').join(',')})`);
-      values.push(...statuses);
-    } else {
-      conditions.push(`standard_status = 'Active'`);
-    }
+ if (status) {
+ const statuses = status.split(',');
+ conditions.push(`standard_status IN (${statuses.map(() => '?').join(',')})`);
+ values.push(...statuses);
+ } else {
+ conditions.push(`standard_status = 'Active'`);
+ }
 
-    if (forRent === 'true') {
-      conditions.push(`property_type LIKE '%Lease%'`);
-    } else if (forRent === 'false') {
-      conditions.push(`property_type NOT LIKE '%Lease%'`);
-    }
+ if (forRent === 'true') {
+ conditions.push(`property_type LIKE '%Lease%'`);
+ } else if (forRent === 'false') {
+ conditions.push(`property_type NOT LIKE '%Lease%'`);
+ }
 
-    if (propertyType) { conditions.push('property_type = ?'); values.push(propertyType); }
-    if (subType) {
-      const types = subType.split(',');
-      conditions.push(`property_sub_type IN (${types.map(() => '?').join(',')})`);
-      values.push(...types);
-    }
-    if (minPrice) { conditions.push('list_price >= ?'); values.push(Number(minPrice)); }
-    if (maxPrice) { conditions.push('list_price <= ?'); values.push(Number(maxPrice)); }
-    if (minBeds) { conditions.push('bedrooms_total >= ?'); values.push(Number(minBeds)); }
-    if (minBaths) { conditions.push('bathrooms_total >= ?'); values.push(Number(minBaths)); }
+ if (propertyType) { conditions.push('property_type = ?'); values.push(propertyType); }
+ if (subType) {
+ const types = subType.split(',');
+ conditions.push(`property_sub_type IN (${types.map(() => '?').join(',')})`);
+ values.push(...types);
+ }
+ if (minPrice) { conditions.push('list_price >= ?'); values.push(Number(minPrice)); }
+ if (maxPrice) { conditions.push('list_price <= ?'); values.push(Number(maxPrice)); }
+ if (minBeds) { conditions.push('bedrooms_total >= ?'); values.push(Number(minBeds)); }
+ if (minBaths) { conditions.push('bathrooms_total >= ?'); values.push(Number(minBaths)); }
 
-    if (city) {
-      const cities = city.split(',').map(s => s.trim());
-      conditions.push(`city IN (${cities.map(() => '?').join(',')})`);
-      values.push(...cities);
-    }
-    if (zip) {
-      const zips = zip.split(',').map(s => s.trim());
-      conditions.push(`postal_code IN (${zips.map(() => '?').join(',')})`);
-      values.push(...zips);
-    }
-    if (neighborhood) {
-      conditions.push(`subdivision_name LIKE ?`);
-      values.push(`%${neighborhood}%`);
-    }
-    if (schoolDistrict) {
-      conditions.push(`school_district LIKE ?`);
-      values.push(`%${schoolDistrict}%`);
-    }
+ if (city) {
+ const cities = city.split(',').map(s => s.trim());
+ conditions.push(`city IN (${cities.map(() => '?').join(',')})`);
+ values.push(...cities);
+ }
+ if (zip) {
+ const zips = zip.split(',').map(s => s.trim());
+ conditions.push(`postal_code IN (${zips.map(() => '?').join(',')})`);
+ values.push(...zips);
+ }
+ if (neighborhood) {
+ conditions.push(`subdivision_name LIKE ?`);
+ values.push(`%${neighborhood}%`);
+ }
+ if (schoolDistrict) {
+ conditions.push(`school_district LIKE ?`);
+ values.push(`%${schoolDistrict}%`);
+ }
 
-    if (minSqft) { conditions.push('living_area >= ?'); values.push(Number(minSqft)); }
-    if (maxSqft) { conditions.push('living_area <= ?'); values.push(Number(maxSqft)); }
-    if (minYear) { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
-    if (maxYear) { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
-    if (pool === 'true') { conditions.push(`pool_features IS NOT NULL AND pool_features != ''`); }
-    if (waterfront === 'true') { conditions.push(`waterfront_yn = 1`); }
-    if (newConstruction === 'true') { conditions.push(`new_construction_yn = 1`); }
-    if (keyword) {
-      conditions.push(`(unparsed_address LIKE ? OR city LIKE ? OR postal_code LIKE ? OR subdivision_name LIKE ? OR school_district LIKE ?)`);
-      const kw = `%${keyword}%`;
-      values.push(kw, kw, kw, kw, kw);
-    }
+ if (minSqft) { conditions.push('living_area >= ?'); values.push(Number(minSqft)); }
+ if (maxSqft) { conditions.push('living_area <= ?'); values.push(Number(maxSqft)); }
+ if (minYear) { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
+ if (maxYear) { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
+ if (pool === 'true') { conditions.push(`pool_features IS NOT NULL AND pool_features != ''`); }
+ if (waterfront === 'true') { conditions.push(`waterfront_yn = 1`); }
+ if (newConstruction === 'true') { conditions.push(`new_construction_yn = 1`); }
+ if (keyword) {
+ conditions.push(`(unparsed_address LIKE ? OR city LIKE ? OR postal_code LIKE ? OR subdivision_name LIKE ? OR school_district LIKE ?)`);
+ const kw = `%${keyword}%`;
+ values.push(kw, kw, kw, kw, kw);
+ }
 
-    if (north && south && east && west) {
-      // R-Tree subquery — same pattern as buildSearchWhere.
-      conditions.push(`rowid IN (
-        SELECT id FROM listings_rtree
-        WHERE minlat BETWEEN ? AND ? AND minlon BETWEEN ? AND ?
-      )`);
-      values.push(Number(south), Number(north), Number(west), Number(east));
-    }
+ if (north && south && east && west) {
+ // R-Tree subquery, same pattern as buildSearchWhere.
+ conditions.push(`rowid IN (
+ SELECT id FROM listings_rtree
+ WHERE minlat BETWEEN ? AND ? AND minlon BETWEEN ? AND ?
+ )`);
+ values.push(Number(south), Number(north), Number(west), Number(east));
+ }
 
-    const where = conditions.join(' AND ');
-    // /map-pins is only used for bounds-fitting (zoomMapToFilter) — it needs
-    // lat/lon but not photos. Pull a slim column set and skip the photo
-    // resolution work entirely. Compared to /map-bundle this is the simpler
-    // fast path for fit-to-results.
-    let pins = db.prepare(`
-      SELECT listing_key, list_price, latitude, longitude, standard_status,
-             bedrooms_total, bathrooms_total, living_area, unparsed_address,
-             city, postal_code
-      FROM listings WHERE ${where} LIMIT 5000
-    `).all(values);
+ const where = conditions.join(' AND ');
+ // /map-pins is only used for bounds-fitting (zoomMapToFilter), it needs
+ // lat/lon but not photos. Pull a slim column set and skip the photo
+ // resolution work entirely. Compared to /map-bundle this is the simpler
+ // fast path for fit-to-results.
+ let pins = db.prepare(`
+ SELECT listing_key, list_price, latitude, longitude, standard_status,
+ bedrooms_total, bathrooms_total, living_area, unparsed_address,
+ city, postal_code
+ FROM listings WHERE ${where} LIMIT 5000
+ `).all(values);
 
-    if (polygon && polygon !== '[]') {
-      try {
-        const polygonArr = JSON.parse(polygon);
-        if (polygonArr.length > 2) {
-          pins = pins.filter(p => pointInPolygon(p.latitude, p.longitude, polygonArr));
-        }
-      } catch {}
-    }
+ if (polygon && polygon !== '[]') {
+ try {
+ const polygonArr = JSON.parse(polygon);
+ if (polygonArr.length > 2) {
+ pins = pins.filter(p => pointInPolygon(p.latitude, p.longitude, polygonArr));
+ }
+ } catch {}
+ }
 
-    // 5 min CDN/browser cache — same filter set served repeatedly across
-    // a session typically returns identical pins.
-    res.set('Cache-Control', 'public, max-age=300');
-    res.json(pins);
-  } catch (err) {
-    console.error('[MAP-PINS]', err);
-    res.status(500).json({ error: err.message });
-  }
+ // 5 min CDN/browser cache, same filter set served repeatedly across
+ // a session typically returns identical pins.
+ res.set('Cache-Control', 'public, max-age=300');
+ res.json(pins);
+ } catch (err) {
+ console.error('[MAP-PINS]', err);
+ res.status(500).json({ error: err.message });
+ }
 });
 
-// GET /api/properties/map-bundle — returns pins + paginated cards + total in ONE call.
+// GET /api/properties/map-bundle, returns pins + paginated cards + total in ONE call.
 // Map view uses this instead of /map-pins + /search to eliminate duplicate DB work.
 // Map-bundle response cache - large payloads on common filters get reused
 // for 5 minutes. Keyed by the SQL where + values + sort + page + polygon flag.
@@ -515,333 +515,332 @@ const MAP_BUNDLE_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 const MAP_BUNDLE_CACHE_MAX = 50; // simple LRU cap to avoid unbounded growth
 
 router.get('/map-bundle', (req, res) => {
-  try {
-    const { sortBy, page = 1, limit = 50, polygon } = req.query;
-    const { where, values } = buildSearchWhere(req.query);
+ try {
+ const { sortBy, page = 1, limit = 50, polygon } = req.query;
+ const { where, values } = buildSearchWhere(req.query);
 
-    const sortMap = {
-      price_asc: 'list_price ASC',
-      price_desc: 'list_price DESC',
-      newest: 'listing_contract_date DESC',
-      oldest: 'listing_contract_date ASC',
-      beds_desc: 'bedrooms_total DESC',
-      sqft_desc: 'living_area DESC',
-      dom_asc: 'days_on_market ASC'
-    };
-    const orderBy = sortMap[sortBy] || 'listing_contract_date DESC';
+ const sortMap = {
+ price_asc: 'list_price ASC',
+ price_desc: 'list_price DESC',
+ newest: 'listing_contract_date DESC',
+ oldest: 'listing_contract_date ASC',
+ beds_desc: 'bedrooms_total DESC',
+ sqft_desc: 'living_area DESC',
+ dom_asc: 'days_on_market ASC'
+ };
+ const orderBy = sortMap[sortBy] || 'listing_contract_date DESC';
 
-    const hasPolygon = polygon && polygon !== '[]';
-    let polygonArr = [];
-    if (hasPolygon) { try { polygonArr = JSON.parse(polygon); } catch {} }
+ const hasPolygon = polygon && polygon !== '[]';
+ let polygonArr = [];
+ if (hasPolygon) { try { polygonArr = JSON.parse(polygon); } catch {} }
 
-    // Cache lookup. Polygon filters skip cache because the polygon shape is
-    // effectively unique per-request and serializing it as a key gets expensive.
-    const cacheKey = !hasPolygon
-      ? `${where}|${JSON.stringify(values)}|${orderBy}|p${page}|l${limit}`
-      : null;
-    if (cacheKey) {
-      const cached = mapBundleCache.get(cacheKey);
-      if (cached && Date.now() - cached.ts < MAP_BUNDLE_CACHE_TTL) {
-        res.set('X-Map-Cache', 'HIT');
-        return res.json(cached.payload);
-      }
-    }
+ // Cache lookup. Polygon filters skip cache because the polygon shape is
+ // effectively unique per-request and serializing it as a key gets expensive.
+ const cacheKey = !hasPolygon
+ ? `${where}|${JSON.stringify(values)}|${orderBy}|p${page}|l${limit}`
+ : null;
+ if (cacheKey) {
+ const cached = mapBundleCache.get(cacheKey);
+ if (cached && Date.now() - cached.ts < MAP_BUNDLE_CACHE_TTL) {
+ res.set('X-Map-Cache', 'HIT');
+ return res.json(cached.payload);
+ }
+ }
 
-    // Pins: lightweight columns, up to 5000.
-    // photos and photos_r2 are pulled from the DB so we can extract the hero
-    // photo per pin, but the FULL arrays are dropped before sending to the
-    // client - pins only need one image for the info-window thumbnail.
-    let pins = db.prepare(`
-      SELECT listing_key, list_price, latitude, longitude, standard_status,
-             bedrooms_total, bathrooms_total, living_area, unparsed_address,
-             city, postal_code, photos, photos_r2
-      FROM listings WHERE ${where} LIMIT 5000
-    `).all(values);
+ // Pins: lightweight columns, up to 5000.
+ // photos and photos_r2 are pulled from the DB so we can extract the hero
+ // photo per pin, but the FULL arrays are dropped before sending to the
+ // client - pins only need one image for the info-window thumbnail.
+ let pins = db.prepare(`
+ SELECT listing_key, list_price, latitude, longitude, standard_status,
+ bedrooms_total, bathrooms_total, living_area, unparsed_address,
+ city, postal_code, photos, photos_r2
+ FROM listings WHERE ${where} LIMIT 5000
+ `).all(values);
 
-    if (hasPolygon && polygonArr.length > 2) {
-      pins = pins.filter(p => pointInPolygon(p.latitude, p.longitude, polygonArr));
-    }
+ if (hasPolygon && polygonArr.length > 2) {
+ pins = pins.filter(p => pointInPolygon(p.latitude, p.longitude, polygonArr));
+ }
 
-    // Replace each pin's full photos array with a single `photo` field (hero
-    // only). For 5000 pins with 30 photos each, this drops payload from
-    // ~7 MB to ~500 KB. The info-window only ever shows photo[0]; the full
-    // photo set loads when the user clicks through to /property/{key}.
-    pins = pins.map(p => {
-      const photos = tryParse(p.photos, []);
-      const r2Photos = tryParse(p.photos_r2, []);
-      const resolved = resolvePhotos(photos, p.listing_key, r2Photos);
-      const { photos: _drop1, photos_r2: _drop2, ...rest } = p;
-      return { ...rest, photo: resolved[0] || null };
-    });
+ // Replace each pin's full photos array with a single `photo` field (hero
+ // only). For 5000 pins with 30 photos each, this drops payload from
+ // ~7 MB to ~500 KB. The info-window only ever shows photo[0]; the full
+ // photo set loads when the user clicks through to /property/{key}.
+ pins = pins.map(p => {
+ const photos = tryParse(p.photos, []);
+ const r2Photos = tryParse(p.photos_r2, []);
+ const resolved = resolvePhotos(photos, p.listing_key, r2Photos);
+ const { photos: _drop1, photos_r2: _drop2...rest } = p;
+ return { ...rest, photo: resolved[0] || null };
+ });
 
-    // Cards: full columns, paginated
-    let total;
-    let rows;
-    if (hasPolygon && polygonArr.length > 2) {
-      // For polygon searches the pin list already contains the visible set —
-      // fetch full cards for just the first page's listings by key.
-      const offset = (Number(page) - 1) * Number(limit);
-      total = pins.length;
-      const pageKeys = pins.slice(offset, offset + Number(limit)).map(p => p.listing_key);
-      if (pageKeys.length) {
-        const placeholders = pageKeys.map(() => '?').join(',');
-        rows = db.prepare(
-          `SELECT ${SEARCH_COLUMNS} FROM listings WHERE listing_key IN (${placeholders}) ORDER BY ${orderBy}`
-        ).all(pageKeys);
-      } else {
-        rows = [];
-      }
-    } else {
-      const countKey = where + JSON.stringify(values);
-      const cached = countCache.get(countKey);
-      if (cached && Date.now() - cached.ts < COUNT_CACHE_TTL) {
-        total = cached.total;
-        res.set('X-Cache', 'HIT');
-      } else {
-        total = db.prepare(`SELECT COUNT(*) as total FROM listings WHERE ${where}`).get(values).total;
-        countCache.set(countKey, { total, ts: Date.now() });
-        res.set('X-Cache', 'MISS');
-      }
-      const offset = (Number(page) - 1) * Number(limit);
-      rows = db.prepare(
-        `SELECT ${SEARCH_COLUMNS} FROM listings WHERE ${where} ORDER BY ${orderBy} LIMIT ? OFFSET ?`
-      ).all([...values, Number(limit), offset]);
-    }
+ // Cards: full columns, paginated
+ let total;
+ let rows;
+ if (hasPolygon && polygonArr.length > 2) {
+ // For polygon searches the pin list already contains the visible set, // fetch full cards for just the first page's listings by key.
+ const offset = (Number(page) - 1) * Number(limit);
+ total = pins.length;
+ const pageKeys = pins.slice(offset, offset + Number(limit)).map(p => p.listing_key);
+ if (pageKeys.length) {
+ const placeholders = pageKeys.map(() => '?').join(',');
+ rows = db.prepare(
+ `SELECT ${SEARCH_COLUMNS} FROM listings WHERE listing_key IN (${placeholders}) ORDER BY ${orderBy}`
+ ).all(pageKeys);
+ } else {
+ rows = [];
+ }
+ } else {
+ const countKey = where + JSON.stringify(values);
+ const cached = countCache.get(countKey);
+ if (cached && Date.now() - cached.ts < COUNT_CACHE_TTL) {
+ total = cached.total;
+ res.set('X-Cache', 'HIT');
+ } else {
+ total = db.prepare(`SELECT COUNT(*) as total FROM listings WHERE ${where}`).get(values).total;
+ countCache.set(countKey, { total, ts: Date.now() });
+ res.set('X-Cache', 'MISS');
+ }
+ const offset = (Number(page) - 1) * Number(limit);
+ rows = db.prepare(
+ `SELECT ${SEARCH_COLUMNS} FROM listings WHERE ${where} ORDER BY ${orderBy} LIMIT ? OFFSET ?`
+ ).all([...values, Number(limit), offset]);
+ }
 
-    rows = rows.map(r => {
-      const photos = tryParse(r.photos, []);
-      const r2Photos = tryParse(r.photos_r2, []);
-      return { ...r, photos: resolvePhotos(photos, r.listing_key, r2Photos) };
-    });
+ rows = rows.map(r => {
+ const photos = tryParse(r.photos, []);
+ const r2Photos = tryParse(r.photos_r2, []);
+ return { ...r, photos: resolvePhotos(photos, r.listing_key, r2Photos) };
+ });
 
-    const payload = {
-      pins,
-      total,
-      page: Number(page),
-      pages: Math.ceil(total / Number(limit)),
-      listings: rows
-    };
+ const payload = {
+ pins,
+ total,
+ page: Number(page),
+ pages: Math.ceil(total / Number(limit)),
+ listings: rows
+ };
 
-    // Cache for 5 minutes (skipped for polygon searches since the key would be
-    // unique per request anyway). Simple LRU eviction when the cache fills up.
-    if (cacheKey) {
-      if (mapBundleCache.size >= MAP_BUNDLE_CACHE_MAX) {
-        const oldestKey = mapBundleCache.keys().next().value;
-        mapBundleCache.delete(oldestKey);
-      }
-      mapBundleCache.set(cacheKey, { payload, ts: Date.now() });
-      res.set('X-Map-Cache', 'MISS');
-    }
+ // Cache for 5 minutes (skipped for polygon searches since the key would be
+ // unique per request anyway). Simple LRU eviction when the cache fills up.
+ if (cacheKey) {
+ if (mapBundleCache.size >= MAP_BUNDLE_CACHE_MAX) {
+ const oldestKey = mapBundleCache.keys().next().value;
+ mapBundleCache.delete(oldestKey);
+ }
+ mapBundleCache.set(cacheKey, { payload, ts: Date.now() });
+ res.set('X-Map-Cache', 'MISS');
+ }
 
-    // 5 min CDN/browser cache. Polygon searches set a shorter window because
-    // the URL signature is effectively unique per draw and rarely re-served.
-    res.set('Cache-Control', hasPolygon ? 'public, max-age=60' : 'public, max-age=300');
-    res.json(payload);
-  } catch (err) {
-    console.error('[MAP-BUNDLE]', err);
-    res.status(500).json({ error: err.message });
-  }
+ // 5 min CDN/browser cache. Polygon searches set a shorter window because
+ // the URL signature is effectively unique per draw and rarely re-served.
+ res.set('Cache-Control', hasPolygon ? 'public, max-age=60' : 'public, max-age=300');
+ res.json(payload);
+ } catch (err) {
+ console.error('[MAP-BUNDLE]', err);
+ res.status(500).json({ error: err.message });
+ }
 });
 
-// Autocomplete cache — key: normalized query, value: { results, ts }
+// Autocomplete cache, key: normalized query, value: { results, ts }
 const acCache = new Map();
 const AC_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
 // GET /api/properties/autocomplete?q=
-// Backed by an FTS5 trigram index (listings_fts) — substring matches like
+// Backed by an FTS5 trigram index (listings_fts), substring matches like
 // "thornton" finding "1234 Thornton Rd" run in <10ms instead of the 4×100ms
 // LIKE table scans the previous implementation needed. For short queries
 // (< 3 chars, below trigram's minimum) we fall back to LIKE.
 router.get('/autocomplete', (req, res) => {
-  const q = (req.query.q || '').trim();
-  if (q.length < 2) return res.json([]);
+ const q = (req.query.q || '').trim();
+ if (q.length < 2) return res.json([]);
 
-  const qKey = q.toLowerCase();
-  const hit = acCache.get(qKey);
-  if (hit && Date.now() - hit.ts < AC_CACHE_TTL) {
-    res.set('Cache-Control', 'public, max-age=600');
-    return res.json(hit.results);
-  }
+ const qKey = q.toLowerCase();
+ const hit = acCache.get(qKey);
+ if (hit && Date.now() - hit.ts < AC_CACHE_TTL) {
+ res.set('Cache-Control', 'public, max-age=600');
+ return res.json(hit.results);
+ }
 
-  let results;
-  try {
-    if (q.length >= 3) {
-      // FTS5 trigram path. We wrap the user input in double quotes so
-      // multi-word phrases (e.g. "south congress") match as a literal
-      // substring rather than getting parsed as FTS5 operators.
-      //
-      // Pattern: subquery-first. We let FTS5 produce the candidate rowids,
-      // then filter by status/mlg_can_view on the listings table. Reversing
-      // this order (JOIN listings_fts ON ... then WHERE l.status = ...) let
-      // the planner pick idx_listings_active_price first, scanning all ~10K
-      // active listings — 2.8s vs <10ms with the subquery form.
-      const ftsQuery = `"${q.replace(/"/g, '""')}"`;
-      const addresses = db.prepare(`
-        SELECT listing_key, unparsed_address as value, city, list_price, 'address' as type
-        FROM listings
-        WHERE rowid IN (SELECT rowid FROM listings_fts WHERE unparsed_address MATCH ?)
-          AND standard_status = 'Active' AND mlg_can_view = 1
-        ORDER BY list_price ASC LIMIT 5
-      `).all(ftsQuery);
-      const cities = db.prepare(`
-        SELECT DISTINCT city as value, 'city' as type
-        FROM listings
-        WHERE rowid IN (SELECT rowid FROM listings_fts WHERE city MATCH ?)
-          AND standard_status = 'Active' AND mlg_can_view = 1
-        LIMIT 4
-      `).all(ftsQuery);
-      const zips = db.prepare(`
-        SELECT DISTINCT postal_code as value, 'zip' as type
-        FROM listings
-        WHERE rowid IN (SELECT rowid FROM listings_fts WHERE postal_code MATCH ?)
-          AND standard_status = 'Active' AND mlg_can_view = 1
-        LIMIT 3
-      `).all(ftsQuery);
-      const hoods = db.prepare(`
-        SELECT DISTINCT subdivision_name as value, 'neighborhood' as type
-        FROM listings
-        WHERE rowid IN (SELECT rowid FROM listings_fts WHERE subdivision_name MATCH ?)
-          AND subdivision_name != ''
-          AND standard_status = 'Active' AND mlg_can_view = 1
-        LIMIT 3
-      `).all(ftsQuery);
-      const schools = db.prepare(`
-        SELECT DISTINCT school_district as value, 'school' as type
-        FROM listings
-        WHERE rowid IN (SELECT rowid FROM listings_fts WHERE school_district MATCH ?)
-          AND school_district != ''
-          AND standard_status = 'Active' AND mlg_can_view = 1
-        LIMIT 2
-      `).all(ftsQuery);
-      results = [...addresses, ...cities, ...zips, ...hoods, ...schools].filter(r => r.value);
-    } else {
-      // 2-character query — trigram returns nothing, so fall back to LIKE.
-      // Only the address column gets queried at this point since narrower
-      // results are rare for 2-char queries anyway.
-      const like = `%${q}%`;
-      results = db.prepare(`
-        SELECT listing_key, unparsed_address as value, city, list_price, 'address' as type
-        FROM listings
-        WHERE unparsed_address LIKE ? AND standard_status = 'Active' AND mlg_can_view = 1
-        ORDER BY list_price ASC LIMIT 5
-      `).all(like);
-    }
-  } catch (err) {
-    // FTS5 syntax errors (rare with quoted phrase) or missing fts table fall
-    // back to the old LIKE path. Surfaces the failure in logs but keeps
-    // autocomplete working for users.
-    console.warn('[autocomplete] FTS path failed, falling back to LIKE:', err.message);
-    const like = `%${q}%`;
-    const addresses = db.prepare(`
-      SELECT listing_key, unparsed_address as value, city, list_price, 'address' as type
-      FROM listings
-      WHERE unparsed_address LIKE ? AND standard_status = 'Active' AND mlg_can_view = 1
-      ORDER BY list_price ASC LIMIT 5
-    `).all(like);
-    const cities = db.prepare(`SELECT DISTINCT city as value, 'city' as type FROM listings WHERE city LIKE ? AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 4`).all(like);
-    const zips = db.prepare(`SELECT DISTINCT postal_code as value, 'zip' as type FROM listings WHERE postal_code LIKE ? AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 3`).all(like);
-    const hoods = db.prepare(`SELECT DISTINCT subdivision_name as value, 'neighborhood' as type FROM listings WHERE subdivision_name LIKE ? AND subdivision_name != '' AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 3`).all(like);
-    const schools = db.prepare(`SELECT DISTINCT school_district as value, 'school' as type FROM listings WHERE school_district LIKE ? AND school_district != '' AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 2`).all(like);
-    results = [...addresses, ...cities, ...zips, ...hoods, ...schools].filter(r => r.value);
-  }
+ let results;
+ try {
+ if (q.length >= 3) {
+ // FTS5 trigram path. We wrap the user input in double quotes so
+ // multi-word phrases (e.g. "south congress") match as a literal
+ // substring rather than getting parsed as FTS5 operators.
+ //
+ // Pattern: subquery-first. We let FTS5 produce the candidate rowids,
+ // then filter by status/mlg_can_view on the listings table. Reversing
+ // this order (JOIN listings_fts ON ... then WHERE l.status = ...) let
+ // the planner pick idx_listings_active_price first, scanning all ~10K
+ // active listings, 2.8s vs <10ms with the subquery form.
+ const ftsQuery = `"${q.replace(/"/g, '""')}"`;
+ const addresses = db.prepare(`
+ SELECT listing_key, unparsed_address as value, city, list_price, 'address' as type
+ FROM listings
+ WHERE rowid IN (SELECT rowid FROM listings_fts WHERE unparsed_address MATCH ?)
+ AND standard_status = 'Active' AND mlg_can_view = 1
+ ORDER BY list_price ASC LIMIT 5
+ `).all(ftsQuery);
+ const cities = db.prepare(`
+ SELECT DISTINCT city as value, 'city' as type
+ FROM listings
+ WHERE rowid IN (SELECT rowid FROM listings_fts WHERE city MATCH ?)
+ AND standard_status = 'Active' AND mlg_can_view = 1
+ LIMIT 4
+ `).all(ftsQuery);
+ const zips = db.prepare(`
+ SELECT DISTINCT postal_code as value, 'zip' as type
+ FROM listings
+ WHERE rowid IN (SELECT rowid FROM listings_fts WHERE postal_code MATCH ?)
+ AND standard_status = 'Active' AND mlg_can_view = 1
+ LIMIT 3
+ `).all(ftsQuery);
+ const hoods = db.prepare(`
+ SELECT DISTINCT subdivision_name as value, 'neighborhood' as type
+ FROM listings
+ WHERE rowid IN (SELECT rowid FROM listings_fts WHERE subdivision_name MATCH ?)
+ AND subdivision_name != ''
+ AND standard_status = 'Active' AND mlg_can_view = 1
+ LIMIT 3
+ `).all(ftsQuery);
+ const schools = db.prepare(`
+ SELECT DISTINCT school_district as value, 'school' as type
+ FROM listings
+ WHERE rowid IN (SELECT rowid FROM listings_fts WHERE school_district MATCH ?)
+ AND school_district != ''
+ AND standard_status = 'Active' AND mlg_can_view = 1
+ LIMIT 2
+ `).all(ftsQuery);
+ results = [...addresses...cities...zips...hoods...schools].filter(r => r.value);
+ } else {
+ // 2-character query, trigram returns nothing, so fall back to LIKE.
+ // Only the address column gets queried at this point since narrower
+ // results are rare for 2-char queries anyway.
+ const like = `%${q}%`;
+ results = db.prepare(`
+ SELECT listing_key, unparsed_address as value, city, list_price, 'address' as type
+ FROM listings
+ WHERE unparsed_address LIKE ? AND standard_status = 'Active' AND mlg_can_view = 1
+ ORDER BY list_price ASC LIMIT 5
+ `).all(like);
+ }
+ } catch (err) {
+ // FTS5 syntax errors (rare with quoted phrase) or missing fts table fall
+ // back to the old LIKE path. Surfaces the failure in logs but keeps
+ // autocomplete working for users.
+ console.warn('[autocomplete] FTS path failed, falling back to LIKE:', err.message);
+ const like = `%${q}%`;
+ const addresses = db.prepare(`
+ SELECT listing_key, unparsed_address as value, city, list_price, 'address' as type
+ FROM listings
+ WHERE unparsed_address LIKE ? AND standard_status = 'Active' AND mlg_can_view = 1
+ ORDER BY list_price ASC LIMIT 5
+ `).all(like);
+ const cities = db.prepare(`SELECT DISTINCT city as value, 'city' as type FROM listings WHERE city LIKE ? AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 4`).all(like);
+ const zips = db.prepare(`SELECT DISTINCT postal_code as value, 'zip' as type FROM listings WHERE postal_code LIKE ? AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 3`).all(like);
+ const hoods = db.prepare(`SELECT DISTINCT subdivision_name as value, 'neighborhood' as type FROM listings WHERE subdivision_name LIKE ? AND subdivision_name != '' AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 3`).all(like);
+ const schools = db.prepare(`SELECT DISTINCT school_district as value, 'school' as type FROM listings WHERE school_district LIKE ? AND school_district != '' AND standard_status = 'Active' AND mlg_can_view=1 LIMIT 2`).all(like);
+ results = [...addresses...cities...zips...hoods...schools].filter(r => r.value);
+ }
 
-  acCache.set(qKey, { results, ts: Date.now() });
-  // 10 min cache matches server-side TTL — keystrokes that repeat across users
-  // hit the CDN edge instead of round-tripping.
-  res.set('Cache-Control', 'public, max-age=600');
-  res.json(results);
+ acCache.set(qKey, { results, ts: Date.now() });
+ // 10 min cache matches server-side TTL, keystrokes that repeat across users
+ // hit the CDN edge instead of round-tripping.
+ res.set('Cache-Control', 'public, max-age=600');
+ res.json(results);
 });
 
-// GET /api/properties/neighborhood-boundary — local overrides first, then Nominatim
+// GET /api/properties/neighborhood-boundary, local overrides first, then Nominatim
 router.get('/neighborhood-boundary', async (req, res) => {
-  const q = (req.query.q || '').trim();
-  if (!q) return res.json(null);
+ const q = (req.query.q || '').trim();
+ if (!q) return res.json(null);
 
-  // Check local override file (City of Austin ArcGIS + manual approximations)
-  const key = q.toLowerCase();
-  if (neighborhoodOverrides[key]) return res.json(neighborhoodOverrides[key]);
+ // Check local override file (City of Austin ArcGIS + manual approximations)
+ const key = q.toLowerCase();
+ if (neighborhoodOverrides[key]) return res.json(neighborhoodOverrides[key]);
 
-  // Fall back to Nominatim
-  try {
-    const url = 'https://nominatim.openstreetmap.org/search?' +
-      'q=' + encodeURIComponent(q + ' Austin TX') +
-      '&format=geojson&polygon_geojson=1&limit=3';
-    const r = await fetch(url, {
-      headers: { 'User-Agent': 'austintxhomes.co/1.0 (Luke@austinmdg.com)' }
-    });
-    const data = await r.json();
-    const feature = data.features?.find(f =>
-      f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon'
-    );
-    res.json(feature?.geometry || null);
-  } catch (e) {
-    res.json(null);
-  }
+ // Fall back to Nominatim
+ try {
+ const url = 'https://nominatim.openstreetmap.org/search?' +
+ 'q=' + encodeURIComponent(q + ' Austin TX') +
+ '&format=geojson&polygon_geojson=1&limit=3';
+ const r = await fetch(url, {
+ headers: { 'User-Agent': 'austintxhomes.co/1.0 (Luke@austinmdg.com)' }
+ });
+ const data = await r.json();
+ const feature = data.features?.find(f =>
+ f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon'
+ );
+ res.json(feature?.geometry || null);
+ } catch (e) {
+ res.json(null);
+ }
 });
 
-// GET /api/properties/cash-flowing — active Austin listings whose PITI < best nearby closed lease rent
+// GET /api/properties/cash-flowing, active Austin listings whose PITI < best nearby closed lease rent
 
-// Live 30-yr fixed rate — fetched from MortgageNewsDaily, cached 4 hours
+// Live 30-yr fixed rate, fetched from MortgageNewsDaily, cached 4 hours
 let liveRateCache = null;
 let liveRateCacheTime = 0;
 
 async function fetchLiveMortgageRate() {
-  // Return cached value if fresh (< 4 hours)
-  if (liveRateCache && Date.now() - liveRateCacheTime < 4 * 60 * 60 * 1000) {
-    return liveRateCache;
-  }
-  try {
-    const https = require('https');
-    const html = await new Promise((resolve, reject) => {
-      const req = https.get('https://www.mortgagenewsdaily.com/mortgage-rates/30-year-fixed', {
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AustinTXHomes/1.0)' }
-      }, (r) => {
-        let body = '';
-        r.on('data', c => body += c);
-        r.on('end', () => resolve(body));
-      });
-      req.on('error', reject);
-      req.setTimeout(8000, () => { req.destroy(); reject(new Error('timeout')); });
-    });
-    // Primary: data-default-thirty attribute
-    const m = html.match(/data-default-thirty="([0-9.]+)"/);
-    if (m) {
-      const rate = parseFloat(m[1]);
-      if (rate > 2 && rate < 20) {
-        liveRateCache = rate;
-        liveRateCacheTime = Date.now();
-        console.log(`[CashFlow] Live mortgage rate: ${rate}%`);
-        return rate;
-      }
-    }
-    // Fallback: embed chart JSON (chartSeries[0].data last entry)
-    const chart = await new Promise((resolve, reject) => {
-      const req = https.get('https://www.mortgagenewsdaily.com/charts/embed/mnd-mtg-rates-30', {
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AustinTXHomes/1.0)' }
-      }, (r) => {
-        let body = '';
-        r.on('data', c => body += c);
-        r.on('end', () => resolve(body));
-      });
-      req.on('error', reject);
-      req.setTimeout(8000, () => { req.destroy(); reject(new Error('timeout')); });
-    });
-    const jm = chart.match(/"data"\s*:\s*(\[[\s\S]+?\])\s*[,}]/);
-    if (jm) {
-      const arr = JSON.parse(jm[1]);
-      const last = arr[arr.length - 1];
-      if (last && last.v > 2 && last.v < 20) {
-        liveRateCache = last.v;
-        liveRateCacheTime = Date.now();
-        console.log(`[CashFlow] Live mortgage rate (fallback): ${last.v}%`);
-        return last.v;
-      }
-    }
-  } catch (e) {
-    console.warn('[CashFlow] Rate fetch failed, using fallback:', e.message);
-  }
-  // Final fallback: env var or 7.0
-  return parseFloat(process.env.MORTGAGE_RATE || '6.0');
+ // Return cached value if fresh (< 4 hours)
+ if (liveRateCache && Date.now() - liveRateCacheTime < 4 * 60 * 60 * 1000) {
+ return liveRateCache;
+ }
+ try {
+ const https = require('https');
+ const html = await new Promise((resolve, reject) => {
+ const req = https.get('https://www.mortgagenewsdaily.com/mortgage-rates/30-year-fixed', {
+ headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AustinTXHomes/1.0)' }
+ }, (r) => {
+ let body = '';
+ r.on('data', c => body += c);
+ r.on('end', () => resolve(body));
+ });
+ req.on('error', reject);
+ req.setTimeout(8000, () => { req.destroy(); reject(new Error('timeout')); });
+ });
+ // Primary: data-default-thirty attribute
+ const m = html.match(/data-default-thirty="([0-9.]+)"/);
+ if (m) {
+ const rate = parseFloat(m[1]);
+ if (rate > 2 && rate < 20) {
+ liveRateCache = rate;
+ liveRateCacheTime = Date.now();
+ console.log(`[CashFlow] Live mortgage rate: ${rate}%`);
+ return rate;
+ }
+ }
+ // Fallback: embed chart JSON (chartSeries[0].data last entry)
+ const chart = await new Promise((resolve, reject) => {
+ const req = https.get('https://www.mortgagenewsdaily.com/charts/embed/mnd-mtg-rates-30', {
+ headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AustinTXHomes/1.0)' }
+ }, (r) => {
+ let body = '';
+ r.on('data', c => body += c);
+ r.on('end', () => resolve(body));
+ });
+ req.on('error', reject);
+ req.setTimeout(8000, () => { req.destroy(); reject(new Error('timeout')); });
+ });
+ const jm = chart.match(/"data"\s*:\s*(\[[\s\S]+?\])\s*[,}]/);
+ if (jm) {
+ const arr = JSON.parse(jm[1]);
+ const last = arr[arr.length - 1];
+ if (last && last.v > 2 && last.v < 20) {
+ liveRateCache = last.v;
+ liveRateCacheTime = Date.now();
+ console.log(`[CashFlow] Live mortgage rate (fallback): ${last.v}%`);
+ return last.v;
+ }
+ }
+ } catch (e) {
+ console.warn('[CashFlow] Rate fetch failed, using fallback:', e.message);
+ }
+ // Final fallback: env var or 7.0
+ return parseFloat(process.env.MORTGAGE_RATE || '6.0');
 }
 
 // Cache per rate key: 'live' or '6.50', '7.00', etc.
@@ -849,349 +848,349 @@ const cashFlowCacheMap = new Map();
 const CF_CACHE_TTL = 30 * 60 * 1000;
 
 function haversineDistanceMiles(lat1, lng1, lat2, lng2) {
-  const R = 3959;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLng = (lng2 - lng1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+ const R = 3959;
+ const dLat = (lat2 - lat1) * Math.PI / 180;
+ const dLng = (lng2 - lng1) * Math.PI / 180;
+ const a = Math.sin(dLat / 2) ** 2 +
+ Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+ return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 router.get('/cash-flowing', async (req, res) => {
-  try {
-    // Optional custom rate from query param (e.g. ?rate=6.5)
-    const customRate = parseFloat(req.query.rate);
-    const useCustomRate = !isNaN(customRate) && customRate >= 1 && customRate <= 20;
-    const cacheKey = useCustomRate ? customRate.toFixed(2) : 'live';
+ try {
+ // Optional custom rate from query param (e.g. ?rate=6.5)
+ const customRate = parseFloat(req.query.rate);
+ const useCustomRate = !isNaN(customRate) && customRate >= 1 && customRate <= 20;
+ const cacheKey = useCustomRate ? customRate.toFixed(2) : 'live';
 
-    const cached = cashFlowCacheMap.get(cacheKey);
-    if (cached && Date.now() - cached.ts < CF_CACHE_TTL) {
-      return res.json(cached.data);
-    }
+ const cached = cashFlowCacheMap.get(cacheKey);
+ if (cached && Date.now() - cached.ts < CF_CACHE_TTL) {
+ return res.json(cached.data);
+ }
 
-    const ratePercent = useCustomRate ? customRate : await fetchLiveMortgageRate();
-    const annualRate = ratePercent / 100;
-    const monthlyRate = annualRate / 12;
-    const n = 360;
+ const ratePercent = useCustomRate ? customRate : await fetchLiveMortgageRate();
+ const annualRate = ratePercent / 100;
+ const monthlyRate = annualRate / 12;
+ const n = 360;
 
-    // 1. Active for-sale (non-lease) listings in Austin
-    const forSale = db.prepare(`
-      SELECT listing_key, list_price, tax_annual_amount, association_fee,
-             association_fee_frequency, latitude, longitude,
-             unparsed_address, city, bedrooms_total, bathrooms_total,
-             living_area, photos, photos_r2, days_on_market, listing_contract_date,
-             subdivision_name, property_type, property_sub_type, year_built
-      FROM listings
-      WHERE mlg_can_view = 1
-        AND standard_status = 'Active'
-        AND property_type NOT LIKE '%Lease%'
-        AND property_type NOT LIKE '%Rental%'
-        AND city LIKE 'Austin%'
-        AND list_price > 0
-        AND latitude IS NOT NULL AND longitude IS NOT NULL
-      ORDER BY listing_contract_date DESC
-      LIMIT 1000
-    `).all();
+ // 1. Active for-sale (non-lease) listings in Austin
+ const forSale = db.prepare(`
+ SELECT listing_key, list_price, tax_annual_amount, association_fee,
+ association_fee_frequency, latitude, longitude,
+ unparsed_address, city, bedrooms_total, bathrooms_total,
+ living_area, photos, photos_r2, days_on_market, listing_contract_date,
+ subdivision_name, property_type, property_sub_type, year_built
+ FROM listings
+ WHERE mlg_can_view = 1
+ AND standard_status = 'Active'
+ AND property_type NOT LIKE '%Lease%'
+ AND property_type NOT LIKE '%Rental%'
+ AND city LIKE 'Austin%'
+ AND list_price > 0
+ AND latitude IS NOT NULL AND longitude IS NOT NULL
+ ORDER BY listing_contract_date DESC
+ LIMIT 1000
+ `).all();
 
-    // 2. Closed leases — use close_price if available, fall back to list_price
-    // (ACTRIS MLS often omits ClosePrice for lease records; ListPrice is the agreed rent)
-    const leases = db.prepare(`
-      SELECT latitude, longitude,
-             COALESCE(close_price, list_price) AS comp_rent,
-             close_date, bedrooms_total
-      FROM listings
-      WHERE (property_type LIKE '%Lease%' OR property_type LIKE '%Rental%')
-        AND standard_status = 'Closed'
-        AND COALESCE(close_price, list_price) > 0
-        AND latitude IS NOT NULL AND longitude IS NOT NULL
-        AND close_date >= date('now', '-180 days')
-    `).all();
+ // 2. Closed leases, use close_price if available, fall back to list_price
+ // (ACTRIS MLS often omits ClosePrice for lease records; ListPrice is the agreed rent)
+ const leases = db.prepare(`
+ SELECT latitude, longitude,
+ COALESCE(close_price, list_price) AS comp_rent,
+ close_date, bedrooms_total
+ FROM listings
+ WHERE (property_type LIKE '%Lease%' OR property_type LIKE '%Rental%')
+ AND standard_status = 'Closed'
+ AND COALESCE(close_price, list_price) > 0
+ AND latitude IS NOT NULL AND longitude IS NOT NULL
+ AND close_date >= date('now', '-180 days')
+ `).all();
 
-    const results = [];
-    const LAT_DELTA = 0.0145; // ~1 mile at Austin latitude
-    const LNG_DELTA = 0.0167;
+ const results = [];
+ const LAT_DELTA = 0.0145; // ~1 mile at Austin latitude
+ const LNG_DELTA = 0.0167;
 
-    for (const listing of forSale) {
-      const price = listing.list_price;
+ for (const listing of forSale) {
+ const price = listing.list_price;
 
-      // P&I (20% down, 30yr fixed)
-      const loan = price * 0.80;
-      const pi = monthlyRate === 0
-        ? Math.round(loan / n)
-        : Math.round(loan * (monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1));
+ // P&I (20% down, 30yr fixed)
+ const loan = price * 0.80;
+ const pi = monthlyRate === 0
+ ? Math.round(loan / n)
+ : Math.round(loan * (monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1));
 
-      // Tax — MLS data preferred, fall back to 1.75% Austin estimate
-      const tax = (listing.tax_annual_amount && listing.tax_annual_amount > 100)
-        ? Math.round(listing.tax_annual_amount / 12)
-        : Math.round(price * 0.0175 / 12);
+ // Tax, MLS data preferred, fall back to 1.75% Austin estimate
+ const tax = (listing.tax_annual_amount && listing.tax_annual_amount > 100)
+ ? Math.round(listing.tax_annual_amount / 12)
+ : Math.round(price * 0.0175 / 12);
 
-      // Insurance fixed at $1,000/yr
-      const insurance = 83;
+ // Insurance fixed at $1,000/yr
+ const insurance = 83;
 
-      // HOA — normalise to monthly
-      let hoa = 0;
-      if (listing.association_fee > 0) {
-        const freq = (listing.association_fee_frequency || 'Monthly').toLowerCase();
-        if (freq.includes('annual') || freq.includes('year')) hoa = Math.round(listing.association_fee / 12);
-        else if (freq.includes('quarter')) hoa = Math.round(listing.association_fee / 3);
-        else hoa = Math.round(listing.association_fee);
-      }
+ // HOA, normalise to monthly
+ let hoa = 0;
+ if (listing.association_fee > 0) {
+ const freq = (listing.association_fee_frequency || 'Monthly').toLowerCase();
+ if (freq.includes('annual') || freq.includes('year')) hoa = Math.round(listing.association_fee / 12);
+ else if (freq.includes('quarter')) hoa = Math.round(listing.association_fee / 3);
+ else hoa = Math.round(listing.association_fee);
+ }
 
-      const monthlyMortgage = pi + tax + insurance + hoa;
-      const lat = listing.latitude, lng = listing.longitude;
-      const subjectBeds = listing.bedrooms_total;
+ const monthlyMortgage = pi + tax + insurance + hoa;
+ const lat = listing.latitude, lng = listing.longitude;
+ const subjectBeds = listing.bedrooms_total;
 
-      // Collect comps: bbox pre-filter → ±1 bedroom → Haversine ≤ 1 mile
-      const nearbyRents = [];
-      for (const lease of leases) {
-        if (Math.abs(lease.latitude - lat) > LAT_DELTA) continue;
-        if (Math.abs(lease.longitude - lng) > LNG_DELTA) continue;
-        if (subjectBeds != null && lease.bedrooms_total != null) {
-          if (Math.abs(lease.bedrooms_total - subjectBeds) > 1) continue;
-        } else if (lease.bedrooms_total == null) {
-          continue;
-        }
-        const dist = haversineDistanceMiles(lat, lng, lease.latitude, lease.longitude);
-        if (dist <= 1.0) {
-          nearbyRents.push({ rent: lease.comp_rent, closedDate: lease.close_date, dist: Math.round(dist * 10) / 10 });
-        }
-      }
+ // Collect comps: bbox pre-filter → ±1 bedroom → Haversine ≤ 1 mile
+ const nearbyRents = [];
+ for (const lease of leases) {
+ if (Math.abs(lease.latitude - lat) > LAT_DELTA) continue;
+ if (Math.abs(lease.longitude - lng) > LNG_DELTA) continue;
+ if (subjectBeds != null && lease.bedrooms_total != null) {
+ if (Math.abs(lease.bedrooms_total - subjectBeds) > 1) continue;
+ } else if (lease.bedrooms_total == null) {
+ continue;
+ }
+ const dist = haversineDistanceMiles(lat, lng, lease.latitude, lease.longitude);
+ if (dist <= 1.0) {
+ nearbyRents.push({ rent: lease.comp_rent, closedDate: lease.close_date, dist: Math.round(dist * 10) / 10 });
+ }
+ }
 
-      if (!nearbyRents.length) continue;
+ if (!nearbyRents.length) continue;
 
-      // Best nearby rent
-      let bestLease = nearbyRents[0];
-      for (const comp of nearbyRents) {
-        if (comp.rent > bestLease.rent) bestLease = comp;
-      }
-      const bestNearbyRent = bestLease.rent;
+ // Best nearby rent
+ let bestLease = nearbyRents[0];
+ for (const comp of nearbyRents) {
+ if (comp.rent > bestLease.rent) bestLease = comp;
+ }
+ const bestNearbyRent = bestLease.rent;
 
-      if (bestNearbyRent > monthlyMortgage) {
-        const photos = tryParse(listing.photos, []);
-        const r2Photos = tryParse(listing.photos_r2, []);
-        results.push({
-          ...listing,
-          photos: resolvePhotos(photos, listing.listing_key, r2Photos),
-          monthlyMortgage,
-          breakdown: { pi, tax, insurance, hoa },
-          bestNearbyRent,
-          cashFlowMargin: bestNearbyRent - monthlyMortgage,
-          compCount: nearbyRents.length,
-          bestLease,
-          mortgageRate: (annualRate * 100).toFixed(1)
-        });
-      }
-    }
+ if (bestNearbyRent > monthlyMortgage) {
+ const photos = tryParse(listing.photos, []);
+ const r2Photos = tryParse(listing.photos_r2, []);
+ results.push({
+ ...listing,
+ photos: resolvePhotos(photos, listing.listing_key, r2Photos),
+ monthlyMortgage,
+ breakdown: { pi, tax, insurance, hoa },
+ bestNearbyRent,
+ cashFlowMargin: bestNearbyRent - monthlyMortgage,
+ compCount: nearbyRents.length,
+ bestLease,
+ mortgageRate: (annualRate * 100).toFixed(1)
+ });
+ }
+ }
 
-    results.sort((a, b) => b.cashFlowMargin - a.cashFlowMargin);
+ results.sort((a, b) => b.cashFlowMargin - a.cashFlowMargin);
 
-    const response = {
-      count: results.length,
-      mortgageRate: (annualRate * 100).toFixed(1),
-      generatedAt: new Date().toISOString(),
-      listings: results
-    };
+ const response = {
+ count: results.length,
+ mortgageRate: (annualRate * 100).toFixed(1),
+ generatedAt: new Date().toISOString(),
+ listings: results
+ };
 
-    cashFlowCacheMap.set(cacheKey, { data: response, ts: Date.now() });
-    res.json(response);
+ cashFlowCacheMap.set(cacheKey, { data: response, ts: Date.now() });
+ res.json(response);
 
-  } catch (err) {
-    console.error('[CASH-FLOW]', err);
-    res.status(500).json({ error: err.message });
-  }
+ } catch (err) {
+ console.error('[CASH-FLOW]', err);
+ res.status(500).json({ error: err.message });
+ }
 });
 
 // GET /api/properties/sync-status
 router.get('/sync-status', (req, res) => {
-  const state = db.prepare('SELECT * FROM sync_state WHERE id = 1').get();
-  const count = db.prepare('SELECT COUNT(*) as total FROM listings WHERE mlg_can_view = 1').get();
-  res.json({ ...state, active_listings: count.total });
+ const state = db.prepare('SELECT * FROM sync_state WHERE id = 1').get();
+ const count = db.prepare('SELECT COUNT(*) as total FROM listings WHERE mlg_can_view = 1').get();
+ res.json({ ...state, active_listings: count.total });
 });
 
 const r2Service = require('../services/r2');
 
 // GET /api/properties/photos/:listingKey/:idx
 // Tier 1: disk cache (instant)
-// Tier 2: R2 redirect (fast — Cloudflare edge, if configured)
-// Tier 3: MLS CDN fetch — GATED by shared MLS rate budget. When MLS is recently
-//         rate-limited or we've hit our hourly cap, this tier returns 404 instead
-//         of hitting MLS so user/bot traffic can't get our API token suspended.
+// Tier 2: R2 redirect (fast, Cloudflare edge, if configured)
+// Tier 3: MLS CDN fetch, GATED by shared MLS rate budget. When MLS is recently
+// rate-limited or we've hit our hourly cap, this tier returns 404 instead
+// of hitting MLS so user/bot traffic can't get our API token suspended.
 const { isRecentlyRateLimited: _isRateLimited, isOverHourlyCap: _isOverCap, recordMlsCall: _recordCall, recordRateLimit: _recordLimit, throttle: _throttle } = require('../sync/throttle');
 router.get('/photos/:listingKey/:idx', async (req, res) => {
-  const { listingKey, idx } = req.params;
-  const photoIdx = parseInt(idx) || 0;
-  const cacheFile = path.join(PHOTO_CACHE_DIR, `${listingKey}-${photoIdx}.jpg`);
+ const { listingKey, idx } = req.params;
+ const photoIdx = parseInt(idx) || 0;
+ const cacheFile = path.join(PHOTO_CACHE_DIR, `${listingKey}-${photoIdx}.jpg`);
 
-  // Tier 1: disk cache
-  if (fs.existsSync(cacheFile)) {
-    res.set('Cache-Control', 'public, max-age=86400');
-    return res.sendFile(cacheFile);
-  }
+ // Tier 1: disk cache
+ if (fs.existsSync(cacheFile)) {
+ res.set('Cache-Control', 'public, max-age=86400');
+ return res.sendFile(cacheFile);
+ }
 
-  // Look up both CDN URL and R2 URL from DB in one query
-  const dbRow = db.prepare('SELECT photos, photos_r2 FROM listings WHERE listing_key = ?').get(listingKey);
-  if (!dbRow) return res.status(404).end();
+ // Look up both CDN URL and R2 URL from DB in one query
+ const dbRow = db.prepare('SELECT photos, photos_r2 FROM listings WHERE listing_key = ?').get(listingKey);
+ if (!dbRow) return res.status(404).end();
 
-  // Tier 2: R2 redirect — browser fetches directly from Cloudflare edge
-  try {
-    const r2List = dbRow.photos_r2 ? JSON.parse(dbRow.photos_r2) : null;
-    const r2Url = Array.isArray(r2List) ? r2List[photoIdx] : null;
-    if (r2Url) {
-      res.set('Cache-Control', 'public, max-age=86400');
-      return res.redirect(302, r2Url);
-    }
-  } catch (_) {}
+ // Tier 2: R2 redirect, browser fetches directly from Cloudflare edge
+ try {
+ const r2List = dbRow.photos_r2 ? JSON.parse(dbRow.photos_r2) : null;
+ const r2Url = Array.isArray(r2List) ? r2List[photoIdx] : null;
+ if (r2Url) {
+ res.set('Cache-Control', 'public, max-age=86400');
+ return res.redirect(302, r2Url);
+ }
+ } catch (_) {}
 
-  // Tier 3: gated MLS CDN fetch.
-  // CRITICAL: Without this gate, user/bot traffic to the photo endpoint hammers
-  // MLS GRID and gets our API token suspended. We absorb the cost of "no photo"
-  // placeholders during traffic spikes rather than risk suspension.
-  if (_isRateLimited() || _isOverCap()) {
-    res.set('Cache-Control', 'public, max-age=300'); // tell browsers to back off for 5 min
-    return res.status(404).end();
-  }
+ // Tier 3: gated MLS CDN fetch.
+ // CRITICAL: Without this gate, user/bot traffic to the photo endpoint hammers
+ // MLS GRID and gets our API token suspended. We absorb the cost of "no photo"
+ // placeholders during traffic spikes rather than risk suspension.
+ if (_isRateLimited() || _isOverCap()) {
+ res.set('Cache-Control', 'public, max-age=300'); // tell browsers to back off for 5 min
+ return res.status(404).end();
+ }
 
-  let photoUrl;
-  try {
-    const urlList = dbRow.photos ? JSON.parse(dbRow.photos) : null;
-    photoUrl = Array.isArray(urlList) ? urlList[photoIdx] : null;
-  } catch (_) {}
-  if (!photoUrl) return res.status(404).end();
+ let photoUrl;
+ try {
+ const urlList = dbRow.photos ? JSON.parse(dbRow.photos) : null;
+ photoUrl = Array.isArray(urlList) ? urlList[photoIdx] : null;
+ } catch (_) {}
+ if (!photoUrl) return res.status(404).end();
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 10000);
+ const controller = new AbortController();
+ const timer = setTimeout(() => controller.abort(), 10000);
 
-  try {
-    // Enforce the shared 600ms inter-request gap. Without this, a card grid
-    // with 30 thumbnails fires 30 fetches at MLS in <1s and trips the 2 RPS
-    // suspension limit even though we're under the hourly cap.
-    await _throttle();
-    _recordCall(); // count toward shared hourly MLS budget
-    let cdnRes = await fetch(photoUrl, { signal: controller.signal });
+ try {
+ // Enforce the shared 600ms inter-request gap. Without this, a card grid
+ // with 30 thumbnails fires 30 fetches at MLS in <1s and trips the 2 RPS
+ // suspension limit even though we're under the hourly cap.
+ await _throttle();
+ _recordCall(); // count toward shared hourly MLS budget
+ let cdnRes = await fetch(photoUrl, { signal: controller.signal });
 
-    // 429 → record so backfill + future proxy calls back off across the whole system
-    if (cdnRes.status === 429) {
-      _recordLimit();
-      clearTimeout(timer);
-      res.set('Cache-Control', 'public, max-age=300');
-      return res.status(404).end();
-    }
+ // 429 → record so backfill + future proxy calls back off across the whole system
+ if (cdnRes.status === 429) {
+ _recordLimit();
+ clearTimeout(timer);
+ res.set('Cache-Control', 'public, max-age=300');
+ return res.status(404).end();
+ }
 
-    // 4xx → URL likely stale. If the listing was synced more than 60 min ago,
-    // trigger a single-listing on-demand URL refresh (rate-limited internally
-    // via the shared throttle + 5-min per-listing cooldown) and retry the CDN
-    // fetch once with the freshly-signed URL. Recently-synced listings skip the
-    // refresh — their URLs should still be valid and refreshing would waste an
-    // MLS API call. This is the path that was disabled during the suspension
-    // panic; the throttle + cooldown make it safe to re-enable.
-    if (!cdnRes.ok && cdnRes.status >= 400 && cdnRes.status < 500) {
-      const syncedRow = db.prepare('SELECT synced_at FROM listings WHERE listing_key = ?').get(listingKey);
-      const syncedMs = syncedRow?.synced_at ? new Date(syncedRow.synced_at).getTime() : 0;
-      const stale = syncedMs && (Date.now() - syncedMs) > 60 * 60 * 1000;
-      if (stale) {
-        const fresh = await refreshListingPhotos(listingKey);
-        if (fresh && fresh[photoIdx]) {
-          cdnRes = await fetch(fresh[photoIdx], { signal: controller.signal });
-        }
-      }
-      if (!cdnRes.ok && cdnRes.status >= 400 && cdnRes.status < 500) {
-        clearTimeout(timer);
-        res.set('Cache-Control', 'public, max-age=300');
-        return res.status(404).end();
-      }
-    }
+ // 4xx → URL likely stale. If the listing was synced more than 60 min ago,
+ // trigger a single-listing on-demand URL refresh (rate-limited internally
+ // via the shared throttle + 5-min per-listing cooldown) and retry the CDN
+ // fetch once with the freshly-signed URL. Recently-synced listings skip the
+ // refresh, their URLs should still be valid and refreshing would waste an
+ // MLS API call. This is the path that was disabled during the suspension
+ // panic; the throttle + cooldown make it safe to re-enable.
+ if (!cdnRes.ok && cdnRes.status >= 400 && cdnRes.status < 500) {
+ const syncedRow = db.prepare('SELECT synced_at FROM listings WHERE listing_key = ?').get(listingKey);
+ const syncedMs = syncedRow?.synced_at ? new Date(syncedRow.synced_at).getTime() : 0;
+ const stale = syncedMs && (Date.now() - syncedMs) > 60 * 60 * 1000;
+ if (stale) {
+ const fresh = await refreshListingPhotos(listingKey);
+ if (fresh && fresh[photoIdx]) {
+ cdnRes = await fetch(fresh[photoIdx], { signal: controller.signal });
+ }
+ }
+ if (!cdnRes.ok && cdnRes.status >= 400 && cdnRes.status < 500) {
+ clearTimeout(timer);
+ res.set('Cache-Control', 'public, max-age=300');
+ return res.status(404).end();
+ }
+ }
 
-    clearTimeout(timer);
-    if (!cdnRes.ok) {
-      res.set('Cache-Control', 'no-cache');
-      return res.status(404).end();
-    }
+ clearTimeout(timer);
+ if (!cdnRes.ok) {
+ res.set('Cache-Control', 'no-cache');
+ return res.status(404).end();
+ }
 
-    const contentType = cdnRes.headers.get('content-type') || 'image/jpeg';
-    const buffer = await cdnRes.buffer();
-    if (!buffer || !buffer.length) return res.status(502).end();
+ const contentType = cdnRes.headers.get('content-type') || 'image/jpeg';
+ const buffer = await cdnRes.buffer();
+ if (!buffer || !buffer.length) return res.status(502).end();
 
-    res.set('Content-Type', contentType);
-    res.set('Cache-Control', 'public, max-age=86400');
-    res.send(buffer);
+ res.set('Content-Type', contentType);
+ res.set('Cache-Control', 'public, max-age=86400');
+ res.send(buffer);
 
-    // Background: write to disk + upload to R2
-    fs.promises.writeFile(cacheFile, buffer).catch(() => {});
-    if (r2Service.isEnabled()) {
-      r2Service.uploadPhoto(listingKey, photoIdx, buffer, contentType)
-        .catch(e => console.warn('[R2]', listingKey, photoIdx, e.message));
-    }
+ // Background: write to disk + upload to R2
+ fs.promises.writeFile(cacheFile, buffer).catch(() => {});
+ if (r2Service.isEnabled()) {
+ r2Service.uploadPhoto(listingKey, photoIdx, buffer, contentType)
+ .catch(e => console.warn('[R2]', listingKey, photoIdx, e.message));
+ }
 
-  } catch (e) {
-    clearTimeout(timer);
-    if (e.name === 'AbortError') {
-      console.warn('[PHOTO] CDN timeout:', listingKey, photoIdx);
-      if (!res.headersSent) res.status(504).end();
-    } else {
-      console.error('[PHOTO]', listingKey, photoIdx, e.message);
-      if (!res.headersSent) res.status(502).end();
-    }
-  }
+ } catch (e) {
+ clearTimeout(timer);
+ if (e.name === 'AbortError') {
+ console.warn('[PHOTO] CDN timeout:', listingKey, photoIdx);
+ if (!res.headersSent) res.status(504).end();
+ } else {
+ console.error('[PHOTO]', listingKey, photoIdx, e.message);
+ if (!res.headersSent) res.status(502).end();
+ }
+ }
 });
 
 // GET /api/properties/:listingKey
 router.get('/:listingKey', (req, res) => {
-  try {
-    const row = db.prepare('SELECT * FROM listings WHERE listing_key = ?').get(req.params.listingKey);
-    if (!row) return res.status(404).json({ error: 'Not found' });
-    const photos = tryParse(row.photos, []);
-    const r2Photos = tryParse(row.photos_r2, []);
-    row.photos = resolvePhotos(photos, row.listing_key, r2Photos);
-    res.json(row);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+ try {
+ const row = db.prepare('SELECT * FROM listings WHERE listing_key = ?').get(req.params.listingKey);
+ if (!row) return res.status(404).json({ error: 'Not found' });
+ const photos = tryParse(row.photos, []);
+ const r2Photos = tryParse(row.photos_r2, []);
+ row.photos = resolvePhotos(photos, row.listing_key, r2Photos);
+ res.json(row);
+ } catch (err) {
+ res.status(500).json({ error: err.message });
+ }
 });
 
 // GET /api/properties/:listingKey/similar
 router.get('/:listingKey/similar', (req, res) => {
-  try {
-    const listing = db.prepare('SELECT * FROM listings WHERE listing_key = ?').get(req.params.listingKey);
-    if (!listing) return res.status(404).json({ error: 'Not found' });
+ try {
+ const listing = db.prepare('SELECT * FROM listings WHERE listing_key = ?').get(req.params.listingKey);
+ if (!listing) return res.status(404).json({ error: 'Not found' });
 
-    const similar = db.prepare(`
-      SELECT * FROM listings
-      WHERE listing_key != ?
-        AND mlg_can_view = 1
-        AND standard_status = 'Active'
-        AND city = ?
-        AND list_price BETWEEN ? AND ?
-        AND (bedrooms_total IS NULL OR ABS(bedrooms_total - ?) <= 1)
-        AND latitude IS NOT NULL
-      ORDER BY ABS(list_price - ?) ASC
-      LIMIT 6
-    `).all(
-      listing.listing_key,
-      listing.city,
-      (listing.list_price || 0) * 0.8,
-      (listing.list_price || 9999999) * 1.2,
-      listing.bedrooms_total || 0,
-      listing.list_price || 0
-    );
+ const similar = db.prepare(`
+ SELECT * FROM listings
+ WHERE listing_key != ?
+ AND mlg_can_view = 1
+ AND standard_status = 'Active'
+ AND city = ?
+ AND list_price BETWEEN ? AND ?
+ AND (bedrooms_total IS NULL OR ABS(bedrooms_total - ?) <= 1)
+ AND latitude IS NOT NULL
+ ORDER BY ABS(list_price - ?) ASC
+ LIMIT 6
+ `).all(
+ listing.listing_key,
+ listing.city,
+ (listing.list_price || 0) * 0.8,
+ (listing.list_price || 9999999) * 1.2,
+ listing.bedrooms_total || 0,
+ listing.list_price || 0
+ );
 
-    res.json(similar.map(r => {
-      const photos = tryParse(r.photos, []);
-      const r2Photos = tryParse(r.photos_r2, []);
-      return { ...r, photos: resolvePhotos(photos, r.listing_key, r2Photos) };
-    }));
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+ res.json(similar.map(r => {
+ const photos = tryParse(r.photos, []);
+ const r2Photos = tryParse(r.photos_r2, []);
+ return { ...r, photos: resolvePhotos(photos, r.listing_key, r2Photos) };
+ }));
+ } catch (err) {
+ res.status(500).json({ error: err.message });
+ }
 });
 
 function tryParse(str, fallback) {
-  try {
-    const v = JSON.parse(str);
-    return Array.isArray(fallback) ? (Array.isArray(v) ? v : fallback) : v;
-  } catch { return fallback; }
+ try {
+ const v = JSON.parse(str);
+ return Array.isArray(fallback) ? (Array.isArray(v) ? v : fallback) : v;
+ } catch { return fallback; }
 }
 
 // Expose refreshListingPhotos to other modules (e.g. photoBackfill) without
-// breaking the express-router contract — extra properties on a router are ignored.
+// breaking the express-router contract, extra properties on a router are ignored.
 router.refreshListingPhotos = refreshListingPhotos;
 module.exports = router;
