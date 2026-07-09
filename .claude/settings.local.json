@@ -44,7 +44,38 @@
       "Bash(curl -s \"http://localhost:3000/api/properties/ACT221669359\")",
       "Bash(lsof -ti:3002)",
       "Bash(curl -s http://localhost:3002/)",
-      "Bash(curl -s http://localhost:3000/api/properties/search?limit=1)"
+      "Bash(curl -s http://localhost:3000/api/properties/search?limit=1)",
+      "WebSearch",
+      "WebFetch(domain:rentsienna.com)",
+      "Bash(node -e ':*)",
+      "Bash(sqlite3 db/idx.db \"SELECT COUNT\\(*\\), photos_r2 FROM listings GROUP BY photos_r2 LIMIT 5;\")",
+      "Bash(git -C \"/Users/lukeallen/VS Studio\" stash push -u -m \"wip-unrelated-pre-rebase\")",
+      "Bash(git -C \"/Users/lukeallen/VS Studio\" pull --rebase origin main)",
+      "Bash(git -C \"/Users/lukeallen/VS Studio\" push origin main)",
+      "Bash(git -C \"/Users/lukeallen/VS Studio\" stash pop)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' https://pub-8badf170634b4109b5e19233575c4291.r2.dev/photos/ACT226031549/__TRACKED_VAR__.jpg)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' https://pub-8badf170634b4109b5e19233575c4291.r2.dev/photos/ACT225795849/__TRACKED_VAR__.jpg)",
+      "Bash(sqlite3 idx-search/db/idx.db \"SELECT property_type, property_sub_type, COUNT\\(*\\) FROM listings WHERE elementary_school='Barton Hills' GROUP BY property_type, property_sub_type ORDER BY 3 DESC\")",
+      "Bash(sqlite3 idx-search/db/idx.db \"SELECT DISTINCT middle_school, high_school FROM listings WHERE elementary_school='Barton Hills'\")",
+      "Bash(curl -sSI \"https://austintxhomes.co/zilker-market-report\")",
+      "Bash(curl -sS \"https://austintxhomes.co/zilker-market-report\")",
+      "Bash(curl -sSI \"https://austintxhomes.co/search\")",
+      "Bash(curl -sS \"https://austintxhomes.co/search\")"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; bash \"/Users/lukeallen/VS Studio/austintxhomes/scripts/hot-push.sh\" \"$f\"; } 2>/dev/null || true",
+            "timeout": 30,
+            "statusMessage": "Hot-pushing to production..."
+          }
+        ]
+      }
     ]
   }
 }
