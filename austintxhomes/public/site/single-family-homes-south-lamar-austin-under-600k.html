@@ -425,6 +425,43 @@
  .hero { padding: 100px 1.25rem 70px; }
  .form-card { padding: 32px 24px; }
  }
+
+ /* LIVE LISTINGS GRID ────────────────────────────────────────── */
+ .listings-section { padding: 96px 2rem; background: #fff; border-bottom: 1px solid var(--border); }
+ .listings-inner { max-width: 1140px; margin: 0 auto; }
+ .listings-header { text-align: center; margin-bottom: 44px; }
+ .listings-header h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(30px, 4.2vw, 44px); font-weight: 400; color: var(--ink); line-height: 1.15; margin: 14px 0 12px; letter-spacing: -0.01em; }
+ .listings-header h2 em { color: var(--gold); font-style: italic; }
+ .listings-header p { font-size: 15px; color: var(--mid); max-width: 660px; margin: 0 auto; line-height: 1.7; }
+ .result-count { display: inline-block; font-size: 11px; color: var(--gold); letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; margin-top: 22px; padding: 6px 14px; border: 1px solid var(--gold-pale); border-radius: 2px; background: var(--gold-pale); }
+ .listing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+ @media (max-width: 960px) { .listing-grid { grid-template-columns: repeat(2, 1fr); } }
+ @media (max-width: 600px) { .listing-grid { grid-template-columns: 1fr; } }
+ .listing-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; text-decoration: none; color: inherit; display: block; transition: box-shadow 0.2s, transform 0.2s; }
+ .listing-card:hover { box-shadow: 0 12px 32px rgba(15,15,14,0.09); transform: translateY(-2px); }
+ .card-img { position: relative; width: 100%; padding-top: 66.67%; overflow: hidden; background: var(--cream); }
+ .card-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+ .card-img-placeholder { position: absolute; inset: 0; background: linear-gradient(135deg, var(--cream), var(--border)); display: flex; align-items: center; justify-content: center; }
+ .card-badge { position: absolute; top: 12px; left: 12px; background: var(--gold); color: #fff; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; }
+ .card-badge-new { position: absolute; top: 12px; left: 84px; background: #2e7d32; color: #fff; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; }
+ .card-body { padding: 18px 20px 22px; }
+ .card-price { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 24px; font-weight: 500; color: var(--gold); line-height: 1.1; margin-bottom: 6px; }
+ .card-address { font-size: 13px; color: var(--mid); margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ .card-details { display: flex; gap: 8px; align-items: center; font-size: 12px; color: var(--light); margin-bottom: 14px; }
+ .card-details strong { color: var(--text); font-weight: 600; }
+ .card-cta { font-size: 11px; font-weight: 600; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; }
+ .listing-card:hover .card-cta { text-decoration: underline; }
+ .listings-state { grid-column: 1 / -1; text-align: center; padding: 60px 24px; font-size: 14px; color: var(--mid); }
+ .listings-state a { color: var(--gold); }
+ .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 12px; }
+ @keyframes spin { to { transform: rotate(360deg); } }
+ .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 44px; flex-wrap: wrap; }
+ .page-btn { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; padding: 9px 14px; border: 1px solid var(--border); border-radius: var(--r); background: #fff; color: var(--text); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+ .page-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+ .page-btn.active { background: var(--gold); border-color: var(--gold); color: #fff; cursor: default; }
+ .page-btn:disabled { opacity: 0.35; cursor: default; }
+ .page-ellipsis { font-size: 13px; color: var(--light); padding: 8px 4px; }
+ 
  </style>
 </head>
 <body>
@@ -483,6 +520,22 @@
  <div class="quick-answer-inner">
  <div class="quick-answer-eyebrow">The Direct Answer</div>
  <p class="quick-answer">Sub-$600K single-family homes near South Lamar Austin are rare but not impossible in 2026. Within the immediate South Lamar corridor (78704 core), most detached SFR trades between $700K and $2M+. Buyers with a firm $600K ceiling typically find single-family inventory by expanding to the <strong>southern edge of 78704 near Manchaca and William Cannon</strong>, or by pushing into <strong>78745 (South Austin, along Manchaca or Menchaca), 78741 (East Riverside near Oltorf), or 78748 (further south along Manchaca)</strong>. Sub-$600K detached SFR in these adjacent corridors typically means 1,000 to 1,600 square feet, built 1960s to 1980s, on smaller lots. Luke Allen (TREC #788149) knows the specific streets where the sub-$600K opportunities land each week and pulls fresh MLS data for every South Lamar buyer consultation.</p>
+ </div>
+</section>
+
+<!-- LIVE MLS LISTINGS GRID -->
+<section class="listings-section" id="listings">
+ <div class="listings-inner">
+ <div class="listings-header">
+ <span class="editorial-eyebrow">Live MLS Inventory</span>
+ <h2>Homes <em>Near South Lamar</em>, $500K to $600K</h2>
+ <p>Current MLS listings in the South Lamar corridor, north of Ben White Blvd, between Zilker and South Congress. Updated live from ACTRIS. Every card links to the full property detail.</p>
+ <div class="result-count"><span id="result-count">Loading</span> Active Listings</div>
+ </div>
+ <div class="listing-grid" id="listings-grid">
+ <div class="listings-state"><div class="spinner"></div><br>Loading current listings.</div>
+ </div>
+ <div class="pagination" id="pagination"></div>
  </div>
 </section>
 
@@ -762,5 +815,87 @@
  else v.addEventListener('canplay', () => v.classList.add('ready'), { once: true });
  })();
 </script>
+
+<script>
+(function(){
+ const grid = document.getElementById('listings-grid');
+ const countEl = document.getElementById('result-count');
+ let currentPage = 1, totalPages = 1;
+ const FILTERS = {"north":"30.263","south":"30.222","east":"-97.750","west":"-97.790","minPrice":"500000","maxPrice":"600000","forRent":"false","sortBy":"newest"};
+
+ window.fetchListings = async function(page) {
+ currentPage = page;
+ grid.innerHTML = '<div class="listings-state"><div class="spinner"></div><br>Loading current listings.</div>';
+ if (page > 1) document.getElementById('listings').scrollIntoView({behavior:'smooth',block:'start'});
+ const params = new URLSearchParams(Object.assign({}, FILTERS, { page: page, limit: 12 }));
+ try {
+ const res = await fetch('/api/properties/search?' + params);
+ const data = await res.json();
+ const listings = data.listings || data.properties || [];
+ const total = data.total || data.totalCount || listings.length;
+ totalPages = Math.ceil(total / 12) || 1;
+ if (countEl) countEl.textContent = total;
+ renderListings(listings);
+ renderPagination();
+ } catch (e) {
+ grid.innerHTML = '<div class="listings-state">Unable to load live listings right now. <a href="#contact">Contact Luke for the current shortlist.</a></div>';
+ }
+ };
+
+ function renderListings(listings) {
+ if (!listings.length) {
+ grid.innerHTML = '<div class="listings-state">No active listings match these exact filters right now. <a href="#contact">Contact Luke to be alerted the moment new inventory hits the market.</a></div>';
+ return;
+ }
+ grid.innerHTML = listings.map(function(l){
+ const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : 'Price N/A';
+ const addr = l.unparsed_address || 'Austin, TX';
+ const beds = l.bedrooms_total || '-';
+ const baths = l.bathrooms_total || '-';
+ const sqft = l.living_area ? Number(l.living_area).toLocaleString() : '-';
+ const img = l.photos && l.photos[0] ? l.photos[0] : '';
+ const addrSlug = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g,'').trim().replace(/\s+/g,'-');
+ const citySlug = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g,'-');
+ const link = l.listing_key ? (addrSlug ? '/property/'+addrSlug+'-'+citySlug+'-tx-'+l.listing_key : '/property/'+l.listing_key) : '/search?zip=78704&forRent=false';
+ const isNew = l.list_date && (Date.now() - new Date(l.list_date).getTime()) < 7*24*60*60*1000;
+ return '<a class="listing-card" href="'+link+'">' +
+ '<div class="card-img">' +
+ (img ? '<img src="'+img+'" alt="'+addr+'" loading="lazy"/>' : '<div class="card-img-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>') +
+ '<span class="card-badge">For Sale</span>' +
+ (isNew ? '<span class="card-badge-new">New</span>' : '') +
+ '</div><div class="card-body">' +
+ '<div class="card-price">'+price+'</div>' +
+ '<div class="card-address">'+addr+'</div>' +
+ '<div class="card-details"><span><strong>'+beds+'</strong> bd</span><span>&middot;</span><span><strong>'+baths+'</strong> ba</span><span>&middot;</span><span><strong>'+sqft+'</strong> sqft</span></div>' +
+ '<div class="card-cta">View Details &rarr;</div>' +
+ '</div></a>';
+ }).join('');
+ }
+
+ function renderPagination() {
+ const el = document.getElementById('pagination');
+ if (!el || totalPages <= 1) { if(el) el.innerHTML=''; return; }
+ let html = '<button class="page-btn"'+(currentPage===1?' disabled':'')+' onclick="fetchListings('+(currentPage-1)+')">&larr; Prev</button>';
+ const pages = [];
+ if (totalPages <= 7) { for(let i=1;i<=totalPages;i++) pages.push(i); }
+ else {
+ pages.push(1,2);
+ if(currentPage>4) pages.push('...');
+ for(let i=Math.max(3,currentPage-1);i<=Math.min(totalPages-2,currentPage+1);i++) pages.push(i);
+ if(currentPage<totalPages-3) pages.push('...');
+ pages.push(totalPages-1,totalPages);
+ }
+ pages.forEach(function(p){
+ if(p==='...') html+='<span class="page-ellipsis">&hellip;</span>';
+ else html+='<button class="page-btn'+(p===currentPage?' active':'')+'" onclick="fetchListings('+p+')">'+p+'</button>';
+ });
+ html+='<button class="page-btn"'+(currentPage===totalPages?' disabled':'')+' onclick="fetchListings('+(currentPage+1)+')">Next &rarr;</button>';
+ el.innerHTML=html;
+ }
+
+ fetchListings(1);
+})();
+</script>
+
 </body>
 </html>
