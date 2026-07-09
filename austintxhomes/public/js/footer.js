@@ -219,6 +219,10 @@
   <li><a href="/moving-to-austin">Moving to Austin Guide</a></li>
   <li><a href="/cost-of-living">Austin Cost of Living ${year}</a></li>
   <li><a href="/first-time-buyers">First-Time Buyer Guide</a></li>
+  <li><a href="/best-family-friendly-neighborhoods-austin-good-schools">Family Neighborhoods &amp; Schools</a></li>
+  <li><a href="/single-family-homes-south-lamar-austin-under-600k">Sub-$600K Homes Near South Lamar</a></li>
+  <li><a href="/commute-time-mueller-to-downtown-austin-tech">Mueller to Downtown Commute</a></li>
+  <li><a href="/central-austin-neighborhoods-vs-round-rock-suburbs">Central Austin vs. Round Rock</a></li>
   <li><a href="/about">About Luke Allen</a></li>
   <li><a href="/about#contact">Contact Luke</a></li>
   </ul>
