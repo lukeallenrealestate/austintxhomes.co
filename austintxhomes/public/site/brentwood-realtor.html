@@ -194,7 +194,7 @@
  }
  .hero::before {
  content: ''; position: absolute; inset: 0;
- background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90.18) 0%, transparent 70%);
+ background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,0.18) 0%, transparent 70%);
  pointer-events: none;
  }
  .hero-inner { position: relative; z-index: 2; max-width: 780px; animation: fadeUp .9s ease both; }
@@ -202,14 +202,14 @@
  .hero-eyebrow { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); margin-bottom: 28px; font-weight: 600; }
  .hero h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 300; color: #fff; line-height: 1.08; margin-bottom: 28px; }
  .hero h1 em { font-style: italic; color: var(--gold-lt); }
- .hero-sub { font-size: 16px; color: rgba(255,255,255.6); max-width: 600px; margin: 0 auto 40px; line-height: 1.7; font-weight: 300; }
+ .hero-sub { font-size: 16px; color: rgba(255,255,255,0.6); max-width: 600px; margin: 0 auto 40px; line-height: 1.7; font-weight: 300; }
  .hero-pills { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 44px; }
- .hero-pill { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255.5); border: 1px solid rgba(255,255,255.12); padding: 8px 18px; border-radius: 40px; }
- .hero-pill.gold { color: var(--gold-lt); border-color: rgba(184,147,90.35); background: rgba(184,147,90.12); }
+ .hero-pill { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.12); padding: 8px 18px; border-radius: 40px; }
+ .hero-pill.gold { color: var(--gold-lt); border-color: rgba(184,147,90,0.35); background: rgba(184,147,90,0.12); }
  .hero-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
  .btn-gold { background: var(--gold); color: #fff; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; padding: 15px 32px; border-radius: var(--r); text-decoration: none; display: inline-block; transition: background .2s, transform .15s; }
  .btn-gold:hover { background: var(--gold-lt); transform: translateY(-1px); }
- .btn-outline { background: transparent; color: rgba(255,255,255.7); border: 1px solid rgba(255,255,255.2); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; font-weight: 500; padding: 15px 32px; border-radius: var(--r); text-decoration: none; display: inline-block; transition: border-color .2s, color .2s; }
+ .btn-outline { background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; font-weight: 500; padding: 15px 32px; border-radius: var(--r); text-decoration: none; display: inline-block; transition: border-color .2s, color .2s; }
  .btn-outline:hover { border-color: var(--gold); color: var(--gold-lt); }
  .cred-bar { background: var(--warm); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 22px 32px; }
  .cred-bar-inner { max-width: var(--w); margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; }
@@ -231,7 +231,7 @@
  .stats-bar { background: var(--ink); padding: 56px 32px; }
  .stats-grid { max-width: var(--w); margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); gap: 32px; text-align: center; }
  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.4rem; font-weight: 300; color: var(--gold); line-height: 1; margin-bottom: 8px; }
- .stat-label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255.45); font-weight: 500; }
+ .stat-label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.45); font-weight: 500; }
 
  /* Two-col why section */
  .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; margin-top: 40px; align-items: start; }
@@ -245,10 +245,10 @@
 
  /* Services grid */
  .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 40px; }
- .card { background: rgba(255,255,255.05); border: 1px solid rgba(184,147,90.15); border-radius: 8px; padding: 28px 24px; }
+ .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(184,147,90,0.15); border-radius: 8px; padding: 28px 24px; }
  .card-label { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 8px; }
  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 600; color: #fff; margin-bottom: 10px; }
- .card-desc { font-size: 13px; color: rgba(255,255,255.55); line-height: 1.7; }
+ .card-desc { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.7; }
  .card-desc a { color: var(--gold-lt); text-decoration: none; }
  .card-desc a:hover { text-decoration: underline; }
 
@@ -320,7 +320,7 @@
  .hero-text { flex: 1; min-width: 0; }
  .hero-text .hero-eyebrow.hero-text .hero-ctas.hero-text .hero-pills.hero-text .hero-anchors { text-align: left; justify-content: flex-start; }
  .hero-photo { flex-shrink: 0; width: 280px; }
- .hero-photo img { width: 100%; border-radius: 10px; border: 2px solid rgba(184,147,90.4); display: block; box-shadow: 0 16px 48px rgba(0,0,0.5); }
+ .hero-photo img { width: 100%; border-radius: 10px; border: 2px solid rgba(184,147,90,0.4); display: block; box-shadow: 0 16px 48px rgba(0,0,0,0.5); }
  @media (max-width: 860px) {
  .hero-inner { flex-direction: column-reverse !important; gap: 32px; text-align: center !important; }
  .hero-photo { width: 180px; }
@@ -337,7 +337,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }
@@ -455,7 +455,7 @@
  <div class="section-inner">
  <p class="section-eyebrow" style="color:var(--gold)">What Luke Does</p>
  <h2 class="section-title" style="color:#fff;">Full-Service Brentwood<br><em>Real Estate Representation</em></h2>
- <p style="font-size:15px;color:rgba(255,255,255.5);max-width:600px;margin-bottom:0;">Every Brentwood client works directly with Luke Allen from first conversation through closing. No team members, no handoffs, no surprises.</p>
+ <p style="font-size:15px;color:rgba(255,255,255,0.5);max-width:600px;margin-bottom:0;">Every Brentwood client works directly with Luke Allen from first conversation through closing. No team members, no handoffs, no surprises.</p>
  <div class="cards-grid">
  <div class="card">
  <div class="card-label">Buyers</div>

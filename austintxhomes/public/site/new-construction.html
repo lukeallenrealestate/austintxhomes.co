@@ -141,35 +141,35 @@
  .hero video.ready { opacity: 1; }
  .hero::before {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.88) 0%, rgba(26,20,16.80) 55%, rgba(15,15,14.88) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.88) 0%, rgba(26,20,16,0.80) 55%, rgba(15,15,14,0.88) 100%);
  }
  .hero-inner {
  max-width: var(--w); margin: 0 auto; padding: 5rem 2rem;
  position: relative; z-index: 2;
  display: grid; grid-template-columns: 1fr 380px; gap: 5rem; align-items: center;
  }
- .breadcrumb { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255.38); margin-bottom: 1.5rem; }
- .breadcrumb a { color: rgba(255,255,255.38); text-decoration: none; }
+ .breadcrumb { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.38); margin-bottom: 1.5rem; }
+ .breadcrumb a { color: rgba(255,255,255,0.38); text-decoration: none; }
  .breadcrumb a:hover { color: var(--gold); }
- .breadcrumb span { margin: 0 6px; color: rgba(255,255,255.2); }
+ .breadcrumb span { margin: 0 6px; color: rgba(255,255,255,0.2); }
  .hero-eyebrow { font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
  .hero h1 { font-family: var(--serif); font-size: clamp(2.6rem, 4.5vw, 4rem); font-weight: 300; color: #fff; line-height: 1.1; margin-bottom: 1.25rem; }
  .hero h1 em { font-style: italic; color: var(--gold-lt); }
- .hero-sub { color: rgba(255,255,255.68); font-size: 1.02rem; line-height: 1.78; max-width: 520px; margin-bottom: 2rem; }
+ .hero-sub { color: rgba(255,255,255,0.68); font-size: 1.02rem; line-height: 1.78; max-width: 520px; margin-bottom: 2rem; }
  .hero-tags { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 2rem; }
- .hero-tag { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255.6); background: rgba(255,255,255.07); border: 1px solid rgba(255,255,255.12); border-radius: 20px; padding: .3rem .9rem; }
+ .hero-tag { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: .3rem .9rem; }
  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
  .btn-gold { background: var(--gold); color: #fff; padding: .85rem 2rem; border-radius: var(--r); text-decoration: none; font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; transition: background .2s; display: inline-block; white-space: nowrap; }
  .btn-gold:hover { background: var(--gold-lt); }
- .btn-outline { border: 1px solid rgba(184,147,90.45); color: var(--gold); padding: .85rem 2rem; border-radius: var(--r); text-decoration: none; font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; transition: all .2s; display: inline-block; white-space: nowrap; }
- .btn-outline:hover { border-color: var(--gold); background: rgba(184,147,90.08); }
+ .btn-outline { border: 1px solid rgba(184,147,90,0.45); color: var(--gold); padding: .85rem 2rem; border-radius: var(--r); text-decoration: none; font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; transition: all .2s; display: inline-block; white-space: nowrap; }
+ .btn-outline:hover { border-color: var(--gold); background: rgba(184,147,90,0.08); }
 
  /* HERO STATS CARD */
- .hero-card { background: rgba(255,255,255.05); border: 1px solid rgba(184,147,90.2); border-radius: var(--r); padding: 2rem; }
+ .hero-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(184,147,90,0.2); border-radius: var(--r); padding: 2rem; }
  .hero-card h3 { font-family: var(--serif); font-size: 1.25rem; color: #fff; margin-bottom: 1.25rem; font-weight: 400; }
- .hc-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255.08); }
+ .hc-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
  .hc-row:last-child { border-bottom: none; }
- .hc-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255.42); }
+ .hc-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,0.42); }
  .hc-val { font-size: 14px; color: #fff; text-align: right; }
  .hc-val.gold { color: var(--gold); font-family: var(--serif); font-size: 1.2rem; }
  .hc-val.green { color: #6dbf7a; }
@@ -183,7 +183,7 @@
  .section-intro { font-size: 1rem; color: var(--mid); line-height: 1.78; max-width: 680px; margin-bottom: 2.5rem; }
  .listings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
  .listing-card { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; transition: box-shadow .25s, transform .25s; text-decoration: none; display: flex; flex-direction: column; }
- .listing-card:hover { box-shadow: 0 8px 28px rgba(0,0,0.08); transform: translateY(-2px); }
+ .listing-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.08); transform: translateY(-2px); }
  .card-img { position: relative; height: 196px; background: var(--cream); overflow: hidden; }
  .card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
  .card-badge { position: absolute; top: 12px; left: 12px; background: var(--gold); color: #fff; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 3px; }
@@ -194,7 +194,7 @@
  .card-details { display: flex; gap: 14px; font-size: 12px; color: var(--mid); margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border); flex-wrap: wrap; }
  .card-details strong { color: var(--ink); font-weight: 600; }
  .listings-loading { text-align: center; padding: 48px; color: var(--mid); font-size: 14px; grid-column: 1/-1; }
- .view-all-link { display: inline-block; margin-top: 2rem; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(184,147,90.3); padding-bottom: 2px; }
+ .view-all-link { display: inline-block; margin-top: 2rem; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(184,147,90,0.3); padding-bottom: 2px; }
  .view-all-link:hover { border-color: var(--gold); }
 
  /* AREAS */
@@ -212,17 +212,17 @@
  .compare-section { padding: 80px 2rem; background: var(--ink); }
  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 2.5rem; }
  .compare-col { padding: 2.5rem 2rem; }
- .compare-col.new-col { background: rgba(184,147,90.07); border: 1px solid rgba(184,147,90.18); }
- .compare-col.resale-col { background: rgba(255,255,255.03); border: 1px solid rgba(255,255,255.08); }
+ .compare-col.new-col { background: rgba(184,147,90,0.07); border: 1px solid rgba(184,147,90,0.18); }
+ .compare-col.resale-col { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
  .compare-head { font-size: .75rem; letter-spacing: .15em; text-transform: uppercase; font-weight: 600; margin-bottom: 1.25rem; }
  .new-col .compare-head { color: var(--gold); }
- .resale-col .compare-head { color: rgba(255,255,255.45); }
+ .resale-col .compare-head { color: rgba(255,255,255,0.45); }
  .compare-list { list-style: none; display: flex; flex-direction: column; gap: .85rem; }
  .compare-list li { font-size: 14px; line-height: 1.6; display: flex; gap: .6rem; align-items: flex-start; }
- .new-col .compare-list li { color: rgba(255,255,255.75); }
+ .new-col .compare-list li { color: rgba(255,255,255,0.75); }
  .new-col .compare-list li::before { content: '✓'; color: var(--gold); font-weight: 700; flex-shrink: 0; }
- .resale-col .compare-list li { color: rgba(255,255,255.55); }
- .resale-col .compare-list li::before { content: '✓'; color: rgba(255,255,255.3); font-weight: 700; flex-shrink: 0; }
+ .resale-col .compare-list li { color: rgba(255,255,255,0.55); }
+ .resale-col .compare-list li::before { content: '✓'; color: rgba(255,255,255,0.3); font-weight: 700; flex-shrink: 0; }
 
  /* INCENTIVES */
  .incentives-section { padding: 80px 2rem; background: var(--bg); }
@@ -238,7 +238,7 @@
  .know-section { padding: 80px 2rem; background: var(--warm); }
  .know-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
  .know-item { display: flex; gap: 1.25rem; align-items: flex-start; }
- .know-num { font-family: var(--serif); font-size: 2.5rem; color: rgba(184,147,90.3); font-weight: 300; line-height: 1; flex-shrink: 0; width: 44px; }
+ .know-num { font-family: var(--serif); font-size: 2.5rem; color: rgba(184,147,90,0.3); font-weight: 300; line-height: 1; flex-shrink: 0; width: 44px; }
  .know-body h3 { font-family: var(--serif); font-size: 1.2rem; font-weight: 400; color: var(--ink); margin-bottom: .5rem; }
  .know-body p { font-size: 13px; color: var(--mid); line-height: 1.72; }
 
@@ -258,20 +258,20 @@
  .cta-inner { max-width: var(--w); margin: 0 auto; display: grid; grid-template-columns: 1fr 400px; gap: 5rem; align-items: start; }
  .cta-copy h2 { font-family: var(--serif); font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 300; color: #fff; line-height: 1.15; margin-bottom: 1rem; }
  .cta-copy h2 em { font-style: italic; color: var(--gold-lt); }
- .cta-copy p { font-size: 14px; color: rgba(255,255,255.6); line-height: 1.78; margin-bottom: .9rem; }
+ .cta-copy p { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.78; margin-bottom: .9rem; }
  .cta-proof { margin-top: 1.75rem; display: flex; flex-direction: column; gap: .5rem; }
- .cta-proof li { font-size: 13px; color: rgba(255,255,255.5); list-style: none; display: flex; gap: .6rem; }
+ .cta-proof li { font-size: 13px; color: rgba(255,255,255,0.5); list-style: none; display: flex; gap: .6rem; }
  .cta-proof li::before { content: '✓'; color: var(--gold); font-weight: 700; }
- .cta-form { background: rgba(255,255,255.05); border: 1px solid rgba(184,147,90.2); border-radius: var(--r); padding: 2.25rem 2rem; }
+ .cta-form { background: rgba(255,255,255,0.05); border: 1px solid rgba(184,147,90,0.2); border-radius: var(--r); padding: 2.25rem 2rem; }
  .cta-form h3 { font-family: var(--serif); font-size: 1.4rem; color: #fff; margin-bottom: .3rem; font-weight: 400; }
- .cta-form > p { font-size: 12px; color: rgba(255,255,255.4); margin-bottom: 1.5rem; }
+ .cta-form > p { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 1.5rem; }
  .form-group { margin-bottom: .85rem; }
  .form-group input.form-group select {
  width: 100%; padding: .7rem 1rem;
- background: rgba(255,255,255.07); border: 1px solid rgba(255,255,255.12);
+ background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
  border-radius: var(--r); color: #fff; font-family: var(--sans); font-size: .88rem;
  }
- .form-group input::placeholder { color: rgba(255,255,255.3); }
+ .form-group input::placeholder { color: rgba(255,255,255,0.3); }
  .form-group input:focus.form-group select:focus { outline: none; border-color: var(--gold); }
  .form-group select option { background: #1a1918; }
  .form-submit { width: 100%; background: var(--gold); color: #fff; border: none; padding: .88rem; border-radius: var(--r); font-family: var(--sans); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: background .2s; }
@@ -441,7 +441,7 @@
  <div class="section-inner">
  <p class="section-eyebrow" style="color:var(--gold)">Side by Side</p>
  <h2 class="section-title light" style="color:#fff">New Construction vs. <em style="color:var(--gold-lt)">Resale</em></h2>
- <p class="section-intro light" style="color:rgba(255,255,255.6)">Both have real advantages right now. Here's the honest comparison - not a sales pitch for either side.</p>
+ <p class="section-intro light" style="color:rgba(255,255,255,0.6)">Both have real advantages right now. Here's the honest comparison - not a sales pitch for either side.</p>
  <div class="compare-grid">
  <div class="compare-col new-col">
  <div class="compare-head">New Construction Advantages</div>
@@ -469,7 +469,7 @@
  </ul>
  </div>
  </div>
- <p style="margin-top:2rem;font-size:13px;color:rgba(255,255,255.4);max-width:700px;line-height:1.75">The honest answer: it depends entirely on your priorities, timeline, and location needs. A good buyer's agent will run both scenarios - true cost comparison including incentives, HOA, taxes, and projected maintenance - before you decide.</p>
+ <p style="margin-top:2rem;font-size:13px;color:rgba(255,255,255,0.4);max-width:700px;line-height:1.75">The honest answer: it depends entirely on your priorities, timeline, and location needs. A good buyer's agent will run both scenarios - true cost comparison including incentives, HOA, taxes, and projected maintenance - before you decide.</p>
  </div>
 </section>
 

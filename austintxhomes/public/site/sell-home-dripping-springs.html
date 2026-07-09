@@ -95,14 +95,14 @@
  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
  :root { --gold: #b8935a; --gold-lt: #cda96f; --gold-pale: #f5ede0; --ink: #0f0f0e; --text: #1a1918; --mid: #5c5b57; --light: #999690; --bg: #ffffff; --warm: #faf8f4; --cream: #f1ece3; --border: #e5dfd4; --r: 4px; --w: 1180px; }
  body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.6; }
- .hero { background: var(--ink); background-image: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90.18) 0%, transparent 70%); padding: 100px 24px 80px; text-align: center; color: #fff; }
+ .hero { background: var(--ink); background-image: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,0.18) 0%, transparent 70%); padding: 100px 24px 80px; text-align: center; color: #fff; }
  .hero-eyebrow { font-family: Inter, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
  .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 500; line-height: 1.1; margin: 0 0 20px; color: #fff; }
  .hero h1 em { font-style: italic; color: var(--gold-lt); }
- .hero-sub { font-family: Inter, sans-serif; font-size: 1.05rem; color: rgba(255,255,255.65); max-width: 720px; margin: 0 auto 32px; line-height: 1.7; }
+ .hero-sub { font-family: Inter, sans-serif; font-size: 1.05rem; color: rgba(255,255,255,0.65); max-width: 720px; margin: 0 auto 32px; line-height: 1.7; }
  .hero-pills { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 36px; }
- .hero-pill { background: rgba(255,255,255.07); border: 1px solid rgba(184,147,90.3); border-radius: 20px; padding: 6px 16px; font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; color: rgba(255,255,255.8); }
- .hero-pill--gold { background: rgba(184,147,90.15); border-color: rgba(184,147,90.5); color: var(--gold-lt); }
+ .hero-pill { background: rgba(255,255,255,0.07); border: 1px solid rgba(184,147,90,0.3); border-radius: 20px; padding: 6px 16px; font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8); }
+ .hero-pill--gold { background: rgba(184,147,90,0.15); border-color: rgba(184,147,90,0.5); color: var(--gold-lt); }
  .btn-gold { background: var(--gold); color: #fff; padding: 12px 28px; border-radius: var(--r); font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: background .2s; }
  .btn-gold:hover { background: var(--gold-lt); }
  .section { padding: 80px 24px; }
@@ -115,7 +115,7 @@
  .section-ink .section-heading { color: #fff; }
  .section-heading em { font-style: italic; color: var(--gold); }
  .section-sub { font-family: Inter, sans-serif; font-size: 15px; color: var(--mid); margin-bottom: 36px; max-width: 700px; }
- .section-ink .section-sub { color: rgba(255,255,255.6); }
+ .section-ink .section-sub { color: rgba(255,255,255,0.6); }
  .body-copy { font-family: Inter, sans-serif; font-size: 15px; line-height: 1.8; color: var(--mid); max-width: 760px; }
  .body-copy p { margin: 0 0 18px; }
  .body-copy a { color: var(--gold); text-decoration: none; }
@@ -158,10 +158,10 @@
  .contact-form input.contact-form select.contact-form textarea { width: 100%; font-family: Inter, sans-serif; font-size: 14px; padding: 11px 14px; border: 1px solid var(--border); border-radius: var(--r); background: var(--bg); color: var(--text); margin-bottom: 12px; outline: none; transition: border-color .2s; }
  .contact-form input:focus.contact-form select:focus.contact-form textarea:focus { border-color: var(--gold); }
  .contact-form textarea { resize: vertical; min-height: 90px; }
- .form-card { background: var(--ink); border-radius: 8px; padding: 36px; border: 1px solid rgba(184,147,90.2); }
- .form-card .contact-form input.form-card .contact-form select.form-card .contact-form textarea { background: rgba(255,255,255.06); border-color: rgba(255,255,255.12); color: rgba(255,255,255.9); }
- .form-card .contact-form input::placeholder.form-card .contact-form textarea::placeholder { color: rgba(255,255,255.35); }
- .form-card .contact-form select { color: rgba(255,255,255.7); }
+ .form-card { background: var(--ink); border-radius: 8px; padding: 36px; border: 1px solid rgba(184,147,90,0.2); }
+ .form-card .contact-form input.form-card .contact-form select.form-card .contact-form textarea { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9); }
+ .form-card .contact-form input::placeholder.form-card .contact-form textarea::placeholder { color: rgba(255,255,255,0.35); }
+ .form-card .contact-form select { color: rgba(255,255,255,0.7); }
  .form-card select option { background: var(--ink); color: #fff; }
  .form-title { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; color: #fff; margin-bottom: 20px; }
  .trust-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
@@ -272,35 +272,35 @@
  <h2 class="section-heading">The Six-Step Dripping Springs<br><em>Listing Process</em></h2>
  <p class="section-sub">Every Dripping Springs listing follows the same process - subdivision-level pricing first, honest renovation guidance second, professional marketing third, negotiation last.</p>
  <div class="step-grid">
- <div class="step-card" style="background: rgba(255,255,255.04); border-color: rgba(184,147,90.2);">
+ <div class="step-card" style="background: rgba(255,255,255,0.04); border-color: rgba(184,147,90,0.2);">
  <div class="step-num">01</div>
  <div class="step-title" style="color: #fff;">Subdivision Pricing</div>
- <div class="step-body" style="color: rgba(255,255,255.55);">Luke pulls actual sold comps from your specific subdivision and DSISD feeder - not Zillow, not generic Austin metro data. Subdivision-level analysis with adjustments for lot size, condition, and acreage.</div>
+ <div class="step-body" style="color: rgba(255,255,255,0.55);">Luke pulls actual sold comps from your specific subdivision and DSISD feeder - not Zillow, not generic Austin metro data. Subdivision-level analysis with adjustments for lot size, condition, and acreage.</div>
  </div>
- <div class="step-card" style="background: rgba(255,255,255.04); border-color: rgba(184,147,90.2);">
+ <div class="step-card" style="background: rgba(255,255,255,0.04); border-color: rgba(184,147,90,0.2);">
  <div class="step-num">02</div>
  <div class="step-title" style="color: #fff;">Pre-Listing Strategy</div>
- <div class="step-body" style="color: rgba(255,255,255.55);">Honest guidance on what to update and what to leave alone. Luke evaluates every potential pre-listing investment against actual comparable sales before recommending you spend money.</div>
+ <div class="step-body" style="color: rgba(255,255,255,0.55);">Honest guidance on what to update and what to leave alone. Luke evaluates every potential pre-listing investment against actual comparable sales before recommending you spend money.</div>
  </div>
- <div class="step-card" style="background: rgba(255,255,255.04); border-color: rgba(184,147,90.2);">
+ <div class="step-card" style="background: rgba(255,255,255,0.04); border-color: rgba(184,147,90,0.2);">
  <div class="step-num">03</div>
  <div class="step-title" style="color: #fff;">Professional Marketing</div>
- <div class="step-body" style="color: rgba(255,255,255.55);">Professional photography, drone aerials for acreage, twilight shots when appropriate, video walkthroughs for luxury, full MLS listing, social media, and direct outreach to buyer agents working the specific tier.</div>
+ <div class="step-body" style="color: rgba(255,255,255,0.55);">Professional photography, drone aerials for acreage, twilight shots when appropriate, video walkthroughs for luxury, full MLS listing, social media, and direct outreach to buyer agents working the specific tier.</div>
  </div>
- <div class="step-card" style="background: rgba(255,255,255.04); border-color: rgba(184,147,90.2);">
+ <div class="step-card" style="background: rgba(255,255,255,0.04); border-color: rgba(184,147,90,0.2);">
  <div class="step-num">04</div>
  <div class="step-title" style="color: #fff;">DSISD Positioning</div>
- <div class="step-body" style="color: rgba(255,255,255.55);">Every listing leads with specific elementary, middle, and high school assignment. The DSISD anchor is the single most important marketing message for most Dripping Springs homes.</div>
+ <div class="step-body" style="color: rgba(255,255,255,0.55);">Every listing leads with specific elementary, middle, and high school assignment. The DSISD anchor is the single most important marketing message for most Dripping Springs homes.</div>
  </div>
- <div class="step-card" style="background: rgba(255,255,255.04); border-color: rgba(184,147,90.2);">
+ <div class="step-card" style="background: rgba(255,255,255,0.04); border-color: rgba(184,147,90,0.2);">
  <div class="step-num">05</div>
  <div class="step-title" style="color: #fff;">Negotiation</div>
- <div class="step-body" style="color: rgba(255,255,255.55);">Luke negotiates directly with buyer agents - on price, contingencies, repair credits, closing timing, and option period. Acreage transactions involve well/septic, easement, and survey negotiations that require expertise.</div>
+ <div class="step-body" style="color: rgba(255,255,255,0.55);">Luke negotiates directly with buyer agents - on price, contingencies, repair credits, closing timing, and option period. Acreage transactions involve well/septic, easement, and survey negotiations that require expertise.</div>
  </div>
- <div class="step-card" style="background: rgba(255,255,255.04); border-color: rgba(184,147,90.2);">
+ <div class="step-card" style="background: rgba(255,255,255,0.04); border-color: rgba(184,147,90,0.2);">
  <div class="step-num">06</div>
  <div class="step-title" style="color: #fff;">Closing Coordination</div>
- <div class="step-body" style="color: rgba(255,255,255.55);">Luke coordinates with the title company, lender, inspectors, and surveyors through closing. For acreage and luxury transactions, this often includes additional due diligence and disclosure work that smaller agents skip.</div>
+ <div class="step-body" style="color: rgba(255,255,255,0.55);">Luke coordinates with the title company, lender, inspectors, and surveyors through closing. For acreage and luxury transactions, this often includes additional due diligence and disclosure work that smaller agents skip.</div>
  </div>
  </div>
  </div>

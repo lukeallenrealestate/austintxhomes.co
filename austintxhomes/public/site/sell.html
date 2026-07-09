@@ -169,7 +169,7 @@
  .hero video.ready { opacity: 1; }
  .hero::before {
  content: ''; position: absolute; inset: 0;
- background: linear-gradient(135deg, rgba(15,15,14.82) 0%, rgba(26,20,16.75) 50%, rgba(15,15,14.82) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.82) 0%, rgba(26,20,16,0.75) 50%, rgba(15,15,14,0.82) 100%);
  z-index: 1;
  }
  .hero-inner {
@@ -188,10 +188,10 @@
  }
  .hero-content h1 em { font-style: italic; color: var(--gold-lt); }
  .hero-content > p {
- color: rgba(255,255,255.72); font-size: 1.05rem; line-height: 1.75;
+ color: rgba(255,255,255,0.72); font-size: 1.05rem; line-height: 1.75;
  max-width: 520px; margin-bottom: 2.5rem;
  }
- .hero-content > p a { color: var(--gold-lt); text-decoration: none; border-bottom: 1px solid rgba(184,147,90.4); }
+ .hero-content > p a { color: var(--gold-lt); text-decoration: none; border-bottom: 1px solid rgba(184,147,90,0.4); }
  .hero-content > p a:hover { color: var(--gold); border-bottom-color: var(--gold); }
  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
  .btn-primary {
@@ -203,13 +203,13 @@
  }
  .btn-primary:hover { background: var(--gold-lt); }
  .btn-outline {
- border: 1px solid rgba(184,147,90.5); color: var(--gold);
+ border: 1px solid rgba(184,147,90,0.5); color: var(--gold);
  padding: .85rem 2rem; border-radius: 2px; text-decoration: none;
  font-size: .88rem; letter-spacing: .1em; text-transform: uppercase;
  transition: all .2s; display: inline-block; background: transparent;
  font-family: 'Inter', sans-serif;
  }
- .btn-outline:hover { border-color: var(--gold); background: rgba(184,147,90.08); color: var(--gold-lt); }
+ .btn-outline:hover { border-color: var(--gold); background: rgba(184,147,90,0.08); color: var(--gold-lt); }
  /* Legacy btn-ghost kept for any non-hero callers */
  .btn-ghost {
  background: transparent; color: var(--ink); cursor: pointer;
@@ -221,7 +221,7 @@
 
  /* HERO FORM CARD (right side, mirrors buy page) */
  .hero-form {
- background: rgba(255,255,255.04); border: 1px solid rgba(184,147,90.2);
+ background: rgba(255,255,255,0.04); border: 1px solid rgba(184,147,90,0.2);
  border-radius: 4px; padding: 2.5rem 2rem;
  }
  .hero-form h3 {
@@ -229,19 +229,19 @@
  color: #fff; margin-bottom: .4rem;
  }
  .hero-form h3 em { font-style: italic; color: var(--gold-lt); }
- .hero-form > p { color: rgba(255,255,255.6); font-size: .85rem; margin-bottom: 1.75rem; }
+ .hero-form > p { color: rgba(255,255,255,0.6); font-size: .85rem; margin-bottom: 1.75rem; }
  .hero-form .form-group { margin-bottom: 1rem; }
  .hero-form .form-group label {
  display: block; font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;
- color: rgba(255,255,255.5); margin-bottom: .4rem;
+ color: rgba(255,255,255,0.5); margin-bottom: .4rem;
  }
  .hero-form .form-group input.hero-form .form-group select {
  width: 100%; padding: .75rem 1rem;
- background: rgba(255,255,255.06); border: 1px solid rgba(255,255,255.12);
+ background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
  border-radius: 2px; color: #fff; font-family: 'Inter', sans-serif; font-size: .9rem;
  transition: border-color .2s; outline: none;
  }
- .hero-form .form-group input::placeholder { color: rgba(255,255,255.3); }
+ .hero-form .form-group input::placeholder { color: rgba(255,255,255,0.3); }
  .hero-form .form-group input:focus.hero-form .form-group select:focus { border-color: var(--gold); }
  .hero-form .form-group select option { background: #1a1410; }
  .hero-form .form-submit {
@@ -252,7 +252,7 @@
  }
  .hero-form .form-submit:hover { background: var(--gold-lt); }
  .hero-form .form-note {
- font-size: .72rem; color: rgba(255,255,255.35);
+ font-size: .72rem; color: rgba(255,255,255,0.35);
  text-align: center; margin-top: .75rem;
  }
  .hero-form .hf-success {
@@ -271,7 +271,7 @@
  font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 400;
  color: var(--gold); display: block; line-height: 1;
  }
- .trust-label { font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: rgba(255,255,255.5); margin-top: 4px; }
+ .trust-label { font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-top: 4px; }
 
  /* VALUATION FORM */
  .valuation { padding: 96px 32px; background: var(--bg); }
@@ -350,15 +350,15 @@
  .dark-inner { max-width: var(--w); margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
  .dark-quote {
  font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3.5vw, 46px);
- font-weight: 300; font-style: italic; line-height: 1.3; color: rgba(255,255,255.9);
+ font-weight: 300; font-style: italic; line-height: 1.3; color: rgba(255,255,255,0.9);
  }
  .dark-quote span { color: var(--gold); }
- .dark-copy { color: rgba(255,255,255.65); }
+ .dark-copy { color: rgba(255,255,255,0.65); }
  .dark-copy h3 { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 400; color: #fff; margin-bottom: 16px; }
  .dark-copy p { font-size: 14px; line-height: 1.75; margin-bottom: 20px; }
  .dark-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 36px; }
  .dark-stat strong { display: block; font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 400; color: var(--gold); }
- .dark-stat span { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255.45); }
+ .dark-stat span { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.45); }
 
  /* FAQ */
  .faq { padding: 96px 32px; background: var(--bg); }
@@ -373,7 +373,7 @@
  .cta-strip { padding: 80px 32px; background: var(--gold); text-align: center; }
  .cta-strip h2 { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 400; color: #fff; margin-bottom: 16px; }
  .cta-strip h2 em { font-style: italic; }
- .cta-strip p { font-size: 15px; color: rgba(255,255,255.8); margin-bottom: 36px; }
+ .cta-strip p { font-size: 15px; color: rgba(255,255,255,0.8); margin-bottom: 36px; }
  .btn-white {
  background: #fff; color: var(--gold); border: none; cursor: pointer;
  font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
@@ -383,15 +383,15 @@
  .btn-white:hover { opacity: .9; }
 
  /* FOOTER */
- footer { background: var(--ink); color: rgba(255,255,255.4); padding: 48px 32px; text-align: center; }
+ footer { background: var(--ink); color: rgba(255,255,255,0.4); padding: 48px 32px; text-align: center; }
  .footer-inner { max-width: var(--w); margin: 0 auto; }
  .footer-logo { margin-bottom: 24px; }
  .footer-logo img { height: 36px; opacity: .6; filter: brightness(10); }
  .footer-links { display: flex; justify-content: center; gap: 32px; margin-bottom: 24px; flex-wrap: wrap; }
- .footer-links a { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255.4); text-decoration: none; transition: color .2s; }
+ .footer-links a { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.4); text-decoration: none; transition: color .2s; }
  .footer-links a:hover { color: var(--gold); }
  .footer-legal { font-size: 11px; line-height: 1.8; }
- .footer-legal a { color: rgba(255,255,255.4); text-decoration: none; }
+ .footer-legal a { color: rgba(255,255,255,0.4); text-decoration: none; }
 
  @media (max-width: 900px) {
  .hero-inner { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 2rem; }
@@ -700,7 +700,7 @@
  <!-- CTA STRIP -->
  <section class="cta-strip">
  <h2>Ready to Find Out<br><em>What Your Home Is Worth?</em></h2>
- <p>Free home valuation. No algorithms. Just a licensed Austin Realtor who knows the market. Wondering about <a href="/austin-home-prices-falling" style="color:rgba(255,255,255.7);text-decoration:underline;">whether Austin prices are still falling</a>? The answer may change your timing.</p>
+ <p>Free home valuation. No algorithms. Just a licensed Austin Realtor who knows the market. Wondering about <a href="/austin-home-prices-falling" style="color:rgba(255,255,255,0.7);text-decoration:underline;">whether Austin prices are still falling</a>? The answer may change your timing.</p>
  <a href="#valuation" class="btn-white">Get My Free Valuation</a>
  </section>
 

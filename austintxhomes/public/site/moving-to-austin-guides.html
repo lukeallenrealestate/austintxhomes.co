@@ -122,14 +122,14 @@
  .hero h1 { font-size: clamp(2.6rem, 5vw, 4rem); color: #fff; margin-bottom: 1.25rem; }
  .hero h1 em { color: var(--gold); font-style: italic; }
  .hero-sub {
- font-size: 1.05rem; color: rgba(255,255,255.7); max-width: 640px;
+ font-size: 1.05rem; color: rgba(255,255,255,0.7); max-width: 640px;
  line-height: 1.75; margin-bottom: 2.5rem;
  }
  .hero-stats { display: flex; gap: 1rem; flex-wrap: wrap; }
  .hero-stat {
- background: rgba(255,255,255.06); border: 1px solid rgba(255,255,255.1);
+ background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
  border-radius: var(--r); padding: .5rem 1.1rem;
- font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255.75);
+ font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,0.75);
  }
  .hero-stat strong { color: var(--gold); }
 
@@ -170,7 +170,7 @@
  padding: 1.5rem 1.75rem; text-decoration: none; color: inherit;
  transition: border-color .2s, box-shadow .2s; display: block;
  }
- .city-card:hover { border-color: var(--gold); box-shadow: 0 4px 20px rgba(184,147,90.1); }
+ .city-card:hover { border-color: var(--gold); box-shadow: 0 4px 20px rgba(184,147,90,0.1); }
  .city-card-from { font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--light); margin-bottom: .35rem; }
  .city-card-name { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--text); margin-bottom: .5rem; line-height: 1.1; }
  .city-card-hook { font-size: .82rem; color: var(--mid); line-height: 1.6; margin-bottom: 1rem; }
@@ -180,7 +180,7 @@
  background: var(--cream); color: var(--mid); border-radius: 3px;
  padding: 2px 7px;
  }
- .city-card-tag.gold { background: rgba(184,147,90.12); color: var(--gold); }
+ .city-card-tag.gold { background: rgba(184,147,90,0.12); color: var(--gold); }
  .city-card-arrow { color: var(--gold); font-size: .8rem; margin-top: 1rem; display: block; }
 
  /* CTA */
@@ -188,7 +188,7 @@
  .cta-inner { max-width: 720px; margin: 0 auto; text-align: center; }
  .cta-inner h2 { font-size: 2.4rem; color: #fff; margin-bottom: 1rem; }
  .cta-inner h2 em { color: var(--gold); font-style: italic; }
- .cta-inner p { color: rgba(255,255,255.65); font-size: .95rem; line-height: 1.8; margin-bottom: 2rem; }
+ .cta-inner p { color: rgba(255,255,255,0.65); font-size: .95rem; line-height: 1.8; margin-bottom: 2rem; }
  .cta-btn {
  display: inline-block; background: var(--gold); color: #fff;
  padding: .85rem 2.5rem; border-radius: var(--r);
@@ -198,7 +198,7 @@
  }
  .cta-btn:hover { background: var(--gold-lt); }
  .cta-links { margin-top: 1.5rem; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
- .cta-links a { color: rgba(255,255,255.45); font-size: .82rem; text-decoration: none; transition: color .2s; }
+ .cta-links a { color: rgba(255,255,255,0.45); font-size: .82rem; text-decoration: none; transition: color .2s; }
  .cta-links a:hover { color: var(--gold); }
 
  @media (max-width: 860px) {
@@ -220,7 +220,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }

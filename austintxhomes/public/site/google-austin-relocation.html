@@ -184,7 +184,7 @@
  .hero video.ready { opacity: 1; }
  .hero::before {
  content: ''; position: absolute; inset: 0;
- background: linear-gradient(135deg, rgba(15,15,14.82) 0%, rgba(26,20,16.75) 50%, rgba(15,15,14.82) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.82) 0%, rgba(26,20,16,0.75) 50%, rgba(15,15,14,0.82) 100%);
  z-index: 1;
  }
  .hero-inner {
@@ -195,20 +195,20 @@
  .hero-left { text-align: left; }
  .hero-right {}
  .hero-form {
- background: rgba(255,255,255.06); border: 1px solid rgba(255,255,255.12);
+ background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
  border-radius: 8px; padding: 28px; text-align: left;
  }
  .hero-form h3 {
  font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #fff; margin-bottom: 4px; font-weight: 400;
  }
- .hero-form p { font-size: 12px; color: rgba(255,255,255.45); margin-bottom: 20px; }
+ .hero-form p { font-size: 12px; color: rgba(255,255,255,0.45); margin-bottom: 20px; }
  .hero-form input.hero-form select {
  width: 100%; padding: 10px 14px; margin-bottom: 10px;
- border: 1px solid rgba(255,255,255.15); border-radius: var(--r);
- background: rgba(255,255,255.08); color: #fff;
+ border: 1px solid rgba(255,255,255,0.15); border-radius: var(--r);
+ background: rgba(255,255,255,0.08); color: #fff;
  font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
  }
- .hero-form input::placeholder { color: rgba(255,255,255.3); }
+ .hero-form input::placeholder { color: rgba(255,255,255,0.3); }
  .hero-form input:focus.hero-form select:focus { border-color: var(--gold); }
  .hero-form select option { background: #1a1918; color: #fff; }
  .hero-form .btn-submit {
@@ -254,7 +254,7 @@
 
  .hero-lead {
  font-size: 1.0625rem;
- color: rgba(255,255,255.58);
+ color: rgba(255,255,255,0.58);
  line-height: 1.8;
  max-width: 680px;
  margin: 0 0 2.5rem;
@@ -279,10 +279,10 @@
  font-weight: 500;
  letter-spacing: .06em;
  color: var(--gold);
- border: 1px solid rgba(184,147,90.35);
+ border: 1px solid rgba(184,147,90,0.35);
  border-radius: 50px;
  padding: 6px 16px;
- background: rgba(184,147,90.06);
+ background: rgba(184,147,90,0.06);
  }
 
  .hero-anchors {
@@ -298,7 +298,7 @@
  font-size: 12px;
  letter-spacing: .1em;
  text-transform: uppercase;
- color: rgba(255,255,255.38);
+ color: rgba(255,255,255,0.38);
  text-decoration: none;
  transition: color .2s;
  }
@@ -387,7 +387,7 @@
  justify-content: space-between;
  align-items: baseline;
  padding: .5rem 0;
- border-bottom: 1px solid rgba(229,223,212.5);
+ border-bottom: 1px solid rgba(229,223,212,0.5);
  gap: .5rem;
  }
 
@@ -413,7 +413,7 @@
  .commute-warning {
  margin-top: 1.25rem;
  padding: .875rem 1rem;
- background: rgba(184,147,90.07);
+ background: rgba(184,147,90,0.07);
  border-left: 3px solid var(--gold);
  border-radius: 0 var(--r) var(--r) 0;
  font-size: .8125rem;
@@ -437,8 +437,8 @@
  }
 
  .nbhd-card:hover {
- border-color: rgba(184,147,90.4);
- box-shadow: 0 4px 20px rgba(184,147,90.08);
+ border-color: rgba(184,147,90,0.4);
+ box-shadow: 0 4px 20px rgba(184,147,90,0.08);
  }
 
  .commute-badge {
@@ -448,8 +448,8 @@
  text-transform: uppercase;
  font-weight: 600;
  color: var(--gold);
- background: rgba(184,147,90.1);
- border: 1px solid rgba(184,147,90.25);
+ background: rgba(184,147,90,0.1);
+ border: 1px solid rgba(184,147,90,0.25);
  border-radius: 3px;
  padding: 2px 8px;
  margin-bottom: 1rem;
@@ -551,7 +551,7 @@
  .cost-table td:not(:first-child) { color: var(--mid); font-size: .8125rem; }
 
  .cost-table tr:last-child td { border-bottom: none; }
- .cost-table tr:hover td { background: rgba(184,147,90.03); }
+ .cost-table tr:hover td { background: rgba(184,147,90,0.03); }
 
  .housing-copy p {
  font-size: .9375rem;
@@ -787,7 +787,7 @@
  /* ── CTA ── */
  .cta-section {
  background: var(--ink);
- background-image: radial-gradient(ellipse 70% 50% at 50% 60%, rgba(184,147,90.12) 0%, transparent 60%);
+ background-image: radial-gradient(ellipse 70% 50% at 50% 60%, rgba(184,147,90,0.12) 0%, transparent 60%);
  }
 
  .cta-grid {
@@ -805,14 +805,14 @@
 
  .cta-copy p {
  font-size: .9375rem;
- color: rgba(255,255,255.52);
+ color: rgba(255,255,255,0.52);
  line-height: 1.85;
  margin-bottom: 1.25rem;
  }
 
  .cta-form-wrap {
- background: rgba(255,255,255.04);
- border: 1px solid rgba(255,255,255.09);
+ background: rgba(255,255,255,0.04);
+ border: 1px solid rgba(255,255,255,0.09);
  border-radius: var(--r);
  padding: 2.25rem;
  }
@@ -827,7 +827,7 @@
 
  .form-sub {
  font-size: .8125rem;
- color: rgba(255,255,255.38);
+ color: rgba(255,255,255,0.38);
  margin-bottom: 1.75rem;
  }
 
@@ -838,16 +838,16 @@
  font-size: 11px;
  letter-spacing: .1em;
  text-transform: uppercase;
- color: rgba(255,255,255.4);
+ color: rgba(255,255,255,0.4);
  margin-bottom: .375rem;
  }
 
  .form-group input.form-group select {
  width: 100%;
- background: rgba(255,255,255.06);
- border: 1px solid rgba(255,255,255.12);
+ background: rgba(255,255,255,0.06);
+ border: 1px solid rgba(255,255,255,0.12);
  border-radius: var(--r);
- color: rgba(255,255,255.85);
+ color: rgba(255,255,255,0.85);
  font-family: 'Inter', sans-serif;
  font-size: .875rem;
  padding: .75rem 1rem;
@@ -856,10 +856,10 @@
  appearance: none;
  }
 
- .form-group input::placeholder { color: rgba(255,255,255.28); }
+ .form-group input::placeholder { color: rgba(255,255,255,0.28); }
 
  .form-group input:focus.form-group select:focus {
- border-color: rgba(184,147,90.5);
+ border-color: rgba(184,147,90,0.5);
  }
 
  .form-group select option { background: #1a1918; color: #fff; }
@@ -1187,7 +1187,7 @@
 
  <style>
  .g-card{background:#fff;border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:box-shadow .25s,transform .25s;text-decoration:none;display:flex;flex-direction:column;cursor:pointer}
- .g-card:hover{box-shadow:0 8px 28px rgba(0,0,0.08);transform:translateY(-2px)}
+ .g-card:hover{box-shadow:0 8px 28px rgba(0,0,0,0.08);transform:translateY(-2px)}
  .g-card-img{position:relative;height:190px;background:var(--cream);overflow:hidden}
  .g-card-img img{width:100%;height:100%;object-fit:cover;display:block}
  .g-card-body{padding:16px;flex:1;display:flex;flex-direction:column}
@@ -1207,17 +1207,17 @@
  /* Lead form card (paid-ad landing) */
  .hero-inner { display: grid; grid-template-columns: 1fr 400px; gap: 56px; align-items: center; max-width: 1180px; margin: 0 auto; }
  .hero-copy { text-align: left; }
- .lead-card { background: rgba(15,15,14.82); border: 1px solid rgba(184,147,90.24); border-radius: 6px; padding: 28px 24px; }
+ .lead-card { background: rgba(15,15,14,0.82); border: 1px solid rgba(184,147,90,0.24); border-radius: 6px; padding: 28px 24px; }
  .lead-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: #fff; margin-bottom: 4px; line-height: 1.2; }
- .lead-card .lead-sub { font-size: 12px; color: rgba(255,255,255.55); margin-bottom: 20px; line-height: 1.5; }
+ .lead-card .lead-sub { font-size: 12px; color: rgba(255,255,255,0.55); margin-bottom: 20px; line-height: 1.5; }
  .lead-card .form-group { margin-bottom: 12px; }
- .lead-card .form-group label { display: block; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255.5); margin-bottom: 5px; }
+ .lead-card .form-group label { display: block; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 5px; }
  .lead-card .form-group input.lead-card .form-group select {
- width: 100%; padding: 11px 14px; border: 1px solid rgba(255,255,255.14);
+ width: 100%; padding: 11px 14px; border: 1px solid rgba(255,255,255,0.14);
  border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 13px;
- color: #fff; background: rgba(255,255,255.07); outline: none; transition: border-color .2s;
+ color: #fff; background: rgba(255,255,255,0.07); outline: none; transition: border-color .2s;
  }
- .lead-card .form-group input::placeholder { color: rgba(255,255,255.28); }
+ .lead-card .form-group input::placeholder { color: rgba(255,255,255,0.28); }
  .lead-card .form-group input:focus.lead-card .form-group select:focus { border-color: var(--gold, #b8935a); }
  .lead-card .form-group select option { background: #1a1918; color: #fff; }
  .lead-card .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -1225,7 +1225,7 @@
  font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: .1em;
  text-transform: uppercase; padding: 13px; border-radius: 4px; transition: background .2s; margin-top: 6px; }
  .lead-card .form-submit:hover { background: var(--gold-lt, #cda96f); }
- .lead-note { font-size: 10.5px; color: rgba(255,255,255.38); text-align: center; margin-top: 12px; letter-spacing: .04em; }
+ .lead-note { font-size: 10.5px; color: rgba(255,255,255,0.38); text-align: center; margin-top: 12px; letter-spacing: .04em; }
  .lead-success { display: none; text-align: center; padding: 24px 0; font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; color: var(--gold-lt, #cda96f); line-height: 1.5; }
  @media (max-width: 900px) {
  .hero-inner { grid-template-columns: 1fr !important; gap: 32px; }
@@ -1465,7 +1465,7 @@
  <div class="section-inner">
  <div class="cta-grid">
  <div class="cta-copy">
- <div class="eyebrow" style="color: rgba(184,147,90.7);">Work With Luke</div>
+ <div class="eyebrow" style="color: rgba(184,147,90,0.7);">Work With Luke</div>
  <h2>Let's Find Your<br><em>Austin Home</em></h2>
  <p>I specialize in helping tech employees relocate to Austin, including Google downtown employees who want to walk or bike to work. I know which central Austin blocks have the best AISD campuses, which streets flood, and how to compete in a market that moves fast. My representation is free to buyers.</p>
  <p>Central Austin inventory is tight. If you're within 90 days of your Google start date, reach out now, Bouldin Creek and Hyde Park homes don't sit long.</p>

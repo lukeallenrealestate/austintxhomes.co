@@ -93,30 +93,30 @@
  .hero { position: relative; overflow: hidden; background: var(--ink); padding: 140px 2rem 90px; }
  .hero video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.4s ease; z-index: 0; }
  .hero video.ready { opacity: .55; }
- .hero::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%); pointer-events: none; }
+ .hero::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%); pointer-events: none; }
  .hero > * { position: relative; z-index: 2; }
  .hero-inner { max-width: var(--w); margin: 0 auto; display: grid; grid-template-columns: 1fr 400px; gap: 56px; align-items: center; }
  .hero-copy { text-align: left; }
  .eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; display: block; }
  .hero h1 { font-family: var(--serif); font-size: clamp(40px, 5.2vw, 60px); font-weight: 400; color: #fff; margin-bottom: 22px; line-height: 1.06; }
  .hero h1 em { color: var(--gold-lt); font-style: italic; }
- .hero-copy p { font-size: 15px; color: rgba(255,255,255.72); line-height: 1.75; max-width: 520px; margin-bottom: 28px; }
+ .hero-copy p { font-size: 15px; color: rgba(255,255,255,0.72); line-height: 1.75; max-width: 520px; margin-bottom: 28px; }
  .pills { display: flex; gap: 8px; flex-wrap: wrap; }
- .pill { font-size: 11px; color: rgba(255,255,255.8); padding: 6px 12px; border: 1px solid rgba(184,147,90.4); border-radius: 100px; background: rgba(184,147,90.08); }
+ .pill { font-size: 11px; color: rgba(255,255,255,0.8); padding: 6px 12px; border: 1px solid rgba(184,147,90,0.4); border-radius: 100px; background: rgba(184,147,90,0.08); }
 
- .lead-card { background: rgba(15,15,14.82); border: 1px solid rgba(184,147,90.24); border-radius: 6px; padding: 28px 24px; }
+ .lead-card { background: rgba(15,15,14,0.82); border: 1px solid rgba(184,147,90,0.24); border-radius: 6px; padding: 28px 24px; }
  .lead-card h3 { font-family: var(--serif); font-size: 22px; font-weight: 400; color: #fff; margin-bottom: 4px; }
- .lead-card .lead-sub { font-size: 12px; color: rgba(255,255,255.55); margin-bottom: 18px; line-height: 1.5; }
+ .lead-card .lead-sub { font-size: 12px; color: rgba(255,255,255,0.55); margin-bottom: 18px; line-height: 1.5; }
  .fg { margin-bottom: 10px; }
- .fg label { display: block; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255.5); margin-bottom: 5px; }
- .fg input.fg select { width: 100%; padding: 11px 14px; border: 1px solid rgba(255,255,255.14); border-radius: 4px; font-family: var(--sans); font-size: 13px; color: #fff; background: rgba(255,255,255.07); outline: none; }
- .fg input::placeholder { color: rgba(255,255,255.28); }
+ .fg label { display: block; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 5px; }
+ .fg input.fg select { width: 100%; padding: 11px 14px; border: 1px solid rgba(255,255,255,0.14); border-radius: 4px; font-family: var(--sans); font-size: 13px; color: #fff; background: rgba(255,255,255,0.07); outline: none; }
+ .fg input::placeholder { color: rgba(255,255,255,0.28); }
  .fg input:focus.fg select:focus { border-color: var(--gold); }
  .fg select option { background: #1a1918; }
  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
  .form-submit { width: 100%; background: var(--gold); color: #fff; border: none; cursor: pointer; font-family: var(--sans); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 13px; border-radius: 4px; margin-top: 6px; }
  .form-submit:hover { background: var(--gold-lt); }
- .lead-note { font-size: 10.5px; color: rgba(255,255,255.38); text-align: center; margin-top: 12px; }
+ .lead-note { font-size: 10.5px; color: rgba(255,255,255,0.38); text-align: center; margin-top: 12px; }
  .lead-success { display: none; text-align: center; padding: 24px 0; font-family: var(--serif); font-size: 18px; font-style: italic; color: var(--gold-lt); line-height: 1.5; }
 
  .stats-bar { background: var(--warm); border-bottom: 1px solid var(--border); padding: 3rem 2rem; }
@@ -144,12 +144,12 @@
  .market-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2px; margin-top: 2rem; }
  .market-card { background: var(--ink); color: #fff; padding: 28px 24px; }
  .market-card .num { font-family: var(--serif); font-size: 2.4rem; color: var(--gold-lt); font-weight: 400; line-height: 1; margin-bottom: 10px; }
- .market-card .label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255.5); margin-bottom: 10px; }
- .market-card p { font-size: 13px; color: rgba(255,255,255.65); line-height: 1.6; }
+ .market-card .label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+ .market-card p { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.6; }
 
  .listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 2rem; }
  .listing-card { background: var(--warm); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; text-decoration: none; color: inherit; display: block; transition: box-shadow .2s; }
- .listing-card:hover { box-shadow: 0 8px 24px rgba(0,0,0.08); }
+ .listing-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
  .listing-img { width: 100%; height: 200px; object-fit: cover; background: var(--cream); }
  .listing-body { padding: 16px; }
  .listing-price { font-family: var(--serif); font-size: 22px; color: var(--ink); margin-bottom: 4px; }
@@ -169,7 +169,7 @@
 
  .cta-band { background: var(--ink); padding: 4rem 2rem; text-align: center; }
  .cta-band h2 { font-family: var(--serif); font-size: clamp(26px, 3vw, 36px); color: #fff; margin-bottom: 12px; }
- .cta-band p { color: rgba(255,255,255.65); font-size: 15px; margin-bottom: 26px; max-width: 520px; margin-left: auto; margin-right: auto; }
+ .cta-band p { color: rgba(255,255,255,0.65); font-size: 15px; margin-bottom: 26px; max-width: 520px; margin-left: auto; margin-right: auto; }
  .cta-btn { display: inline-block; background: var(--gold); color: #fff; padding: 14px 32px; border-radius: var(--r); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; font-weight: 600; }
 
  @media (max-width: 900px) {

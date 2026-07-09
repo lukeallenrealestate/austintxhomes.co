@@ -92,17 +92,17 @@
  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 65% 55% at 50% 40%, rgba(184,147,90,0.16) 0%, transparent 70%); z-index: 1; }
  .hero video.bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.4s ease; z-index: 0; }
  .hero video.bg-video.ready { opacity: 1; }
- .hero::after { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%); }
+ .hero::after { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%); }
  .hero > *:not(video) { position: relative; z-index: 2; }
  .hero-inner { max-width: var(--w); margin: 0 auto; }
- .breadcrumb { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255.55); margin-bottom: 16px; }
- .breadcrumb a { color: rgba(255,255,255.55); }
+ .breadcrumb { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 16px; }
+ .breadcrumb a { color: rgba(255,255,255,0.55); }
  .hero-eyebrow { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
  .hero h1 { font-size: clamp(2.4rem, 4.5vw, 3.6rem); color: #fff; margin-bottom: 1.25rem; }
  .hero h1 em { color: var(--gold); font-style: italic; }
- .hero-sub { font-size: 1.05rem; color: rgba(255,255,255.7); line-height: 1.8; margin-bottom: 1.5rem; max-width: 620px; }
+ .hero-sub { font-size: 1.05rem; color: rgba(255,255,255,0.7); line-height: 1.8; margin-bottom: 1.5rem; max-width: 620px; }
  .hero-stats { display: flex; gap: .75rem; flex-wrap: wrap; }
- .hero-stat { background: rgba(255,255,255.07); border: 1px solid rgba(255,255,255.1); border-radius: var(--r); padding: .45rem 1rem; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255.7); }
+ .hero-stat { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--r); padding: .45rem 1rem; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,0.7); }
  .hero-stat strong { color: var(--gold); }
 
  section.content { padding: 72px 2rem; }
@@ -129,7 +129,7 @@
  .listing-card:hover { border-color: var(--gold); }
  .card-img { position: relative; height: 210px; background: var(--cream); overflow: hidden; }
  .card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
- .card-badge { position: absolute; top: .75rem; left: .75rem; background: rgba(15,15,14.75); color: rgba(255,255,255.85); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; border-radius: 3px; padding: 3px 8px; }
+ .card-badge { position: absolute; top: .75rem; left: .75rem; background: rgba(15,15,14,0.75); color: rgba(255,255,255,0.85); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; border-radius: 3px; padding: 3px 8px; }
  .card-no-photo { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--light); font-size: .8rem; text-transform: uppercase; }
  .card-body { padding: 1.1rem 1.25rem; }
  .card-price { font-family: 'Cormorant Garamond', serif; font-size: 1.45rem; color: var(--text); margin-bottom: .25rem; }
@@ -154,10 +154,10 @@
  .cta-section { padding: 80px 2rem; background: var(--ink); text-align: center; }
  .cta-section h2 { color: #fff; }
  .cta-section h2 em { color: var(--gold); font-style: italic; }
- .cta-section p { color: rgba(255,255,255.65); margin: 1rem auto 2rem; max-width: 640px; line-height: 1.85; }
+ .cta-section p { color: rgba(255,255,255,0.65); margin: 1rem auto 2rem; max-width: 640px; line-height: 1.85; }
  .btn-gold { display: inline-block; background: var(--gold); color: #fff; padding: 14px 32px; border-radius: var(--r); font-size: .82rem; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; font-weight: 500; margin: .25rem; }
  .btn-gold:hover { background: var(--gold-lt); color: #fff; }
- .btn-outline { display: inline-block; background: transparent; color: #fff; padding: 14px 32px; border-radius: var(--r); font-size: .82rem; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; border: 1px solid rgba(255,255,255.25); margin: .25rem; }
+ .btn-outline { display: inline-block; background: transparent; color: #fff; padding: 14px 32px; border-radius: var(--r); font-size: .82rem; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; border: 1px solid rgba(255,255,255,0.25); margin: .25rem; }
  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
 
  .related { padding: 56px 2rem; background: var(--bg); border-top: 1px solid var(--border); }

@@ -161,8 +161,8 @@
  .hero::before {
  content: ''; position: absolute; inset: 0; z-index: 1;
  background:
- radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90.13) 0%, transparent 70%),
- linear-gradient(135deg, rgba(15,15,14.88) 0%, rgba(26,20,16.82) 50%, rgba(15,15,14.88) 100%);
+ radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,0.13) 0%, transparent 70%),
+ linear-gradient(135deg, rgba(15,15,14,0.88) 0%, rgba(26,20,16,0.82) 50%, rgba(15,15,14,0.88) 100%);
  }
 
  /* All hero text content floats above overlay */
@@ -182,19 +182,19 @@
  }
  .hero h1 em { font-style: italic; color: var(--gold-lt); }
  .hero-sub {
- font-size: 15px; color: rgba(255,255,255.6); max-width: 620px;
+ font-size: 15px; color: rgba(255,255,255,0.6); max-width: 620px;
  margin: 0 auto 36px; line-height: 1.75;
  }
  .hero-pills { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
  .hero-pill {
  font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
- border: 1px solid rgba(184,147,90.4); color: var(--gold-lt);
+ border: 1px solid rgba(184,147,90,0.4); color: var(--gold-lt);
  padding: 7px 18px; border-radius: 20px;
  }
  .hero-anchors { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
  .hero-anchors a {
  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
- color: rgba(255,255,255.4); text-decoration: none; transition: color .2s;
+ color: rgba(255,255,255,0.4); text-decoration: none; transition: color .2s;
  }
  .hero-anchors a:hover { color: var(--gold); }
 
@@ -224,7 +224,7 @@
  border: 1px solid var(--border); border-radius: 6px; padding: 28px;
  background: var(--bg); transition: box-shadow .2s, transform .2s;
  }
- .cost-card:hover { box-shadow: 0 6px 24px rgba(0,0,0.06); transform: translateY(-2px); }
+ .cost-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.06); transform: translateY(-2px); }
  .cost-icon { font-size: 28px; margin-bottom: 14px; display: block; }
  .cost-name { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--light); margin-bottom: 6px; }
  .cost-range { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; color: var(--gold); margin-bottom: 10px; }
@@ -240,7 +240,7 @@
  .price-table tr:last-child td { border-bottom: none; }
  .price-table td:first-child { font-weight: 500; }
  .price-table td:not(:first-child) { color: var(--mid); }
- .price-table tr:hover td { background: rgba(184,147,90.04); }
+ .price-table tr:hover td { background: rgba(184,147,90,0.04); }
 
  /* RENT VS BUY */
  .rvb { padding: 80px 2rem; background: var(--bg); }
@@ -248,7 +248,7 @@
  .rvb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
  .rvb-card { border-radius: 8px; padding: 36px; }
  .rvb-card.rent { background: var(--cream); border: 1px solid var(--border); }
- .rvb-card.buy { background: rgba(184,147,90.07); border: 1px solid rgba(184,147,90.3); }
+ .rvb-card.buy { background: rgba(184,147,90,0.07); border: 1px solid rgba(184,147,90,0.3); }
  .rvb-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--ink); margin-bottom: 20px; }
  .rvb-section-head { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--light); margin-bottom: 8px; margin-top: 16px; }
  .rvb-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
@@ -265,7 +265,7 @@
  .compare-table th { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--light); text-align: left; padding: 12px 20px; border-bottom: 2px solid var(--border); background: var(--cream); }
  .compare-table td { padding: 14px 20px; border-bottom: 1px solid var(--border); color: var(--text); }
  .compare-table tr:last-child td { border-bottom: none; }
- .compare-table tr.austin-row td { background: rgba(184,147,90.06); border-left: 3px solid var(--gold); font-weight: 500; }
+ .compare-table tr.austin-row td { background: rgba(184,147,90,0.06); border-left: 3px solid var(--gold); font-weight: 500; }
  .compare-table tr.austin-row td:first-child { padding-left: 17px; }
  .compare-note { font-size: 11px; color: var(--light); }
 
@@ -275,17 +275,17 @@
  .taxes-copy p { font-size: 15px; color: var(--mid); line-height: 1.8; margin-bottom: 18px; }
  .savings-card { background: var(--ink); border-radius: 8px; padding: 36px; }
  .savings-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: #fff; margin-bottom: 24px; line-height: 1.3; }
- .savings-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255.08); }
+ .savings-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
  .savings-row:last-child { border-bottom: none; }
  .savings-row.deduct { opacity: .65; }
- .savings-label { font-size: 12px; color: rgba(255,255,255.6); }
+ .savings-label { font-size: 12px; color: rgba(255,255,255,0.6); }
  .savings-value { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--gold-lt); }
- .savings-row.deduct .savings-value { color: rgba(255,255,255.5); }
- .savings-divider { border-top: 1px solid rgba(184,147,90.3); margin: 4px 0; }
+ .savings-row.deduct .savings-value { color: rgba(255,255,255,0.5); }
+ .savings-divider { border-top: 1px solid rgba(184,147,90,0.3); margin: 4px 0; }
  .savings-total { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; margin-top: 4px; }
- .savings-total .savings-label { color: rgba(255,255,255.9); font-weight: 500; }
+ .savings-total .savings-label { color: rgba(255,255,255,0.9); font-weight: 500; }
  .savings-total .savings-value { font-size: 24px; color: var(--gold); }
- .savings-note { font-size: 11px; color: rgba(255,255,255.3); margin-top: 16px; line-height: 1.6; }
+ .savings-note { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 16px; line-height: 1.6; }
 
  /* NEIGHBORHOOD BUDGET */
  .nbhd-budget { padding: 80px 2rem; background: var(--warm); }
@@ -315,17 +315,17 @@
  .cta-inner { max-width: var(--w); margin: 0 auto; display: grid; grid-template-columns: 1fr 420px; gap: 80px; align-items: center; }
  .cta-copy h2 { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 400; color: #fff; line-height: 1.12; margin-bottom: 16px; }
  .cta-copy h2 em { font-style: italic; color: var(--gold); }
- .cta-copy p { font-size: 14px; color: rgba(255,255,255.6); line-height: 1.75; margin-bottom: 16px; }
- .cta-form { background: rgba(255,255,255.05); border: 1px solid rgba(255,255,255.1); border-radius: 8px; padding: 36px; }
+ .cta-copy p { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.75; margin-bottom: 16px; }
+ .cta-form { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 36px; }
  .cta-form h3 { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: #fff; margin-bottom: 6px; }
- .cta-form p { font-size: 13px; color: rgba(255,255,255.45); margin-bottom: 22px; }
+ .cta-form p { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 22px; }
  .form-group { margin-bottom: 12px; }
  .form-group input.form-group select {
- width: 100%; padding: 11px 14px; border: 1px solid rgba(255,255,255.15);
+ width: 100%; padding: 11px 14px; border: 1px solid rgba(255,255,255,0.15);
  border-radius: var(--r); font-family: 'Inter', sans-serif; font-size: 13px;
- color: #fff; background: rgba(255,255,255.08); outline: none; transition: border-color .2s;
+ color: #fff; background: rgba(255,255,255,0.08); outline: none; transition: border-color .2s;
  }
- .form-group input::placeholder { color: rgba(255,255,255.3); }
+ .form-group input::placeholder { color: rgba(255,255,255,0.3); }
  .form-group input:focus.form-group select:focus { border-color: var(--gold); }
  .form-group select option { background: #1a1918; color: #fff; }
  .form-submit {
@@ -759,7 +759,7 @@
  <div class="cta-copy">
  <h2>Ready to Make<br><em>Your Move to Austin?</em></h2>
  <p>I help buyers navigate Austin's neighborhoods, price ranges, and suburbs to find the best fit for their budget and lifestyle, at no cost to you as a buyer.</p>
- <p style="font-size:13px;color:rgba(255,255,255.4)">Luke Allen · TREC #788149 · (254) 718-2567</p>
+ <p style="font-size:13px;color:rgba(255,255,255,0.4)">Luke Allen · TREC #788149 · (254) 718-2567</p>
  </div>
  <div class="cta-form">
  <h3>Free Austin Relocation Consultation</h3>

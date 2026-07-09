@@ -115,12 +115,12 @@
  .hero-eyebrow { font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; }
  .hero h1 { font-size: clamp(2.6rem, 5vw, 4rem); color: #fff; margin-bottom: 1.25rem; }
  .hero h1 em { color: var(--gold); font-style: italic; }
- .hero-sub { font-size: 1.05rem; color: rgba(255,255,255.7); max-width: 640px; line-height: 1.75; margin-bottom: 2.5rem; }
+ .hero-sub { font-size: 1.05rem; color: rgba(255,255,255,0.7); max-width: 640px; line-height: 1.75; margin-bottom: 2.5rem; }
  .hero-stats { display: flex; gap: 1rem; flex-wrap: wrap; }
  .hero-stat {
- background: rgba(255,255,255.06); border: 1px solid rgba(255,255,255.1);
+ background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
  border-radius: var(--r); padding: .5rem 1.1rem;
- font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255.75);
+ font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,0.75);
  }
  .hero-stat strong { color: var(--gold); }
 
@@ -129,7 +129,7 @@
  .intro-bar-inner { max-width: var(--w); margin: 0 auto; display: flex; gap: 3rem; align-items: center; flex-wrap: wrap; }
  .intro-bar-stat { text-align: center; }
  .intro-bar-num { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: #fff; line-height: 1; }
- .intro-bar-label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255.8); margin-top: .2rem; }
+ .intro-bar-label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.8); margin-top: .2rem; }
 
  /* SECTION HEADER */
  .section-header { text-align: center; margin-bottom: 3rem; }
@@ -155,7 +155,7 @@
  transition: border-color .2s, box-shadow .2s; display: block;
  }
  .employers-section.alt .employer-card { background: var(--bg); }
- .employer-card:hover { border-color: var(--gold); box-shadow: 0 4px 20px rgba(184,147,90.1); }
+ .employer-card:hover { border-color: var(--gold); box-shadow: 0 4px 20px rgba(184,147,90,0.1); }
  .employer-card-sector { font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--light); margin-bottom: .35rem; }
  .employer-card-name { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--text); margin-bottom: .5rem; line-height: 1.1; }
  .employer-card-location { font-size: .78rem; color: var(--gold); margin-bottom: .5rem; font-weight: 500; }
@@ -165,7 +165,7 @@
  font-size: 10px; letter-spacing: .07em; text-transform: uppercase;
  background: var(--cream); color: var(--mid); border-radius: 3px; padding: 2px 7px;
  }
- .employer-card-tag.gold { background: rgba(184,147,90.12); color: var(--gold); }
+ .employer-card-tag.gold { background: rgba(184,147,90,0.12); color: var(--gold); }
  .employer-card-arrow { color: var(--gold); font-size: .8rem; margin-top: 1rem; display: block; }
 
  /* AUSTIN TECH MAP */
@@ -174,14 +174,14 @@
  .map-inner .section-eyebrow { color: var(--gold-lt); }
  .map-inner h2 { color: #fff; font-size: 2.4rem; margin-bottom: .75rem; }
  .map-inner h2 em { color: var(--gold); font-style: italic; }
- .map-inner > p { color: rgba(255,255,255.65); font-size: .95rem; line-height: 1.8; max-width: 680px; margin-bottom: 2.5rem; }
+ .map-inner > p { color: rgba(255,255,255,0.65); font-size: .95rem; line-height: 1.8; max-width: 680px; margin-bottom: 2.5rem; }
  .corridor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
  .corridor-card {
- background: rgba(255,255,255.04); border: 1px solid rgba(255,255,255.08);
+ background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
  border-radius: var(--r); padding: 1.25rem 1.5rem;
  }
  .corridor-name { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--gold); margin-bottom: .4rem; }
- .corridor-employers { font-size: .82rem; color: rgba(255,255,255.55); line-height: 1.7; }
+ .corridor-employers { font-size: .82rem; color: rgba(255,255,255,0.55); line-height: 1.7; }
 
  /* CTA */
  .cta-section { padding: 80px 2rem; background: var(--warm); }
@@ -217,7 +217,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }

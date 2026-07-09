@@ -198,7 +198,7 @@
  }
  .hero::before {
  content: ''; position: absolute; inset: 0;
- background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90.18) 0%, transparent 70%);
+ background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,0.18) 0%, transparent 70%);
  pointer-events: none;
  }
  .hero-inner { position: relative; z-index: 2; max-width: 780px; animation: fadeUp .9s ease both; }
@@ -206,19 +206,19 @@
  .hero-eyebrow { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); margin-bottom: 28px; font-weight: 600; }
  .hero h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 300; color: #fff; line-height: 1.08; margin-bottom: 28px; }
  .hero h1 em { font-style: italic; color: var(--gold-lt); }
- .hero-sub { font-size: 16px; color: rgba(255,255,255.6); max-width: 600px; margin: 0 auto 40px; line-height: 1.7; font-weight: 300; }
+ .hero-sub { font-size: 16px; color: rgba(255,255,255,0.6); max-width: 600px; margin: 0 auto 40px; line-height: 1.7; font-weight: 300; }
  .hero-pills { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 44px; }
- .hero-pill { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255.5); border: 1px solid rgba(255,255,255.12); padding: 8px 18px; border-radius: 40px; }
- .hero-pill.gold { color: var(--gold-lt); border-color: rgba(184,147,90.35); background: rgba(184,147,90.12); }
+ .hero-pill { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.12); padding: 8px 18px; border-radius: 40px; }
+ .hero-pill.gold { color: var(--gold-lt); border-color: rgba(184,147,90,0.35); background: rgba(184,147,90,0.12); }
  .hero-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
  .btn-gold { background: var(--gold); color: #fff; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; padding: 15px 32px; border-radius: var(--r); text-decoration: none; display: inline-block; transition: background .2s, transform .15s; }
  .btn-gold:hover { background: var(--gold-lt); transform: translateY(-1px); }
- .btn-outline { background: transparent; color: rgba(255,255,255.7); border: 1px solid rgba(255,255,255.2); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; font-weight: 500; padding: 15px 32px; border-radius: var(--r); text-decoration: none; display: inline-block; transition: border-color .2s, color .2s; }
+ .btn-outline { background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; font-weight: 500; padding: 15px 32px; border-radius: var(--r); text-decoration: none; display: inline-block; transition: border-color .2s, color .2s; }
  .btn-outline:hover { border-color: var(--gold); color: var(--gold-lt); }
  .snapshot-bar { background: var(--ink); padding: 56px 32px; }
  .snapshot-grid { max-width: var(--w); margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; text-align: center; }
  .snap-num { font-family: 'Cormorant Garamond', serif; font-size: 2.6rem; font-weight: 300; color: var(--gold); line-height: 1; margin-bottom: 8px; }
- .snap-label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255.45); font-weight: 500; }
+ .snap-label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.45); font-weight: 500; }
  .section { padding: 96px 32px; }
  .section-inner { max-width: var(--w); margin: 0 auto; }
  .section-eyebrow { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 16px; }
@@ -256,7 +256,7 @@
  .compare-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 28px 24px; }
  .compare-card.featured { border-color: var(--gold); background: var(--gold-pale); }
  .compare-nbhd { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 500; color: var(--ink); margin-bottom: 12px; }
- .compare-badge { display: inline-block; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); background: rgba(184,147,90.15); border-radius: 40px; padding: 4px 12px; margin-bottom: 12px; font-weight: 700; }
+ .compare-badge { display: inline-block; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); background: rgba(184,147,90,0.15); border-radius: 40px; padding: 4px 12px; margin-bottom: 12px; font-weight: 700; }
  .compare-row { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
  .compare-row:last-child { border-bottom: none; }
  .compare-row .label { color: var(--light); letter-spacing: .05em; text-transform: uppercase; font-size: 10px; font-weight: 500; }
@@ -314,7 +314,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }
@@ -330,7 +330,7 @@
  <div class="hero-inner">
  <p class="hero-eyebrow">Allandale Austin · Market Intelligence</p>
  <p class="hero-byline" style="font-size:12px;color:rgba(255,255,255,0.7);margin:-10px 0 22px;letter-spacing:.03em;line-height:1.7;font-family:'Inter',system-ui,sans-serif;">
- By <a href="/about" style="color:#cda96f;text-decoration:none;border-bottom:1px dotted rgba(205,169,111.55);">Luke Allen</a> &middot; Licensed Texas Realtor (TREC #788149) &middot; Updated July 2, 2026</p>
+ By <a href="/about" style="color:#cda96f;text-decoration:none;border-bottom:1px dotted rgba(205,169,111,0.55);">Luke Allen</a> &middot; Licensed Texas Realtor (TREC #788149) &middot; Updated July 2, 2026</p>
  <h1>Allandale Austin<br><em>Market Report</em></h1>
  <p class="hero-sub">Luke Allen tracks the Allandale real estate market continuously, median prices, days on market, MoPac discount, renovation economics, and the teardown market. Data-driven insight from North Central Austin's most dedicated Allandale specialist.</p>
  <div class="hero-pills">

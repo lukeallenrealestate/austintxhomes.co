@@ -166,7 +166,7 @@
  /* ── HERO ── */
  .hero {
  background: var(--ink);
- background-image: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(184,147,90.18) 0%, transparent 65%);
+ background-image: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(184,147,90,0.18) 0%, transparent 65%);
  padding: 120px 2rem 100px;
  text-align: center;
  position: relative; overflow: hidden;}
@@ -202,7 +202,7 @@
 
  .hero-lead {
  font-size: 1.0625rem;
- color: rgba(255,255,255.55);
+ color: rgba(255,255,255,0.55);
  line-height: 1.8;
  max-width: 680px;
  margin: 0 auto 2.5rem;
@@ -226,10 +226,10 @@
  font-weight: 500;
  letter-spacing: .06em;
  color: var(--gold);
- border: 1px solid rgba(184,147,90.35);
+ border: 1px solid rgba(184,147,90,0.35);
  border-radius: 50px;
  padding: 6px 16px;
- background: rgba(184,147,90.06);
+ background: rgba(184,147,90,0.06);
  }
 
  .hero-anchors {
@@ -245,7 +245,7 @@
  font-size: 12px;
  letter-spacing: .1em;
  text-transform: uppercase;
- color: rgba(255,255,255.35);
+ color: rgba(255,255,255,0.35);
  text-decoration: none;
  transition: color .2s;
  }
@@ -293,7 +293,7 @@
  margin-top: 1.75rem;
  padding: 1.25rem 1.5rem;
  border-left: 3px solid var(--gold);
- background: rgba(184,147,90.05);
+ background: rgba(184,147,90,0.05);
  border-radius: 0 var(--r) var(--r) 0;
  }
 
@@ -346,7 +346,7 @@
  justify-content: space-between;
  align-items: baseline;
  padding: .5rem 0;
- border-bottom: 1px solid rgba(229,223,212.5);
+ border-bottom: 1px solid rgba(229,223,212,0.5);
  gap: .5rem;
  }
 
@@ -372,7 +372,7 @@
  .commute-warning {
  margin-top: 1.25rem;
  padding: .875rem 1rem;
- background: rgba(184,147,90.07);
+ background: rgba(184,147,90,0.07);
  border-left: 3px solid var(--gold);
  border-radius: 0 var(--r) var(--r) 0;
  font-size: .8125rem;
@@ -396,8 +396,8 @@
  }
 
  .nbhd-card:hover {
- border-color: rgba(184,147,90.4);
- box-shadow: 0 4px 20px rgba(184,147,90.08);
+ border-color: rgba(184,147,90,0.4);
+ box-shadow: 0 4px 20px rgba(184,147,90,0.08);
  }
 
  .commute-badge {
@@ -407,8 +407,8 @@
  text-transform: uppercase;
  font-weight: 600;
  color: var(--gold);
- background: rgba(184,147,90.1);
- border: 1px solid rgba(184,147,90.25);
+ background: rgba(184,147,90,0.1);
+ border: 1px solid rgba(184,147,90,0.25);
  border-radius: 3px;
  padding: 2px 8px;
  margin-bottom: 1rem;
@@ -509,7 +509,7 @@
  .cost-table td:first-child { font-weight: 500; }
  .cost-table td:not(:first-child) { color: var(--mid); font-size: .8125rem; }
  .cost-table tr:last-child td { border-bottom: none; }
- .cost-table tr:hover td { background: rgba(184,147,90.03); }
+ .cost-table tr:hover td { background: rgba(184,147,90,0.03); }
 
  .housing-copy p {
  font-size: .9375rem;
@@ -733,7 +733,7 @@
  /* ── CTA ── */
  .cta-section {
  background: var(--ink);
- background-image: radial-gradient(ellipse 70% 50% at 50% 60%, rgba(184,147,90.12) 0%, transparent 60%);
+ background-image: radial-gradient(ellipse 70% 50% at 50% 60%, rgba(184,147,90,0.12) 0%, transparent 60%);
  }
 
  .cta-grid {
@@ -748,14 +748,14 @@
 
  .cta-copy p {
  font-size: .9375rem;
- color: rgba(255,255,255.52);
+ color: rgba(255,255,255,0.52);
  line-height: 1.85;
  margin-bottom: 1.25rem;
  }
 
  .cta-form-wrap {
- background: rgba(255,255,255.04);
- border: 1px solid rgba(255,255,255.09);
+ background: rgba(255,255,255,0.04);
+ border: 1px solid rgba(255,255,255,0.09);
  border-radius: var(--r);
  padding: 2.25rem;
  }
@@ -770,7 +770,7 @@
 
  .form-sub {
  font-size: .8125rem;
- color: rgba(255,255,255.38);
+ color: rgba(255,255,255,0.38);
  margin-bottom: 1.75rem;
  }
 
@@ -781,16 +781,16 @@
  font-size: 11px;
  letter-spacing: .1em;
  text-transform: uppercase;
- color: rgba(255,255,255.4);
+ color: rgba(255,255,255,0.4);
  margin-bottom: .375rem;
  }
 
  .form-group input.form-group select {
  width: 100%;
- background: rgba(255,255,255.06);
- border: 1px solid rgba(255,255,255.12);
+ background: rgba(255,255,255,0.06);
+ border: 1px solid rgba(255,255,255,0.12);
  border-radius: var(--r);
- color: rgba(255,255,255.85);
+ color: rgba(255,255,255,0.85);
  font-family: 'Inter', sans-serif;
  font-size: .875rem;
  padding: .75rem 1rem;
@@ -799,8 +799,8 @@
  appearance: none;
  }
 
- .form-group input::placeholder { color: rgba(255,255,255.28); }
- .form-group input:focus.form-group select:focus { border-color: rgba(184,147,90.5); }
+ .form-group input::placeholder { color: rgba(255,255,255,0.28); }
+ .form-group input:focus.form-group select:focus { border-color: rgba(184,147,90,0.5); }
  .form-group select option { background: #1a1918; color: #fff; }
 
  .form-row {
@@ -872,7 +872,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }
@@ -969,7 +969,7 @@
  </div>
  </section>
  <style>
- .ind-card{background:#fff;border:1px solid var(--border, #e5dfd4);border-radius:6px;overflow:hidden;transition:box-shadow .25s,transform .25s;text-decoration:none;display:flex;flex-direction:column;cursor:pointer}.ind-card:hover{box-shadow:0 8px 28px rgba(0,0,0.08);transform:translateY(-2px)}.ind-card-img{position:relative;height:190px;background:var(--cream, #f1ece3);overflow:hidden}.ind-card-img img{width:100%;height:100%;object-fit:cover;display:block}.ind-card-body{padding:16px;flex:1;display:flex;flex-direction:column}.ind-card-price{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--ink, #0f0f0e);margin-bottom:4px}.ind-card-addr{font-size:13px;color:var(--mid, #5c5b57);margin-bottom:10px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ind-card-stats{display:flex;gap:14px;font-size:12px;color:var(--mid, #5c5b57);margin-top:auto;padding-top:12px;border-top:1px solid var(--border, #e5dfd4)}.ind-card-stats strong{color:var(--ink, #0f0f0e);font-weight:600}.ind-card-badge{position:absolute;top:10px;left:10px;background:var(--gold, #b8935a);color:#fff;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:3px}
+ .ind-card{background:#fff;border:1px solid var(--border, #e5dfd4);border-radius:6px;overflow:hidden;transition:box-shadow .25s,transform .25s;text-decoration:none;display:flex;flex-direction:column;cursor:pointer}.ind-card:hover{box-shadow:0 8px 28px rgba(0,0,0,0.08);transform:translateY(-2px)}.ind-card-img{position:relative;height:190px;background:var(--cream, #f1ece3);overflow:hidden}.ind-card-img img{width:100%;height:100%;object-fit:cover;display:block}.ind-card-body{padding:16px;flex:1;display:flex;flex-direction:column}.ind-card-price{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--ink, #0f0f0e);margin-bottom:4px}.ind-card-addr{font-size:13px;color:var(--mid, #5c5b57);margin-bottom:10px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ind-card-stats{display:flex;gap:14px;font-size:12px;color:var(--mid, #5c5b57);margin-top:auto;padding-top:12px;border-top:1px solid var(--border, #e5dfd4)}.ind-card-stats strong{color:var(--ink, #0f0f0e);font-weight:600}.ind-card-badge{position:absolute;top:10px;left:10px;background:var(--gold, #b8935a);color:#fff;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:3px}
  .ind-pg-btn{min-width:36px;height:36px;padding:0 10px;border:1px solid var(--border, #e5dfd4);border-radius:4px;background:#fff;font-size:13px;font-weight:500;color:var(--ink, #0f0f0e);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}.ind-pg-btn:hover{border-color:var(--gold, #b8935a);color:var(--gold, #b8935a)}.ind-pg-btn.active{background:var(--ink, #0f0f0e);color:#fff;border-color:var(--ink, #0f0f0e)}.ind-pg-btn:disabled{opacity:.35;pointer-events:none}#indeed-listings-grid .ind-loading{grid-column:1/-1;text-align:center;padding:48px;color:var(--mid, #5c5b57);font-size:14px}
  @media(max-width:900px){#indeed-listings-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){#indeed-listings-grid{grid-template-columns:1fr}}
  </style>
@@ -1295,7 +1295,7 @@
  <div class="section-inner">
  <div class="cta-grid">
  <div class="cta-copy">
- <div class="eyebrow" style="color:rgba(184,147,90.7)">Work With Luke</div>
+ <div class="eyebrow" style="color:rgba(184,147,90,0.7)">Work With Luke</div>
  <h2>Let's Find Your<br><em>Austin Home</em></h2>
  <p>I help tech employees relocate to Austin, including Indeed employees joining one of Austin's most important homegrown companies. I know the northwest corridor, the school boundaries, and how to close before your start date. My representation is free to buyers.</p>
  <p>Cedar Park and Leander move fast, homes in the $400K to $600K range regularly see multiple offers. If you're within 60 to 90 days of your Indeed start date, reach out today.</p>

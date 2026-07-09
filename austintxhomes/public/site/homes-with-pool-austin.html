@@ -149,7 +149,7 @@
  .hero-ripple {
  position: absolute; bottom: -30%; left: 50%; transform: translateX(-50%);
  width: 160%; aspect-ratio: 2/1;
- background: radial-gradient(ellipse 100% 60% at 50% 100%, rgba(26,143,160.22) 0%, transparent 70%);
+ background: radial-gradient(ellipse 100% 60% at 50% 100%, rgba(26,143,160,0.22) 0%, transparent 70%);
  animation: ripple 6s ease-in-out infinite;
  }
  @keyframes ripple {
@@ -169,7 +169,7 @@
  .hero h1 em { font-style: italic; color: #7de0ee; }
  .hero-sub {
  font-size: clamp(.95rem, 1.8vw, 1.1rem);
- color: rgba(255,255,255.62); max-width: 600px; margin: 0 auto 2.5rem; line-height: 1.8;
+ color: rgba(255,255,255,0.62); max-width: 600px; margin: 0 auto 2.5rem; line-height: 1.8;
  }
  .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
  .btn-primary {
@@ -188,13 +188,13 @@
  .btn-pool:hover { background: var(--pool-dark); }
 
  /* STATS BAR */
- .stats-bar { background: #0b1214; padding: 2.75rem 2rem; border-top: 1px solid rgba(26,143,160.2); }
+ .stats-bar { background: #0b1214; padding: 2.75rem 2rem; border-top: 1px solid rgba(26,143,160,0.2); }
  .stats-bar-inner {
  max-width: 1080px; margin: 0 auto;
  display: grid; grid-template-columns: repeat(5, 1fr); gap: 2rem; text-align: center;
  }
  .stat-val { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 2.1rem; color: #5fd0e0; line-height: 1; }
- .stat-lbl { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255.35); margin-top: .4rem; }
+ .stat-lbl { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-top: .4rem; }
 
  /* LISTINGS HERO SECTION */
  .listings-section { background: var(--warm); padding: 5rem 2rem; }
@@ -233,11 +233,11 @@
  }
  .listing-card {
  background: #fff; border-radius: 10px; overflow: hidden;
- box-shadow: 0 2px 14px rgba(0,0,0.07);
+ box-shadow: 0 2px 14px rgba(0,0,0,0.07);
  transition: box-shadow .25s, transform .25s;
  text-decoration: none; color: inherit; display: block;
  }
- .listing-card:hover { box-shadow: 0 10px 36px rgba(0,0,0.12); transform: translateY(-3px); }
+ .listing-card:hover { box-shadow: 0 10px 36px rgba(0,0,0,0.12); transform: translateY(-3px); }
  .listing-img { position: relative; }
  .listing-img img { width: 100%; height: 210px; object-fit: cover; display: block; }
  .listing-img-placeholder {
@@ -245,10 +245,10 @@
  background: linear-gradient(135deg, #0b1a1e 0%, #0f2830 100%);
  display: flex; align-items: center; justify-content: center;
  }
- .listing-img-placeholder span { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255.2); }
+ .listing-img-placeholder span { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,0.2); }
  .pool-badge {
  position: absolute; top: .75rem; right: .75rem;
- background: rgba(26,143,160.9); color: #fff;
+ background: rgba(26,143,160,0.9); color: #fff;
  font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
  padding: .25rem .65rem; border-radius: 3px;
  }
@@ -295,7 +295,7 @@
  border-radius: 8px; overflow: hidden; border: 1px solid var(--border);
  transition: box-shadow .2s, transform .2s;
  }
- .nbhd-card:hover { box-shadow: 0 6px 24px rgba(0,0,0.08); transform: translateY(-2px); }
+ .nbhd-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
  .nbhd-head { background: var(--ink); padding: 1.25rem 1.5rem; }
  .nbhd-head .zip { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #5fd0e0; }
  .nbhd-head h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; color: #fff; margin-top: .2rem; }
@@ -312,7 +312,7 @@
  }
  .cost-card {
  background: var(--pool-lt); border-radius: 8px; padding: 1.5rem; text-align: center;
- border: 1px solid rgba(26,143,160.2);
+ border: 1px solid rgba(26,143,160,0.2);
  }
  .cost-card .cv {
  font-family: 'Cormorant Garamond', Georgia, serif;
@@ -350,7 +350,7 @@
  .agent-name { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.5rem; color: #fff; margin-bottom: .2rem; }
  .agent-title { font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
  .agent-contact { margin-top: 1.25rem; }
- .agent-contact a { display: block; color: rgba(255,255,255.65); font-size: .87rem; text-decoration: none; margin-bottom: .4rem; transition: color .2s; }
+ .agent-contact a { display: block; color: rgba(255,255,255,0.65); font-size: .87rem; text-decoration: none; margin-bottom: .4rem; transition: color .2s; }
  .agent-contact a:hover { color: var(--gold-lt); }
  .agent-text .section-label { color: var(--gold); }
  .agent-text h2 {
@@ -358,7 +358,7 @@
  font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 400; color: #fff;
  margin-bottom: 1.25rem; line-height: 1.2;
  }
- .agent-text p { font-size: .97rem; color: rgba(255,255,255.62); margin-bottom: 1rem; line-height: 1.85; }
+ .agent-text p { font-size: .97rem; color: rgba(255,255,255,0.62); margin-bottom: 1rem; line-height: 1.85; }
 
  /* CONTACT */
  .contact-section { background: var(--pool-dark); padding: 5rem 2rem; }
@@ -369,17 +369,17 @@
  font-size: clamp(1.8rem, 3.5vw, 2.8rem); color: #fff; font-weight: 400;
  margin-bottom: .75rem; line-height: 1.2;
  }
- .contact-inner > p { font-size: .95rem; color: rgba(255,255,255.6); margin-bottom: 2.5rem; line-height: 1.75; }
+ .contact-inner > p { font-size: .95rem; color: rgba(255,255,255,0.6); margin-bottom: 2.5rem; line-height: 1.75; }
  .contact-form { text-align: left; }
  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
  .form-field { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1rem; }
- .form-field label { font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255.45); }
+ .form-field label { font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.45); }
  .form-field input.form-field select.form-field textarea {
- background: rgba(255,255,255.08); border: 1px solid rgba(255,255,255.15);
+ background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
  border-radius: 4px; padding: .75rem 1rem; color: #fff; font-size: .9rem;
  font-family: 'Inter', system-ui, sans-serif; transition: border-color .2s; width: 100%;
  }
- .form-field input::placeholder.form-field textarea::placeholder { color: rgba(255,255,255.25); }
+ .form-field input::placeholder.form-field textarea::placeholder { color: rgba(255,255,255,0.25); }
  .form-field input:focus.form-field select:focus.form-field textarea:focus { outline: none; border-color: #7de0ee; }
  .form-field select option { background: #0f4a55; }
  .form-field textarea { resize: vertical; min-height: 110px; }
@@ -390,7 +390,7 @@
  font-family: 'Inter', system-ui, sans-serif;
  }
  .form-submit:hover { background: #a07e4d; }
- #form-success { display: none; text-align: center; padding: 2rem; color: rgba(255,255,255.85); }
+ #form-success { display: none; text-align: center; padding: 2rem; color: rgba(255,255,255,0.85); }
  #form-success h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.5rem; color: #fff; margin-bottom: .5rem; }
 
  /* FAQ */
@@ -440,7 +440,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }

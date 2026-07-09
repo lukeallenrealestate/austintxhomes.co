@@ -156,7 +156,7 @@
 
  /* ── Hero ── */
  .hero {
- background-image: linear-gradient(rgba(10,8,4.62), rgba(10,8,4.62)), url('/images/tesla-gigafactory-austin-tx.webp');
+ background-image: linear-gradient(rgba(10,8,4,0.62), rgba(10,8,4,0.62)), url('/images/tesla-gigafactory-austin-tx.webp');
  background-size: cover;
  background-position: center;
  padding: 100px 24px 80px;
@@ -176,16 +176,16 @@
  .hero h1 em { font-style: italic; color: var(--gold-lt); }
  .hero-sub {
  font-family: Inter, sans-serif; font-size: 1.05rem;
- color: rgba(255,255,255.65); max-width: 620px;
+ color: rgba(255,255,255,0.65); max-width: 620px;
  margin: 0 auto 32px; line-height: 1.7;
  }
  .hero-pills { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 36px; }
  .hero-pill {
- background: rgba(255,255,255.07); border: 1px solid rgba(184,147,90.3);
+ background: rgba(255,255,255,0.07); border: 1px solid rgba(184,147,90,0.3);
  border-radius: 20px; padding: 6px 16px;
- font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; color: rgba(255,255,255.8);
+ font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8);
  }
- .hero-pill--gold { background: rgba(184,147,90.15); border-color: rgba(184,147,90.5); color: var(--gold-lt); }
+ .hero-pill--gold { background: rgba(184,147,90,0.15); border-color: rgba(184,147,90,0.5); color: var(--gold-lt); }
  .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
  .btn-gold {
  background: var(--gold); color: #fff; padding: 12px 28px;
@@ -195,8 +195,8 @@
  }
  .btn-gold:hover { background: var(--gold-lt); }
  .btn-outline-light {
- background: transparent; color: rgba(255,255,255.8);
- border: 1px solid rgba(255,255,255.25); padding: 12px 28px;
+ background: transparent; color: rgba(255,255,255,0.8);
+ border: 1px solid rgba(255,255,255,0.25); padding: 12px 28px;
  border-radius: var(--r); font-family: Inter, sans-serif;
  font-size: 14px; font-weight: 500; text-decoration: none;
  transition: border-color .2s, color .2s;
@@ -205,8 +205,8 @@
 
  /* ── Commute bar ── */
  .commute-bar {
- background: rgba(255,255,255.05);
- border-top: 1px solid rgba(184,147,90.15);
+ background: rgba(255,255,255,0.05);
+ border-top: 1px solid rgba(184,147,90,0.15);
  padding: 20px 24px;
  }
  .commute-bar-inner {
@@ -214,9 +214,9 @@
  display: flex; justify-content: center; flex-wrap: wrap; gap: 32px;
  }
  .commute-item { text-align: center; }
- .commute-label { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255.4); margin-bottom: 4px; }
+ .commute-label { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
  .commute-value { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; color: var(--gold-lt); font-weight: 500; }
- .commute-sub { font-size: 11px; color: rgba(255,255,255.35); }
+ .commute-sub { font-size: 11px; color: rgba(255,255,255,0.35); }
 
  /* ── Layout ── */
  .section { padding: 72px 24px; }
@@ -297,7 +297,7 @@
  border: 1px solid var(--border); transition: box-shadow .2s, transform .2s;
  text-decoration: none; color: inherit; display: block;
  }
- .listing-card:hover { box-shadow: 0 8px 32px rgba(0,0,0.1); transform: translateY(-2px); }
+ .listing-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); transform: translateY(-2px); }
 
  .card-img { position: relative; width: 100%; padding-top: 66.67%; overflow: hidden; background: var(--cream); }
  .card-img img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -347,7 +347,7 @@
  /* ── Commute table ── */
  .commute-table-wrap { overflow-x: auto; margin: 28px 0; }
  .commute-table { width: 100%; border-collapse: collapse; font-family: Inter, sans-serif; font-size: 13px; }
- .commute-table th { background: var(--ink); color: rgba(255,255,255.7); font-weight: 600; text-align: left; padding: 12px 16px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+ .commute-table th { background: var(--ink); color: rgba(255,255,255,0.7); font-weight: 600; text-align: left; padding: 12px 16px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
  .commute-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--mid); vertical-align: top; }
  .commute-table tr:hover td { background: var(--cream); }
  .commute-table .highlight { color: var(--text); font-weight: 600; }
@@ -374,10 +374,10 @@
  }
  .contact-form input:focus.contact-form select:focus.contact-form textarea:focus { border-color: var(--gold); }
  .contact-form textarea { resize: vertical; min-height: 90px; }
- .form-card { background: var(--ink); border-radius: 8px; padding: 36px; border: 1px solid rgba(184,147,90.2); }
- .form-card .contact-form input.form-card .contact-form select.form-card .contact-form textarea { background: rgba(255,255,255.06); border-color: rgba(255,255,255.12); color: rgba(255,255,255.9); }
- .form-card .contact-form input::placeholder.form-card .contact-form textarea::placeholder { color: rgba(255,255,255.35); }
- .form-card .contact-form select { color: rgba(255,255,255.7); }
+ .form-card { background: var(--ink); border-radius: 8px; padding: 36px; border: 1px solid rgba(184,147,90,0.2); }
+ .form-card .contact-form input.form-card .contact-form select.form-card .contact-form textarea { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9); }
+ .form-card .contact-form input::placeholder.form-card .contact-form textarea::placeholder { color: rgba(255,255,255,0.35); }
+ .form-card .contact-form select { color: rgba(255,255,255,0.7); }
  .form-card .contact-form input:focus.form-card .contact-form select:focus.form-card .contact-form textarea:focus { border-color: var(--gold); }
  .form-card select option { background: var(--ink); color: #fff; }
  .form-title { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; color: #fff; margin-bottom: 20px; }
@@ -397,7 +397,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }

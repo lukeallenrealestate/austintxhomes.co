@@ -95,7 +95,7 @@
  .page-header {
  padding: 140px 52px 80px;
  background: var(--ink);
- border-bottom: 1px solid rgba(184,147,90.15);
+ border-bottom: 1px solid rgba(184,147,90,0.15);
  position: relative; overflow: hidden;
  }
  .page-header video {
@@ -107,7 +107,7 @@
  .page-header video.ready { opacity: 1; }
  .page-header::before {
  content: ''; position: absolute; inset: 0;
- background: linear-gradient(135deg, rgba(15,15,14.88) 0%, rgba(26,20,16.80) 60%, rgba(15,15,14.88) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.88) 0%, rgba(26,20,16,0.80) 60%, rgba(15,15,14,0.88) 100%);
  z-index: 1;
  }
  .page-header-inner {
@@ -131,7 +131,7 @@
  .ph-right { padding-bottom: 6px; }
  .ph-intro {
  font-size: 17px; font-weight: 300;
- color: rgba(255,255,255.72); line-height: 1.8;
+ color: rgba(255,255,255,0.72); line-height: 1.8;
  margin-bottom: 28px;
  }
  .ph-cred-row {
@@ -139,7 +139,7 @@
  }
  .ph-cred {
  font-size: 12px; font-weight: 500;
- letter-spacing: .06em; color: rgba(255,255,255.6);
+ letter-spacing: .06em; color: rgba(255,255,255,0.6);
  display: flex; align-items: center; gap: 7px;
  }
  .ph-cred::before {
@@ -257,7 +257,7 @@
  position: absolute; top: -60px; right: 60px;
  font-family: 'Cormorant Garamond', serif;
  font-size: 360px; font-weight: 300; line-height: 1;
- color: rgba(255,255,255.03); pointer-events: none;
+ color: rgba(255,255,255,0.03); pointer-events: none;
  }
  .philosophy-inner {
  max-width: var(--w); margin: 0 auto;
@@ -268,7 +268,7 @@
  font-family: 'Cormorant Garamond', serif;
  font-size: clamp(24px, 2.8vw, 38px);
  font-weight: 300; font-style: italic;
- color: rgba(255,255,255.85); line-height: 1.5;
+ color: rgba(255,255,255,0.85); line-height: 1.5;
  }
  .phil-quote strong {
  font-style: normal; font-weight: 400; color: #fff;
@@ -276,7 +276,7 @@
  .phil-right { }
  .phil-p {
  font-size: 15px; font-weight: 300;
- color: rgba(255,255,255.5); line-height: 1.85;
+ color: rgba(255,255,255,0.5); line-height: 1.85;
  margin-bottom: 14px;
  }
  .phil-p:last-child { margin-bottom: 0; }
@@ -433,18 +433,18 @@
  .foot-top {
  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
  gap: 48px; padding-bottom: 44px;
- border-bottom: 1px solid rgba(255,255,255.07); margin-bottom: 26px;
+ border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 26px;
  }
  .foot-logo img { height: 30px; filter: brightness(0) invert(1); margin-bottom: 14px; }
- .foot-about { font-size: 12.5px; color: rgba(255,255,255.33); line-height: 1.75; }
- .fc-label { font-size: 9.5px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255.65); margin-bottom: 14px; }
- .fc a { display: block; font-size: 12.5px; color: rgba(255,255,255.33); text-decoration: none; margin-bottom: 8px; transition: color .2s; }
- .fc a:hover { color: rgba(255,255,255.72); }
- .foot-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 11.5px; color: rgba(255,255,255.22); }
+ .foot-about { font-size: 12.5px; color: rgba(255,255,255,0.33); line-height: 1.75; }
+ .fc-label { font-size: 9.5px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 14px; }
+ .fc a { display: block; font-size: 12.5px; color: rgba(255,255,255,0.33); text-decoration: none; margin-bottom: 8px; transition: color .2s; }
+ .fc a:hover { color: rgba(255,255,255,0.72); }
+ .foot-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 11.5px; color: rgba(255,255,255,0.22); }
  .foot-lic { color: var(--gold); opacity: .75; }
 
  /* ── TOAST ─────────────────────────────────────────────── */
- .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(56px); background: var(--text); color: #fff; padding: 12px 24px; border-radius: var(--r); font-size: 13.5px; pointer-events: none; z-index: 9999; box-shadow: 0 8px 28px rgba(0,0,0.18); transition: transform .3s ease; }
+ .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(56px); background: var(--text); color: #fff; padding: 12px 24px; border-radius: var(--r); font-size: 13.5px; pointer-events: none; z-index: 9999; box-shadow: 0 8px 28px rgba(0,0,0,0.18); transition: transform .3s ease; }
  .toast.show { transform: translateX(-50%) translateY(0); }
 
  /* ── RESPONSIVE ────────────────────────────────────────── */

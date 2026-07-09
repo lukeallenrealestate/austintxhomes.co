@@ -219,7 +219,7 @@
  content: '';
  position: absolute;
  inset: 0;
- background: radial-gradient(ellipse 72% 62% at 50% 40%, rgba(184,147,90.17) 0%, transparent 70%);
+ background: radial-gradient(ellipse 72% 62% at 50% 40%, rgba(184,147,90,0.17) 0%, transparent 70%);
  pointer-events: none;
  }
 
@@ -229,8 +229,8 @@
  position: absolute;
  inset: 0;
  background-image:
- linear-gradient(rgba(184,147,90.04) 1px, transparent 1px),
- linear-gradient(90deg, rgba(184,147,90.04) 1px, transparent 1px);
+ linear-gradient(rgba(184,147,90,0.04) 1px, transparent 1px),
+ linear-gradient(90deg, rgba(184,147,90,0.04) 1px, transparent 1px);
  background-size: 48px 48px;
  pointer-events: none;
  }
@@ -250,7 +250,7 @@
  .hero p {
  font-size: 17px;
  line-height: 1.7;
- color: rgba(255,255,255.62);
+ color: rgba(255,255,255,0.62);
  max-width: 580px;
  margin-bottom: 36px;
  }
@@ -266,12 +266,12 @@
  display: inline-flex;
  align-items: center;
  padding: 8px 16px;
- border: 1px solid rgba(184,147,90.35);
+ border: 1px solid rgba(184,147,90,0.35);
  border-radius: 100px;
  font-size: 12px;
  font-weight: 500;
  color: var(--gold-lt);
- background: rgba(184,147,90.07);
+ background: rgba(184,147,90,0.07);
  letter-spacing: 0.02em;
  }
 
@@ -283,14 +283,14 @@
 
  .hero-anchors a {
  font-size: 12px;
- color: rgba(255,255,255.42);
+ color: rgba(255,255,255,0.42);
  text-decoration: none;
  padding: 5px 12px;
- border: 1px solid rgba(255,255,255.1);
+ border: 1px solid rgba(255,255,255,0.1);
  border-radius: 100px;
  transition: color .2s, border-color .2s;
  }
- .hero-anchors a:hover { color: rgba(255,255,255.8); border-color: rgba(255,255,255.28); }
+ .hero-anchors a:hover { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.28); }
 
  /* ── Section headers ── */
  .section-header { margin-bottom: 48px; }
@@ -443,8 +443,8 @@
  }
 
  .compare-card.leaving .compare-card-head { background: var(--warm); color: var(--mid); }
- .compare-card.getting .compare-card-head { background: var(--ink); color: rgba(255,255,255.5); }
- .compare-card.getting { border-color: rgba(184,147,90.28); background: var(--ink); }
+ .compare-card.getting .compare-card-head { background: var(--ink); color: rgba(255,255,255,0.5); }
+ .compare-card.getting { border-color: rgba(184,147,90,0.28); background: var(--ink); }
 
  .compare-list { list-style: none; padding: 18px 24px; }
  .compare-list li {
@@ -459,8 +459,8 @@
  .compare-list li:last-child { border-bottom: none; }
  .compare-card.leaving .compare-list li { color: var(--mid); }
  .compare-card.getting .compare-list li {
- color: rgba(255,255,255.6);
- border-color: rgba(255,255,255.08);
+ color: rgba(255,255,255,0.6);
+ border-color: rgba(255,255,255,0.08);
  }
 
  /* ── Neighborhood cards ── */
@@ -479,9 +479,9 @@
  }
  .nbhd-card:hover {
  border-color: var(--gold);
- box-shadow: 0 4px 20px rgba(184,147,90.1);
+ box-shadow: 0 4px 20px rgba(184,147,90,0.1);
  }
- .nbhd-card.premium { border-color: rgba(184,147,90.4); }
+ .nbhd-card.premium { border-color: rgba(184,147,90,0.4); }
 
  .nbhd-header {
  display: flex;
@@ -749,7 +749,7 @@
  content: '';
  position: absolute;
  inset: 0;
- background: radial-gradient(ellipse 60% 80% at 20% 50%, rgba(184,147,90.11) 0%, transparent 65%);
+ background: radial-gradient(ellipse 60% 80% at 20% 50%, rgba(184,147,90,0.11) 0%, transparent 65%);
  pointer-events: none;
  }
  /* grid overlay echo from hero */
@@ -758,8 +758,8 @@
  position: absolute;
  inset: 0;
  background-image:
- linear-gradient(rgba(184,147,90.03) 1px, transparent 1px),
- linear-gradient(90deg, rgba(184,147,90.03) 1px, transparent 1px);
+ linear-gradient(rgba(184,147,90,0.03) 1px, transparent 1px),
+ linear-gradient(90deg, rgba(184,147,90,0.03) 1px, transparent 1px);
  background-size: 48px 48px;
  pointer-events: none;
  }
@@ -782,15 +782,15 @@
  .cta-copy h2 em { color: var(--gold-lt); }
  .cta-copy p {
  font-size: 15px;
- color: rgba(255,255,255.6);
+ color: rgba(255,255,255,0.6);
  line-height: 1.75;
  margin-bottom: 14px;
  }
 
  /* ── Form ── */
  .contact-form {
- background: rgba(255,255,255.04);
- border: 1px solid rgba(255,255,255.1);
+ background: rgba(255,255,255,0.04);
+ border: 1px solid rgba(255,255,255,0.1);
  border-radius: var(--r);
  padding: 32px;
  }
@@ -801,24 +801,24 @@
  color: #fff;
  margin-bottom: 4px;
  }
- .form-sub { font-size: 12px; color: rgba(255,255,255.38); margin-bottom: 24px; }
+ .form-sub { font-size: 12px; color: rgba(255,255,255,0.38); margin-bottom: 24px; }
 
  .form-group { margin-bottom: 14px; }
  .form-group input.form-group select {
  width: 100%;
  padding: 11px 14px;
- background: rgba(255,255,255.06);
- border: 1px solid rgba(255,255,255.13);
+ background: rgba(255,255,255,0.06);
+ border: 1px solid rgba(255,255,255,0.13);
  border-radius: var(--r);
- color: rgba(255,255,255.85);
+ color: rgba(255,255,255,0.85);
  font-family: 'Inter', sans-serif;
  font-size: 14px;
  outline: none;
  transition: border-color .2s;
  appearance: none;
  }
- .form-group input::placeholder { color: rgba(255,255,255.28); }
- .form-group input:focus.form-group select:focus { border-color: rgba(184,147,90.6); }
+ .form-group input::placeholder { color: rgba(255,255,255,0.28); }
+ .form-group input:focus.form-group select:focus { border-color: rgba(184,147,90,0.6); }
  .form-group select option { background: #1a1918; color: #fff; }
 
  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -902,7 +902,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }
@@ -1101,7 +1101,7 @@
  </div>
 </section>
 <style>
- .nv-card{background:#fff;border:1px solid var(--border, #e5dfd4);border-radius:6px;overflow:hidden;transition:box-shadow .25s,transform .25s;text-decoration:none;display:flex;flex-direction:column;cursor:pointer}.nv-card:hover{box-shadow:0 8px 28px rgba(0,0,0.08);transform:translateY(-2px)}.nv-card-img{position:relative;height:190px;background:var(--cream, #f1ece3);overflow:hidden}.nv-card-img img{width:100%;height:100%;object-fit:cover;display:block}.nv-card-body{padding:16px;flex:1;display:flex;flex-direction:column}.nv-card-price{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--ink, #0f0f0e);margin-bottom:4px}.nv-card-addr{font-size:13px;color:var(--mid, #5c5b57);margin-bottom:10px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nv-card-stats{display:flex;gap:14px;font-size:12px;color:var(--mid, #5c5b57);margin-top:auto;padding-top:12px;border-top:1px solid var(--border, #e5dfd4)}.nv-card-stats strong{color:var(--ink, #0f0f0e);font-weight:600}.nv-card-badge{position:absolute;top:10px;left:10px;background:var(--gold, #b8935a);color:#fff;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:3px}
+ .nv-card{background:#fff;border:1px solid var(--border, #e5dfd4);border-radius:6px;overflow:hidden;transition:box-shadow .25s,transform .25s;text-decoration:none;display:flex;flex-direction:column;cursor:pointer}.nv-card:hover{box-shadow:0 8px 28px rgba(0,0,0,0.08);transform:translateY(-2px)}.nv-card-img{position:relative;height:190px;background:var(--cream, #f1ece3);overflow:hidden}.nv-card-img img{width:100%;height:100%;object-fit:cover;display:block}.nv-card-body{padding:16px;flex:1;display:flex;flex-direction:column}.nv-card-price{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--ink, #0f0f0e);margin-bottom:4px}.nv-card-addr{font-size:13px;color:var(--mid, #5c5b57);margin-bottom:10px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nv-card-stats{display:flex;gap:14px;font-size:12px;color:var(--mid, #5c5b57);margin-top:auto;padding-top:12px;border-top:1px solid var(--border, #e5dfd4)}.nv-card-stats strong{color:var(--ink, #0f0f0e);font-weight:600}.nv-card-badge{position:absolute;top:10px;left:10px;background:var(--gold, #b8935a);color:#fff;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:3px}
  .nv-pg-btn{min-width:36px;height:36px;padding:0 10px;border:1px solid var(--border, #e5dfd4);border-radius:4px;background:#fff;font-size:13px;font-weight:500;color:var(--ink, #0f0f0e);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}.nv-pg-btn:hover{border-color:var(--gold, #b8935a);color:var(--gold, #b8935a)}.nv-pg-btn.active{background:var(--ink, #0f0f0e);color:#fff;border-color:var(--ink, #0f0f0e)}.nv-pg-btn:disabled{opacity:.35;pointer-events:none}#nv-listings-grid .nv-loading{grid-column:1/-1;text-align:center;padding:48px;color:var(--mid, #5c5b57);font-size:14px}
  @media(max-width:900px){#nv-listings-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){#nv-listings-grid{grid-template-columns:1fr}}
 </style>
@@ -1464,7 +1464,7 @@
  <h2>Let's Find Your<br><em>Austin Home</em></h2>
  <p>I help tech employees relocate to Austin, including Nvidia engineers making the Silicon Valley-to-Texas move. I know the northwest Austin corridor, I understand the tax math at Nvidia comp levels, and I know how to get you into a home before your first Austin workday. My representation is free to buyers.</p>
  <p>Cedar Park, Lakeway, and Westlake Hills don't sit long in the $400K to $1.1M range. If you're within 60 to 90 days of your Nvidia start date, or just starting to run the numbers, reach out now.</p>
- <p style="font-size:13px; color:rgba(255,255,255.32); margin-top:20px;">Luke Allen · TREC #788149 · Luke@austinmdg.com</p>
+ <p style="font-size:13px; color:rgba(255,255,255,0.32); margin-top:20px;">Luke Allen · TREC #788149 · Luke@austinmdg.com</p>
  </div>
 
  <div>

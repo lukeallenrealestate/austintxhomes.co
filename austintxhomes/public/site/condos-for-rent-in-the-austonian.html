@@ -129,7 +129,7 @@
  }
  .hero::before {
  content: ''; position: absolute; inset: 0;
- background: linear-gradient(165deg, rgba(15,15,14.85) 0%, rgba(15,15,14.65) 55%, rgba(15,15,14.8) 100%);
+ background: linear-gradient(165deg, rgba(15,15,14,0.85) 0%, rgba(15,15,14,0.65) 55%, rgba(15,15,14,0.8) 100%);
  }
  .hero::after {
  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 200px;
@@ -148,12 +148,12 @@
  color: #fff; letter-spacing: -.01em; margin-bottom: 1.5rem; max-width: 720px;
  }
  .hero h1 em { font-style: italic; color: var(--gold-lt); }
- .hero-sub { font-size: 1.08rem; color: rgba(255,255,255.68); max-width: 540px; line-height: 1.75; margin-bottom: 2.5rem; }
+ .hero-sub { font-size: 1.08rem; color: rgba(255,255,255,0.68); max-width: 540px; line-height: 1.75; margin-bottom: 2.5rem; }
  .hero-pills { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 2.5rem; }
  .hero-pill {
  display: inline-flex; align-items: center; gap: 7px;
- background: rgba(184,147,90.14); border: 1px solid rgba(184,147,90.28);
- color: rgba(255,255,255.85); font-size: .74rem; font-weight: 500; letter-spacing: .06em;
+ background: rgba(184,147,90,0.14); border: 1px solid rgba(184,147,90,0.28);
+ color: rgba(255,255,255,0.85); font-size: .74rem; font-weight: 500; letter-spacing: .06em;
  padding: 7px 14px; border-radius: 100px;
  }
  .hero-pill svg { width: 13px; height: 13px; stroke: var(--gold); fill: none; stroke-width: 2; stroke-linecap: round; }
@@ -168,11 +168,11 @@
  .btn-gold svg.btn-ghost svg { width: 15px; height: 15px; flex-shrink: 0; }
  .btn-ghost {
  display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
- background: transparent; color: rgba(255,255,255.8); border: 1px solid rgba(255,255,255.28);
+ background: transparent; color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.28);
  font-size: .78rem; font-weight: 500; text-transform: uppercase; letter-spacing: .08em;
  padding: 14px 28px; border-radius: var(--r); transition: all .2s;
  }
- .btn-ghost:hover { border-color: rgba(255,255,255.6); color: #fff; }
+ .btn-ghost:hover { border-color: rgba(255,255,255,0.6); color: #fff; }
  .btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
 
  /* SHARED */
@@ -192,12 +192,12 @@
  }
  .ftab:hover { border-color: var(--gold); color: var(--gold); }
  .ftab.active { background: var(--gold); border-color: var(--gold); color: #fff; }
- .ftab-count { background: rgba(0,0,0.08); color: inherit; border-radius: 100px; font-size: .66rem; padding: 1px 7px; line-height: 1.6; }
- .ftab.active .ftab-count { background: rgba(255,255,255.25); }
+ .ftab-count { background: rgba(0,0,0,0.08); color: inherit; border-radius: 100px; font-size: .66rem; padding: 1px 7px; line-height: 1.6; }
+ .ftab.active .ftab-count { background: rgba(255,255,255,0.25); }
 
  .listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 24px; }
  .listing-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: box-shadow .25s, transform .25s; }
- .listing-card:hover { box-shadow: 0 12px 40px rgba(0,0,0.1); transform: translateY(-2px); }
+ .listing-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.1); transform: translateY(-2px); }
  .card-photo { aspect-ratio: 4/3; overflow: hidden; background: var(--cream); position: relative; }
  .card-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
  .listing-card:hover .card-photo img { transform: scale(1.03); }
@@ -235,7 +235,7 @@
  .lifestyle-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
  .lifestyle-photo:hover img { transform: scale(1.04); }
  .lifestyle-copy {
- background: var(--ink); color: rgba(255,255,255.7);
+ background: var(--ink); color: rgba(255,255,255,0.7);
  padding: 52px 48px; display: flex; flex-direction: column; justify-content: center;
  }
  .lifestyle-copy .section-label { color: var(--gold-lt); }
@@ -253,7 +253,7 @@
 
  /* FORM */
  .form-wrap { max-width: 600px; margin: 0 auto; }
- .form-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 44px; box-shadow: 0 8px 40px rgba(0,0,0.06); }
+ .form-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 44px; box-shadow: 0 8px 40px rgba(0,0,0,0.06); }
  .form-group { margin-bottom: 18px; }
  .form-group label { display: block; font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--mid); margin-bottom: 6px; }
  .form-group input.form-group select.form-group textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: var(--r); font-family: 'Inter', sans-serif; font-size: .93rem; color: var(--text); background: var(--bg); appearance: none; transition: border-color .2s; }
@@ -284,9 +284,9 @@
  .related-link svg { width: 14px; height: 14px; stroke: var(--gold); fill: none; stroke-width: 2; stroke-linecap: round; flex-shrink: 0; }
 
  /* LOCATION BAR */
- .location-bar { background: var(--ink); color: rgba(255,255,255.55); padding: 24px 0; }
+ .location-bar { background: var(--ink); color: rgba(255,255,255,0.55); padding: 24px 0; }
  .location-pills { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
- .loc-pill { display: inline-flex; align-items: center; gap: 7px; font-size: .76rem; color: rgba(255,255,255.5); }
+ .loc-pill { display: inline-flex; align-items: center; gap: 7px; font-size: .76rem; color: rgba(255,255,255,0.5); }
  .loc-pill::before { content: ''; width: 4px; height: 4px; background: var(--gold); border-radius: 50%; }
 
  @media (max-width: 900px) {
@@ -606,16 +606,16 @@
  </section>
 
  <style>
- .property-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0.08);border:1px solid #e5e7eb;transition:transform .2s,box-shadow .2s;cursor:pointer;position:relative;}
- .property-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0.12);border-color:transparent;}
+ .property-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);border:1px solid #e5e7eb;transition:transform .2s,box-shadow .2s;cursor:pointer;position:relative;}
+ .property-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,0.12);border-color:transparent;}
  .card-image{position:relative;height:220px;overflow:hidden;background:#f3f4f6;}
  .card-image img{width:100%;height:100%;object-fit:cover;transition:transform .3s;}
  .property-card:hover .card-image img{transform:scale(1.03);}
  .card-image .no-photo{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#bcc1ca;font-size:12px;flex-direction:column;gap:8px;background:#f3f4f6;}
  .card-status{position:absolute;top:12px;left:12px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
  .status-active{background:#16a34a;color:#fff;} .status-pending{background:#ea580c;color:#fff;} .status-coming-soon{background:#111;color:#fff;} .status-under-contract{background:#7c3aed;color:#fff;} .status-closed{background:#6b7280;color:#fff;}
- .card-photo-count{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0.6);color:#fff;padding:3px 8px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:4px;}
- .heart-btn{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255.9);display:flex;align-items:center;justify-content:center;transition:all .2s;color:#6b7280;z-index:5;border:none;cursor:pointer;}
+ .card-photo-count{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,0.6);color:#fff;padding:3px 8px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:4px;}
+ .heart-btn{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;transition:all .2s;color:#6b7280;z-index:5;border:none;cursor:pointer;}
  .heart-btn:hover{color:#dc2626;transform:scale(1.1);}
  .heart-btn svg{width:18px;height:18px;}
  .card-body{padding:16px;}

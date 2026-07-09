@@ -84,7 +84,7 @@
  }
  .hero::after {
  content: ''; position: absolute; inset: 0;
- background: linear-gradient(135deg, rgba(15,15,14.88) 0%, rgba(26,20,16.72) 50%, rgba(15,15,14.88) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.88) 0%, rgba(26,20,16,0.72) 50%, rgba(15,15,14,0.88) 100%);
  z-index: 1;
  }
  .hero-grid {
@@ -105,13 +105,13 @@
  }
  .hero-copy h1 em { color: var(--gold-lt); font-style: italic; }
  .hero-sub {
- font-size: 15px; color: rgba(255,255,255.7);
+ font-size: 15px; color: rgba(255,255,255,0.7);
  line-height: 1.75; max-width: 540px; margin-bottom: 28px;
  }
  .savings-bar {
  display: inline-flex; gap: 2rem; align-items: center;
- background: rgba(255,255,255.04);
- border: 1px solid rgba(184,147,90.25);
+ background: rgba(255,255,255,0.04);
+ border: 1px solid rgba(184,147,90,0.25);
  border-radius: 6px;
  padding: 16px 28px; margin-bottom: 24px;
  }
@@ -121,21 +121,21 @@
  font-size: 1.8rem; font-weight: 500;
  color: var(--gold-lt); display: block;
  }
- .savings-label { font-size: 9px; color: rgba(255,255,255.45); text-transform: uppercase; letter-spacing: .12em; }
- .savings-divider { width: 1px; height: 36px; background: rgba(184,147,90.2); }
+ .savings-label { font-size: 9px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: .12em; }
+ .savings-divider { width: 1px; height: 36px; background: rgba(184,147,90,0.2); }
  .hero-proof {
- font-size: 13px; color: rgba(255,255,255.55); line-height: 1.6;
+ font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6;
  }
  .hero-proof strong { color: var(--gold-lt); }
 
  /* ── LEAD FORM (HERO + REUSABLE) ──────────────────────────── */
  .lead-card {
- background: rgba(15,15,14.85);
- border: 1px solid rgba(184,147,90.32);
+ background: rgba(15,15,14,0.85);
+ border: 1px solid rgba(184,147,90,0.32);
  border-radius: 8px;
  padding: 30px 28px;
  backdrop-filter: blur(10px);
- box-shadow: 0 24px 60px rgba(0,0,0.5);
+ box-shadow: 0 24px 60px rgba(0,0,0,0.5);
  }
  .lead-card h3 {
  font-family: 'Cormorant Garamond', serif;
@@ -144,25 +144,25 @@
  }
  .lead-card h3 em { color: var(--gold-lt); font-style: italic; }
  .lead-card .lead-sub {
- font-size: 12px; color: rgba(255,255,255.6);
+ font-size: 12px; color: rgba(255,255,255,0.6);
  margin-bottom: 20px; line-height: 1.55;
  }
  .lf-row { margin-bottom: 10px; }
  .lf-row.lf-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
  .lf-row label {
  display: block; font-size: 10px; letter-spacing: .12em;
- text-transform: uppercase; color: rgba(255,255,255.5);
+ text-transform: uppercase; color: rgba(255,255,255,0.5);
  margin-bottom: 4px;
  }
  .lf-row input.lf-row select {
  width: 100%; padding: 10px 12px;
- border: 1px solid rgba(255,255,255.16);
+ border: 1px solid rgba(255,255,255,0.16);
  border-radius: var(--r);
  font-family: 'Inter', sans-serif; font-size: 13px;
- color: #fff; background: rgba(255,255,255.07);
+ color: #fff; background: rgba(255,255,255,0.07);
  outline: none; transition: border-color .2s; appearance: none;
  }
- .lf-row input::placeholder { color: rgba(255,255,255.3); }
+ .lf-row input::placeholder { color: rgba(255,255,255,0.3); }
  .lf-row input:focus.lf-row select:focus { border-color: var(--gold); }
  .lf-row select option { background: var(--ink); color: #fff; }
  .lf-submit {
@@ -175,11 +175,11 @@
  .lf-submit:hover { background: var(--gold-lt); }
  .lf-meta {
  margin-top: 14px; padding-top: 14px;
- border-top: 1px solid rgba(255,255,255.08);
- font-size: 10.5px; color: rgba(255,255,255.45);
+ border-top: 1px solid rgba(255,255,255,0.08);
+ font-size: 10.5px; color: rgba(255,255,255,0.45);
  line-height: 1.6; text-align: center;
  }
- .lf-meta a { color: rgba(255,255,255.65); text-decoration: underline; }
+ .lf-meta a { color: rgba(255,255,255,0.65); text-decoration: underline; }
  .lf-meta .lf-eho { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; }
  .lf-meta .lf-eho-icon {
  display: inline-block; width: 14px; height: 14px; border: 1.5px solid currentColor;
@@ -276,7 +276,7 @@
  text-transform: uppercase; letter-spacing: .1em; margin-bottom: .75rem;
  }
  .tag-gold { background: var(--gold-pale); color: var(--gold); }
- .tag-green { background: rgba(46,125,94.1); color: var(--green); }
+ .tag-green { background: rgba(46,125,94,0.1); color: var(--green); }
  .elig-block h3 {
  font-family: 'Cormorant Garamond', serif;
  font-size: 1.3rem; font-weight: 500; color: var(--text); margin-bottom: .75rem;
@@ -297,8 +297,8 @@
  border-radius: 6px; padding: 1.25rem;
  display: flex; gap: .75rem;
  }
- .warning-card.red { background: rgba(192,57,43.06); border: 1px solid rgba(192,57,43.2); }
- .warning-card.green { background: rgba(46,125,94.06); border: 1px solid rgba(46,125,94.2); }
+ .warning-card.red { background: rgba(192,57,43,0.06); border: 1px solid rgba(192,57,43,0.2); }
+ .warning-card.green { background: rgba(46,125,94,0.06); border: 1px solid rgba(46,125,94,0.2); }
  .warning-icon { font-size: 1.3rem; flex-shrink: 0; }
  .warning-body h4 { font-size: .9rem; font-weight: 600; color: var(--text); margin-bottom: .3rem; }
  .warning-body p { font-size: .82rem; color: var(--mid); line-height: 1.6; }
@@ -366,8 +366,8 @@
  }
  .tl-dot.phase1 { background: var(--gold-pale); border: 2px solid var(--gold); }
  .tl-dot.phase2 { background: var(--gold-pale); border: 2px solid var(--gold-lt); }
- .tl-dot.phase3 { background: rgba(46,125,94.1); border: 2px solid var(--green-lt); }
- .tl-dot.phase4 { background: rgba(46,125,94.15); border: 2px solid var(--green); }
+ .tl-dot.phase3 { background: rgba(46,125,94,0.1); border: 2px solid var(--green-lt); }
+ .tl-dot.phase4 { background: rgba(46,125,94,0.15); border: 2px solid var(--green); }
  .tl-phase {
  font-size: .6rem; text-transform: uppercase; letter-spacing: .12em;
  color: var(--gold); font-weight: 600; margin-bottom: .3rem;
@@ -397,7 +397,7 @@
  display: flex; gap: .6rem; align-items: center;
  padding: .45rem 0;
  font-size: .82rem; color: var(--mid);
- border-bottom: 1px solid rgba(0,0,0.04);
+ border-bottom: 1px solid rgba(0,0,0,0.04);
  line-height: 1.5;
  }
  .doc-item:last-child { border-bottom: none; }
@@ -523,17 +523,17 @@
  /* ── STICKY MOBILE CTA BAR ──────────────────────────────── */
  .sticky-cta {
  position: fixed; left: 0; right: 0; bottom: 0;
- background: var(--ink); border-top: 1px solid rgba(184,147,90.25);
+ background: var(--ink); border-top: 1px solid rgba(184,147,90,0.25);
  padding: 12px 16px; z-index: 100;
  display: flex; align-items: center; gap: 12px;
- box-shadow: 0 -8px 24px rgba(0,0,0.3);
+ box-shadow: 0 -8px 24px rgba(0,0,0,0.3);
  }
  .sticky-cta-text {
- flex: 1; color: rgba(255,255,255.85);
+ flex: 1; color: rgba(255,255,255,0.85);
  font-size: 13px; line-height: 1.35;
  }
  .sticky-cta-text strong { color: var(--gold-lt); display: block; font-size: 13px; margin-bottom: 1px; }
- .sticky-cta-text span { font-size: 11px; color: rgba(255,255,255.5); }
+ .sticky-cta-text span { font-size: 11px; color: rgba(255,255,255,0.5); }
  .sticky-cta a {
  background: var(--gold); color: #fff;
  font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
@@ -1123,7 +1123,7 @@
 </section>
 
 <!-- LEAD FORM #3, Bottom anchor -->
-<section class="lead-section section-ink" id="lead-form-bottom-anchor" style="background-image: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(184,147,90.12) 0%, transparent 70%);">
+<section class="lead-section section-ink" id="lead-form-bottom-anchor" style="background-image: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(184,147,90,0.12) 0%, transparent 70%);">
  <div class="lead-inner-wrap">
  <p class="lead-eyebrow" style="color: var(--gold);">Ready to Get Started?</p>
  <h2 class="lead-title" style="color: #fff;">Free <em>UT Residency Guide</em> + 15-Min Consult</h2>

@@ -47,7 +47,7 @@
  .hero::before {
  content: '';
  position: absolute; inset: 0;
- background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90.18) 0%, transparent 70%);
+ background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,0.18) 0%, transparent 70%);
  pointer-events: none;
  }
  .hero-eyebrow {
@@ -63,7 +63,7 @@
  }
  .hero h1 em { color: var(--gold); font-style: italic; }
  .hero-sub {
- font-size: .95rem; color: rgba(255,255,255.58);
+ font-size: .95rem; color: rgba(255,255,255,0.58);
  max-width: 560px; margin: 0 auto 2rem; line-height: 1.7;
  }
  .hero-pills {
@@ -72,7 +72,7 @@
  }
  .hero-pill {
  font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
- border: 1px solid rgba(184,147,90.35); color: var(--gold-lt);
+ border: 1px solid rgba(184,147,90,0.35); color: var(--gold-lt);
  padding: .4rem 1rem; border-radius: 2rem; font-weight: 500;
  }
  .hero-cta {
@@ -144,7 +144,7 @@
  overflow: hidden;
  transition: box-shadow .2s, transform .2s;
  }
- .fp-card:hover { box-shadow: 0 8px 32px rgba(0,0,0.09); transform: translateY(-2px); }
+ .fp-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.09); transform: translateY(-2px); }
  .fp-card-header {
  padding: 1.25rem 1.25rem .75rem;
  border-bottom: 1px solid var(--border);
@@ -185,8 +185,8 @@
  font-size: .7rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase;
  padding: .3rem .8rem; border-radius: 2rem; margin-bottom: 1rem;
  }
- .fp-avail.now { background: rgba(74,178,82.12); color: #3d9e44; border: 1px solid rgba(74,178,82.25); }
- .fp-avail.ask { background: rgba(92,91,87.08); color: var(--mid); border: 1px solid var(--border); }
+ .fp-avail.now { background: rgba(74,178,82,0.12); color: #3d9e44; border: 1px solid rgba(74,178,82,0.25); }
+ .fp-avail.ask { background: rgba(92,91,87,0.08); color: var(--mid); border: 1px solid var(--border); }
  .fp-avail-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
  .fp-inquire-btn {
  display: block; width: 100%; padding: .7rem;
@@ -230,7 +230,7 @@
  }
  .amenity-icon {
  width: 32px; height: 32px; border-radius: 50%;
- background: var(--gold-pale); border: 1px solid rgba(184,147,90.2);
+ background: var(--gold-pale); border: 1px solid rgba(184,147,90,0.2);
  display: flex; align-items: center; justify-content: center;
  font-size: .95rem; flex-shrink: 0;
  }
@@ -258,7 +258,7 @@
  .map-placeholder-icon { font-size: 2.5rem; }
  .map-placeholder a {
  font-size: .8rem; color: var(--gold); text-decoration: none;
- border-bottom: 1px solid rgba(184,147,90.3);
+ border-bottom: 1px solid rgba(184,147,90,0.3);
  }
 
  /* ── INQUIRY FORM ─────────────────────────────────────────────────── */
@@ -354,7 +354,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }

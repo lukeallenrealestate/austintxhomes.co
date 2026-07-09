@@ -190,13 +190,13 @@
  .hero::before {
  content: '';
  position: absolute; inset: 0;
- background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90.18) 0%, transparent 70%);
+ background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,0.18) 0%, transparent 70%);
  pointer-events: none;
  }
  .hero::after {
  content: '';
  position: absolute; inset: 0;
- background: radial-gradient(ellipse 40% 30% at 50% 38%, rgba(184,147,90.08) 0%, transparent 60%);
+ background: radial-gradient(ellipse 40% 30% at 50% 38%, rgba(184,147,90,0.08) 0%, transparent 60%);
  pointer-events: none;
  }
  .hero-inner {
@@ -220,7 +220,7 @@
  }
  .hero h1 em { font-style: italic; color: var(--gold-lt); }
  .hero-sub {
- font-size: 16px; color: rgba(255,255,255.62);
+ font-size: 16px; color: rgba(255,255,255,0.62);
  max-width: 560px; margin: 0 auto 40px;
  line-height: 1.7; font-weight: 300;
  }
@@ -230,10 +230,10 @@
  }
  .hero-pill {
  font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
- color: rgba(255,255,255.5); border: 1px solid rgba(255,255,255.12);
+ color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.12);
  padding: 8px 18px; border-radius: 40px;
  }
- .hero-pill.gold { color: var(--gold-lt); border-color: rgba(184,147,90.35); }
+ .hero-pill.gold { color: var(--gold-lt); border-color: rgba(184,147,90,0.35); }
  .hero-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
  .btn-gold {
  background: var(--gold); color: #fff; border: none; cursor: pointer;
@@ -245,8 +245,8 @@
  }
  .btn-gold:hover { background: var(--gold-lt); transform: translateY(-1px); }
  .btn-outline {
- background: transparent; color: rgba(255,255,255.7);
- border: 1px solid rgba(255,255,255.2); cursor: pointer;
+ background: transparent; color: rgba(255,255,255,0.7);
+ border: 1px solid rgba(255,255,255,0.2); cursor: pointer;
  font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: .1em;
  text-transform: uppercase; font-weight: 500;
  padding: 15px 32px; border-radius: var(--r);
@@ -428,11 +428,11 @@
  font-weight: 300; color: #fff; margin-bottom: 12px;
  }
  .reviews-strip .sub {
- font-size: 15px; color: rgba(255,255,255.55);
+ font-size: 15px; color: rgba(255,255,255,0.55);
  margin-bottom: 8px;
  }
  .reviews-strip .note {
- font-size: 12px; color: rgba(255,255,255.3);
+ font-size: 12px; color: rgba(255,255,255,0.3);
  font-style: italic; margin-bottom: 40px;
  }
  .btn-gold-outline {
@@ -553,7 +553,7 @@
  .hero-text { flex: 1; min-width: 0; }
  .hero-text .hero-eyebrow.hero-text .hero-ctas.hero-text .hero-pills.hero-text .hero-anchors { text-align: left; justify-content: flex-start; }
  .hero-photo { flex-shrink: 0; width: 280px; }
- .hero-photo img { width: 100%; border-radius: 10px; border: 2px solid rgba(184,147,90.4); display: block; box-shadow: 0 16px 48px rgba(0,0,0.5); }
+ .hero-photo img { width: 100%; border-radius: 10px; border: 2px solid rgba(184,147,90,0.4); display: block; box-shadow: 0 16px 48px rgba(0,0,0,0.5); }
  @media (max-width: 860px) {
  .hero-inner { flex-direction: column-reverse !important; gap: 32px; text-align: center !important; }
  .hero-photo { width: 180px; }
@@ -570,7 +570,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }

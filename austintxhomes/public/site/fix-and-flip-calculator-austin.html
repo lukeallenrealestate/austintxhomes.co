@@ -136,7 +136,7 @@
  .hero::before {
  content: '';
  position: absolute; inset: 0;
- background: radial-gradient(ellipse 70% 55% at 50% 40%, rgba(184,147,90.18) 0%, transparent 70%);
+ background: radial-gradient(ellipse 70% 55% at 50% 40%, rgba(184,147,90,0.18) 0%, transparent 70%);
  }
  .hero-inner { position: relative; max-width: 860px; margin: 0 auto; }
  .hero-eyebrow {
@@ -149,13 +149,13 @@
  }
  .hero h1 em { color: var(--gold); font-style: normal; }
  .hero-sub {
- font-size: 1.1rem; color: rgba(255,255,255.62); max-width: 640px;
+ font-size: 1.1rem; color: rgba(255,255,255,0.62); max-width: 640px;
  margin: 0 auto 2.2rem; line-height: 1.7;
  }
  .hero-pills { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.2rem; }
  .hero-pill {
- background: rgba(255,255,255.06); border: 1px solid rgba(255,255,255.12);
- color: rgba(255,255,255.72); font-size: 13px; padding: .45rem 1.1rem;
+ background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+ color: rgba(255,255,255,0.72); font-size: 13px; padding: .45rem 1.1rem;
  border-radius: 100px;
  }
  .btn-gold {
@@ -175,7 +175,7 @@
 
  /* ── ANCHOR NAV ── */
  .anchor-nav {
- background: var(--ink); border-top: 1px solid rgba(255,255,255.08);
+ background: var(--ink); border-top: 1px solid rgba(255,255,255,0.08);
  position: sticky; top: 64px; z-index: 90;
  overflow-x: auto; -webkit-overflow-scrolling: touch;
  }
@@ -184,7 +184,7 @@
  display: flex; gap: 0; padding: 0 1rem;
  }
  .anchor-nav a {
- color: rgba(255,255,255.5); font-size: 12px; letter-spacing: .1em;
+ color: rgba(255,255,255,0.5); font-size: 12px; letter-spacing: .1em;
  text-transform: uppercase; text-decoration: none;
  padding: 1rem 1.2rem; white-space: nowrap;
  border-bottom: 2px solid transparent;
@@ -196,7 +196,7 @@
  .section { padding: 72px 2rem; }
  .section-warm { background: var(--warm); }
  .section-cream { background: var(--cream); }
- .section-dark { background: var(--ink); color: rgba(255,255,255.8); }
+ .section-dark { background: var(--ink); color: rgba(255,255,255,0.8); }
  .container { max-width: var(--w); margin: 0 auto; }
  .section-label {
  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
@@ -225,7 +225,7 @@
  font-size: 1.25rem; margin-bottom: 1.5rem;
  padding-bottom: .75rem; border-bottom: 1px solid var(--border);
  }
- .calc-results h3 { color: #fff; border-bottom-color: rgba(255,255,255.1); }
+ .calc-results h3 { color: #fff; border-bottom-color: rgba(255,255,255,0.1); }
  .input-group { margin-bottom: 1.2rem; }
  .input-group label {
  display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
@@ -247,30 +247,30 @@
 
  .result-row {
  display: flex; justify-content: space-between; align-items: baseline;
- padding: .7rem 0; border-bottom: 1px solid rgba(255,255,255.06);
+ padding: .7rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);
  }
  .result-row:last-child { border-bottom: none; }
- .result-label { font-size: 13px; color: rgba(255,255,255.55); }
- .result-val { font-size: 1rem; font-weight: 500; color: rgba(255,255,255.9); }
- .result-row.total { padding-top: 1rem; margin-top: .5rem; border-top: 1px solid rgba(255,255,255.15); }
- .result-row.total .result-label { font-size: .95rem; color: rgba(255,255,255.75); font-weight: 500; }
+ .result-label { font-size: 13px; color: rgba(255,255,255,0.55); }
+ .result-val { font-size: 1rem; font-weight: 500; color: rgba(255,255,255,0.9); }
+ .result-row.total { padding-top: 1rem; margin-top: .5rem; border-top: 1px solid rgba(255,255,255,0.15); }
+ .result-row.total .result-label { font-size: .95rem; color: rgba(255,255,255,0.75); font-weight: 500; }
  .result-row.total .result-val { font-size: 1.5rem; font-family: 'Cormorant Garamond', serif; color: var(--gold); }
  .result-badge {
  display: inline-block; padding: .3rem 1rem; border-radius: 100px;
  font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
  font-weight: 500; margin-top: 1rem;
  }
- .badge-pass { background: rgba(34,197,94.15); color: #4ade80; border: 1px solid rgba(34,197,94.25); }
- .badge-warn { background: rgba(234,179,8.15); color: #facc15; border: 1px solid rgba(234,179,8.25); }
- .badge-fail { background: rgba(239,68,68.15); color: #f87171; border: 1px solid rgba(239,68,68.25); }
+ .badge-pass { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
+ .badge-warn { background: rgba(234,179,8,0.15); color: #facc15; border: 1px solid rgba(234,179,8,0.25); }
+ .badge-fail { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
  .mao-box {
- background: rgba(184,147,90.1); border: 1px solid rgba(184,147,90.2);
+ background: rgba(184,147,90,0.1); border: 1px solid rgba(184,147,90,0.2);
  border-radius: 6px; padding: 1rem 1.2rem; margin-top: 1.2rem;
  text-align: center;
  }
  .mao-label { font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--gold); margin-bottom: .3rem; }
  .mao-val { font-size: 1.8rem; font-family: 'Cormorant Garamond', serif; color: var(--gold); }
- .mao-sub { font-size: 11px; color: rgba(255,255,255.4); margin-top: .3rem; }
+ .mao-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: .3rem; }
 
  /* ── 70% RULE ── */
  .quick-calc {
@@ -283,7 +283,7 @@
  margin-top: 1.5rem; display: flex; gap: 2rem; flex-wrap: wrap;
  }
  .qr-item { flex: 1; min-width: 140px; }
- .qr-label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255.4); margin-bottom: .3rem; }
+ .qr-label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: .3rem; }
  .qr-val { font-size: 1.5rem; font-family: 'Cormorant Garamond', serif; color: var(--gold); }
 
  /* ── REHAB ESTIMATOR ── */
@@ -317,9 +317,9 @@
  display: flex; justify-content: space-between; align-items: center;
  flex-wrap: wrap; gap: 1rem;
  }
- .rehab-total-label { font-size: 14px; color: rgba(255,255,255.6); }
+ .rehab-total-label { font-size: 14px; color: rgba(255,255,255,0.6); }
  .rehab-total-val { font-size: 2rem; font-family: 'Cormorant Garamond', serif; color: var(--gold); }
- .rehab-per-sqft { font-size: 13px; color: rgba(255,255,255.4); margin-top: .2rem; }
+ .rehab-per-sqft { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: .2rem; }
  .sqft-input-row { display: flex; gap: .75rem; align-items: center; margin-bottom: 1.5rem; }
  .sqft-input-row label { font-size: 13px; color: var(--mid); white-space: nowrap; }
  .sqft-input-row input {
@@ -336,7 +336,7 @@
  }
  .arv-table thead { background: var(--ink); }
  .arv-table thead th {
- color: rgba(255,255,255.7); font-size: 11px; letter-spacing: .12em;
+ color: rgba(255,255,255,0.7); font-size: 11px; letter-spacing: .12em;
  text-transform: uppercase; text-align: left; padding: .9rem 1.2rem;
  font-weight: 500;
  }
@@ -352,10 +352,10 @@
  font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
  padding: 2px 7px; border-radius: 3px; font-weight: 500;
  }
- .zone-central { background: rgba(184,147,90.12); color: var(--gold); }
- .zone-inner { background: rgba(99,155,100.12); color: #5b9e5c; }
- .zone-outer { background: rgba(100,130,180.12); color: #5b7ec0; }
- .zone-suburban { background: rgba(140,100,160.12); color: #8c5ba0; }
+ .zone-central { background: rgba(184,147,90,0.12); color: var(--gold); }
+ .zone-inner { background: rgba(99,155,100,0.12); color: #5b9e5c; }
+ .zone-outer { background: rgba(100,130,180,0.12); color: #5b7ec0; }
+ .zone-suburban { background: rgba(140,100,160,0.12); color: #8c5ba0; }
 
  /* ── HARD MONEY CALC ── */
  .hm-grid {
@@ -368,13 +368,13 @@
  .hm-results { background: var(--ink); border-radius: 8px; padding: 2rem; }
  .hm-result-row {
  display: flex; justify-content: space-between; align-items: baseline;
- padding: .65rem 0; border-bottom: 1px solid rgba(255,255,255.06);
+ padding: .65rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);
  }
  .hm-result-row:last-child { border-bottom: none; }
- .hm-result-label { font-size: 13px; color: rgba(255,255,255.5); }
- .hm-result-val { font-weight: 500; color: rgba(255,255,255.9); }
- .hm-total { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255.15); }
- .hm-total .hm-result-label { color: rgba(255,255,255.7); font-size: .9rem; }
+ .hm-result-label { font-size: 13px; color: rgba(255,255,255,0.5); }
+ .hm-result-val { font-weight: 500; color: rgba(255,255,255,0.9); }
+ .hm-total { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.15); }
+ .hm-total .hm-result-label { color: rgba(255,255,255,0.7); font-size: .9rem; }
  .hm-total .hm-result-val { font-size: 1.5rem; font-family: 'Cormorant Garamond', serif; color: var(--gold); }
 
  /* ── CHECKLIST ── */
@@ -384,12 +384,12 @@
  gap: 1.5rem;
  }
  .checklist-group {
- background: rgba(255,255,255.04); border: 1px solid rgba(255,255,255.08);
+ background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
  border-radius: 8px; padding: 1.5rem;
  }
  .checklist-group h3 {
  font-size: 1rem; color: var(--gold); margin-bottom: 1rem;
- padding-bottom: .6rem; border-bottom: 1px solid rgba(255,255,255.08);
+ padding-bottom: .6rem; border-bottom: 1px solid rgba(255,255,255,0.08);
  }
  .checklist-item {
  display: flex; align-items: flex-start; gap: .6rem;
@@ -399,17 +399,17 @@
  width: 15px; height: 15px; margin-top: 2px; flex-shrink: 0;
  accent-color: var(--gold); cursor: pointer;
  }
- .checklist-item span { font-size: 13px; color: rgba(255,255,255.65); line-height: 1.5; }
- .checklist-item.done span { text-decoration: line-through; color: rgba(255,255,255.3); }
+ .checklist-item span { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.5; }
+ .checklist-item.done span { text-decoration: line-through; color: rgba(255,255,255,0.3); }
  .checklist-progress {
- background: rgba(255,255,255.05); border-radius: 100px;
+ background: rgba(255,255,255,0.05); border-radius: 100px;
  height: 4px; margin-top: 1.5rem; overflow: hidden;
  }
  .checklist-progress-bar {
  height: 100%; background: var(--gold); border-radius: 100px;
  transition: width .3s ease;
  }
- .checklist-count { font-size: 12px; color: rgba(255,255,255.35); margin-top: .5rem; text-align: right; }
+ .checklist-count { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: .5rem; text-align: right; }
 
  /* ── FAQ ── */
  .faq-list { max-width: 800px; }
@@ -443,7 +443,7 @@
 
  /* ── MISC ── */
  .tip-box {
- background: rgba(184,147,90.08); border: 1px solid rgba(184,147,90.2);
+ background: rgba(184,147,90,0.08); border: 1px solid rgba(184,147,90,0.2);
  border-radius: 6px; padding: 1rem 1.25rem;
  font-size: .9rem; color: var(--mid); margin-top: 1.5rem;
  }
@@ -464,7 +464,7 @@
  }
  .internal-link-strip a {
  font-size: 13px; color: var(--gold); text-decoration: none;
- border: 1px solid rgba(184,147,90.3); border-radius: 100px;
+ border: 1px solid rgba(184,147,90,0.3); border-radius: 100px;
  padding: .4rem 1rem; transition: background .2s, color .2s;
  }
  .internal-link-strip a:hover { background: var(--gold); color: #fff; }
@@ -492,7 +492,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }
@@ -883,7 +883,7 @@
  </div>
 
  <div class="hm-results">
- <h3 style="color:#fff;border-bottom:1px solid rgba(255,255,255.1);padding-bottom:.75rem;margin-bottom:1.5rem">Loan Cost Breakdown</h3>
+ <h3 style="color:#fff;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:.75rem;margin-bottom:1.5rem">Loan Cost Breakdown</h3>
  <div class="hm-result-row">
  <span class="hm-result-label">Monthly Interest Payment</span>
  <span class="hm-result-val" id="hm-monthly"> - </span>
@@ -913,7 +913,7 @@
  <span class="hm-result-val" id="hm-effective"> - </span>
  </div>
 
- <div class="tip-box" style="margin-top:1.5rem;background:rgba(184,147,90.08);border-color:rgba(184,147,90.2);">
+ <div class="tip-box" style="margin-top:1.5rem;background:rgba(184,147,90,0.08);border-color:rgba(184,147,90,0.2);">
  <strong style="color:var(--gold)">Austin lender range:</strong> Most Austin hard money lenders charge 10 to 14% interest + 2 to 4 points, with 65 to 75% ARV LTV. Some offer 80% of cost (purchase + rehab) for experienced flippers.
  </div>
  </div>
@@ -926,11 +926,11 @@
  <div class="container">
  <span class="section-label" style="color:var(--gold)">Before You Close</span>
  <h2 style="color:#fff">Fix &amp; Flip Due Diligence Checklist</h2>
- <p class="section-sub" style="color:rgba(255,255,255.55)">Check each item before making an offer or proceeding to close. Missed items are the #1 cause of blown flip budgets.</p>
+ <p class="section-sub" style="color:rgba(255,255,255,0.55)">Check each item before making an offer or proceeding to close. Missed items are the #1 cause of blown flip budgets.</p>
 
  <div class="checklist-grid" id="checklist-container"></div>
 
- <div id="checklist-summary" style="margin-top:1.5rem;font-size:13px;color:rgba(255,255,255.4);text-align:right"></div>
+ <div id="checklist-summary" style="margin-top:1.5rem;font-size:13px;color:rgba(255,255,255,0.4);text-align:right"></div>
  </div>
  </section>
 

@@ -112,7 +112,7 @@
  }
  .hero::before {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.82) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.82) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.82) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.82) 100%);
  pointer-events: none;
  }
  .hero > * { position: relative; z-index: 2; }
@@ -121,24 +121,24 @@
  .eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
  .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(40px, 5.2vw, 64px); font-weight: 400; line-height: 1.07; color: #fff; margin-bottom: 22px; }
  .hero h1 em { font-style: italic; color: var(--gold-lt); }
- .hero-sub { font-size: 15px; color: rgba(255,255,255.72); max-width: 520px; margin: 0 0 32px; line-height: 1.7; }
+ .hero-sub { font-size: 15px; color: rgba(255,255,255,0.72); max-width: 520px; margin: 0 0 32px; line-height: 1.7; }
  .pills { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
- .lead-card { background: rgba(15,15,14.82); border: 1px solid rgba(184,147,90.24); border-radius: 6px; padding: 28px 24px; }
+ .lead-card { background: rgba(15,15,14,0.82); border: 1px solid rgba(184,147,90,0.24); border-radius: 6px; padding: 28px 24px; }
  .lead-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: #fff; margin-bottom: 4px; line-height: 1.2; }
- .lead-card .lead-sub { font-size: 12px; color: rgba(255,255,255.55); margin-bottom: 20px; line-height: 1.5; }
+ .lead-card .lead-sub { font-size: 12px; color: rgba(255,255,255,0.55); margin-bottom: 20px; line-height: 1.5; }
  .lead-card .form-submit { margin-top: 4px; }
- .lead-note { font-size: 10.5px; color: rgba(255,255,255.38); text-align: center; margin-top: 12px; letter-spacing: .04em; }
+ .lead-note { font-size: 10.5px; color: rgba(255,255,255,0.38); text-align: center; margin-top: 12px; letter-spacing: .04em; }
  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
- .form-group label { display: block; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255.5); margin-bottom: 5px; }
+ .form-group label { display: block; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 5px; }
  .lead-success { text-align: center; padding: 24px 0; font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; color: var(--gold-lt); line-height: 1.5; display: none; }
  @media (max-width: 900px) {
  .hero-inner { grid-template-columns: 1fr; gap: 32px; }
  .hero-copy { text-align: left; }
  .hero h1 { font-size: clamp(38px, 7vw, 56px); }
  }
- .pill { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; border: 1px solid rgba(184,147,90.38); color: var(--gold-lt); padding: 7px 18px; border-radius: 20px; }
+ .pill { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; border: 1px solid rgba(184,147,90,0.38); color: var(--gold-lt); padding: 7px 18px; border-radius: 20px; }
  .anchors { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
- .anchors a { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255.38); text-decoration: none; transition: color .2s; }
+ .anchors a { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.38); text-decoration: none; transition: color .2s; }
  .anchors a:hover { color: var(--gold); }
 
  /* SHARED */
@@ -153,12 +153,12 @@
  .location-copy p { font-size: 15px; color: var(--mid); line-height: 1.8; margin-bottom: 18px; }
  .commute-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 28px; }
  .commute-card-head { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--light); margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); line-height: 1.5; }
- .commute-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(229,223,212.5); gap: 16px; }
+ .commute-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(229,223,212,0.5); gap: 16px; }
  .commute-row:last-of-type { border-bottom: none; }
  .commute-place { font-size: 13px; font-weight: 500; color: var(--ink); }
  .commute-time { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--gold); white-space: nowrap; }
  .commute-via { font-size: 11px; color: var(--light); margin-top: 2px; }
- .commute-avoid { margin-top: 16px; padding: 12px 14px; background: rgba(184,147,90.07); border: 1px solid rgba(184,147,90.2); border-radius: var(--r); font-size: 12px; color: var(--mid); line-height: 1.5; }
+ .commute-avoid { margin-top: 16px; padding: 12px 14px; background: rgba(184,147,90,0.07); border: 1px solid rgba(184,147,90,0.2); border-radius: var(--r); font-size: 12px; color: var(--mid); line-height: 1.5; }
  .commute-avoid strong { color: var(--text); }
 
  /* NEIGHBORHOOD CARDS */
@@ -166,8 +166,8 @@
  .nbhd-inner { max-width: var(--w); margin: 0 auto; }
  .nbhd-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
  .nbhd-card { border: 1px solid var(--border); border-radius: 6px; padding: 26px; background: var(--bg); transition: box-shadow .25s, transform .25s; display: flex; flex-direction: column; }
- .nbhd-card:hover { box-shadow: 0 8px 28px rgba(0,0,0.07); transform: translateY(-2px); }
- .commute-badge { display: inline-block; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; background: rgba(184,147,90.1); color: var(--gold); border: 1px solid rgba(184,147,90.25); border-radius: 3px; padding: 3px 10px; margin-bottom: 14px; }
+ .nbhd-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.07); transform: translateY(-2px); }
+ .commute-badge { display: inline-block; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; background: rgba(184,147,90,0.1); color: var(--gold); border: 1px solid rgba(184,147,90,0.25); border-radius: 3px; padding: 3px 10px; margin-bottom: 14px; }
  .nbhd-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: var(--ink); margin-bottom: 4px; }
  .nbhd-price { font-size: 12px; color: var(--light); margin-bottom: 16px; }
  .nbhd-bullets { list-style: none; display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; flex: 1; }
@@ -187,9 +187,9 @@
  .housing-table tr:last-child td { border-bottom: none; }
  .housing-table td:first-child { font-weight: 500; }
  .housing-table td:not(:first-child) { color: var(--mid); }
- .housing-table tr:hover td { background: rgba(184,147,90.04); }
+ .housing-table tr:hover td { background: rgba(184,147,90,0.04); }
  .housing-copy p { font-size: 15px; color: var(--mid); line-height: 1.8; margin-bottom: 18px; }
- .housing-copy a { color: var(--gold); text-decoration: none; font-size: 13px; letter-spacing: .06em; border-bottom: 1px solid rgba(184,147,90.3); padding-bottom: 1px; }
+ .housing-copy a { color: var(--gold); text-decoration: none; font-size: 13px; letter-spacing: .06em; border-bottom: 1px solid rgba(184,147,90,0.3); padding-bottom: 1px; }
  .housing-copy a:hover { border-color: var(--gold); }
 
  /* RENT VS BUY */
@@ -198,7 +198,7 @@
  .rvb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
  .rvb-card { border-radius: 8px; padding: 36px; }
  .rvb-card.rent { background: var(--cream); border: 1px solid var(--border); }
- .rvb-card.buy { background: rgba(184,147,90.07); border: 1px solid rgba(184,147,90.3); }
+ .rvb-card.buy { background: rgba(184,147,90,0.07); border: 1px solid rgba(184,147,90,0.3); }
  .rvb-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--ink); margin-bottom: 20px; }
  .rvb-head { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--light); margin-bottom: 8px; margin-top: 16px; }
  .rvb-head:first-of-type { margin-top: 0; }
@@ -250,17 +250,17 @@
  .cta-inner { max-width: var(--w); margin: 0 auto; display: grid; grid-template-columns: 1fr 420px; gap: 80px; align-items: center; }
  .cta-copy h2 { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 400; color: #fff; line-height: 1.1; margin-bottom: 16px; }
  .cta-copy h2 em { font-style: italic; color: var(--gold); }
- .cta-copy p { font-size: 14px; color: rgba(255,255,255.58); line-height: 1.75; margin-bottom: 14px; }
- .cta-form { background: rgba(255,255,255.05); border: 1px solid rgba(255,255,255.1); border-radius: 8px; padding: 36px; }
+ .cta-copy p { font-size: 14px; color: rgba(255,255,255,0.58); line-height: 1.75; margin-bottom: 14px; }
+ .cta-form { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 36px; }
  .cta-form h3 { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: #fff; margin-bottom: 6px; }
- .cta-form > p { font-size: 13px; color: rgba(255,255,255.4); margin-bottom: 22px; }
+ .cta-form > p { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 22px; }
  .form-group { margin-bottom: 12px; }
  .form-group input.form-group select {
- width: 100%; padding: 11px 14px; border: 1px solid rgba(255,255,255.14);
+ width: 100%; padding: 11px 14px; border: 1px solid rgba(255,255,255,0.14);
  border-radius: var(--r); font-family: 'Inter', sans-serif; font-size: 13px;
- color: #fff; background: rgba(255,255,255.07); outline: none; transition: border-color .2s;
+ color: #fff; background: rgba(255,255,255,0.07); outline: none; transition: border-color .2s;
  }
- .form-group input::placeholder { color: rgba(255,255,255.28); }
+ .form-group input::placeholder { color: rgba(255,255,255,0.28); }
  .form-group input:focus.form-group select:focus { border-color: var(--gold); }
  .form-group select option { background: #1a1918; color: #fff; }
  .form-submit {
@@ -304,7 +304,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }
@@ -509,7 +509,7 @@
  overflow:hidden; transition:box-shadow .25s, transform .25s;
  text-decoration:none; display:flex; flex-direction:column; cursor:pointer;
  }
- .spacex-card:hover { box-shadow:0 8px 28px rgba(0,0,0.08); transform:translateY(-2px); }
+ .spacex-card:hover { box-shadow:0 8px 28px rgba(0,0,0,0.08); transform:translateY(-2px); }
  .spacex-card-img { position:relative; height:190px; background:var(--cream, #f1ece3); overflow:hidden; }
  .spacex-card-img img { width:100%; height:100%; object-fit:cover; display:block; }
  .spacex-card-body { padding:16px; flex:1; display:flex; flex-direction:column; }
@@ -838,7 +838,7 @@
  <h2>Let's Find Your<br><em>Austin Home</em></h2>
  <p>I specialize in helping tech and aerospace employees relocate to Austin - I know the Bastrop and SH-130 commute corridors, the neighborhoods worth the premium, and how to get you into a home before your start date. My representation is free to buyers.</p>
  <p>Most SpaceX relocations I work with start the home search 60 to 90 days before their start date. If you're closer than that, I've made it work - just reach out immediately. If you're also weighing the <a href="/tesla-austin-relocation" style="color:var(--gold);">Tesla Gigafactory commute</a>, the corridor overlaps significantly and I can help with both.</p>
- <p style="font-size:13px;color:rgba(255,255,255.35);margin-top:8px;">Luke Allen · TREC #788149 · (254) 718-2567</p>
+ <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-top:8px;">Luke Allen · TREC #788149 · (254) 718-2567</p>
  </div>
  <div class="cta-form">
  <h3>SpaceX Relocation Consultation</h3>

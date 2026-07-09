@@ -130,13 +130,13 @@
 
  :root {
  --gold: #b8935a;
- --gold-light: rgba(184,147,90.12);
- --gold-border: rgba(184,147,90.25);
+ --gold-light: rgba(184,147,90,0.12);
+ --gold-border: rgba(184,147,90,0.25);
  --ink: #1a1a18;
  --bg: #f9f8f5;
  --text: #3d3d3a;
  --mid: #6b6b67;
- --border: rgba(0,0,0.08);
+ --border: rgba(0,0,0,0.08);
  --w: 1100px;
  }
 
@@ -160,22 +160,22 @@
  0deg,
  transparent 0px,
  transparent 34px,
- rgba(184,147,90.04) 34px,
- rgba(184,147,90.04) 36px
+ rgba(184,147,90,0.04) 34px,
+ rgba(184,147,90,0.04) 36px
  ),
  repeating-linear-gradient(
  0deg,
  transparent 0px,
  transparent 118px,
- rgba(184,147,90.07) 118px,
- rgba(184,147,90.07) 121px
+ rgba(184,147,90,0.07) 118px,
+ rgba(184,147,90,0.07) 121px
  );
  pointer-events: none;
  }
  .hero::after {
  content: '';
  position: absolute; inset: 0;
- background: radial-gradient(ellipse 80% 70% at 30% 50%, rgba(184,147,90.06) 0%, transparent 70%);
+ background: radial-gradient(ellipse 80% 70% at 30% 50%, rgba(184,147,90,0.06) 0%, transparent 70%);
  pointer-events: none;
  }
  .hero-inner {
@@ -200,20 +200,20 @@
  }
  .hero h1 em { font-style: italic; color: var(--gold); }
  .hero-sub {
- font-size: 15px; color: rgba(255,255,255.55);
+ font-size: 15px; color: rgba(255,255,255,0.55);
  line-height: 1.75; max-width: 480px; margin-bottom: 2rem;
  }
  .hero-pills { display: flex; gap: .6rem; flex-wrap: wrap; }
  .hero-pill {
  font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
- border: 1px solid rgba(184,147,90.3); color: rgba(184,147,90.8);
+ border: 1px solid rgba(184,147,90,0.3); color: rgba(184,147,90,0.8);
  padding: 5px 12px; border-radius: 20px;
  }
 
  /* Form card */
  .form-card {
- background: rgba(255,255,255.04);
- border: 1px solid rgba(255,255,255.1);
+ background: rgba(255,255,255,0.04);
+ border: 1px solid rgba(255,255,255,0.1);
  border-radius: 4px;
  padding: 32px 28px;
  backdrop-filter: blur(8px);
@@ -224,22 +224,22 @@
  color: #f5f0e8; margin-bottom: 6px;
  }
  .form-card-sub {
- font-size: 12px; color: rgba(255,255,255.4);
+ font-size: 12px; color: rgba(255,255,255,0.4);
  margin-bottom: 20px; line-height: 1.5;
  }
  .fg { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
- .fg label { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255.35); }
+ .fg label { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
  .fg input.fg select.fg textarea {
- background: rgba(255,255,255.06);
- border: 1px solid rgba(255,255,255.12);
+ background: rgba(255,255,255,0.06);
+ border: 1px solid rgba(255,255,255,0.12);
  border-radius: 3px;
  padding: 10px 12px;
  font-size: 13px; font-family: 'Inter', sans-serif;
- color: rgba(255,255,255.85);
+ color: rgba(255,255,255,0.85);
  outline: none; transition: border-color .2s;
  }
- .fg input::placeholder.fg textarea::placeholder { color: rgba(255,255,255.25); }
- .fg input:focus.fg select:focus.fg textarea:focus { border-color: rgba(184,147,90.5); }
+ .fg input::placeholder.fg textarea::placeholder { color: rgba(255,255,255,0.25); }
+ .fg input:focus.fg select:focus.fg textarea:focus { border-color: rgba(184,147,90,0.5); }
  .fg select { appearance: none; cursor: pointer; }
  .fg select option { background: #2a2820; color: #f5f0e8; }
  .fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -251,7 +251,7 @@
  transition: background .2s; margin-top: 4px;
  }
  .cta-btn:hover { background: #a07d48; }
- .form-note { font-size: 11px; color: rgba(255,255,255.25); text-align: center; margin-top: 10px; }
+ .form-note { font-size: 11px; color: rgba(255,255,255,0.25); text-align: center; margin-top: 10px; }
 
  /* ── SECTION SHARED ─────────────────────────────── */
  .sec-ey {
@@ -330,16 +330,16 @@
  color: #f5f0e8; line-height: 1.15;
  }
  .hoods-head h2 em { font-style: italic; color: var(--gold); }
- .hoods-head p { font-size: 14px; color: rgba(255,255,255.45); margin-top: 10px; max-width: 560px; }
- .hoods-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(255,255,255.06); border: 1px solid rgba(255,255,255.06); }
+ .hoods-head p { font-size: 14px; color: rgba(255,255,255,0.45); margin-top: 10px; max-width: 560px; }
+ .hoods-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.06); }
  .hood-card {
  background: #1c1a16; padding: 28px 24px;
  text-decoration: none; transition: background .2s;
  display: block;
  }
- .hood-card:hover { background: rgba(184,147,90.06); }
+ .hood-card:hover { background: rgba(184,147,90,0.06); }
  .hood-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 400; color: #f5f0e8; margin-bottom: 6px; }
- .hood-card p { font-size: 12px; color: rgba(255,255,255.35); line-height: 1.6; }
+ .hood-card p { font-size: 12px; color: rgba(255,255,255,0.35); line-height: 1.6; }
  .hood-card .hood-arrow { font-size: 11px; color: var(--gold); margin-top: 12px; display: block; }
 
  /* ── BUYER VALUES ───────────────────────────────── */
@@ -449,7 +449,7 @@
  color: #f5f0e8; line-height: 1.15; margin-bottom: 12px;
  }
  .cta-copy h2 em { font-style: italic; color: var(--gold); }
- .cta-copy p { font-size: 14px; color: rgba(255,255,255.45); max-width: 520px; }
+ .cta-copy p { font-size: 14px; color: rgba(255,255,255,0.45); max-width: 520px; }
  .cta-actions { display: flex; flex-direction: column; gap: 12px; min-width: 200px; }
  .btn-gold-lg {
  padding: 16px 32px; background: var(--gold); border: none; border-radius: 3px;
@@ -460,9 +460,9 @@
  .btn-gold-lg:hover { background: #a07d48; }
  .btn-ghost-lg {
  padding: 16px 32px; background: transparent;
- border: 1px solid rgba(255,255,255.15); border-radius: 3px;
+ border: 1px solid rgba(255,255,255,0.15); border-radius: 3px;
  font-size: 13px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
- color: rgba(255,255,255.6); text-decoration: none; text-align: center;
+ color: rgba(255,255,255,0.6); text-decoration: none; text-align: center;
  transition: border-color .2s, color .2s; white-space: nowrap;
  }
  .btn-ghost-lg:hover { border-color: var(--gold); color: var(--gold); }
@@ -497,7 +497,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }
@@ -867,7 +867,7 @@
  <div class="form-card" style="text-align:center;padding:48px 28px;">
  <div style="font-size:2rem;margin-bottom:16px;">✓</div>
  <div class="form-card-head" style="margin-bottom:10px;">Request Received</div>
- <p style="font-size:13px;color:rgba(255,255,255.5);line-height:1.7;">
+ <p style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7;">
  Thanks ${data.name.split(' ')[0]}. Luke will review your property and get back to you within 24 hours with an honest assessment of what your ranch home is worth.
  </p>
  </div>`;

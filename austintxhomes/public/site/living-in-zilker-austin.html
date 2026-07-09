@@ -256,12 +256,12 @@
  }
  .btn-gold:hover { background: var(--gold-lt); color: #fff; }
  .btn-outline {
- border: 1px solid rgba(184,147,90.45); color: var(--gold);
+ border: 1px solid rgba(184,147,90,0.45); color: var(--gold);
  padding: .85rem 2rem; border-radius: var(--r); text-decoration: none;
  font-size: .82rem; letter-spacing: .1em; text-transform: uppercase;
  font-weight: 500; transition: all .2s; display: inline-block; white-space: nowrap;
  }
- .btn-outline:hover { border-color: var(--gold); background: rgba(184,147,90.08); }
+ .btn-outline:hover { border-color: var(--gold); background: rgba(184,147,90,0.08); }
 
  /* ── QUICK FACTS BAR ── */
  .facts-bar { background: var(--ink); border-top: 1px solid rgba(184,147,90,0.18); border-bottom: 1px solid rgba(184,147,90,0.18); padding: 44px 24px; }
@@ -413,7 +413,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }

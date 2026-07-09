@@ -186,7 +186,7 @@
  ══════════════════════════════════════ */
  #hero {
  background: var(--ink);
- background-image: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(184,147,90.13) 0%, transparent 70%);
+ background-image: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(184,147,90,0.13) 0%, transparent 70%);
  padding: 140px 2rem 100px;
  position: relative;
  overflow: hidden;
@@ -198,8 +198,8 @@
  position: absolute;
  inset: 0;
  background-image:
- linear-gradient(rgba(184,147,90.04) 1px, transparent 1px),
- linear-gradient(90deg, rgba(184,147,90.04) 1px, transparent 1px);
+ linear-gradient(rgba(184,147,90,0.04) 1px, transparent 1px),
+ linear-gradient(90deg, rgba(184,147,90,0.04) 1px, transparent 1px);
  background-size: 60px 60px;
  pointer-events: none;
  }
@@ -212,7 +212,7 @@
  top: 0;
  width: 1px;
  height: 60px;
- background: linear-gradient(to bottom, transparent, rgba(184,147,90.3));
+ background: linear-gradient(to bottom, transparent, rgba(184,147,90,0.3));
  transform: translateX(-50%);
  }
 
@@ -249,7 +249,7 @@
  font-size: clamp(3rem, 6vw, 5.5rem);
  font-weight: 300;
  line-height: 1.05;
- color: rgba(255,255,255.92);
+ color: rgba(255,255,255,0.92);
  letter-spacing: -.01em;
  margin-bottom: 1.75rem;
  max-width: 680px;
@@ -264,7 +264,7 @@
  .hero-desc {
  font-size: 15px;
  line-height: 1.75;
- color: rgba(255,255,255.52);
+ color: rgba(255,255,255,0.52);
  max-width: 560px;
  margin-bottom: 2.5rem;
  }
@@ -281,14 +281,14 @@
  align-items: center;
  gap: .5rem;
  padding: .5rem 1rem;
- border: 1px solid rgba(184,147,90.25);
+ border: 1px solid rgba(184,147,90,0.25);
  border-radius: 2px;
  font-size: 11px;
  font-weight: 500;
  letter-spacing: .08em;
  text-transform: uppercase;
- color: rgba(255,255,255.65);
- background: rgba(184,147,90.06);
+ color: rgba(255,255,255,0.65);
+ background: rgba(184,147,90,0.06);
  }
 
  .hero-pill::before {
@@ -311,7 +311,7 @@
  font-weight: 500;
  letter-spacing: .1em;
  text-transform: uppercase;
- color: rgba(255,255,255.35);
+ color: rgba(255,255,255,0.35);
  text-decoration: none;
  transition: color .2s;
  }
@@ -323,7 +323,7 @@
  ══════════════════════════════════════ */
  #market-intel {
  background: var(--ink-2);
- border-bottom: 1px solid rgba(255,255,255.05);
+ border-bottom: 1px solid rgba(255,255,255,0.05);
  }
 
  .intel-grid {
@@ -337,7 +337,7 @@
 
  .intel-card {
  padding: 2rem 1.5rem;
- border-right: 1px solid rgba(255,255,255.05);
+ border-right: 1px solid rgba(255,255,255,0.05);
  position: relative;
  }
 
@@ -348,7 +348,7 @@
  font-weight: 500;
  letter-spacing: .18em;
  text-transform: uppercase;
- color: rgba(255,255,255.3);
+ color: rgba(255,255,255,0.3);
  margin-bottom: .6rem;
  }
 
@@ -364,7 +364,7 @@
 
  .intel-note {
  font-size: 11px;
- color: rgba(255,255,255.28);
+ color: rgba(255,255,255,0.28);
  line-height: 1.4;
  }
 
@@ -422,8 +422,8 @@
  }
 
  .deal-card:hover {
- border-color: rgba(184,147,90.4);
- box-shadow: 0 4px 24px rgba(184,147,90.08);
+ border-color: rgba(184,147,90,0.4);
+ box-shadow: 0 4px 24px rgba(184,147,90,0.08);
  }
 
  .deal-card-top {
@@ -446,7 +446,7 @@
  text-transform: uppercase;
  padding: 3px 8px;
  background: var(--ink);
- color: rgba(255,255,255.7);
+ color: rgba(255,255,255,0.7);
  border-radius: 2px;
  }
 
@@ -472,14 +472,14 @@
  }
 
  .deal-status.active {
- border: 1px solid rgba(184,147,90.4);
+ border: 1px solid rgba(184,147,90,0.4);
  color: var(--gold);
- background: rgba(184,147,90.07);
+ background: rgba(184,147,90,0.07);
  }
 
  .deal-status.off-market {
  background: var(--ink);
- color: rgba(255,255,255.55);
+ color: rgba(255,255,255,0.55);
  }
 
  .deal-status.under-contract {
@@ -547,7 +547,7 @@
  gap: .5rem;
  padding: .65rem 1.25rem;
  background: var(--ink);
- color: rgba(255,255,255.8);
+ color: rgba(255,255,255,0.8);
  font-size: 11px;
  font-weight: 500;
  letter-spacing: .1em;
@@ -639,7 +639,7 @@
  font-weight: 500;
  letter-spacing: .18em;
  text-transform: uppercase;
- color: rgba(255,255,255.3);
+ color: rgba(255,255,255,0.3);
  margin-bottom: .5rem;
  }
 
@@ -654,7 +654,7 @@
 
  .why-stat-note {
  font-size: 11px;
- color: rgba(255,255,255.3);
+ color: rgba(255,255,255,0.3);
  line-height: 1.4;
  }
 
@@ -701,7 +701,7 @@
  }
 
  .wwd-card:hover {
- border-color: rgba(184,147,90.35);
+ border-color: rgba(184,147,90,0.35);
  transform: translateY(-2px);
  }
 
@@ -744,7 +744,7 @@
  ══════════════════════════════════════ */
  #investor-form-section {
  background: var(--ink);
- background-image: radial-gradient(ellipse 50% 60% at 20% 50%, rgba(184,147,90.07) 0%, transparent 60%);
+ background-image: radial-gradient(ellipse 50% 60% at 20% 50%, rgba(184,147,90,0.07) 0%, transparent 60%);
  padding: 100px 2rem;
  }
 
@@ -762,7 +762,7 @@
  font-size: clamp(2.4rem, 4vw, 3.4rem);
  font-weight: 300;
  line-height: 1.05;
- color: rgba(255,255,255.9);
+ color: rgba(255,255,255,0.9);
  margin-bottom: 1.75rem;
  }
 
@@ -774,14 +774,14 @@
  .form-left p {
  font-size: 14px;
  line-height: 1.8;
- color: rgba(255,255,255.42);
+ color: rgba(255,255,255,0.42);
  margin-bottom: 1rem;
  }
 
  .form-left .form-divider {
  width: 40px;
  height: 1px;
- background: rgba(184,147,90.3);
+ background: rgba(184,147,90,0.3);
  margin: 2rem 0;
  }
 
@@ -790,12 +790,12 @@
  font-weight: 500;
  letter-spacing: .08em;
  text-transform: uppercase;
- color: rgba(255,255,255.2);
+ color: rgba(255,255,255,0.2);
  }
 
  .form-box {
- background: rgba(255,255,255.03);
- border: 1px solid rgba(255,255,255.08);
+ background: rgba(255,255,255,0.03);
+ border: 1px solid rgba(255,255,255,0.08);
  border-radius: var(--r);
  padding: 2.5rem;
  }
@@ -804,13 +804,13 @@
  font-family: 'Cormorant Garamond', Georgia, serif;
  font-size: 1.4rem;
  font-weight: 400;
- color: rgba(255,255,255.85);
+ color: rgba(255,255,255,0.85);
  margin-bottom: .35rem;
  }
 
  .form-box-sub {
  font-size: 11px;
- color: rgba(255,255,255.28);
+ color: rgba(255,255,255,0.28);
  margin-bottom: 2rem;
  letter-spacing: .04em;
  }
@@ -835,39 +835,39 @@
  font-weight: 500;
  letter-spacing: .14em;
  text-transform: uppercase;
- color: rgba(255,255,255.35);
+ color: rgba(255,255,255,0.35);
  }
 
  .form-field input.form-field select.form-field textarea {
- background: rgba(255,255,255.05);
- border: 1px solid rgba(255,255,255.1);
+ background: rgba(255,255,255,0.05);
+ border: 1px solid rgba(255,255,255,0.1);
  border-radius: 3px;
  padding: .7rem .9rem;
  font-family: 'Inter', sans-serif;
  font-size: 13px;
- color: rgba(255,255,255.8);
+ color: rgba(255,255,255,0.8);
  outline: none;
  transition: border-color .2s;
  width: 100%;
  }
 
  .form-field input::placeholder.form-field textarea::placeholder {
- color: rgba(255,255,255.2);
+ color: rgba(255,255,255,0.2);
  }
 
  .form-field input:focus.form-field select:focus.form-field textarea:focus {
- border-color: rgba(184,147,90.4);
+ border-color: rgba(184,147,90,0.4);
  }
 
  .form-field select {
  appearance: none;
- background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255.3)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,0.3)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
  background-repeat: no-repeat;
  background-position: right .9rem center;
  cursor: pointer;
  }
 
- .form-field select option { background: #1a1918; color: rgba(255,255,255.8); }
+ .form-field select option { background: #1a1918; color: rgba(255,255,255,0.8); }
 
  .form-field textarea { resize: vertical; min-height: 100px; }
 
@@ -976,8 +976,8 @@
  @media (max-width: 768px) {
  #hero { padding: 120px 1.5rem 80px; }
  .intel-grid { grid-template-columns: repeat(2, 1fr); }
- .intel-card { border-right: none; border-bottom: 1px solid rgba(255,255,255.05); }
- .intel-card:nth-child(odd) { border-right: 1px solid rgba(255,255,255.05); }
+ .intel-card { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
+ .intel-card:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.05); }
  .intel-card:nth-last-child(-n+2) { border-bottom: none; }
  .deals-grid { grid-template-columns: 1fr; }
  .wwd-grid { grid-template-columns: 1fr; }
@@ -1002,7 +1002,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }
@@ -1164,7 +1164,7 @@
  <section id="investor-form-section">
  <div class="form-grid">
  <div class="form-left">
- <div class="eyebrow" style="color:rgba(184,147,90.6)">Investor Inquiry</div>
+ <div class="eyebrow" style="color:rgba(184,147,90,0.6)">Investor Inquiry</div>
  <h2>Let's Talk<br><em>Capital Deployment</em></h2>
  <p>I work with a small number of commercial investment clients at a time, the deals I bring are serious, the process is direct. Tell me what you're looking to deploy and I'll come back with options, including off-market inventory that matches your profile.</p>
  <div class="form-divider"></div>

@@ -157,7 +157,7 @@
  /* ── Hero ── */
  .hero {
  background: var(--ink);
- background-image: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90.18) 0%, transparent 70%);
+ background-image: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,0.18) 0%, transparent 70%);
  padding: 100px 24px 80px;
  text-align: center;
  color: #fff;
@@ -183,7 +183,7 @@
  .hero-sub {
  font-family: Inter, sans-serif;
  font-size: 1.05rem;
- color: rgba(255,255,255.65);
+ color: rgba(255,255,255,0.65);
  max-width: 620px;
  margin: 0 auto 32px;
  line-height: 1.7;
@@ -196,18 +196,18 @@
  margin-bottom: 36px;
  }
  .hero-pill {
- background: rgba(255,255,255.07);
- border: 1px solid rgba(184,147,90.3);
+ background: rgba(255,255,255,0.07);
+ border: 1px solid rgba(184,147,90,0.3);
  border-radius: 20px;
  padding: 6px 16px;
  font-family: Inter, sans-serif;
  font-size: 12px;
  font-weight: 500;
- color: rgba(255,255,255.8);
+ color: rgba(255,255,255,0.8);
  }
  .hero-pill--gold {
- background: rgba(184,147,90.15);
- border-color: rgba(184,147,90.5);
+ background: rgba(184,147,90,0.15);
+ border-color: rgba(184,147,90,0.5);
  color: var(--gold-lt);
  }
  .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
@@ -227,8 +227,8 @@
  .btn-gold:hover { background: var(--gold-lt); }
  .btn-outline-light {
  background: transparent;
- color: rgba(255,255,255.8);
- border: 1px solid rgba(255,255,255.25);
+ color: rgba(255,255,255,0.8);
+ border: 1px solid rgba(255,255,255,0.25);
  padding: 12px 28px;
  border-radius: var(--r);
  font-family: Inter, sans-serif;
@@ -346,7 +346,7 @@
  color: inherit;
  display: block;
  }
- .listing-card:hover { box-shadow: 0 8px 32px rgba(0,0,0.1); transform: translateY(-2px); }
+ .listing-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); transform: translateY(-2px); }
 
  .card-img {
  position: relative;
@@ -552,15 +552,15 @@
  background: var(--ink);
  border-radius: 8px;
  padding: 36px;
- border: 1px solid rgba(184,147,90.2);
+ border: 1px solid rgba(184,147,90,0.2);
  }
  .form-card .contact-form input.form-card .contact-form select.form-card .contact-form textarea {
- background: rgba(255,255,255.06);
- border-color: rgba(255,255,255.12);
- color: rgba(255,255,255.9);
+ background: rgba(255,255,255,0.06);
+ border-color: rgba(255,255,255,0.12);
+ color: rgba(255,255,255,0.9);
  }
- .form-card .contact-form input::placeholder.form-card .contact-form textarea::placeholder { color: rgba(255,255,255.35); }
- .form-card .contact-form select { color: rgba(255,255,255.7); }
+ .form-card .contact-form input::placeholder.form-card .contact-form textarea::placeholder { color: rgba(255,255,255,0.35); }
+ .form-card .contact-form select { color: rgba(255,255,255,0.7); }
  .form-card .contact-form input:focus.form-card .contact-form select:focus.form-card .contact-form textarea:focus { border-color: var(--gold); }
  .form-card select option { background: var(--ink); color: #fff; }
  .form-title {
@@ -603,7 +603,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }

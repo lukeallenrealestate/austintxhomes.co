@@ -182,7 +182,7 @@
  content: '';
  position: absolute;
  inset: 0;
- background: radial-gradient(ellipse 68% 58% at 50% 40%, rgba(184,147,90.18) 0%, transparent 70%);
+ background: radial-gradient(ellipse 68% 58% at 50% 40%, rgba(184,147,90,0.18) 0%, transparent 70%);
  pointer-events: none;
  }
  /* Candlestick / market chart lines, subtle financial motif */
@@ -196,11 +196,11 @@
  180deg,
  transparent,
  transparent 28px,
- rgba(184,147,90.04) 28px,
- rgba(184,147,90.04) 29px
+ rgba(184,147,90,0.04) 28px,
+ rgba(184,147,90,0.04) 29px
  );
- mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0.6) 40%, rgba(0,0,0.6) 100%);
- -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0.6) 40%, rgba(0,0,0.6) 100%);
+ mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.6) 100%);
+ -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.6) 100%);
  pointer-events: none;
  }
 
@@ -208,12 +208,12 @@
  .hero .eyebrow { color: var(--gold-lt); }
  .hero h1 { font-size: clamp(46px, 7vw, 78px); font-weight: 600; color: #fff; margin-bottom: 24px; letter-spacing: -0.01em; }
  .hero h1 em { color: var(--gold-lt); }
- .hero p { font-size: 17px; line-height: 1.7; color: rgba(255,255,255.62); max-width: 600px; margin-bottom: 36px; }
+ .hero p { font-size: 17px; line-height: 1.7; color: rgba(255,255,255,0.62); max-width: 600px; margin-bottom: 36px; }
  .hero-pills { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
- .pill { display: inline-flex; align-items: center; padding: 8px 16px; border: 1px solid rgba(184,147,90.35); border-radius: 100px; font-size: 12px; font-weight: 500; color: var(--gold-lt); background: rgba(184,147,90.07); letter-spacing: 0.02em; }
+ .pill { display: inline-flex; align-items: center; padding: 8px 16px; border: 1px solid rgba(184,147,90,0.35); border-radius: 100px; font-size: 12px; font-weight: 500; color: var(--gold-lt); background: rgba(184,147,90,0.07); letter-spacing: 0.02em; }
  .hero-anchors { display: flex; flex-wrap: wrap; gap: 6px; }
- .hero-anchors a { font-size: 12px; color: rgba(255,255,255.42); text-decoration: none; padding: 5px 12px; border: 1px solid rgba(255,255,255.1); border-radius: 100px; transition: color .2s, border-color .2s; }
- .hero-anchors a:hover { color: rgba(255,255,255.8); border-color: rgba(255,255,255.28); }
+ .hero-anchors a { font-size: 12px; color: rgba(255,255,255,0.42); text-decoration: none; padding: 5px 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 100px; transition: color .2s, border-color .2s; }
+ .hero-anchors a:hover { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.28); }
 
  /* ── Section headers ── */
  .section-header { margin-bottom: 48px; }
@@ -266,19 +266,19 @@
  .compare-card { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
  .compare-card-head { padding: 14px 24px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
  .compare-card.leaving .compare-card-head { background: var(--warm); color: var(--mid); }
- .compare-card.getting .compare-card-head { background: var(--ink); color: rgba(255,255,255.5); }
- .compare-card.getting { border-color: rgba(184,147,90.28); background: var(--ink); }
+ .compare-card.getting .compare-card-head { background: var(--ink); color: rgba(255,255,255,0.5); }
+ .compare-card.getting { border-color: rgba(184,147,90,0.28); background: var(--ink); }
  .compare-list { list-style: none; padding: 18px 24px; }
  .compare-list li { padding: 8px 0; font-size: 14px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: baseline; line-height: 1.5; }
  .compare-list li:last-child { border-bottom: none; }
  .compare-card.leaving .compare-list li { color: var(--mid); }
- .compare-card.getting .compare-list li { color: rgba(255,255,255.6); border-color: rgba(255,255,255.08); }
+ .compare-card.getting .compare-list li { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.08); }
 
  /* ── Neighborhood cards ── */
  .nbhd-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
  .nbhd-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; transition: border-color .2s, box-shadow .2s; }
- .nbhd-card:hover { border-color: var(--gold); box-shadow: 0 4px 20px rgba(184,147,90.1); }
- .nbhd-card.premium { border-color: rgba(184,147,90.4); }
+ .nbhd-card:hover { border-color: var(--gold); box-shadow: 0 4px 20px rgba(184,147,90,0.1); }
+ .nbhd-card.premium { border-color: rgba(184,147,90,0.4); }
  .nbhd-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 8px; }
  .nbhd-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--ink); }
  .nbhd-commute { font-size: 11px; font-weight: 600; color: var(--gold); background: var(--gold-pale); padding: 3px 9px; border-radius: 100px; white-space: nowrap; flex-shrink: 0; }
@@ -336,21 +336,21 @@
 
  /* ── CTA ── */
  .cta-section { background: var(--ink); padding: 80px 0; position: relative; overflow: hidden; }
- .cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 20% 50%, rgba(184,147,90.12) 0%, transparent 65%); pointer-events: none; }
+ .cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 20% 50%, rgba(184,147,90,0.12) 0%, transparent 65%); pointer-events: none; }
  .cta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; position: relative; z-index: 1; }
  .cta-copy .eyebrow { color: var(--gold-lt); }
  .cta-copy h2 { font-size: clamp(34px, 4vw, 52px); color: #fff; letter-spacing: -0.01em; margin-bottom: 20px; }
  .cta-copy h2 em { color: var(--gold-lt); }
- .cta-copy p { font-size: 15px; color: rgba(255,255,255.58); line-height: 1.75; margin-bottom: 16px; }
- .cta-form-wrap { background: rgba(255,255,255.04); border: 1px solid rgba(255,255,255.1); border-radius: var(--r); padding: 32px; }
+ .cta-copy p { font-size: 15px; color: rgba(255,255,255,0.58); line-height: 1.75; margin-bottom: 16px; }
+ .cta-form-wrap { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--r); padding: 32px; }
  .form-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #fff; margin-bottom: 4px; }
- .form-sub { font-size: 12px; color: rgba(255,255,255.35); margin-bottom: 24px; }
+ .form-sub { font-size: 12px; color: rgba(255,255,255,0.35); margin-bottom: 24px; }
  .form-group { margin-bottom: 14px; }
- .form-group label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255.4); margin-bottom: 6px; }
- .form-group input.form-group select { width: 100%; background: rgba(255,255,255.07); border: 1px solid rgba(255,255,255.12); border-radius: var(--r); padding: 10px 14px; font-family: 'Inter', sans-serif; font-size: 14px; color: #fff; outline: none; transition: border-color .2s; }
- .form-group input::placeholder { color: rgba(255,255,255.28); }
- .form-group input:focus.form-group select:focus { border-color: rgba(184,147,90.5); }
- .form-group select { color: rgba(255,255,255.75); }
+ .form-group label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+ .form-group input.form-group select { width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--r); padding: 10px 14px; font-family: 'Inter', sans-serif; font-size: 14px; color: #fff; outline: none; transition: border-color .2s; }
+ .form-group input::placeholder { color: rgba(255,255,255,0.28); }
+ .form-group input:focus.form-group select:focus { border-color: rgba(184,147,90,0.5); }
+ .form-group select { color: rgba(255,255,255,0.75); }
  .form-group select option { background: #1a1918; color: #fff; }
  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
  .form-btn { width: 100%; margin-top: 8px; padding: 13px; background: var(--gold); border: none; border-radius: var(--r); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: #fff; cursor: pointer; letter-spacing: 0.03em; transition: background .2s; }
@@ -380,7 +380,7 @@
  .hero video.bg-video.ready { opacity: 1; }
  .hero::after {
  content: ''; position: absolute; inset: 0; z-index: 1;
- background: linear-gradient(135deg, rgba(15,15,14.78) 0%, rgba(26,20,16.7) 50%, rgba(15,15,14.78) 100%);
+ background: linear-gradient(135deg, rgba(15,15,14,0.78) 0%, rgba(26,20,16,0.7) 50%, rgba(15,15,14,0.78) 100%);
  pointer-events: none;
  }
  .hero > *:not(video) { position: relative; z-index: 2; }
@@ -833,7 +833,7 @@
  <h2>Let's Find Your<br><em>Austin Home</em></h2>
  <p>I help Schwab employees make the California-to-Austin move, I know the SW Austin corridor intimately, I understand what Westlake Hills delivers vs the Barton Hills alternative, and I know the Eanes ISD school zone boundaries that matter. My representation is free to buyers.</p>
  <p>Westlake Hills and Barton Hills at $700K to $1.3M move faster than most Bay Area transplants expect. If you're within 60 to 90 days of your Schwab start date, or just starting to run the San Francisco comparison, reach out now.</p>
- <p style="font-size:13px;color:rgba(255,255,255.35);margin-top:8px;">Luke Allen · TREC #788149 · Austin, TX</p>
+ <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-top:8px;">Luke Allen · TREC #788149 · Austin, TX</p>
  </div>
  <div class="cta-form-wrap">
  <div class="form-title">Schwab Relocation Consultation</div>
