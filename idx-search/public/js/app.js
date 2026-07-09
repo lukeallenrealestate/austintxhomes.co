@@ -5,7 +5,9 @@ let currentFilters = {};
 let totalResults = 0;
 let googleMap = null;
 let mapMarkers = [];
-let drawingManager = null;
+// drawingManager removed: Google Maps API 3.65 deprecated DrawingManager.
+// Custom freehand mousedown/mousemove/mouseup handlers below now handle
+// all polygon drawing, which is what actually rendered anyway.
 let drawnPolygon = null;
 let isDrawing = false;
 let drawPath = [];
@@ -288,7 +290,9 @@ async function loadGoogleMaps() {
 
   window.initMap = initMap;
   const script = document.createElement('script');
-  script.src = `https://maps.googleapis.com/maps/api/js?key=${config.googleMapsKey}&libraries=drawing,places,geometry&callback=initMap`;
+  // libraries: removed 'drawing' — deprecated in Maps JS 3.65. Freehand
+  // polygon drawing is implemented directly in initMap below.
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${config.googleMapsKey}&libraries=places,geometry&callback=initMap`;
   script.async = true;
   script.defer = true;
   document.head.appendChild(script);
@@ -306,6 +310,7 @@ async function loadGoogleMaps() {
 }
 
 function initMap() {
+  try {
   gmapsLoaded = true;
   let _savedMap = null;
   try { _savedMap = JSON.parse(localStorage.getItem('searchState') || 'null'); } catch(e) {}
@@ -315,6 +320,7 @@ function initMap() {
     mapTypeControl: false,
     fullscreenControl: false,
     streetViewControl: false,
+    gestureHandling: 'greedy', // Zillow parity: one-finger pan + scroll-wheel zoom without cmd/ctrl
     styles: [
       { featureType: 'poi', stylers: [{ visibility: 'off' }] },
       { featureType: 'transit', stylers: [{ visibility: 'simplified' }] }
@@ -323,19 +329,10 @@ function initMap() {
 
   infoWindow = new google.maps.InfoWindow();
 
-  // Drawing Manager
-  drawingManager = new google.maps.drawing.DrawingManager({
-    drawingMode: null,
-    drawingControl: false,
-    polygonOptions: {
-      fillColor: '#1877F2',
-      fillOpacity: 0.15,
-      strokeWeight: 2,
-      strokeColor: '#1877F2',
-      editable: false
-    }
-  });
-  drawingManager.setMap(googleMap);
+  // Note: google.maps.drawing.DrawingManager was removed in Maps JS 3.65.
+  // All polygon drawing is done via the freehand mousedown/mousemove/mouseup
+  // handlers below. This is what actually rendered anyway; the old
+  // DrawingManager was only ever used as a controlled toggle.
 
   // Freehand drawing
   const mapDiv = document.getElementById('map');
@@ -426,35 +423,20 @@ function initMap() {
     } catch(e) {}
   }
 
-  google.maps.event.addListener(drawingManager, 'polygoncomplete', polygon => {
-    drawnPolygon = polygon;
-    drawingManager.setDrawingMode(null);
-    document.getElementById('draw-btn').classList.remove('active');
-    document.getElementById('clear-draw-btn').style.display = 'flex';
-
-    // Get polygon bounds as bounding box for API, then pass polygon for filtering
-    const bounds = new google.maps.LatLngBounds();
-    polygon.getPath().forEach(p => bounds.extend(p));
-    currentFilters.north = bounds.getNorthEast().lat();
-    currentFilters.south = bounds.getSouthWest().lat();
-    currentFilters.east = bounds.getNorthEast().lng();
-    currentFilters.west = bounds.getSouthWest().lng();
-
-    const path = [];
-    polygon.getPath().forEach(p => path.push({ lat: p.lat(), lng: p.lng() }));
-    currentFilters.polygon = JSON.stringify(path);
-    currentPage = 1;
-    loadMapPins();
-    loadMapCards();
-  });
+  // DrawingManager removed — see freehand handler above for the actual drawing
+  // implementation. Polygon completion is done by finishFreehandDraw().
 
   // Update marker style on zoom
   googleMap.addListener('zoom_changed', () => {
     const zoom = googleMap.getZoom();
     mapMarkers.forEach(m => m.setIcon(markerIcon(m._pin, zoom)));
+    // Flag "map moved" so the Search-this-area affordance updates.
+    mapDirtySinceLastFetch = true;
+    updateSearchAreaBtn();
   });
 
-  // Update on map pan/zoom (debounced 300ms to avoid request storms)
+  // Update on map pan/zoom (debounced 200ms — snappier than 300, still avoids
+  // request storms during continuous drags. Zillow parity.)
   googleMap.addListener('idle', () => {
     clearTimeout(mapIdleTimer);
     mapIdleTimer = setTimeout(() => {
@@ -471,15 +453,60 @@ function initMap() {
       currentFilters.south = sw.lat();
       currentFilters.east = ne.lng();
       currentFilters.west = sw.lng();
+      currentPage = 1; // Panning to a new area resets pagination to page 1
       loadMapPins();
-      loadMapCards();
-    }, 300);
+      syncUrlFromFilters();
+      mapDirtySinceLastFetch = false;
+      updateSearchAreaBtn();
+    }, 200);
+  });
+
+  // Track when user starts panning/zooming (before idle fires) so the
+  // Search-this-area badge shows without waiting for the debounce.
+  googleMap.addListener('dragstart', () => {
+    mapDirtySinceLastFetch = true;
+    updateSearchAreaBtn();
   });
 
   if (currentView === 'map' && pendingMapZoom) {
     zoomMapToFilter();
   }
   // idle event fires automatically after map creation and handles initial pin/card load
+  } catch (e) {
+    console.error('[initMap] fatal — map init failed but sidebar list still works:', e);
+    // Fall back to list view so the user still sees results
+    if (typeof switchView === 'function' && currentView === 'map') switchView('list');
+  }
+}
+
+// Tracks whether the user moved the map since the last search fetch.
+// Powers the Zillow-style "Search this area" hint on the map.
+let mapDirtySinceLastFetch = false;
+function updateSearchAreaBtn() {
+  const btn = document.getElementById('search-area-btn');
+  if (!btn) return;
+  btn.classList.toggle('is-visible', mapDirtySinceLastFetch && !drawnPolygon && !currentFilters.polygon);
+}
+
+// User-triggered "search this area" — same effect as the idle debounce but
+// instant. Useful when the auto-refresh feels slow, or as a fallback if the
+// user is scrolling through map without wanting sidebar updates yet.
+function searchThisArea() {
+  if (!googleMap) return;
+  const bounds = googleMap.getBounds();
+  if (!bounds) return;
+  const ne = bounds.getNorthEast();
+  const sw = bounds.getSouthWest();
+  currentFilters.north = ne.lat();
+  currentFilters.south = sw.lat();
+  currentFilters.east = ne.lng();
+  currentFilters.west = sw.lng();
+  currentPage = 1;
+  clearTimeout(mapIdleTimer);
+  loadMapPins();
+  syncUrlFromFilters();
+  mapDirtySinceLastFetch = false;
+  updateSearchAreaBtn();
 }
 
 // ---- Filters ----
@@ -828,6 +855,7 @@ function applyFilters() {
   if (sort) currentFilters.sortBy = sort;
 
   updateFilterButtons();
+  renderFilterChips();
   saveSearchState();
   syncUrlFromFilters();
   saveRecentSearchDebounced();
@@ -836,8 +864,131 @@ function applyFilters() {
     loadListings();
   } else {
     loadMapPins();
-    loadMapCards();
+    // loadMapCards() removed — was a redundant no-op call
   }
+}
+
+// ────────────────────────────────────────────────────────────────────
+// Filter chips row — Zillow-style removable pills showing every active
+// filter. Rendered just above the results, always visible on both list
+// and map views. Click × to remove one filter; "Clear all" wipes them.
+// ────────────────────────────────────────────────────────────────────
+function ensureChipsRow() {
+  let row = document.getElementById('filter-chips-row');
+  if (row) return row;
+  row = document.createElement('div');
+  row.id = 'filter-chips-row';
+  row.className = 'filter-chips-row';
+  // Insert AFTER view-controls (which is sticky below header + filter-bar).
+  // Inserting BEFORE view-controls would put the row in normal flow starting
+  // at y=0 — behind the fixed header — and clicks would hit the header logo,
+  // navigating to the homepage. Post-view-controls placement keeps chips in
+  // the natural content column between the filter bar and the results.
+  const viewControls = document.getElementById('view-controls');
+  if (viewControls && viewControls.parentNode) {
+    if (viewControls.nextSibling) {
+      viewControls.parentNode.insertBefore(row, viewControls.nextSibling);
+    } else {
+      viewControls.parentNode.appendChild(row);
+    }
+  }
+  return row;
+}
+
+function renderFilterChips() {
+  const row = ensureChipsRow();
+  const f = currentFilters;
+  const chips = [];
+
+  if (f.minPrice || f.maxPrice) {
+    const min = f.minPrice ? fmtPriceCompact(Number(f.minPrice)) : 'Any';
+    const max = f.maxPrice ? fmtPriceCompact(Number(f.maxPrice)) : 'Any';
+    chips.push({ label: `Price: ${min} – ${max}`, key: 'price' });
+  }
+  if (f.minBeds)  chips.push({ label: `${f.minBeds}+ Beds`,  key: 'beds' });
+  if (f.minBaths) chips.push({ label: `${f.minBaths}+ Baths`, key: 'baths' });
+  if (f.subType) {
+    f.subType.split(',').forEach(t => chips.push({ label: t, key: 'subType:' + t }));
+  }
+  if (f.minSqft || f.maxSqft) {
+    const min = f.minSqft ? Number(f.minSqft).toLocaleString() : 'Any';
+    const max = f.maxSqft ? Number(f.maxSqft).toLocaleString() : 'Any';
+    chips.push({ label: `Sqft: ${min} – ${max}`, key: 'sqft' });
+  }
+  if (f.minYear || f.maxYear) {
+    chips.push({ label: `Year: ${f.minYear || 'Any'} – ${f.maxYear || 'Any'}`, key: 'year' });
+  }
+  if (f.schoolDistrict) chips.push({ label: 'School: ' + f.schoolDistrict, key: 'schoolDistrict' });
+  if (f.pool === 'true')            chips.push({ label: 'Pool',             key: 'pool' });
+  if (f.waterfront === 'true')      chips.push({ label: 'Waterfront',       key: 'waterfront' });
+  if (f.newConstruction === 'true') chips.push({ label: 'New Construction', key: 'newConstruction' });
+  if (f.forRent === 'true')         chips.push({ label: 'For Rent',         key: 'forRent' });
+  if (f.city)         chips.push({ label: 'City: ' + f.city.split(',')[0], key: 'city' });
+  if (f.zip)          chips.push({ label: 'ZIP: ' + f.zip.split(',')[0],    key: 'zip' });
+  if (f.neighborhood) chips.push({ label: f.neighborhood, key: 'neighborhood' });
+  if (f.keyword)      chips.push({ label: '"' + f.keyword + '"', key: 'keyword' });
+
+  if (!chips.length) {
+    row.innerHTML = '';
+    row.classList.remove('has-chips');
+    return;
+  }
+  row.classList.add('has-chips');
+  const closeX = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+  row.innerHTML = chips.map(c =>
+    `<button type="button" class="filter-chip" onclick="removeFilterChip('${c.key.replace(/'/g,"\\'")}')">${escHtml(c.label)}${closeX}</button>`
+  ).join('') + `<button type="button" class="filter-chip-clear" onclick="clearAllFilters()">Clear all</button>`;
+}
+
+function removeFilterChip(key) {
+  // Composite keys like "subType:Condominium" remove a single sub-type; base
+  // keys clear both DOM state and currentFilters for that filter's fields.
+  if (key.startsWith('subType:')) {
+    const val = key.slice('subType:'.length);
+    const cb = document.querySelector(`#type-dropdown input[value="${val}"]`);
+    if (cb) cb.checked = false;
+    const checkedTypes = Array.from(document.querySelectorAll('#type-dropdown input:checked')).map(i => i.value);
+    if (checkedTypes.length) currentFilters.subType = checkedTypes.join(',');
+    else delete currentFilters.subType;
+  } else if (key === 'price') {
+    delete currentFilters.minPrice; delete currentFilters.maxPrice;
+    const mn = document.getElementById('min-price'); if (mn) mn.value = '';
+    const mx = document.getElementById('max-price'); if (mx) mx.value = '';
+    const psMin = document.getElementById('ps-min'); if (psMin) psMin.value = 0;
+    const psMax = document.getElementById('ps-max'); if (psMax) psMax.value = 40;
+    // Re-run the visual updater so the slider fill and labels resync
+    psMin?.dispatchEvent(new Event('input'));
+  } else if (key === 'beds') {
+    delete currentFilters.minBeds;
+    document.querySelectorAll('#beds-pills .pill').forEach(p => p.classList.remove('active'));
+  } else if (key === 'baths') {
+    delete currentFilters.minBaths;
+    document.querySelectorAll('#baths-pills .pill').forEach(p => p.classList.remove('active'));
+  } else if (key === 'sqft') {
+    delete currentFilters.minSqft; delete currentFilters.maxSqft;
+    const mn = document.getElementById('min-sqft'); if (mn) mn.value = '';
+    const mx = document.getElementById('max-sqft'); if (mx) mx.value = '';
+  } else if (key === 'year') {
+    delete currentFilters.minYear; delete currentFilters.maxYear;
+    const mn = document.getElementById('min-year'); if (mn) mn.value = '';
+    const mx = document.getElementById('max-year'); if (mx) mx.value = '';
+  } else if (key === 'schoolDistrict') {
+    delete currentFilters.schoolDistrict;
+    const el = document.getElementById('school-filter'); if (el) el.value = '';
+  } else if (key === 'pool' || key === 'waterfront' || key === 'newConstruction') {
+    delete currentFilters[key];
+    const cbId = key === 'newConstruction' ? 'new-construction-filter' : (key + '-filter');
+    const el = document.getElementById(cbId); if (el) el.checked = false;
+  } else if (key === 'forRent') {
+    currentFilters.forRent = 'false';
+    document.querySelectorAll('.filter-toggle button').forEach(b => b.classList.toggle('active', b.dataset.type === 'buy'));
+  } else if (key === 'city' || key === 'zip' || key === 'neighborhood' || key === 'keyword') {
+    delete currentFilters[key];
+    const input = document.getElementById('location-search');
+    if (input) input.value = '';
+  }
+  currentPage = 1;
+  applyFilters();
 }
 
 function updateFilterButtons() {
@@ -1464,6 +1615,8 @@ function renderMapCardsSkeleton(count = 6) {
   ).join('');
 }
 
+const MAP_PAGE_SIZE = 20; // Zillow shows ~20/page in the sidebar
+
 async function loadMapPins() {
   if (!googleMap) return;
 
@@ -1476,8 +1629,8 @@ async function loadMapPins() {
 
   const params = new URLSearchParams({
     ...currentFilters,
-    page: 1,
-    limit: 50
+    page: currentPage || 1,
+    limit: MAP_PAGE_SIZE
   });
 
   try {
@@ -1487,22 +1640,47 @@ async function loadMapPins() {
 
     mapPins = data.pins || [];
     renderMapMarkers(mapPins);
+    totalResults = data.total || 0;
 
     const countEl = document.getElementById('results-count');
     if (countEl) countEl.innerHTML = `<strong>${data.total.toLocaleString()}</strong> homes found`;
 
     const mapCount = document.getElementById('map-count');
-    if (mapCount) mapCount.textContent = `${data.total.toLocaleString()} homes`;
+    if (mapCount) {
+      const start = ((data.page || 1) - 1) * MAP_PAGE_SIZE + 1;
+      const end = Math.min(data.page * MAP_PAGE_SIZE, data.total);
+      mapCount.innerHTML = data.total > MAP_PAGE_SIZE
+        ? `<strong>${data.total.toLocaleString()}</strong> homes · showing ${start.toLocaleString()}–${end.toLocaleString()}`
+        : `<strong>${data.total.toLocaleString()}</strong> homes`;
+    }
 
     if (listEl) {
-      listEl.innerHTML = (data.listings || []).map(renderMapCard).join('');
+      const cardsHtml = (data.listings || []).map(renderMapCard).join('');
+      const paginationHtml = renderPagination(data.page || 1, data.pages || 1, 'goToMapPage');
+      listEl.innerHTML = cardsHtml + (paginationHtml ? `<div class="map-pagination">${paginationHtml}</div>` : '');
       attachCarouselListeners(listEl);
     }
+
+    // Sync the filter chips row (below the filter bar) so users see what's
+    // currently applied and can remove any single filter with one click.
+    renderFilterChips();
+
+    // Update Search-this-area affordance state after a successful fetch.
+    mapDirtySinceLastFetch = false;
+    updateSearchAreaBtn();
   } catch (err) {
     if (err.name === 'AbortError') return;
     console.error('[loadMapPins]', err);
     if (listEl) listEl.innerHTML = `<div class="empty-state" style="padding:24px"><h3 style="font-size:14px">Error loading map data</h3><p style="font-size:12px">${err.message}</p></div>`;
   }
+}
+
+function goToMapPage(page) {
+  currentPage = page;
+  loadMapPins();
+  // Scroll sidebar to top so the user sees page 1 items immediately
+  const sidebar = document.querySelector('.map-sidebar');
+  if (sidebar) sidebar.scrollTop = 0;
 }
 
 // Merged into loadMapPins — kept as a no-op so existing paired call sites still compile.
@@ -1802,3 +1980,51 @@ async function confirmSaveSearch() {
     if (btn) { btn.disabled = false; btn.textContent = originalText; }
   }
 }
+
+// ─────────────────────────────────────────────────────────────
+// Expose key state on window. Necessary because esbuild bundles
+// app.js into a scoped module and `let` at top level does NOT
+// leak to window automatically. Puppeteer tests, third-party
+// integrations, and browser DevTools all read from window.
+// Also exposes the callable functions used by inline onclick=
+// handlers in index.html (they need the global scope).
+// ─────────────────────────────────────────────────────────────
+Object.defineProperty(window, 'googleMap',      { get: () => googleMap,      configurable: true });
+Object.defineProperty(window, 'currentFilters', { get: () => currentFilters, configurable: true });
+Object.defineProperty(window, 'currentView',    { get: () => currentView,    configurable: true });
+Object.defineProperty(window, 'currentPage',    { get: () => currentPage,    configurable: true });
+Object.defineProperty(window, 'totalResults',   { get: () => totalResults,   configurable: true });
+Object.defineProperty(window, 'mapMarkers',     { get: () => mapMarkers,     configurable: true });
+Object.defineProperty(window, 'mapPins',        { get: () => mapPins,        configurable: true });
+
+// Inline onclick handlers in index.html expect these on window
+window.setListingType     = setListingType;
+window.toggleDropdown     = toggleDropdown;
+window.applyFilters       = applyFilters;
+window.clearAllFilters    = clearAllFilters;
+window.clearPriceFilter   = clearPriceFilter;
+window.clearFilter        = clearFilter;
+window.resetSearch        = resetSearch;
+window.saveSearch         = saveSearch;
+window.confirmSaveSearch  = confirmSaveSearch;
+window.switchView         = switchView;
+window.toggleDrawMode     = toggleDrawMode;
+window.clearDrawing       = clearDrawing;
+window.toggleMapSidebar   = toggleMapSidebar;
+window.searchNearMe       = searchNearMe;
+window.openContactModal   = openContactModal;
+window.closeContactModal  = closeContactModal;
+window.submitContactModal = submitContactModal;
+window.goToPage           = goToPage;
+window.goToMapPage        = goToMapPage;
+window.searchThisArea     = searchThisArea;
+window.removeFilterChip   = removeFilterChip;
+window.applyRecentSearch  = applyRecentSearch;
+window.clearRecentSearches= clearRecentSearches;
+window.highlightFromCard  = highlightFromCard;
+window.hoverMarker        = hoverMarker;
+window.unhoverMarker      = unhoverMarker;
+window.toggleFavorite     = toggleFavorite;
+window.goToListing        = goToListing;
+window.carouselNav        = carouselNav;
+

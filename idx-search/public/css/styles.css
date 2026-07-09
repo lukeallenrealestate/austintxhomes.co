@@ -976,6 +976,140 @@ input, select, textarea { font-family: inherit; }
 .map-tool-btn:hover { background: var(--blue); color: white; }
 .map-tool-btn.active { background: var(--blue); color: white; }
 
+/* Zillow-style "Search this area" pill that appears after user pans/zooms.
+   Positioned centered at top of map, above the draw tools. Only visible when
+   the map has moved since the last fetch (JS toggles .is-visible). */
+.search-area-btn {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translate(-50%, -8px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: var(--blue, #1877f2);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(24, 119, 242, 0.35), 0 2px 4px rgba(0,0,0,0.1);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  z-index: 6;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.15s;
+}
+.search-area-btn.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+.search-area-btn:hover { background: #1466cf; }
+.search-area-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.search-area-btn svg { stroke: white; }
+
+/* Filter chips row — sits between view-controls and the results grid.
+   One chip per active filter, click × to remove that filter,
+   "Clear all" at the end wipes them. Hidden when no chips.
+   Sticky-pinned just below the view-controls bar so users always see
+   active filters. z-index sits below view-controls to avoid overlap. */
+.filter-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 0;
+  background: var(--white, #fff);
+  border-bottom: 1px solid var(--border, #eaeaea);
+  transition: padding 0.15s;
+  max-height: 0;
+  overflow: hidden;
+  position: sticky;
+  top: calc(var(--header-h, 60px) + var(--filter-h, 44px) + 57px);
+  z-index: 65;
+}
+.filter-chips-row.has-chips {
+  padding: 10px 20px;
+  max-height: 120px;
+  overflow: visible;
+}
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px 5px 12px;
+  background: white;
+  border: 1.5px solid var(--blue, #1877f2);
+  color: var(--blue, #1877f2);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
+}
+.filter-chip:hover { background: var(--blue, #1877f2); color: white; }
+.filter-chip:hover svg { stroke: white; }
+.filter-chip svg { stroke: var(--blue, #1877f2); flex-shrink: 0; }
+.filter-chip-clear {
+  padding: 5px 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-light, #666);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.filter-chip-clear:hover { color: var(--text, #222); }
+
+/* Map sidebar pagination — sits at the bottom of the scrollable list.
+   Zillow shows page numbers here so users can walk through all bounded results. */
+.map-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 20px 12px 24px;
+  border-top: 1px solid var(--border, #eaeaea);
+  flex-wrap: wrap;
+}
+.map-pagination .page-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--border, #eaeaea);
+  background: white;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text, #222);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.map-pagination .page-btn:hover:not(:disabled) { border-color: var(--blue, #1877f2); color: var(--blue, #1877f2); }
+.map-pagination .page-btn.active {
+  background: var(--blue, #1877f2);
+  border-color: var(--blue, #1877f2);
+  color: white;
+}
+.map-pagination .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.map-pagination .page-btn.page-nav svg { flex-shrink: 0; }
+.map-pagination .page-ellipsis { color: var(--text-light, #666); padding: 0 4px; font-size: 12.5px; }
+
+@media (max-width: 640px) {
+  .filter-chips-row.has-chips { padding: 8px 12px; }
+  .search-area-btn { font-size: 12px; padding: 8px 14px; top: 10px; }
+}
+
 /* Map info window */
 .map-info-window {
   padding: 0;
