@@ -1,4 +1,80 @@
 User-agent: *
 Allow: /
 
+# Explicit allow for major AI crawlers and answer engines.
+# These are already allowed by the wildcard above, but explicit blocks
+# send a strong signal to bot operators and future-proof us against
+# tighter interpretations of the * rule.
+
+# OpenAI (ChatGPT training + real-time browsing + SearchGPT)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# Anthropic (Claude web browsing + training)
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Google Gemini / AI Overviews (Google-Extended controls Gemini training)
+User-agent: Google-Extended
+Allow: /
+
+# Common Crawl (used by many LLMs including Claude, ChatGPT training)
+User-agent: CCBot
+Allow: /
+
+# Apple Intelligence
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta AI (Llama, Meta AI Assistant)
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+# Amazon (Alexa, Nova, Rufus)
+User-agent: Amazonbot
+Allow: /
+
+# ByteDance (Doubao, TikTok AI)
+User-agent: Bytespider
+Allow: /
+
+# DuckDuckGo AI Chat
+User-agent: DuckAssistBot
+Allow: /
+
+# You.com
+User-agent: YouBot
+Allow: /
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+
+# Diffbot
+User-agent: Diffbot
+Allow: /
+
 Sitemap: https://austintxhomes.co/sitemap-index.xml
+Sitemap: https://austintxhomes.co/sitemap.xml
