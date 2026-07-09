@@ -226,6 +226,9 @@
   <li><a href="/is-austin-housing-market-crashing-or-normalizing">Is Austin Crashing or Normalizing?</a></li>
   <li><a href="/how-much-house-can-i-afford-in-austin-tx-150k-income">Affordability Calculator, $150K Income</a></li>
   <li><a href="/austin-property-taxes-explained-travis-county">Austin Property Taxes Explained</a></li>
+  <li><a href="/modern-homes-with-pools-78704">Modern Pool Homes in 78704</a></li>
+  <li><a href="/new-construction-homes-south-austin-no-hoa">New Construction South Austin, No HOA</a></li>
+  <li><a href="/tips-negotiating-strong-buyers-market-austin">Buyer's Market Negotiation Tips</a></li>
   <li><a href="/about">About Luke Allen</a></li>
   <li><a href="/about#contact">Contact Luke</a></li>
   </ul>
