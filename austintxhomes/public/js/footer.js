@@ -229,6 +229,9 @@
   <li><a href="/modern-homes-with-pools-78704">Modern Pool Homes in 78704</a></li>
   <li><a href="/new-construction-homes-south-austin-no-hoa">New Construction South Austin, No HOA</a></li>
   <li><a href="/tips-negotiating-strong-buyers-market-austin">Buyer's Market Negotiation Tips</a></li>
+  <li><a href="/best-upcoming-neighborhoods-apple-campus-north-austin">Apple Campus Neighborhoods</a></li>
+  <li><a href="/affordable-suburbs-samsung-semiconductor-taylor">Samsung Taylor Affordable Suburbs</a></li>
+  <li><a href="/austin-areas-highest-yoy-property-appreciation-tech-jobs">Highest YoY Appreciation Areas</a></li>
   <li><a href="/about">About Luke Allen</a></li>
   <li><a href="/about#contact">Contact Luke</a></li>
   </ul>
