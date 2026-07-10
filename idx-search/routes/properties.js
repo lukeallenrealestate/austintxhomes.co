@@ -130,7 +130,7 @@ function buildSearchWhere(q) {
     minPrice, maxPrice, minBeds, maxBeds, minBaths,
     minSqft, maxSqft, minYear, maxYear,
     city, zip, neighborhood, schoolDistrict, keyword,
-    pool, waterfront, newConstruction,
+    pool, waterfront, newConstruction, culDeSac,
     north, south, east, west
   } = q;
 
@@ -196,6 +196,15 @@ function buildSearchWhere(q) {
   if (pool === 'true')             conditions.push(`pool_features IS NOT NULL AND pool_features != ''`);
   if (waterfront === 'true')       conditions.push(`waterfront_yn = 1`);
   if (newConstruction === 'true')  conditions.push(`new_construction_yn = 1`);
+  // Cul-de-sac: no dedicated MLS column, so we match multiple spellings against
+  // public_remarks (property description) and subdivision_name. Roughly 4-5% of
+  // Austin metro listings mention cul-de-sac language, a meaningful filter.
+  if (culDeSac === 'true') {
+    conditions.push(`(
+      LOWER(public_remarks) LIKE '%cul-de-sac%' OR LOWER(public_remarks) LIKE '%cul de sac%'
+      OR LOWER(public_remarks) LIKE '%culdesac%' OR LOWER(subdivision_name) LIKE '%cul-de-sac%'
+    )`);
+  }
 
   if (north && south && east && west) {
     // Use the R-Tree spatial index for the bbox filter. The subquery returns

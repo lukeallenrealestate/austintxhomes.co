@@ -61,6 +61,7 @@ function restoreSearchState() {
     if (filters.pool) document.getElementById('pool-filter').checked = true;
     if (filters.waterfront) document.getElementById('waterfront-filter').checked = true;
     if (filters.newConstruction) document.getElementById('new-construction-filter').checked = true;
+    if (filters.culDeSac) document.getElementById('cul-de-sac-filter').checked = true;
     if (filters.sortBy) document.getElementById('sort-select').value = filters.sortBy;
     if (searchInput) document.getElementById('location-search').value = searchInput;
 
@@ -112,6 +113,7 @@ function syncUrlFromFilters() {
   if (f.pool === 'true')            params.set('pool', 'true');
   if (f.waterfront === 'true')      params.set('waterfront', 'true');
   if (f.newConstruction === 'true') params.set('newConstruction', 'true');
+  if (f.culDeSac === 'true') params.set('culDeSac', 'true');
   if (f.forRent)      params.set('forRent', f.forRent);
   if (f.polygon)      params.set('polygon', f.polygon);
   const qs = params.toString();
@@ -138,6 +140,7 @@ function applyUrlParams() {
   const pool = params.get('pool');
   const waterfront = params.get('waterfront');
   const newConstruction = params.get('newConstruction');
+  const culDeSac = params.get('culDeSac');
   const forRent = params.get('forRent');
 
   if (zip) {
@@ -190,6 +193,11 @@ function applyUrlParams() {
   if (newConstruction === 'true') {
     currentFilters.newConstruction = 'true';
     const el = document.getElementById('new-construction-filter');
+    if (el) el.checked = true;
+  }
+  if (culDeSac === 'true') {
+    currentFilters.culDeSac = 'true';
+    const el = document.getElementById('cul-de-sac-filter');
     if (el) el.checked = true;
   }
   if (forRent === 'true') {
@@ -667,6 +675,7 @@ function saveRecentSearch() {
   if (f.pool === 'true')             parts.push('Pool');
   if (f.waterfront === 'true')       parts.push('Waterfront');
   if (f.newConstruction === 'true')  parts.push('New');
+  if (f.culDeSac === 'true')         parts.push('Cul-de-sac');
   if (f.forRent === 'true')          parts.push('Rentals');
   if (!parts.length) return;  // nothing meaningful to save
 
@@ -849,6 +858,8 @@ function applyFilters() {
   if (pool) currentFilters.pool = 'true'; else delete currentFilters.pool;
   if (waterfront) currentFilters.waterfront = 'true'; else delete currentFilters.waterfront;
   if (newConst) currentFilters.newConstruction = 'true'; else delete currentFilters.newConstruction;
+  const culDeSac = document.getElementById('cul-de-sac-filter')?.checked;
+  if (culDeSac) currentFilters.culDeSac = 'true'; else delete currentFilters.culDeSac;
 
   // Sort
   const sort = document.getElementById('sort-select')?.value;
@@ -922,6 +933,7 @@ function renderFilterChips() {
   if (f.pool === 'true')            chips.push({ label: 'Pool',             key: 'pool' });
   if (f.waterfront === 'true')      chips.push({ label: 'Waterfront',       key: 'waterfront' });
   if (f.newConstruction === 'true') chips.push({ label: 'New Construction', key: 'newConstruction' });
+  if (f.culDeSac === 'true')        chips.push({ label: 'Cul-de-sac',       key: 'culDeSac' });
   if (f.forRent === 'true')         chips.push({ label: 'For Rent',         key: 'forRent' });
   if (f.city)         chips.push({ label: 'City: ' + f.city.split(',')[0], key: 'city' });
   if (f.zip)          chips.push({ label: 'ZIP: ' + f.zip.split(',')[0],    key: 'zip' });
@@ -975,10 +987,15 @@ function removeFilterChip(key) {
   } else if (key === 'schoolDistrict') {
     delete currentFilters.schoolDistrict;
     const el = document.getElementById('school-filter'); if (el) el.value = '';
-  } else if (key === 'pool' || key === 'waterfront' || key === 'newConstruction') {
+  } else if (key === 'pool' || key === 'waterfront' || key === 'newConstruction' || key === 'culDeSac') {
     delete currentFilters[key];
-    const cbId = key === 'newConstruction' ? 'new-construction-filter' : (key + '-filter');
-    const el = document.getElementById(cbId); if (el) el.checked = false;
+    const cbIdMap = {
+      newConstruction: 'new-construction-filter',
+      culDeSac: 'cul-de-sac-filter',
+      pool: 'pool-filter',
+      waterfront: 'waterfront-filter'
+    };
+    const el = document.getElementById(cbIdMap[key]); if (el) el.checked = false;
   } else if (key === 'forRent') {
     currentFilters.forRent = 'false';
     document.querySelectorAll('.filter-toggle button').forEach(b => b.classList.toggle('active', b.dataset.type === 'buy'));
@@ -1005,7 +1022,7 @@ function updateFilterButtons() {
   updateFilterBtnLabel('type-btn', types ? `Type (${types})` : 'Type');
 
   const hasMore = currentFilters.minSqft || currentFilters.maxSqft || currentFilters.schoolDistrict
-    || currentFilters.pool || currentFilters.waterfront || currentFilters.newConstruction
+    || currentFilters.pool || currentFilters.waterfront || currentFilters.newConstruction || currentFilters.culDeSac
     || currentFilters.minYear || currentFilters.maxYear;
   document.getElementById('more-btn')?.classList.toggle('active', !!hasMore);
 }
@@ -1223,6 +1240,8 @@ function clearAllFilters() {
   document.getElementById('pool-filter').checked = false;
   document.getElementById('waterfront-filter').checked = false;
   document.getElementById('new-construction-filter').checked = false;
+  const culDeSacEl = document.getElementById('cul-de-sac-filter');
+  if (culDeSacEl) culDeSacEl.checked = false;
   document.getElementById('location-search').value = '';
   document.querySelectorAll('#beds-pills .pill, #baths-pills .pill').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('#type-dropdown input').forEach(i => i.checked = false);
