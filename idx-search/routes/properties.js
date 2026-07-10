@@ -223,6 +223,17 @@ function buildSearchWhere(q) {
   return { where: conditions.join(' AND '), values };
 }
 
+// GET /api/properties/_version — returns the deployed build marker. Lets us
+// (and Puppeteer tests) positively confirm which revision Render is running,
+// so we can distinguish "code deployed, cache stale" from "code not deployed".
+router.get('/_version', (_req, res) => {
+  res.json({
+    build: 'culDeSac-2026-07-10',
+    supports: ['culDeSac', 'pool', 'waterfront', 'newConstruction'],
+    ts: Date.now()
+  });
+});
+
 // GET /api/properties/search
 router.get('/search', (req, res) => {
   try {
