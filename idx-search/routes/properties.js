@@ -122,7 +122,7 @@ function pointInPolygon(lat, lng, polygon) {
 const countCache = new Map();
 const COUNT_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-// Shared WHERE-clause builder — mirrors /search logic so /map-bundle returns
+// Shared WHERE-clause builder v2 — mirrors /search logic so /map-bundle returns
 // identical result sets for pins and cards in a single pass.
 function buildSearchWhere(q) {
   const {
@@ -1204,3 +1204,4 @@ function tryParse(str, fallback) {
 // breaking the express-router contract — extra properties on a router are ignored.
 router.refreshListingPhotos = refreshListingPhotos;
 module.exports = router;
+
