@@ -228,7 +228,7 @@ function buildSearchWhere(q) {
 // so we can distinguish "code deployed, cache stale" from "code not deployed".
 router.get('/_version', (_req, res) => {
   res.json({
-    build: 'culDeSac-2026-07-10',
+    build: 'culDeSac-search-fix-2026-07-10',
     supports: ['culDeSac', 'pool', 'waterfront', 'newConstruction'],
     ts: Date.now()
   });
@@ -242,7 +242,7 @@ router.get('/search', (req, res) => {
       minPrice, maxPrice, minBeds, maxBeds, minBaths,
       minSqft, maxSqft, minYear, maxYear,
       city, zip, neighborhood, schoolDistrict, keyword,
-      pool, waterfront, newConstruction,
+      pool, waterfront, newConstruction, culDeSac,
       sortBy, page = 1, limit = 24,
       // Map bounds
       north, south, east, west,
@@ -338,6 +338,12 @@ router.get('/search', (req, res) => {
     if (pool === 'true') { conditions.push(`pool_features IS NOT NULL AND pool_features != ''`); }
     if (waterfront === 'true') { conditions.push(`waterfront_yn = 1`); }
     if (newConstruction === 'true') { conditions.push(`new_construction_yn = 1`); }
+    if (culDeSac === 'true') {
+      conditions.push(`(
+        LOWER(public_remarks) LIKE '%cul-de-sac%' OR LOWER(public_remarks) LIKE '%cul de sac%'
+        OR LOWER(public_remarks) LIKE '%culdesac%' OR LOWER(subdivision_name) LIKE '%cul-de-sac%'
+      )`);
+    }
 
     // Map bounds (bounding box)
     if (north && south && east && west) {
