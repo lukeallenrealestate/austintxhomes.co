@@ -232,6 +232,7 @@
   <li><a href="/best-upcoming-neighborhoods-apple-campus-north-austin">Apple Campus Neighborhoods</a></li>
   <li><a href="/affordable-suburbs-samsung-semiconductor-taylor">Samsung Taylor Affordable Suburbs</a></li>
   <li><a href="/austin-areas-highest-yoy-property-appreciation-tech-jobs">Highest YoY Appreciation Areas</a></li>
+  <li><a href="/austin-homebuyer-report-2026-q3">Austin Homebuyer Report Q3 2026 <span class="sf-badge">New</span></a></li>
   <li><a href="/about">About Luke Allen</a></li>
   <li><a href="/about#contact">Contact Luke</a></li>
   </ul>

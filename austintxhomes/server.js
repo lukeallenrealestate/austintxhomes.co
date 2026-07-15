@@ -1073,6 +1073,7 @@ app.get('/tips-negotiating-strong-buyers-market-austin',          (_req, res) =>
 app.get('/best-upcoming-neighborhoods-apple-campus-north-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-upcoming-neighborhoods-apple-campus-north-austin.html')));
 app.get('/affordable-suburbs-samsung-semiconductor-taylor',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/affordable-suburbs-samsung-semiconductor-taylor.html')));
 app.get('/austin-areas-highest-yoy-property-appreciation-tech-jobs', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-areas-highest-yoy-property-appreciation-tech-jobs.html')));
+app.get('/austin-homebuyer-report-2026-q3', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-homebuyer-report-2026-q3.html')));
 app.get('/living-in-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-east-austin.html')));
 app.get('/sell-home-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-east-austin.html')));
 app.get('/homes-for-sale-near-tesla-gigafactory', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-tesla-gigafactory.html')));
