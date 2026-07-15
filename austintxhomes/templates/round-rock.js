@@ -283,10 +283,11 @@ let rrPage = 1;
 function makePropertyUrl(l) {
   const key = l.listing_key || '';
   if (!key) return '#';
+  // Canonical URL shape is /homes/{addr}--{key} (double-dash before key).
+  // /property/* still works but 301-redirects here; linking directly to /homes/
+  // saves a redirect and stops feeding Google duplicate URL shapes.
   const addr = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\\s+/g, '-');
-  const city = (l.city || 'round-rock').toLowerCase().replace(/[^a-z]/g, '-');
-  const zip = (l.postal_code || '').replace(/[^0-9]/g, '');
-  return addr ? '/property/' + addr + '-' + city + '-tx' + (zip ? '-' + zip : '') + '-' + key : '/property/' + key;
+  return addr ? '/homes/' + addr + '--' + key : '/homes/' + key;
 }
 
 async function loadListings(page) {

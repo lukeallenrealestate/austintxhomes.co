@@ -216,5 +216,8 @@ async function toggleFavorite(event, listingKey) {
 }
 
 function goToListing(listingKey) {
-  window.open(`/property/${listingKey}`, '_blank');
+  // /property/* 301-redirects to /homes/*. Linking directly to /homes/
+  // avoids the redirect hop for users AND stops feeding Google duplicate
+  // URL shapes (root cause of the May 2026 organic traffic drop).
+  window.open(`/homes/${listingKey}`, '_blank');
 }

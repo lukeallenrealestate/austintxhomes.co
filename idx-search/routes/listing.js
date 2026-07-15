@@ -26,11 +26,45 @@ function makePropertySlug(listing_key, unparsed_address, city, postal_code) {
 }
 
 // GET /property/:slug
-// Accepts both old format (ACT222191837) and new address-based format
-// (4101-idalia-dr-austin-tx-ACT222191837). Old format gets 301 redirected.
+// ⚠️ DEPRECATED URL SHAPE. All /property/* URLs now 301 redirect to /homes/*.
+//
+// Why: prior to this fix, both /property/{addr-city-tx-zip-KEY} AND
+// /homes/{addr}--{KEY} served the same listing detail page with each URL
+// self-canonicalized. That's 5,000+ duplicate pages telling Google two
+// different URLs are the true canonical — a domain-wide quality demotion
+// pattern that lined up exactly with our May 30, 2026 organic traffic drop
+// (66K → ~15K impressions/mo). Consolidating everything under /homes/*
+// (which is what the sitemap already points to) recovers the equity.
+//
+// The 301 preserves backlinks pointing at /property/* URLs — Google
+// forwards their signal to the /homes/* equivalent within a few crawl cycles.
 router.get('/:slug', (req, res) => {
   const { slug } = req.params;
-  // Extract listing key: uppercase letters + digits at end of slug
+  // Extract listing key from either URL shape: uppercase letters + digits at end
+  const match = slug.match(/([A-Z][A-Z0-9]*\d+)$/);
+  const listingKey = match ? match[1] : slug;
+
+  // Look up the listing so we can build the canonical /homes/ slug from the
+  // real address. Falls back to /homes/{listingKey} if the listing is missing —
+  // still a 301, still cleaner than serving a duplicate detail page.
+  const listing = db.prepare(`
+    SELECT listing_key, unparsed_address
+    FROM listings
+    WHERE listing_key = ? AND mlg_can_view = 1
+  `).get(listingKey);
+
+  const addrSlug = listing ? slugify(listing.unparsed_address || '') : '';
+  const homesPath = addrSlug ? `/homes/${addrSlug}--${listingKey}` : `/homes/${listingKey}`;
+  return res.redirect(301, homesPath);
+});
+
+// The old rendering path is preserved below in case we ever need to reintroduce
+// server-side /property/* for a specific use case. It is currently unreachable —
+// the redirect above returns before we get here — but leaving the code lets us
+// diff-view what the duplicate template used to emit.
+// eslint-disable-next-line no-unused-vars
+function _legacyPropertyRenderer(req, res) {
+  const { slug } = req.params;
   const match = slug.match(/([A-Z][A-Z0-9]*\d+)$/);
   const listingKey = match ? match[1] : slug;
 
@@ -398,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(html);
-});
+}
 
 function escHtml(str) {
   return String(str || '')

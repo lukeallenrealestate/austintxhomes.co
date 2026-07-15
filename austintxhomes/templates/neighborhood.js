@@ -547,7 +547,9 @@ module.exports = function renderNeighborhoodPage(n) {
   const img = l.photos && l.photos[0] ? l.photos[0] : '';
   const addrSlug = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-');
   const citySlug = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
-  const link = l.listing_key ? (addrSlug ? '/property/' + addrSlug + '-' + citySlug + '-tx-' + l.listing_key : '/property/' + l.listing_key) : '${n.searchParam ? '/search?' + n.searchParam : '/search?neighborhood=' + encodeURIComponent(n.mlsSearch)}';
+  // Canonical URL shape: /homes/{addr}--{key} (double-dash). /property/* still
+  // 301s here but linking directly avoids feeding Google duplicate URL shapes.
+  const link = l.listing_key ? (addrSlug ? '/homes/' + addrSlug + '--' + l.listing_key : '/homes/' + l.listing_key) : '${n.searchParam ? '/search?' + n.searchParam : '/search?neighborhood=' + encodeURIComponent(n.mlsSearch)}';
   return '<a class="listing-card" href="' + link + '">' +
   '<div class="card-img">' + (img ? '<img src="' + img + '" alt="' + addr + '" loading="lazy" onerror="this.style.display=\\'none\\';this.parentElement.style.background=\\'linear-gradient(135deg,#f1ece3,#e5dfd4)\\'" />' : '') +
   '<span class="card-badge">For Sale</span></div>' +

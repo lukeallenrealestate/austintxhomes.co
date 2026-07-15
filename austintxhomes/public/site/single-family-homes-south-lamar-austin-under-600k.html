@@ -955,7 +955,7 @@
  const img = l.photos && l.photos[0] ? l.photos[0] : '';
  const addrSlug = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g,'').trim().replace(/\s+/g,'-');
  const citySlug = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g,'-');
- const link = l.listing_key ? (addrSlug ? '/property/'+addrSlug+'-'+citySlug+'-tx-'+l.listing_key : '/property/'+l.listing_key) : '/search?zip=78704&forRent=false';
+ const link = l.listing_key ? (addrSlug ? '/homes/'+addrSlug+'--'+l.listing_key : '/homes/'+l.listing_key) : '/search?zip=78704&forRent=false';
  const isNew = l.list_date && (Date.now() - new Date(l.list_date).getTime()) < 7*24*60*60*1000;
  return '<a class="listing-card" href="'+link+'">' +
  '<div class="card-img">' +

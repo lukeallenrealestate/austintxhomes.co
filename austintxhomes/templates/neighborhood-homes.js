@@ -717,8 +717,11 @@ module.exports = function renderNeighborhoodHomesPage(n) {
       const img = l.photos && l.photos[0] ? l.photos[0] : '';
       const addrSlug = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\\s+/g, '-');
       const citySlug = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
+      // Canonical URL shape: /homes/{addr}--{key} (double-dash before key).
+      // /property/* still 301s here but linking directly avoids feeding Google
+      // duplicate URL shapes (which drove the May 2026 traffic drop).
       const link = l.listing_key
-        ? (addrSlug ? '/property/' + addrSlug + '-' + citySlug + '-tx-' + l.listing_key : '/property/' + l.listing_key)
+        ? (addrSlug ? '/homes/' + addrSlug + '--' + l.listing_key : '/homes/' + l.listing_key)
         : '/search?neighborhood=${encodeURIComponent(n.mlsSearch)}';
       const isNew = l.list_date && (Date.now() - new Date(l.list_date).getTime()) < 7 * 24 * 60 * 60 * 1000;
 

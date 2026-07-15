@@ -1408,7 +1408,7 @@ async function selectAutocomplete(type, value, listingKey) {
   hideAutocomplete();
 
   if (type === 'address' && listingKey) {
-    window.location.href = `/property/${listingKey}`;
+    window.location.href = `/homes/${listingKey}`;
     return;
   }
 
@@ -1841,7 +1841,7 @@ function showMarkerInfo(pin, marker) {
         <div class="map-info-details">${[beds, baths, sqft].filter(Boolean).join(' · ')}</div>
         <div class="map-info-address">${pin.unparsed_address || ''}</div>
         <div class="map-info-address" style="color:var(--text-light);font-size:11px;">${pin.city || ''}</div>
-        <a class="map-info-link" href="/property/${pin.listing_key}" target="_blank">View Details</a>
+        <a class="map-info-link" href="/homes/${pin.listing_key}" target="_blank">View Details</a>
       </div>
     </div>`;
 
@@ -1867,7 +1867,7 @@ function highlightFromCard(listingKey) {
   });
   if (marker) google.maps.event.trigger(marker, 'click');
 
-  window.open(`/property/${listingKey}`, '_blank');
+  window.open(`/homes/${listingKey}`, '_blank');
 }
 
 function hoverMarker(listingKey) {
