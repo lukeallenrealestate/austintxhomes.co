@@ -815,6 +815,7 @@ app.get('/', (_req, res) => {
 // Clean URLs for main pages
 app.get('/about',         (_req, res) => res.sendFile(path.join(__dirname, 'public/site/about.html')));
 app.get('/luke-allen',    (_req, res) => res.sendFile(path.join(__dirname, 'public/site/luke-allen.html')));
+app.get('/sell-house-78704-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-house-78704-austin.html')));
 app.get('/privacy',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/privacy.html')));
 app.get('/sell',                    (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell.html')));
 app.get('/what-is-my-home-worth',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/what-is-my-home-worth.html')));

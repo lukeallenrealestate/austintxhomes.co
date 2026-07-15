@@ -235,6 +235,7 @@
   <li><a href="/austin-homebuyer-report-2026-q3">Austin Homebuyer Report Q3 2026 <span class="sf-badge">New</span></a></li>
   <li><a href="/about">About Luke Allen</a></li>
   <li><a href="/luke-allen">Luke Allen (Bio &amp; Credentials)</a></li>
+  <li><a href="/sell-house-78704-austin">Sell Your 78704 House</a></li>
   <li><a href="/about#contact">Contact Luke</a></li>
   </ul>
 
