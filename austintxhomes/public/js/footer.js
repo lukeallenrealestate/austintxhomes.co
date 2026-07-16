@@ -236,6 +236,11 @@
   <li><a href="/about">About Luke Allen</a></li>
   <li><a href="/luke-allen">Luke Allen (Bio &amp; Credentials)</a></li>
   <li><a href="/sell-house-78704-austin">Sell Your 78704 House</a></li>
+  <li><a href="/sell-house-78701-austin">Sell Your 78701 Condo</a></li>
+  <li><a href="/sell-house-78702-austin">Sell Your 78702 Home</a></li>
+  <li><a href="/sell-house-78703-austin">Sell Your Tarrytown Home (78703)</a></li>
+  <li><a href="/sell-house-78705-austin">Sell Your 78705 Condo or Home</a></li>
+  <li><a href="/sell-house-78723-austin">Sell Your Mueller Home (78723)</a></li>
   <li><a href="/about#contact">Contact Luke</a></li>
   </ul>
 
