@@ -821,6 +821,7 @@ app.get('/sell-house-78702-austin', (_req, res) => res.sendFile(path.join(__dirn
 app.get('/sell-house-78703-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-house-78703-austin.html')));
 app.get('/sell-house-78705-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-house-78705-austin.html')));
 app.get('/sell-house-78723-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-house-78723-austin.html')));
+app.get('/100-bonus-depreciation-real-estate', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/100-bonus-depreciation-real-estate.html')));
 app.get('/privacy',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/privacy.html')));
 app.get('/sell',                    (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell.html')));
 app.get('/what-is-my-home-worth',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/what-is-my-home-worth.html')));

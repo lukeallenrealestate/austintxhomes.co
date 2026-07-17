@@ -241,6 +241,7 @@
   <li><a href="/sell-house-78703-austin">Sell Your Tarrytown Home (78703)</a></li>
   <li><a href="/sell-house-78705-austin">Sell Your 78705 Condo or Home</a></li>
   <li><a href="/sell-house-78723-austin">Sell Your Mueller Home (78723)</a></li>
+  <li><a href="/100-bonus-depreciation-real-estate">100% Bonus Depreciation (OBBBA) Guide</a></li>
   <li><a href="/about#contact">Contact Luke</a></li>
   </ul>
 
