@@ -266,13 +266,22 @@
  a { color: var(--gold); text-decoration: none; }
  a:hover { color: var(--gold-lt); }
 
- /* HERO */
+ /* HERO with looping homepage video (matches money-page pattern) */
  .hero { position: relative; background: var(--ink); overflow: hidden; padding: 130px 2rem 90px; text-align: center; }
- .hero::before {
-   content: ''; position: absolute; inset: 0; pointer-events: none;
-   background: radial-gradient(ellipse 65% 55% at 50% 45%, rgba(184,147,90,0.18) 0%, transparent 65%);
+ .hero video.bg-video {
+   position: absolute; inset: 0; width: 100%; height: 100%;
+   object-fit: cover; opacity: 0;
+   transition: opacity 1.4s ease; z-index: 0;
  }
- .hero-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+ .hero video.bg-video.ready { opacity: 1; }
+ .hero::after {
+   content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+   background:
+     radial-gradient(ellipse 65% 55% at 50% 45%, rgba(184,147,90,0.18) 0%, transparent 65%),
+     linear-gradient(180deg, rgba(15,15,14,0.55) 0%, rgba(15,15,14,0.72) 55%, rgba(15,15,14,0.88) 100%);
+ }
+ .hero > *:not(video) { position: relative; z-index: 2; }
+ .hero-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 2; }
  .hero-eyebrow { font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: inline-block; font-weight: 600; }
  .hero h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(38px, 5.2vw, 62px); font-weight: 400; color: #fff; line-height: 1.05; letter-spacing: -0.015em; margin: 0 0 22px; }
  .hero h1 em { color: var(--gold-lt); font-style: italic; font-weight: 400; }
@@ -385,8 +394,9 @@
 <body>
 <script src="/js/nav.js" defer></script>
 
-<!-- HERO -->
+<!-- HERO with looping homepage video -->
 <section class="hero">
+ <video class="bg-video" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
  <div class="hero-inner">
   <div class="hero-eyebrow">Real Estate Tax Strategy, Post-OBBBA</div>
   <h1><em>100% Bonus Depreciation</em> Is Back</h1>
@@ -766,5 +776,15 @@
 </section>
 
 <script src="/js/footer.js" defer></script>
+<script>
+ (function(){
+  const v = document.querySelector('.hero video.bg-video');
+  if (!v) return;
+  const src = v.getAttribute('data-src');
+  if (src && !v.src) v.src = src;
+  if (v.readyState >= 3) v.classList.add('ready');
+  else v.addEventListener('canplay', () => v.classList.add('ready'), { once: true });
+ })();
+</script>
 </body>
 </html>
