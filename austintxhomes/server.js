@@ -310,20 +310,52 @@ function runSiennaScraper(source) {
 
 cron.schedule('0 6 * * 1', () => { runSiennaScraper('weekly-cron').catch(() => {}); });
 
-// Daily stale-check fallback — if the JSON is older than 8 days (Monday cron
+// Same pattern for Solomon (East Austin/Mueller) and Seven (downtown 615 W 7th).
+// Both use their own scraper scripts and JSON caches so the trio can be
+// scraped in parallel without a shared state.
+function runNamedScraper(name, scriptName, jsonName, cacheRef) {
+  const { execFile } = require('child_process');
+  const scraperPath = path.join(__dirname, 'scripts/' + scriptName);
+  console.log(`[${name}-scraper] Triggered at ${new Date().toISOString()}`);
+  return new Promise((resolve, reject) => {
+    execFile(process.execPath, [scraperPath], { cwd: __dirname, timeout: 240000 }, (err, stdout, stderr) => {
+      cacheRef.value = null;
+      cacheRef.stamp = 0;
+      if (err) { console.error(`[${name}-scraper] Failed:`, err.message); reject(err); }
+      else { console.log(`[${name}-scraper] Complete:`, stdout.trim().split('\n').pop()); resolve(); }
+    });
+  });
+}
+const solomonCacheRef = { value: null, stamp: 0 };
+const sevenCacheRef = { value: null, stamp: 0 };
+function runSolomonScraper() { return runNamedScraper('solomon', 'update-solomon-floorplans.js', 'solomon-floorplans.json', solomonCacheRef); }
+function runSevenScraper()   { return runNamedScraper('seven',   'update-seven-floorplans.js',   'seven-floorplans.json',   sevenCacheRef); }
+
+// Staggered Monday schedule so all three scrapers don't hit Puppeteer + Chrome
+// concurrently on the same Render dyno. 6:00 Sienna → 6:15 Solomon → 6:30 Seven.
+cron.schedule('15 6 * * 1', () => { runSolomonScraper().catch(() => {}); });
+cron.schedule('30 6 * * 1', () => { runSevenScraper().catch(() => {}); });
+
+// Daily stale-check fallback — if any JSON is older than 8 days (Monday cron
 // missed for any reason: Render restart timing, Puppeteer failure, etc.),
-// retry the scrape. Runs at 6:30am daily.
-cron.schedule('30 6 * * *', () => {
-  try {
-    const filePath = path.join(__dirname, 'data/sienna-floorplans.json');
-    const data = JSON.parse(require('fs').readFileSync(filePath, 'utf8'));
-    const ageMs = Date.now() - new Date(data.lastUpdated).getTime();
-    const ageDays = ageMs / 86400000;
-    if (ageDays > 8) {
-      console.log(`[sienna-scraper] Stale-check triggered — data is ${ageDays.toFixed(1)} days old`);
-      runSiennaScraper('stale-fallback').catch(() => {});
-    }
-  } catch (e) { console.warn('[sienna-scraper] stale-check read failed:', e.message); }
+// retry that specific scrape. Runs at 6:45am daily.
+cron.schedule('45 6 * * *', () => {
+  const targets = [
+    { name: 'sienna',  file: 'sienna-floorplans.json',  run: () => runSiennaScraper('stale-fallback') },
+    { name: 'solomon', file: 'solomon-floorplans.json', run: runSolomonScraper },
+    { name: 'seven',   file: 'seven-floorplans.json',   run: runSevenScraper },
+  ];
+  for (const t of targets) {
+    try {
+      const filePath = path.join(__dirname, 'data', t.file);
+      const data = JSON.parse(require('fs').readFileSync(filePath, 'utf8'));
+      const ageDays = (Date.now() - new Date(data.lastUpdated).getTime()) / 86400000;
+      if (ageDays > 8) {
+        console.log(`[${t.name}-scraper] Stale-check triggered — ${ageDays.toFixed(1)} days old`);
+        t.run().catch(() => {});
+      }
+    } catch (e) { console.warn(`[${t.name}-scraper] stale-check failed:`, e.message); }
+  }
 });
 
 // ── Cash Flow Subscriber API (must come BEFORE the generic /api proxy) ───────
@@ -378,6 +410,24 @@ app.post('/api/sienna/refresh', async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
+});
+
+app.post('/api/solomon/refresh', async (req, res) => {
+  if (req.headers['x-admin-key'] !== ADMIN_KEY) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    await runSolomonScraper();
+    const data = JSON.parse(require('fs').readFileSync(path.join(__dirname, 'data/solomon-floorplans.json'), 'utf8'));
+    res.json({ ok: true, lastUpdated: data.lastUpdated, unitCount: data.plans.length });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/seven/refresh', async (req, res) => {
+  if (req.headers['x-admin-key'] !== ADMIN_KEY) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    await runSevenScraper();
+    const data = JSON.parse(require('fs').readFileSync(path.join(__dirname, 'data/seven-floorplans.json'), 'utf8'));
+    res.json({ ok: true, lastUpdated: data.lastUpdated, unitCount: data.plans.length });
+  } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 // ── Deal Radar API routes (must come BEFORE the generic /api proxy) ──────────
@@ -526,6 +576,26 @@ app.get('/api/sienna-floorplans', (_req, res) => {
     res.status(500).json({ error: 'Floor plan data unavailable', plans: [], lastUpdated: null });
   }
 });
+
+// Reusable read-through-cache handler for the property JSON endpoints.
+// solomonCacheRef / sevenCacheRef are declared with the scraper wiring above.
+function jsonDataHandler(jsonName, cacheRef) {
+  return (_req, res) => {
+    try {
+      if (cacheRef.value && (Date.now() - cacheRef.stamp) < 3600000) return res.json(cacheRef.value);
+      const filePath = path.join(__dirname, 'data', jsonName);
+      const data = JSON.parse(require('fs').readFileSync(filePath, 'utf8'));
+      cacheRef.value = data;
+      cacheRef.stamp = Date.now();
+      res.json(data);
+    } catch (e) {
+      if (cacheRef.value) return res.json(cacheRef.value);
+      res.status(500).json({ error: 'Floor plan data unavailable', plans: [], lastUpdated: null });
+    }
+  };
+}
+app.get('/api/solomon-floorplans', jsonDataHandler('solomon-floorplans.json', solomonCacheRef));
+app.get('/api/seven-floorplans',   jsonDataHandler('seven-floorplans.json',   sevenCacheRef));
 
 // Market stats endpoint — computed from live MLS data, cached 1 hour
 let marketStatsCache = null;
@@ -1011,6 +1081,42 @@ let siennaHtmlCacheStamp = null;
 app.get('/sienna',  (_req, res) => res.redirect(301, '/sienna-at-the-thompson-austin'));
 app.get('/solomon', (_req, res) => res.redirect(301, '/solomon-austin-apartments'));
 app.get('/seven',   (_req, res) => res.redirect(301, '/seven-austin-apartments'));
+
+// SSR templater factory — injects the scraped JSON's lastUpdated into
+// {{DATE_MODIFIED}} and {{DATE_MODIFIED_DISPLAY}} placeholders and sets a
+// Last-Modified header. Googlebot sees the freshness signal without needing
+// to execute the client-side floorplan fetch. HTML is memoized per data
+// version (cache invalidates the moment the scraper writes a new stamp).
+function buildingSsrRoute(jsonName, htmlName) {
+  const state = { html: null, stamp: null };
+  return (_req, res) => {
+    try {
+      const jsonPath = path.join(__dirname, 'data', jsonName);
+      const htmlPath = path.join(__dirname, 'public/site', htmlName);
+      const data = JSON.parse(require('fs').readFileSync(jsonPath, 'utf8'));
+      const stamp = data.lastUpdated;
+      if (state.html && state.stamp === stamp) {
+        res.set('Last-Modified', new Date(stamp).toUTCString());
+        res.set('Content-Type', 'text/html; charset=utf-8');
+        return res.send(state.html);
+      }
+      let html = require('fs').readFileSync(htmlPath, 'utf8');
+      html = html.replace(/\{\{DATE_MODIFIED\}\}/g, stamp);
+      html = html.replace(/\{\{DATE_MODIFIED_DISPLAY\}\}/g,
+        new Date(stamp).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }));
+      state.html = html;
+      state.stamp = stamp;
+      res.set('Last-Modified', new Date(stamp).toUTCString());
+      res.set('Content-Type', 'text/html; charset=utf-8');
+      res.send(html);
+    } catch (e) {
+      console.warn(`[${htmlName}] SSR template failed, falling back to static:`, e.message);
+      res.sendFile(path.join(__dirname, 'public/site', htmlName));
+    }
+  };
+}
+app.get('/solomon-austin-apartments', buildingSsrRoute('solomon-floorplans.json', 'solomon-austin-apartments.html'));
+app.get('/seven-austin-apartments',   buildingSsrRoute('seven-floorplans.json',   'seven-austin-apartments.html'));
 
 app.get('/sienna-at-the-thompson-austin', (_req, res) => {
   try {

@@ -479,6 +479,25 @@
  }
  </script>
 
+ <!-- JSON-LD: VideoObject — enables video rich result with thumbnail in Google SERPs -->
+ <script type="application/ld+json">
+ {
+ "@context": "https://schema.org",
+ "@type": "VideoObject",
+ "name": "Sienna at the Thompson Austin Apartment Tour",
+ "description": "Luke Allen tours Sienna at the Thompson in downtown Austin, a 32-story luxury apartment tower above The Thompson Hotel on Rainey Street. Covers studio, 1BR and 2BR floor plans, amenities, and location.",
+ "thumbnailUrl": "https://i.ytimg.com/vi/20Oc7lgKFxE/maxresdefault.jpg",
+ "uploadDate": "2026-06-01",
+ "contentUrl": "https://www.youtube.com/watch?v=20Oc7lgKFxE",
+ "embedUrl": "https://www.youtube.com/embed/20Oc7lgKFxE",
+ "publisher": {
+ "@type": "Organization",
+ "name": "Austin TX Homes",
+ "url": "https://austintxhomes.co"
+ }
+ }
+ </script>
+
  <!-- JSON-LD: Article — carries dateModified so Google recognizes weekly freshness -->
  <script type="application/ld+json">
  {
@@ -525,7 +544,7 @@
 <script src="/js/nav.js" defer></script>
 
 <!-- ── HERO ──────────────────────────────────────────────────────────────── -->
-<section class="hero" style="margin-top: 64px;">
+<section class="hero">
  <video class="bg-video" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
  <div class="hero-eyebrow">Sienna at the Thompson &nbsp;·&nbsp; 501 Brazos St &nbsp;·&nbsp; Downtown Austin</div>
  <h1>Sienna at the Thompson<br><em>Floor Plans &amp; Pricing</em></h1>
@@ -553,6 +572,19 @@
  <div class="prop-bar-item"><strong>Walk Score 98</strong>&nbsp;, Walker's Paradise</div>
  </div>
 </div>
+
+<!-- ── VIDEO TOUR ──────────────────────────────────────────────────────────── -->
+<section id="video-tour" style="background:var(--warm);padding:64px 2rem">
+ <div class="section-inner">
+ <div style="text-align:center;margin-bottom:2rem">
+ <div class="eyebrow">Watch The Building Tour</div>
+ <h2 class="section-title">Inside Sienna at the Thompson<br><em>with Luke Allen</em></h2>
+ </div>
+ <div style="max-width:900px;margin:0 auto;position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.12)">
+ <iframe src="https://www.youtube.com/embed/20Oc7lgKFxE" title="Sienna at the Thompson Austin Apartment Tour" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" style="position:absolute;inset:0;width:100%;height:100%"></iframe>
+ </div>
+ </div>
+</section>
 
 <!-- ── FLOOR PLAN GRID ────────────────────────────────────────────────────── -->
 <section id="floor-plans">

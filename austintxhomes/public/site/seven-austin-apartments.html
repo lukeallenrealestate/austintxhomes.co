@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Seven Downtown Austin Apartments Tour, Rent &amp; Floor Plans</title>
+ <meta name="description" content="Tour Seven apartments in downtown Austin, 615 W 7th St. 1BR and 2BR floor plans from The Bremond to The Tower. Live rents pulled weekly with Luke Allen." />
+ <link rel="canonical" href="https://austintxhomes.co/seven-austin-apartments" />
+ <link rel="icon" href="/favicon.ico" sizes="any" />
+ <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
+ <link rel="apple-touch-icon" href="/favicon-96.png" />
+ <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+ <meta name="geo.region" content="US-TX" />
+ <meta name="geo.placename" content="Austin, Texas" />
+ <meta property="og:type" content="website" />
+ <meta property="og:title" content="Seven Downtown Austin Apartments Tour, Rent &amp; Floor Plans" />
+ <meta property="og:description" content="Tour Seven apartments in downtown Austin at 615 W 7th St. 1BR and 2BR floor plans from The Bremond to The Tower. Live rents pulled weekly with Luke Allen." />
+ <meta property="og:url" content="https://austintxhomes.co/seven-austin-apartments" />
+ <meta property="og:image" content="https://austintxhomes.co/images/luke-allen.jpg" />
+ <meta name="twitter:card" content="summary_large_image" />
+ <meta property="article:modified_time" content="{{DATE_MODIFIED}}" />
+ <meta property="og:updated_time" content="{{DATE_MODIFIED}}" />
+
+ <link rel="preconnect" href="https://fonts.googleapis.com" />
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+ <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" />
+
+ <style>
+ :root {
+ --gold: #b8935a; --gold-lt: #cda96f; --gold-pale: #f5ede0;
+ --ink: #0f0f0e; --text: #1a1918; --mid: #5c5b57;
+ --light: #999690; --bg: #ffffff; --warm: #faf8f4;
+ --cream: #f1ece3; --border: #e5dfd4; --r: 4px; --w: 1180px;
+ }
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ html { scroll-behavior: smooth; }
+ body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); background: var(--bg); }
+ .hero { background: var(--ink); padding: 120px 2rem 100px; text-align: center; position: relative; overflow: hidden; }
+ .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,0.18) 0%, transparent 70%); pointer-events: none; }
+ .hero-eyebrow { font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.25rem; font-weight: 500; }
+ .hero h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(2.6rem, 6vw, 4.5rem); font-weight: 300; line-height: 1.1; color: #fff; margin-bottom: 1.25rem; }
+ .hero h1 em { color: var(--gold); font-style: italic; }
+ .hero-sub { font-size: .95rem; color: rgba(255,255,255,0.58); max-width: 560px; margin: 0 auto 2rem; line-height: 1.7; }
+ .hero-pills { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.25rem; }
+ .hero-pill { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; border: 1px solid rgba(184,147,90,0.35); color: var(--gold-lt); padding: .4rem 1rem; border-radius: 2rem; font-weight: 500; }
+ .hero-cta { display: inline-block; background: var(--gold); color: var(--ink); font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: .85rem 2rem; border-radius: var(--r); text-decoration: none; transition: background .2s; }
+ .hero-cta:hover { background: var(--gold-lt); }
+ .prop-bar { background: var(--warm); border-bottom: 1px solid var(--border); padding: 1.25rem 2rem; }
+ .prop-bar-inner { max-width: var(--w); margin: 0 auto; display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; justify-content: center; }
+ .prop-bar-item { display: flex; align-items: center; gap: .5rem; font-size: .8rem; color: var(--mid); line-height: 1.4; }
+ .prop-bar-item strong { color: var(--text); font-weight: 500; }
+ .prop-bar-divider { color: var(--border); }
+ section { padding: 80px 2rem; }
+ .section-inner { max-width: var(--w); margin: 0 auto; }
+ .eyebrow { font-size: .65rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: .75rem; }
+ .section-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 300; line-height: 1.15; color: var(--text); margin-bottom: 1.5rem; }
+ .section-title em { font-style: italic; color: var(--gold); }
+ #floor-plans { background: var(--bg); }
+ .fp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+ .fp-card { background: var(--warm); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: box-shadow .2s, transform .2s; }
+ .fp-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.09); transform: translateY(-2px); }
+ .fp-card-header { padding: 1.25rem 1.25rem .75rem; border-bottom: 1px solid var(--border); }
+ .fp-card-type { font-size: .65rem; letter-spacing: .15em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: .35rem; }
+ .fp-card-name { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.4rem; font-weight: 400; color: var(--text); }
+ .fp-card-body { padding: 1rem 1.25rem; }
+ .fp-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem; margin-bottom: 1rem; }
+ .fp-metric { text-align: center; }
+ .fp-metric-val { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; font-weight: 400; color: var(--text); display: block; }
+ .fp-metric-label { font-size: .65rem; letter-spacing: .1em; text-transform: uppercase; color: var(--light); font-weight: 500; }
+ .fp-price { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.8rem; font-weight: 400; color: var(--gold); margin-bottom: .75rem; display: block; }
+ .fp-avail { display: inline-flex; align-items: center; gap: .4rem; font-size: .7rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; padding: .3rem .8rem; border-radius: 2rem; margin-bottom: 1rem; }
+ .fp-avail.now { background: rgba(74,178,82,0.12); color: #3d9e44; border: 1px solid rgba(74,178,82,0.25); }
+ .fp-avail.ask { background: rgba(92,91,87,0.08); color: var(--mid); border: 1px solid var(--border); }
+ .fp-avail-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+ .fp-inquire-btn { display: block; width: 100%; padding: .7rem; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; border-radius: var(--r); cursor: pointer; font-family: 'Inter', sans-serif; transition: all .2s; }
+ .fp-inquire-btn:hover { background: var(--gold); color: var(--ink); }
+ .fp-loading { grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--light); font-size: .9rem; }
+ .fp-last-updated { margin-top: 1.25rem; font-size: .78rem; color: var(--light); font-style: italic; text-align: center; }
+ #highlights { background: var(--warm); }
+ .highlights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+ .highlights-copy p { font-size: .95rem; color: var(--mid); line-height: 1.75; margin-bottom: 1rem; }
+ .amenity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; margin-top: 1rem; }
+ .amenity-item { display: flex; align-items: center; gap: .65rem; font-size: .82rem; color: var(--text); }
+ .amenity-icon { width: 32px; height: 32px; border-radius: 50%; background: var(--gold-pale); border: 1px solid rgba(184,147,90,0.2); display: flex; align-items: center; justify-content: center; font-size: .95rem; flex-shrink: 0; }
+ #location .location-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+ .walk-list { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
+ .walk-item { display: flex; align-items: baseline; gap: .75rem; font-size: .9rem; color: var(--mid); }
+ .walk-dist { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; color: var(--gold); flex-shrink: 0; min-width: 3.5rem; }
+ #inquiry { background: var(--warm); }
+ .inquiry-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; align-items: start; }
+ .form-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 2rem; }
+ .form-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.5rem; font-weight: 400; color: var(--text); margin-bottom: 1.5rem; }
+ .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+ .field { margin-bottom: 1rem; }
+ .field label { display: block; font-size: .72rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--mid); margin-bottom: .4rem; }
+ .field input, .field select, .field textarea { width: 100%; padding: .65rem .85rem; border: 1px solid var(--border); border-radius: var(--r); font-family: 'Inter', sans-serif; font-size: .88rem; color: var(--text); background: var(--bg); outline: none; }
+ .field textarea { resize: vertical; min-height: 90px; }
+ .submit-btn { width: 100%; padding: .9rem; background: var(--gold); color: var(--ink); border: none; border-radius: var(--r); font-size: .8rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+ .submit-btn:hover { background: var(--gold-lt); }
+ .form-success { display: none; text-align: center; padding: 2rem 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; font-style: italic; color: var(--gold); }
+ #faq { background: var(--bg); }
+ .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+ .faq-item { background: var(--warm); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; }
+ .faq-q { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.15rem; color: var(--text); margin-bottom: .5rem; }
+ .faq-a { font-size: .88rem; color: var(--mid); line-height: 1.7; }
+ @media (max-width: 800px) {
+ .highlights-grid, #location .location-grid, .inquiry-grid, .faq-grid { grid-template-columns: 1fr; gap: 2rem; }
+ section { padding: 60px 1rem; }
+ .prop-bar-divider { display: none; }
+ }
+ </style>
+
+ <!-- JSON-LD: RealEstateAgent -->
+ <script type="application/ld+json">
+ {
+ "@context": "https://schema.org",
+ "@type": "RealEstateAgent",
+ "name": "Luke Allen – Austin TX Homes",
+ "url": "https://austintxhomes.co",
+ "telephone": "+12547182567",
+ "email": "Luke@austinmdg.com",
+ "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5.0", "reviewCount": "22", "bestRating": "5", "worstRating": "1" },
+ "sameAs": [
+ "https://share.google/hETte82InqUPvWeNC",
+ "https://www.linkedin.com/in/lukeallentx/",
+ "https://www.instagram.com/lukeallenrealty/",
+ "https://www.tiktok.com/@austintxapartments"
+ ]
+ }
+ </script>
+
+ <!-- JSON-LD: ApartmentComplex -->
+ <script type="application/ld+json">
+ {
+ "@context": "https://schema.org",
+ "@type": "ApartmentComplex",
+ "name": "Seven Apartments Austin",
+ "url": "https://www.sevenapts.com",
+ "address": { "@type": "PostalAddress", "streetAddress": "615 W 7th St", "addressLocality": "Austin", "addressRegion": "TX", "postalCode": "78701", "addressCountry": "US" },
+ "numberOfRooms": "1 Bedroom, 2 Bedroom",
+ "petsAllowed": true,
+ "description": "Seven is a Greystar-managed apartment building in downtown Austin at 615 West 7th Street. 1BR and 2BR floor plans, walkable to the Central Library, 6th Street, the Warehouse District, and Whole Foods flagship."
+ }
+ </script>
+
+ <!-- JSON-LD: VideoObject -->
+ <script type="application/ld+json">
+ {
+ "@context": "https://schema.org",
+ "@type": "VideoObject",
+ "name": "Seven Downtown Austin Apartment Tour, Floor Plans & Amenities",
+ "description": "Luke Allen tours Seven apartments at 615 W 7th Street in downtown Austin. Covers 1BR and 2BR floor plans including The Bremond and The Tower, plus amenities and the downtown location.",
+ "thumbnailUrl": "https://i.ytimg.com/vi/bFpHnu8B99s/maxresdefault.jpg",
+ "uploadDate": "2026-06-01",
+ "contentUrl": "https://www.youtube.com/watch?v=bFpHnu8B99s",
+ "embedUrl": "https://www.youtube.com/embed/bFpHnu8B99s",
+ "publisher": { "@type": "Organization", "name": "Austin TX Homes", "url": "https://austintxhomes.co" }
+ }
+ </script>
+
+ <!-- JSON-LD: Article -->
+ <script type="application/ld+json">
+ {
+ "@context": "https://schema.org",
+ "@type": "Article",
+ "headline": "Seven Downtown Austin Apartments Tour, Floor Plans & Rent",
+ "description": "Independent building tour and rent guide for Seven in downtown Austin. Live pricing pulled weekly.",
+ "datePublished": "2026-07-19",
+ "dateModified": "{{DATE_MODIFIED}}",
+ "author": { "@type": "Person", "name": "Luke Allen", "url": "https://austintxhomes.co/luke-allen", "jobTitle": "Licensed Austin TX Realtor", "identifier": "TREC #788149" },
+ "publisher": { "@type": "Organization", "name": "Austin TX Homes", "url": "https://austintxhomes.co" },
+ "mainEntityOfPage": { "@type": "WebPage", "@id": "https://austintxhomes.co/seven-austin-apartments" },
+ "image": "https://austintxhomes.co/images/luke-allen.jpg"
+ }
+ </script>
+
+ <!-- JSON-LD: FAQPage -->
+ <script type="application/ld+json">
+ {
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+ { "@type": "Question", "name": "Where is Seven located in downtown Austin?", "acceptedAnswer": { "@type": "Answer", "text": "Seven sits at 615 West 7th Street in downtown Austin's Market District. You're a 5 minute walk to the Central Library, 8 minutes to 6th Street, and 10 minutes to the Warehouse District and Whole Foods flagship. It's one of the more central downtown addresses you can rent at right now." } },
+ { "@type": "Question", "name": "What floor plans does Seven offer?", "acceptedAnswer": { "@type": "Answer", "text": "Seven offers 1 bedroom and 2 bedroom floor plans only. There are 27 distinct 1BR plans and 9 distinct 2BR plans, including named layouts like The Bremond (loft variant), The Tower, and several standard 1BR configurations. Starting rents range from around $2,100 for a 1BR to $3,800+ for a 1BR loft or 2BR." } },
+ { "@type": "Question", "name": "What is the difference between Base Rent and Total Monthly Leasing Price at Seven?", "acceptedAnswer": { "@type": "Answer", "text": "Seven, like most Greystar properties, publishes two numbers. Base Rent is the monthly rent for the apartment itself. Total Monthly Leasing Price is base rent plus fixed mandatory monthly fees (trash, pest, common area, etc). When you compare against other downtown buildings, compare Total Monthly Leasing Price to Total Monthly Leasing Price, not base rent." } },
+ { "@type": "Question", "name": "Is Seven Austin pet-friendly?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Seven welcomes pets under standard Greystar pet policy. Deposit and monthly pet rent apply; contact the leasing team for current pet fees and any breed restrictions." } },
+ { "@type": "Question", "name": "Should I rent at Seven or buy a condo downtown?", "acceptedAnswer": { "@type": "Answer", "text": "Depends on your horizon. Downtown Austin condos (Austonian, The Modern, The Independent, 44 East Ave) have appreciated meaningfully. If you're staying downtown 3+ years, buying often nets ahead of renting at $2,500+ per month. If you're 1 to 2 years, or need max flexibility, renting at Seven is safer. I'll run the actual math on your specific situation." } },
+ { "@type": "Question", "name": "How much parking does Seven offer?", "acceptedAnswer": { "@type": "Answer", "text": "Seven has on-site parking as part of the building. Rates and assigned vs unassigned availability vary; the leasing team can confirm current parking availability and pricing." } } ]
+ }
+ </script>
+
+ <!-- JSON-LD: BreadcrumbList -->
+ <script type="application/ld+json">
+ {
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+ { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://austintxhomes.co/" },
+ { "@type": "ListItem", "position": 2, "name": "Rentals", "item": "https://austintxhomes.co/rentals" },
+ { "@type": "ListItem", "position": 3, "name": "Seven Austin", "item": "https://austintxhomes.co/seven-austin-apartments" }
+ ]
+ }
+ </script>
+</head>
+<body>
+<script src="/js/nav.js" defer></script>
+
+<section class="hero">
+ <div class="hero-eyebrow">Seven Apartments &nbsp;·&nbsp; 615 W 7th St &nbsp;·&nbsp; Downtown Austin 78701</div>
+ <h1>Seven<br><em>Downtown Austin Floor Plans</em></h1>
+ <p class="hero-sub">1BR and 2BR apartments at 615 West 7th Street. Named layouts including The Bremond and The Tower. Live pricing pulled weekly from the property's official website.</p>
+ <div class="hero-pills">
+ <span class="hero-pill">Downtown Austin</span>
+ <span class="hero-pill">Market District</span>
+ <span class="hero-pill">1BR &amp; 2BR</span>
+ <span class="hero-pill" style="background:rgba(184,147,90,.15);border-color:rgba(184,147,90,.5);color:#e8d3a8">Updated {{DATE_MODIFIED_DISPLAY}}</span>
+ </div>
+ <a href="#floor-plans" class="hero-cta">View Floor Plans ↓</a>
+</section>
+
+<div class="prop-bar">
+ <div class="prop-bar-inner">
+ <div class="prop-bar-item"><strong>615 W 7th St</strong>&nbsp;Austin TX 78701</div>
+ <span class="prop-bar-divider">|</span>
+ <div class="prop-bar-item"><strong>Downtown Austin</strong>&nbsp;, Market District</div>
+ <span class="prop-bar-divider">|</span>
+ <div class="prop-bar-item"><strong>Managed by Greystar</strong></div>
+ <span class="prop-bar-divider">|</span>
+ <div class="prop-bar-item"><strong>1BR &amp; 2BR</strong>&nbsp;, no studios</div>
+ </div>
+</div>
+
+<section id="video-tour" style="background:var(--warm);padding:64px 2rem">
+ <div class="section-inner">
+ <div style="text-align:center;margin-bottom:2rem">
+ <div class="eyebrow">Watch The Building Tour</div>
+ <h2 class="section-title">Inside Seven<br><em>with Luke Allen</em></h2>
+ </div>
+ <div style="max-width:900px;margin:0 auto;position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.12)">
+ <iframe src="https://www.youtube.com/embed/bFpHnu8B99s" title="Seven Downtown Austin Apartment Tour" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" style="position:absolute;inset:0;width:100%;height:100%"></iframe>
+ </div>
+ </div>
+</section>
+
+<section id="floor-plans">
+ <div class="section-inner">
+ <div class="eyebrow">Available Units</div>
+ <h2 class="section-title">Current Floor Plans<br><em>&amp; Live Pricing</em></h2>
+ <div class="fp-grid" id="fp-grid">
+ <div class="fp-loading">Loading current floor plans and pricing…</div>
+ </div>
+ <p class="fp-last-updated" id="fp-last-updated"></p>
+ </div>
+</section>
+
+<section id="highlights">
+ <div class="section-inner">
+ <div class="highlights-grid">
+ <div class="highlights-copy">
+ <div class="eyebrow">The Building</div>
+ <h2 class="section-title">West 7th Street<br><em>Downtown Living</em></h2>
+ <p>Seven sits at 615 West 7th Street in downtown Austin's Market District. This is west of Congress Avenue, walking distance to the Central Library, the Warehouse District, and the flagship Whole Foods. It's one of the more genuinely central downtown addresses you can rent at without paying the Rainey Street tower premium.</p>
+ <p>The floor plan mix is 1 bedroom and 2 bedroom only, with 27 distinct 1BR layouts and 9 distinct 2BR layouts. Named plans include The Bremond (both flat and loft variants), The Tower, and several standard 1BR configurations. Starting rents range from about $2,100 for a compact 1BR to $3,800 and up for a loft or 2BR.</p>
+ <p>Seven is professionally managed by Greystar, so pricing uses their two-column format: Base Rent for the apartment plus a Total Monthly Leasing Price that includes fixed mandatory monthly fees. When comparing Seven to other downtown buildings, always compare Total Monthly Leasing Price to Total Monthly Leasing Price, not base rent to base rent.</p>
+ </div>
+ <div>
+ <div class="eyebrow">Highlights</div>
+ <div class="amenity-grid">
+ <div class="amenity-item"><div class="amenity-icon">🏙️</div>Downtown walkable</div>
+ <div class="amenity-item"><div class="amenity-icon">📚</div>Central Library nearby</div>
+ <div class="amenity-item"><div class="amenity-icon">🛒</div>Whole Foods flagship</div>
+ <div class="amenity-item"><div class="amenity-icon">🍔</div>Warehouse District dining</div>
+ <div class="amenity-item"><div class="amenity-icon">🚶</div>Walk to 6th Street</div>
+ <div class="amenity-item"><div class="amenity-icon">🅿️</div>On-site parking</div>
+ <div class="amenity-item"><div class="amenity-icon">🐾</div>Pet-friendly</div>
+ <div class="amenity-item"><div class="amenity-icon">🛗</div>Elevator access</div>
+ </div>
+ </div>
+ </div>
+ </div>
+</section>
+
+<section id="location">
+ <div class="section-inner">
+ <div class="location-grid">
+ <div>
+ <div class="eyebrow">Location</div>
+ <h2 class="section-title">Market District<br><em>Downtown Austin</em></h2>
+ <p style="font-size:.95rem;color:var(--mid);line-height:1.75;margin-bottom:1.5rem">Seven's Market District location is one of the most walkable in downtown Austin. You're inside the CBD but on the calmer, more residential-feeling west side of Congress. Central Library and Republic Square Park are your neighborhood parks. Warehouse District bars and restaurants are 5 minutes on foot.</p>
+ <ul class="walk-list">
+ <li class="walk-item"><span class="walk-dist">3 min</span><span>Walk to Central Library, Republic Square Park</span></li>
+ <li class="walk-item"><span class="walk-dist">5 min</span><span>Walk to Whole Foods flagship, Warehouse District</span></li>
+ <li class="walk-item"><span class="walk-dist">8 min</span><span>Walk to 6th Street, Congress Avenue</span></li>
+ <li class="walk-item"><span class="walk-dist">12 min</span><span>Walk to Lady Bird Lake trail</span></li>
+ <li class="walk-item"><span class="walk-dist">15 min</span><span>Drive to UT Austin, East Austin</span></li>
+ <li class="walk-item"><span class="walk-dist">18 min</span><span>Drive to Austin-Bergstrom (ABIA)</span></li>
+ </ul>
+ </div>
+ <div>
+ <div class="eyebrow">Considering downtown?</div>
+ <h2 class="section-title" style="font-size:1.8rem">Or buy a <em>downtown condo</em>?</h2>
+ <p style="font-size:.95rem;color:var(--mid);line-height:1.75;margin-bottom:1.25rem">If you love downtown living and plan to stay 3+ years, buying a condo often nets ahead of renting at $2,500+ per month. Downtown Austin condo inventory includes The Austonian, The Modern, The Independent, and 44 East Ave.</p>
+ <p style="margin-bottom:1.5rem"><a href="/condos-for-sale-in-the-austonian" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(184,147,90,0.3);font-size:.9rem">Browse Austonian condos for sale →</a></p>
+ <p style="margin-bottom:1.5rem"><a href="/condos-for-sale-in-the-modern" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(184,147,90,0.3);font-size:.9rem">Browse The Modern condos →</a></p>
+ <p><a href="/best-realtor-78701-austin" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(184,147,90,0.3);font-size:.9rem">Selling downtown? Talk to Luke →</a></p>
+ </div>
+ </div>
+ </div>
+</section>
+
+<section id="inquiry">
+ <div class="section-inner">
+ <div class="inquiry-grid">
+ <div>
+ <div class="eyebrow">Get Honest Advice</div>
+ <h2 class="section-title">Considering Seven?<br><em>Talk to Luke.</em></h2>
+ <p style="font-size:.95rem;color:var(--mid);line-height:1.75;margin-bottom:1rem">I'm a licensed Austin Realtor (TREC #788149). I don't lease apartments — I sell homes and condos — but I've toured Seven and I'll give you an honest read on whether it fits your situation, or whether buying downtown instead would come out ahead over your timeline.</p>
+ <p style="font-size:.95rem;color:var(--mid);line-height:1.75;margin-bottom:1rem">Free rent-vs-buy math based on your actual numbers. No obligation.</p>
+ </div>
+ <div class="form-box">
+ <div class="form-title">Ask about Seven</div>
+ <form id="seven-form">
+ <input type="hidden" name="source" value="seven-austin-apartments" />
+ <div class="field-row">
+ <div class="field"><label>Name</label><input type="text" name="name" required /></div>
+ <div class="field"><label>Phone</label><input type="tel" name="phone" /></div>
+ </div>
+ <div class="field"><label>Email</label><input type="email" name="email" required /></div>
+ <div class="field"><label>Floor Plan of Interest</label>
+ <select name="planType" id="s-plan">
+ <option value="">Any</option>
+ <option value="1 Bedroom">1 Bedroom</option>
+ <option value="1BR Loft">1BR Loft</option>
+ <option value="2 Bedroom">2 Bedroom</option>
+ </select>
+ </div>
+ <div class="field"><label>Specific Plan</label><input type="text" name="interestedPlan" id="interestedPlan" placeholder="e.g. The Bremond, The Tower" /></div>
+ <div class="field"><label>Message</label><textarea name="message" placeholder="What are you looking for?"></textarea></div>
+ <button type="submit" class="submit-btn">Send to Luke</button>
+ </form>
+ <div class="form-success" id="seven-success">Thanks — Luke will reach out shortly.</div>
+ </div>
+ </div>
+ </div>
+</section>
+
+<section id="faq">
+ <div class="section-inner">
+ <div class="eyebrow">FAQ</div>
+ <h2 class="section-title" style="text-align:center;margin-bottom:2.5rem">Seven Austin<br><em>Questions Answered</em></h2>
+ <div class="faq-grid">
+ <div class="faq-item"><div class="faq-q">Where exactly is Seven?</div><div class="faq-a">615 West 7th Street, Austin TX 78701, in downtown Austin's Market District. West of Congress, walking distance to the Central Library, Whole Foods flagship, Warehouse District, and 6th Street.</div></div>
+ <div class="faq-item"><div class="faq-q">What floor plans does Seven offer?</div><div class="faq-a">1 bedroom and 2 bedroom only, no studios. 27 distinct 1BR layouts and 9 distinct 2BR layouts, including named plans like The Bremond and The Tower.</div></div>
+ <div class="faq-item"><div class="faq-q">What is the price range?</div><div class="faq-a">Starting rents range from about $2,100 for a compact 1BR to $3,800 and up for lofts and 2BR plans. Total Monthly Leasing Price includes fixed monthly fees on top of base rent.</div></div>
+ <div class="faq-item"><div class="faq-q">Why does Seven show two rent numbers?</div><div class="faq-a">Greystar convention. Base Rent is the apartment cost. Total Monthly Leasing Price is base rent plus fixed mandatory monthly fees. Always compare Total to Total when shopping across buildings.</div></div>
+ <div class="faq-item"><div class="faq-q">Should I rent Seven or buy a downtown condo?</div><div class="faq-a">3+ year horizon usually favors buying at these rent levels. 1 to 2 years or maximum flexibility usually favors renting Seven. I'll run the actual numbers with you against downtown condo inventory.</div></div>
+ <div class="faq-item"><div class="faq-q">Is Seven pet-friendly?</div><div class="faq-a">Yes, under standard Greystar pet policy. Deposit and monthly pet rent apply. Contact the leasing team for current pet fees and any breed restrictions.</div></div>
+ </div>
+ </div>
+</section>
+
+<script src="/js/footer.js" defer></script>
+<script>
+function renderCard(plan) {
+ const availClass = plan.availableNow ? 'now' : 'ask';
+ const availLabel = plan.availableNow ? 'Available Now' : (plan.available || 'Contact for Availability');
+ const sqftDisplay = plan.sqft ? plan.sqft.toLocaleString() : '—';
+ const bathDisplay = plan.baths || '—';
+ const bedDisplay = plan.beds === 0 ? 'Studio' : (plan.beds || '—');
+ return `
+ <div class="fp-card" data-type="${plan.planType || ''}">
+ <div class="fp-card-header">
+ <div class="fp-card-type">${plan.planType || 'Unit'}</div>
+ <div class="fp-card-name">${plan.name || plan.planType}</div>
+ </div>
+ <div class="fp-card-body">
+ <div class="fp-metrics">
+ <div class="fp-metric"><span class="fp-metric-val">${bedDisplay}</span><span class="fp-metric-label">Beds</span></div>
+ <div class="fp-metric"><span class="fp-metric-val">${bathDisplay}</span><span class="fp-metric-label">Bath</span></div>
+ <div class="fp-metric"><span class="fp-metric-val">${sqftDisplay}</span><span class="fp-metric-label">Sq Ft</span></div>
+ </div>
+ <span class="fp-price">${plan.priceDisplay || 'Contact for Pricing'}</span>
+ <div class="fp-avail ${availClass}"><span class="fp-avail-dot"></span>${availLabel}</div>
+ <button class="fp-inquire-btn" onclick="inquireAbout('${(plan.name || '').replace(/'/g, '')}', '${(plan.planType || '').replace(/'/g, '')}')">Inquire About This Unit</button>
+ </div>
+ </div>`;
+}
+function inquireAbout(name, type) {
+ document.getElementById('interestedPlan').value = name + (type ? ' (' + type + ')' : '');
+ if (type) { const sel = document.getElementById('s-plan'); for (let i = 0; i < sel.options.length; i++) if (sel.options[i].value === type) { sel.selectedIndex = i; break; } }
+ document.getElementById('inquiry').scrollIntoView({ behavior: 'smooth' });
+}
+fetch('/api/seven-floorplans')
+ .then(r => r.json())
+ .then(data => {
+ const plans = data.plans || [];
+ const grid = document.getElementById('fp-grid');
+ if (!plans.length) {
+ grid.innerHTML = `<div class="fp-loading">No units currently listed. Contact Luke for latest availability.</div>`;
+ } else {
+ grid.innerHTML = plans.map(renderCard).join('');
+ }
+ if (data.lastUpdated) {
+ const d = new Date(data.lastUpdated);
+ const fmt = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+ document.getElementById('fp-last-updated').textContent = 'Pricing data last updated: ' + fmt + ' · Source: sevenapts.com';
+ }
+ })
+ .catch(() => { document.getElementById('fp-grid').innerHTML = `<div class="fp-loading">Unable to load current floor plans. Contact Luke for latest pricing.</div>`; });
+document.getElementById('seven-form').addEventListener('submit', async (e) => {
+ e.preventDefault();
+ const form = e.target;
+ const data = { name: form.name.value, email: form.email.value, phone: form.phone.value, planType: form.planType.value, interestedPlan: form.interestedPlan.value, message: form.message.value, source: 'seven-austin-apartments' };
+ try {
+ await fetch('/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+ form.style.display = 'none';
+ document.getElementById('seven-success').style.display = 'block';
+ } catch (err) { alert('Could not send. Email Luke@austinmdg.com'); }
+});
+</script>
+</body>
+</html>
