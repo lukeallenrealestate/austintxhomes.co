@@ -137,12 +137,12 @@ body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); backgrou
 .section.dark p strong { color: #fff; }
 .section.dark .section-eyebrow { color: var(--gold-lt); }
 
-/* TAKE CALLOUT */
-.take { background: var(--ink); color: #fff; border-radius: var(--r); border-left: 4px solid var(--gold); padding: 28px 32px; margin: 28px 0; box-shadow: 0 12px 40px rgba(0,0,0,0.08); max-width: 780px; }
-.take-label { font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-lt); font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-.take-label::before { content: ''; display: inline-block; width: 22px; height: 1px; background: var(--gold-lt); }
-.take-body { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 21px; line-height: 1.55; font-weight: 400; font-style: italic; color: rgba(255,255,255,0.94); }
-.take-body strong { font-weight: 600; color: #fff; font-style: normal; }
+/* TAKE CALLOUT — selectors must out-specify .section p / .section.dark p */
+.section .take, .section.alt .take, .section.dark .take { background: var(--ink); color: #fff; border-radius: var(--r); border-left: 4px solid var(--gold); padding: 32px 36px; margin: 32px 0; box-shadow: 0 12px 40px rgba(0,0,0,0.08); max-width: 780px; }
+.section .take .take-label, .section.alt .take .take-label, .section.dark .take .take-label { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-lt); font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.section .take .take-label::before, .section.alt .take .take-label::before, .section.dark .take .take-label::before { content: ''; display: inline-block; width: 22px; height: 1px; background: var(--gold-lt); }
+.section .take p.take-body, .section.alt .take p.take-body, .section.dark .take p.take-body { font-family: 'Inter', system-ui, sans-serif; font-size: 18px; line-height: 1.65; font-weight: 400; color: #ffffff; margin: 0; max-width: none; }
+.section .take p.take-body strong, .section.alt .take p.take-body strong, .section.dark .take p.take-body strong { font-weight: 600; color: var(--gold-lt); }
 
 /* VERDICT */
 .verdict { background: var(--warm); border: 1px solid var(--border); border-top: 4px solid var(--gold); padding: 40px 44px; border-radius: var(--r); margin: 36px 0; }
