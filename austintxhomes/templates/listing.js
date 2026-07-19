@@ -247,6 +247,19 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
   const ppsf  = listing.living_area > 0 ? Math.round(price / listing.living_area) : null;
   const acres = listing.lot_size_acres ? listing.lot_size_acres.toFixed(2) : null;
 
+  // Days on market — prefer the MLS field, fall back to contract-date derivation.
+  const domRaw = listing.days_on_market;
+  const domCalc = listing.listing_contract_date
+    ? Math.max(0, Math.floor((Date.now() - new Date(listing.listing_contract_date).getTime()) / 86400000))
+    : null;
+  const dom = (domRaw && domRaw > 0) ? domRaw : domCalc;
+
+  // Full address with city + ZIP for display and geocoded map embed
+  const fullAddr = `${addr}${addr && !addr.match(/,/) ? ',' : ''} ${city}, TX${zip ? ' ' + zip : ''}`.replace(/\s+/g, ' ').trim();
+  const mapEmbedUrl = (listing.latitude && listing.longitude)
+    ? `https://www.google.com/maps?q=${listing.latitude},${listing.longitude}&z=15&t=m&output=embed`
+    : `https://www.google.com/maps?q=${encodeURIComponent(fullAddr)}&z=15&t=m&output=embed`;
+
   // Price-vs-market insight
   let priceInsight = '';
   if (market && market.avg_ppsf && ppsf) {
@@ -483,17 +496,27 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
     body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);}
     a{color:var(--gold);text-decoration:none;}a:hover{color:var(--gold-lt);}
 
-    /* sold banner */
-    .sold-banner{background:#1a1a1a;color:#ccc;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding:10px 2rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-top:80px;}
+    /* sold banner — sits under nav, dark bg so nav's white text stays legible */
+    .sold-banner{background:#1a1a1a;color:#ccc;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding:90px 2rem 10px;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;}
     .sold-banner span:first-child{color:var(--gold);font-weight:600;}
 
-    /* hero */
-    .hero{position:relative;background:var(--ink);${!isSold?'margin-top:80px;':''}min-height:460px;display:flex;align-items:flex-end;overflow:hidden;}
+    /* hero — starts at y=0 so nav overlays dark bg (align-items:flex-end keeps content below nav zone) */
+    .hero{position:relative;background:var(--ink);min-height:540px;display:flex;align-items:flex-end;overflow:hidden;}
     ${heroPhoto?`.hero-bg{position:absolute;inset:0;background:url('${heroPhoto}') center/cover no-repeat;filter:brightness(.5);}`:'.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(184,147,90,.18) 0%,transparent 70%);}'}
     .hero-content{position:relative;z-index:2;padding:3rem 2rem 2.5rem;max-width:var(--w);margin:0 auto;width:100%;}
     .status-badge{display:inline-block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:2px;margin-bottom:.9rem;font-weight:600;}
     .status-active{background:#1d7a4a;color:#fff;}.status-pending{background:#b8935a;color:#fff;}.status-sold{background:#555;color:#fff;}
-    .hero h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:600;color:#fff;margin:0 0 .6rem;line-height:1.1;}
+    .hero h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:600;color:#fff;margin:0 0 .3rem;line-height:1.1;}
+    .hero-locality{font-size:.95rem;color:rgba(255,255,255,.7);margin:0 0 .8rem;letter-spacing:.02em;font-weight:400;}
+    /* Location map */
+    .map-section{margin:1.5rem 0;}
+    .map-section h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.6rem;font-weight:600;margin:0 0 .3rem;color:var(--text);}
+    .map-section .map-addr{font-size:.88rem;color:var(--mid);margin:0 0 1rem;}
+    .map-embed-wrap{position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--border);height:400px;background:var(--warm);}
+    .map-embed-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+    .map-actions{margin-top:.9rem;display:flex;gap:.6rem;flex-wrap:wrap;}
+    .map-actions a{display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;font-weight:600;letter-spacing:.04em;padding:.55rem 1rem;border:1px solid var(--border);border-radius:var(--r);color:var(--mid);background:#fff;text-transform:uppercase;transition:all .18s;}
+    .map-actions a:hover{border-color:var(--gold);color:var(--gold);}
     .hero-price{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;color:var(--gold);margin-bottom:.9rem;}
     .hero-pills{display:flex;flex-wrap:wrap;gap:.5rem;}
     .pill{background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);font-size:.73rem;letter-spacing:.05em;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.2);}
@@ -627,14 +650,15 @@ ${isSold ? `<div class="sold-banner">
   <span>SOLD${listing.close_date ? ' · ' + fmtDate(listing.close_date) : ''}</span>
   ${listing.close_price ? `<span>Final: ${fmtPrice(listing.close_price)}</span>` : ''}
   <span>Page preserved as a market reference for ${city}, TX.</span>
-</div>` : '<div style="margin-top:80px"></div>'}
+</div>` : ''}
 
 <!-- Hero -->
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-content">
-    <div class="status-badge ${statusCls}">${statusLabel}</div>
+    <div class="status-badge ${statusCls}">${statusLabel}${dom != null && !isSold ? ` &nbsp;·&nbsp; ${dom} ${dom === 1 ? 'day' : 'days'} on market` : ''}</div>
     <h1>${addr}</h1>
+    <div class="hero-locality">${city}, TX${zip ? ' ' + zip : ''}</div>
     <div class="hero-price">${fmtPrice(price)}</div>
     <div class="hero-pills">
       ${listing.bedrooms_total ? `<span class="pill">${listing.bedrooms_total} Bed</span>` : ''}
@@ -665,6 +689,18 @@ ${photoUrls.length > 1 ? `<div class="gallery"><div class="gallery-grid">${galle
     </div>` : ''}
 
     ${priceInsightHTML}
+
+    <div class="map-section">
+      <h2>Location</h2>
+      <p class="map-addr">${addr}, ${city}, TX${zip ? ' ' + zip : ''}</p>
+      <div class="map-embed-wrap">
+        <iframe src="${mapEmbedUrl}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen title="Map of ${addr}, ${city}, TX"></iframe>
+      </div>
+      <div class="map-actions">
+        <a href="https://www.google.com/maps/search/?api=1&query=${listing.latitude && listing.longitude ? listing.latitude + ',' + listing.longitude : encodeURIComponent(fullAddr)}" target="_blank" rel="noopener">Open in Google Maps ↗</a>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=${listing.latitude && listing.longitude ? listing.latitude + ',' + listing.longitude : encodeURIComponent(fullAddr)}" target="_blank" rel="noopener">Get Directions ↗</a>
+      </div>
+    </div>
 
     <div class="details-grid">
       <h2>Property Details</h2>
