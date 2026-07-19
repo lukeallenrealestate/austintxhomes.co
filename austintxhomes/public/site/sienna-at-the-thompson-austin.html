@@ -19,6 +19,8 @@
  <meta property="og:url" content="https://austintxhomes.co/sienna-at-the-thompson-austin" />
  <meta property="og:image" content="https://austintxhomes.co/images/luke-allen.jpg" />
  <meta name="twitter:card" content="summary_large_image" />
+ <meta property="article:modified_time" content="{{DATE_MODIFIED}}" />
+ <meta property="og:updated_time" content="{{DATE_MODIFIED}}" />
 
  <link rel="preconnect" href="https://fonts.googleapis.com" />
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -477,6 +479,35 @@
  }
  </script>
 
+ <!-- JSON-LD: Article — carries dateModified so Google recognizes weekly freshness -->
+ <script type="application/ld+json">
+ {
+ "@context": "https://schema.org",
+ "@type": "Article",
+ "headline": "Sienna at the Thompson Floor Plans, Pricing & Availability",
+ "description": "Live floor plans, unit availability, and pricing for Sienna at the Thompson in downtown Austin. Pulled weekly from rentsienna.com.",
+ "datePublished": "2026-03-16",
+ "dateModified": "{{DATE_MODIFIED}}",
+ "author": {
+ "@type": "Person",
+ "name": "Luke Allen",
+ "url": "https://austintxhomes.co/luke-allen",
+ "jobTitle": "Licensed Austin TX Realtor",
+ "identifier": "TREC #788149"
+ },
+ "publisher": {
+ "@type": "Organization",
+ "name": "Austin TX Homes",
+ "url": "https://austintxhomes.co"
+ },
+ "mainEntityOfPage": {
+ "@type": "WebPage",
+ "@id": "https://austintxhomes.co/sienna-at-the-thompson-austin"
+ },
+ "image": "https://austintxhomes.co/images/luke-allen.jpg"
+ }
+ </script>
+
  <!-- JSON-LD: BreadcrumbList -->
  <script type="application/ld+json">
  {
@@ -498,11 +529,12 @@
  <video class="bg-video" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
  <div class="hero-eyebrow">Sienna at the Thompson &nbsp;·&nbsp; 501 Brazos St &nbsp;·&nbsp; Downtown Austin</div>
  <h1>Sienna at the Thompson<br><em>Floor Plans &amp; Pricing</em></h1>
- <p class="hero-sub">Studio, 1BR &amp; 2BR apartments in downtown Austin. Live pricing updated monthly from the property's official website.</p>
+ <p class="hero-sub">Studio, 1BR &amp; 2BR apartments in downtown Austin. Live pricing pulled weekly from the property's official website.</p>
  <div class="hero-pills">
  <span class="hero-pill">32 Stories</span>
  <span class="hero-pill">Downtown Austin</span>
  <span class="hero-pill">Pet Friendly</span>
+ <span class="hero-pill" style="background:rgba(184,147,90,.15);border-color:rgba(184,147,90,.5);color:#e8d3a8">Updated {{DATE_MODIFIED_DISPLAY}}</span>
  </div>
  <a href="#floor-plans" class="hero-cta">View Floor Plans ↓</a>
 </section>

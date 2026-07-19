@@ -286,20 +286,44 @@ cron.schedule('22 * * * *', () => {
   }
 });
 
-// Monthly scraper — runs on the 1st of each month at 7:00am server time
-cron.schedule('0 7 1 * *', () => {
+// Weekly Sienna scraper — Mondays at 6:00am server time (before market report at 9am)
+// Also invalidates cache immediately so a manual trigger picks up fresh JSON.
+function runSiennaScraper(source) {
   const { execFile } = require('child_process');
   const scraperPath = path.join(__dirname, 'scripts/update-sienna-floorplans.js');
-  console.log('[cron] Running Sienna floor plan scraper...');
-  execFile(process.execPath, [scraperPath], { cwd: __dirname }, (err, stdout, stderr) => {
-    siennaCache = null;
-    siennaCacheTime = 0;
-    if (err) {
-      console.error('[cron] Sienna scraper failed:', err.message);
-    } else {
-      console.log('[cron] Sienna scraper complete:', stdout.trim().split('\n').pop());
-    }
+  console.log(`[sienna-scraper] Triggered by ${source} at ${new Date().toISOString()}`);
+  return new Promise((resolve, reject) => {
+    execFile(process.execPath, [scraperPath], { cwd: __dirname, timeout: 180000 }, (err, stdout, stderr) => {
+      siennaCache = null;
+      siennaCacheTime = 0;
+      if (err) {
+        console.error(`[sienna-scraper] Failed (${source}):`, err.message);
+        if (stderr) console.error('[sienna-scraper] stderr:', stderr.trim().slice(-500));
+        reject(err);
+      } else {
+        console.log(`[sienna-scraper] Complete (${source}):`, stdout.trim().split('\n').pop());
+        resolve();
+      }
+    });
   });
+}
+
+cron.schedule('0 6 * * 1', () => { runSiennaScraper('weekly-cron').catch(() => {}); });
+
+// Daily stale-check fallback — if the JSON is older than 8 days (Monday cron
+// missed for any reason: Render restart timing, Puppeteer failure, etc.),
+// retry the scrape. Runs at 6:30am daily.
+cron.schedule('30 6 * * *', () => {
+  try {
+    const filePath = path.join(__dirname, 'data/sienna-floorplans.json');
+    const data = JSON.parse(require('fs').readFileSync(filePath, 'utf8'));
+    const ageMs = Date.now() - new Date(data.lastUpdated).getTime();
+    const ageDays = ageMs / 86400000;
+    if (ageDays > 8) {
+      console.log(`[sienna-scraper] Stale-check triggered — data is ${ageDays.toFixed(1)} days old`);
+      runSiennaScraper('stale-fallback').catch(() => {});
+    }
+  } catch (e) { console.warn('[sienna-scraper] stale-check read failed:', e.message); }
 });
 
 // ── Cash Flow Subscriber API (must come BEFORE the generic /api proxy) ───────
@@ -336,6 +360,21 @@ app.post('/api/weekly-report/generate', async (req, res) => {
     const post = await generateWeeklyReport(weeklyReports, opts);
     if (!post) return res.status(503).json({ error: 'No MLS data available — is the idx-search server running?' });
     res.json({ ok: true, slug: post.slug, url: `https://austintxhomes.co/blog/${post.slug}`, backfilled: !!opts.targetDate });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Manual trigger for the Sienna scraper. Use when the weekly cron missed a run
+// or when you want fresh pricing on demand. Long-running (Puppeteer, ~30-60s).
+//   curl -X POST https://austintxhomes.co/api/sienna/refresh -H "x-admin-key: $ADMIN_KEY"
+app.post('/api/sienna/refresh', async (req, res) => {
+  if (req.headers['x-admin-key'] !== ADMIN_KEY) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    await runSiennaScraper('manual-trigger');
+    const filePath = path.join(__dirname, 'data/sienna-floorplans.json');
+    const data = JSON.parse(require('fs').readFileSync(filePath, 'utf8'));
+    res.json({ ok: true, lastUpdated: data.lastUpdated, unitCount: data.plans.length });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -962,7 +1001,42 @@ app.get('/austin-buyers-or-sellers-market', (_req, res) => {
   }
 });
 app.get('/austin-home-prices-falling', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-home-prices-falling.html')));
-app.get('/sienna-at-the-thompson-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sienna-at-the-thompson-austin.html')));
+// Sienna page — SSR template that injects dateModified/datePublished from the
+// scraped JSON so Googlebot sees the freshness signal without executing the
+// client-side /api/sienna-floorplans fetch. HTML is cached per data version.
+let siennaHtmlCache = null;
+let siennaHtmlCacheStamp = null;
+// Short branded redirects for YouTube video descriptions (character-limited).
+// 301 permanent so link equity consolidates on the canonical URL.
+app.get('/sienna',  (_req, res) => res.redirect(301, '/sienna-at-the-thompson-austin'));
+app.get('/solomon', (_req, res) => res.redirect(301, '/solomon-austin-apartments'));
+app.get('/seven',   (_req, res) => res.redirect(301, '/seven-austin-apartments'));
+
+app.get('/sienna-at-the-thompson-austin', (_req, res) => {
+  try {
+    const jsonPath = path.join(__dirname, 'data/sienna-floorplans.json');
+    const htmlPath = path.join(__dirname, 'public/site/sienna-at-the-thompson-austin.html');
+    const data = JSON.parse(require('fs').readFileSync(jsonPath, 'utf8'));
+    const stamp = data.lastUpdated;
+    if (siennaHtmlCache && siennaHtmlCacheStamp === stamp) {
+      res.set('Last-Modified', new Date(stamp).toUTCString());
+      res.set('Content-Type', 'text/html; charset=utf-8');
+      return res.send(siennaHtmlCache);
+    }
+    let html = require('fs').readFileSync(htmlPath, 'utf8');
+    html = html.replace(/\{\{DATE_MODIFIED\}\}/g, stamp);
+    html = html.replace(/\{\{DATE_MODIFIED_DISPLAY\}\}/g,
+      new Date(stamp).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }));
+    siennaHtmlCache = html;
+    siennaHtmlCacheStamp = stamp;
+    res.set('Last-Modified', new Date(stamp).toUTCString());
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.send(html);
+  } catch (e) {
+    console.warn('[sienna-route] template failed, falling back to static:', e.message);
+    res.sendFile(path.join(__dirname, 'public/site/sienna-at-the-thompson-austin.html'));
+  }
+});
 app.get('/condos-for-sale-in-the-austonian', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/condos-for-sale-in-the-austonian.html')));
 app.get('/condos-for-rent-in-the-austonian', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/condos-for-rent-in-the-austonian.html')));
 app.get('/condos-for-sale-in-the-modern', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/condos-for-sale-in-the-modern.html')));
