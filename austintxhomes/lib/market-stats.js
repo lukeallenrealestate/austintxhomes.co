@@ -115,7 +115,10 @@ function soldStats(filter, days = 90) {
     const values = [];
     if (filter.city)           { conditions.push(`city = ?`); values.push(filter.city); }
     if (filter.zip)            { conditions.push(`postal_code = ?`); values.push(filter.zip); }
+    if (filter.subdivision)    { conditions.push(`lower(subdivision_name) LIKE ?`); values.push('%' + filter.subdivision.toLowerCase() + '%'); }
     if (filter.schoolDistrict) { conditions.push(`school_district LIKE ?`); values.push('%' + filter.schoolDistrict + '%'); }
+    if (filter.elementary)     { conditions.push(`elementary_school LIKE ?`); values.push('%' + filter.elementary + '%'); }
+    if (filter.high)           { conditions.push(`high_school LIKE ?`); values.push('%' + filter.high + '%'); }
 
     const where = conditions.join(' AND ');
     const rows = listingDb.prepare(

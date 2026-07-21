@@ -7,14 +7,14 @@
  * with URLs we've just updated, Bing and Yandex crawl them within minutes
  * and re-index. Google doesn't consume IndexNow directly, but AI answer
  * engines (ChatGPT web, Perplexity, DuckDuckGo) all source from Bing's
- * index — so a fast Bing recrawl feeds all of them.
+ * index, so a fast Bing recrawl feeds all of them.
  *
  * Protocol: host a key file at https://austintxhomes.co/{KEY}.txt whose
  * body is exactly the key. POST { host, key, keyLocation, urlList } to
  * api.indexnow.org/indexnow. Bing owns the endpoint.
  *
  * Key file exposure: the /{key}.txt route in server.js serves the key.
- * The key itself is public — it's a domain-ownership proof, not a secret,
+ * The key itself is public, it's a domain-ownership proof, not a secret,
  * so committing it is fine.
  */
 

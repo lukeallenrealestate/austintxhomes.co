@@ -6,7 +6,7 @@
  *   sold-by-neighborhood /sold-homes-in-{neighborhood-slug}
  *   active-by-zip        /homes-for-sale-in-{zip}
  *
- * All three share the same layout — hero, stat bar, Luke's Take, subdivisions
+ * All three share the same layout, hero, stat bar, Luke's Take, subdivisions
  * grid, sales/listings table, CTA, related links. What varies is which
  * filter drives the DB query and which prose fits above each block.
  */
@@ -49,12 +49,50 @@ const AUSTIN_ZIP_META = {
   '78759': { name: 'Northwest Hills',           note: "Established NW submarket with strong resale patterns." },
 };
 
+// Per-ZIP editorial takes. Two to three sentences of Luke's actual opinion on
+// how to buy/sell in this ZIP. These are the primary differentiator against
+// Zillow/Realtor.com's cookie-cutter ZIP pages — real POV from a licensed
+// Realtor who works these submarkets. Anything not overridden here falls back
+// to a generic-but-still-decent per-ZIP note computed inline.
+const AUSTIN_ZIP_ANGLES = {
+  '78701': "Downtown vertical inventory has been the softest condo tier in the metro for two quarters running. Motivated sellers who bought in 2021-2022 are absorbing losses; the newer 2024-2025 buildings are holding pricing better. If you're renting downtown at $2,800+/mo, run the buy-vs-rent math seriously — HOA-inclusive.",
+  '78702': "East Austin's identity split shows up clearly in the sales data. New-build 1500-2000 sqft SFR trades in a different band than the older 1920s bungalows that still sit on the same block. Compare like to like when you evaluate any 78702 comp.",
+  '78703': "Tarrytown teardowns are the story. A dirt sale here is worth what the eventual new build is worth minus construction cost. Buyers looking at 'entry' 78703 listings should compare against Rosedale (78756) and Central West Austin lots — the lot value trade-off is what drives 78703's next 24 months.",
+  '78704': "78704 pricing bifurcates sharply by block. West of Lamar / Zilker sits north of $900/sqft; East of Congress / Travis Heights runs closer to $600-700/sqft; South of Oltorf / Bouldin is a third tier. Any median for 'all of 78704' hides more than it tells.",
+  '78705': "West Campus condos behave like a different asset class. Parent-buyer purchases are largely cash, largely rate-insensitive, and pricing tracks UT enrollment more than local mortgage rates. If you're an investor eyeing 78705, understand you're competing against families who don't need financing.",
+  '78721': "Govalle's 3-year compression against 78702 pricing is the interesting trade here. Comparable finishes east of Airport Boulevard trade 15-25% below equivalent 78702 product with similar walk-to-East-Austin access.",
+  '78722': "Cherrywood's boutique small-inventory pattern means comps are hard to run — often only 2-4 legitimate matches within a quarter. Buyers here should expect to pay close to list on a well-priced home; sellers should expect to negotiate concessions rather than price on anything sitting past 45 days.",
+  '78723': "The Mueller-adjacent SFR blocks (Windsor Park, Delwood, French Place) are a distinct submarket from Mueller-branded condos. Same ZIP, very different comp sets. Confirm which one your target actually is before you anchor on 78723 medians.",
+  '78724': "Manor-adjacent affordability is the play. If you're priced out of Mueller or the eastern 78723 blocks, 78724 is often the answer at $75-125K less for equivalent square footage.",
+  '78727': "The Domain / Q2 stadium corridor is one of the metro's clearest live-work-walk plays. Condo inventory here trades tighter than the 78758 median suggests; separate them when reading comps.",
+  '78731': "Northwest Hills lots are the asset. Established landscaping, mature trees, and view corridors drive per-lot value that doesn't show in $/sqft. Comp against similarly-lotted 78703 or 78733 product, not by list price alone.",
+  '78733': "Steiner Ranch is a two-market ZIP: gated luxury on the west side, mainstream MI Homes / Toll Brothers product on the east. Understand which submarket your specific address is in — the $/sqft numbers diverge by 30-40%.",
+  '78734': "Lakeway's retiree-buyer pool means downsizer 3BR under $700K moves fastest. Larger primary-residence homes with school-district appeal to Lake Travis ISD move slower but hold pricing better.",
+  '78735': "Barton Creek country club buyers care about golf-course access and building age. A 2015 build with membership included trades at a materially different number than a 2005 build without.",
+  '78737': "Dripping Springs ETJ inventory is a Hill Country lifestyle purchase, not a commute purchase. Buyers doing 45+ min drives to downtown Austin should understand what they're actually paying for — larger lots, newer construction, quieter roads.",
+  '78738': "Bee Cave / Lakeway master-planned communities (Rough Hollow, Serene Hills, Falconhead) each have distinct HOA and amenity structures. Comps within-community are meaningful; cross-community comps require adjustment.",
+  '78745': "78745 is where 78704-priced-out buyers land. Manchaca-corridor inventory offers 15-20% more house for the money vs equivalent 78704 blocks, at a ~5 minute drive penalty. That trade is legitimate for many buyers.",
+  '78746': "Westlake/Eanes ISD is the metro's true trophy submarket. Sales here move slower but prices hold — 78746 has the lowest reduction rate in the metro. If you're pricing a Westlake home, don't chase the market down; the buyer pool eventually rebuilds.",
+  '78747': "Onion Creek's newer builder inventory (KB, Meritage, Lennar) makes for cleaner comps than most metro submarkets. Same builder, same year, same subdivision = an actual apples-to-apples comparison.",
+  '78748': "78748 is a value tier just south of 78745. The commute penalty over 78745 is minimal for most workplaces; the price gap is meaningful. Worth checking if you were originally targeting 78745.",
+  '78749': "Circle C master-planned buyers care about pool access, tennis, and school ratings. Non-Circle-C 78749 addresses miss those amenities and price lower even for equivalent product.",
+  '78750': "Anderson Mill's 1980s-1990s stock is well-maintained but pre-open-floor-plan. Buyers coming from newer builds should tour with realistic expectations about wall-heavy layouts.",
+  '78751': "Hyde Park and North Loop draw a specific buyer profile — walkability, historic character, small-lot ownership. Comps here should be same-side-of-Duval, same-decade construction. Cross-Duval comps understate value differences.",
+  '78752': "The Highland corridor is Austin's clearest gentrification-in-progress submarket. Buyers with 5-7 year holds are the target; 1-2 year holds carry outsized redevelopment risk.",
+  '78753': "78753's investor-buyer pull-back in 2024-2025 has produced entry-level inventory below $350K that hasn't been available in North Austin in 5 years. Owner-occupants have a rare window here.",
+  '78754': "78754's growth corridor pricing is builder-driven. Resale sellers should price against the newest-completed neighboring build, not against the prior resale comp — that's what the buyer pool is actually shopping against.",
+  '78756': "Rosedale/Allandale's tight supply keeps DOM low even in soft markets. Sellers here should expect competitive negotiation more than price cuts. Buyers should expect to move fast on well-priced product.",
+  '78757': "Crestview/Brentwood value tier is the metro's best 'Central Austin lite' story. Same commute as 78703/78704 at ~40% less per square foot. If schools aren't your primary driver, this is where the math works.",
+  '78758': "Domain-adjacent condo and older-SFR mix means your specific 78758 address matters more than the ZIP median. Confirm which sub-corridor you're in.",
+  '78759': "78759's established Northwest Hills patterns hold reliably — schools, tree cover, moderate elevation, steady resale. Long-hold buyers should feel comfortable underwriting to 2019-2020 pricing baselines.",
+};
+
 // Neighborhood → subdivision LIKE filter mapping. Slug is what appears in the
 // URL; subdivision is what ACTRIS actually stores (case-insensitive LIKE).
 const NEIGHBORHOOD_META = {
   'mueller':    { name: 'Mueller',                 subdivision: 'Mueller',        note: "Master-planned redevelopment on the old airport site. Condo/TH heavy on the west side, SFR to the east." },
   'hyde-park':  { name: 'Hyde Park',               subdivision: 'Hyde Park',      note: "Historic North Central bungalow neighborhood. Tight inventory, high price-per-foot, walkable grid." },
-  'zilker':     { name: 'Zilker',                  subdivision: 'Zilker',         note: "South of Barton Springs. The 78704 crown jewel — small lots, huge demand." },
+  'zilker':     { name: 'Zilker',                  subdivision: 'Zilker',         note: "South of Barton Springs. The 78704 crown jewel, small lots, huge demand." },
   'tarrytown':  { name: 'Tarrytown / Clarksville', subdivision: 'Tarrytown',      note: "West of MoPac in 78703. Old-money character, established buyer pool." },
   'brentwood':  { name: 'Brentwood',               subdivision: 'Brentwood',      note: "Central Austin value tier north of 45th St. Less transient than 78704." },
   'crestview':  { name: 'Crestview',               subdivision: 'Crestview',      note: "Between Burnet and Lamar in 78757. Small-lot SFR, walkable to shops." },
@@ -70,7 +108,7 @@ function schemaBlocks({ url, headline, description, published, faqs }) {
   const now = new Date().toISOString();
   const agent = {
     '@context': 'https://schema.org', '@type': 'RealEstateAgent',
-    name: 'Luke Allen – Austin TX Homes', url: 'https://austintxhomes.co',
+    name: 'Luke Allen, Austin TX Homes', url: 'https://austintxhomes.co',
     telephone: '+12547182567', email: 'Luke@austinmdg.com',
     aggregateRating: { '@type': 'AggregateRating', ratingValue: '5.0', reviewCount: '27', bestRating: '5', worstRating: '1' },
     sameAs: [
@@ -181,8 +219,8 @@ function fetchRecentActive(filter, limit = 12) {
 
 function renderMarketPage(config) {
   // config: { mode: 'sold' | 'active', filter, urlPath, areaName, note,
-  //          headingLead, breadcrumbName }
-  const { mode, filter, urlPath, areaName, note } = config;
+  //          headingLead, breadcrumbName, angle }
+  const { mode, filter, urlPath, areaName, note, angle } = config;
   const url = `https://austintxhomes.co${urlPath}`;
   const isSold = mode === 'sold';
 
@@ -198,17 +236,28 @@ function renderMarketPage(config) {
   if (isSold && !sold && !active) return null;
   if (!isSold && !active) return null;
 
+  // Google SERP truncates titles around 60 chars and descriptions around
+  // 160. The `areaName` we pass in for ZIP variants includes a parenthetical
+  // ("(South Austin (Zilker/Bouldin/Travis Heights))") that would blow past
+  // both limits. Strip the paren for meta/title purposes only.
+  const shortArea = areaName.replace(/\s*\(.*\)\s*$/, '').trim();
   const title = isSold
-    ? `Recently Sold Homes in ${areaName}, Austin | Live MLS`
-    : `Homes for Sale in ${areaName}, Austin | Live MLS`;
+    ? `Sold Homes in ${shortArea}, Austin | Live MLS Data`
+    : `Homes for Sale in ${shortArea}, Austin | Live MLS`;
 
-  const desc = isSold
+  function trimDesc(s) {
+    if (s.length <= 158) return s;
+    const cut = s.slice(0, 158);
+    const lastDot = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf(', '));
+    return (lastDot > 100 ? cut.slice(0, lastDot) : cut) + '.';
+  }
+  const desc = trimDesc(isSold
     ? (sold
-        ? `${sold.count} homes sold in ${areaName} the last 90 days, median close ${fmt(sold.medianClose)}, avg ${sold.avgDom || '—'} DOM. Pulled from live ACTRIS MLS. Free CMA by Luke Allen, TREC #788149.`
-        : `Recent sold home data for ${areaName}, Austin TX. Comparative market analysis by Luke Allen, licensed Realtor, TREC #788149.`)
+        ? `${sold.count} homes sold in ${shortArea} the last 90 days, median close ${fmt(sold.medianClose)}. Live ACTRIS MLS. Free CMA by Luke Allen, TREC #788149.`
+        : `Recent sold home data for ${shortArea}, Austin. Comparative market analysis by Luke Allen, licensed Realtor, TREC #788149.`)
     : (active
-        ? `${fmtNum(active.count)} active homes for sale in ${areaName}, median list ${fmt(active.medianPrice)}, ${active.reducedPct}% have cut price. Pulled live from ACTRIS MLS. Talk to Luke Allen, TREC #788149.`
-        : `Active homes for sale in ${areaName}, Austin TX. Contact Luke Allen for the current inventory.`);
+        ? `${fmtNum(active.count)} homes for sale in ${shortArea}, median list ${fmt(active.medianPrice)}, ${active.reducedPct}% have cut price. Live ACTRIS MLS.`
+        : `Active homes for sale in ${shortArea}, Austin. Contact Luke Allen for current inventory.`));
 
   const faqs = isSold
     ? [
@@ -219,7 +268,7 @@ function renderMarketPage(config) {
     ]
     : [
       { q: `How many homes are for sale in ${areaName}?`, a: active ? `There are ${fmtNum(active.count)} active homes for sale in ${areaName} right now per ACTRIS MLS. Median list price is ${fmt(active.medianPrice)}.` : `Contact Luke Allen for the current inventory count.` },
-      { q: `Is ${areaName} a buyer's or seller's market?`, a: active ? `${active.reducedPct}% of ${areaName} listings have reduced from their original list price, at an average of 8.6%. That indicates ${active.reducedPct >= 50 ? "a buyer's market — you have real negotiating leverage." : active.reducedPct >= 35 ? 'a balanced market where accurate pricing wins.' : "a seller's market where well-priced homes still move fast."}` : 'Contact Luke Allen for a current market read.' },
+      { q: `Is ${areaName} a buyer's or seller's market?`, a: active ? `${active.reducedPct}% of ${areaName} listings have reduced from their original list price, at an average of 8.6%. That indicates ${active.reducedPct >= 50 ? "a buyer's market, you have real negotiating leverage." : active.reducedPct >= 35 ? 'a balanced market where accurate pricing wins.' : "a seller's market where well-priced homes still move fast."}` : 'Contact Luke Allen for a current market read.' },
       { q: `What's the average days on market in ${areaName}?`, a: active && active.medianDom ? `Median days on market for active listings in ${areaName} is ${active.medianDom} days. Homes priced well move faster.` : 'Days on market data isn\'t available for the most recent sync.' },
       { q: `Who should I hire to buy or sell in ${areaName}?`, a: `Luke Allen (TREC #788149) is a licensed Austin Realtor who covers ${areaName} and every Central Austin submarket. Reach him at (254) 718-2567 or Luke@austinmdg.com.` }
     ];
@@ -309,11 +358,11 @@ function renderMarketPage(config) {
 
 <section class="hero">
   <div class="hero-inner">
-    <div class="eyebrow">Live MLS Data · ${areaName}</div>
-    <h1>${isSold ? `Recently Sold Homes in <em>${areaName}</em>` : `Homes for Sale in <em>${areaName}</em>`}</h1>
+    <div class="eyebrow">Live MLS Data · ${shortArea}, Austin</div>
+    <h1>${isSold ? `Recently Sold Homes in <em>${shortArea}</em>` : `Homes for Sale in <em>${shortArea}</em>`}</h1>
     <p class="hero-sub">${isSold
-      ? (sold ? `${sold.count} homes closed in the last ${sold.days} days at a median of ${fmt(sold.medianClose)}. ${note}` : `Last 90 days of closed home sales in ${areaName}. ${note}`)
-      : (active ? `${fmtNum(active.count)} homes for sale right now at a median of ${fmt(active.medianPrice)}. ${note}` : `Live inventory of homes for sale in ${areaName}. ${note}`)}</p>
+      ? (sold ? `${sold.count} homes closed in the last ${sold.days} days at a median of ${fmt(sold.medianClose)}. ${note}` : `Last 90 days of closed home sales in ${shortArea}. ${note}`)
+      : (active ? `${fmtNum(active.count)} homes for sale right now at a median of ${fmt(active.medianPrice)}. ${note}` : `Live inventory of homes for sale in ${shortArea}. ${note}`)}</p>
     <div class="hero-updated">Data updated ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} · Source: ACTRIS MLS</div>
   </div>
 </section>
@@ -324,7 +373,7 @@ ${isSold && sold ? `
     <div class="stat-cell"><div class="stat-num">${sold.count}</div><div class="stat-label">Sales (90 days)</div></div>
     <div class="stat-cell"><div class="stat-num">${fmt(sold.medianClose)}</div><div class="stat-label">Median Close</div></div>
     <div class="stat-cell"><div class="stat-num">${fmt(sold.medianPpsf)}</div><div class="stat-label">Median $/sqft</div></div>
-    <div class="stat-cell"><div class="stat-num">${sold.avgDom || '—'}</div><div class="stat-label">Avg DOM</div></div>
+    <div class="stat-cell"><div class="stat-num">${sold.avgDom || 'n/a'}</div><div class="stat-label">Avg DOM</div></div>
     <div class="stat-cell"><div class="stat-num">${sold.aboveListPct}%</div><div class="stat-label">Sold Above List</div></div>
   </div>
 </div>` : ''}
@@ -335,35 +384,31 @@ ${!isSold && active ? `
     <div class="stat-cell"><div class="stat-num">${fmtNum(active.count)}</div><div class="stat-label">Active Listings</div></div>
     <div class="stat-cell"><div class="stat-num">${fmt(active.medianPrice)}</div><div class="stat-label">Median List</div></div>
     <div class="stat-cell"><div class="stat-num">${fmt(active.medianPpsf)}</div><div class="stat-label">Median $/sqft</div></div>
-    <div class="stat-cell"><div class="stat-num">${active.medianDom || '—'}</div><div class="stat-label">Median DOM</div></div>
+    <div class="stat-cell"><div class="stat-num">${active.medianDom || 'n/a'}</div><div class="stat-label">Median DOM</div></div>
     <div class="stat-cell"><div class="stat-num">${active.reducedPct}%</div><div class="stat-label">Have Cut Price</div></div>
   </div>
 </div>` : ''}
 
 <div class="body">
 
-<h2>What ${areaName} is <em>doing right now</em></h2>
 <p class="lede">${note}</p>
 
-${isSold && sold ? `
-<p>Across ${sold.count} closed sales in the last ${sold.days} days, the median close price in ${areaName} is <strong>${fmt(sold.medianClose)}</strong> at <strong>${fmt(sold.medianPpsf)}/sqft</strong>. Homes averaged <strong>${sold.avgDom || '—'} days on market</strong> before closing, with an average sale-to-list ratio of <strong>${sold.avgSaleToList}%</strong>. ${sold.aboveListPct >= 25 ? `Notably, ${sold.aboveListPct}% of sales closed above the original list price — indicating buyers are still competing on well-priced inventory here.` : `Only ${sold.aboveListPct}% of sales closed above the original list price — buyers have real negotiating leverage in this submarket right now.`}</p>` : ''}
-
-${!isSold && active ? `
-<p>Right now ${areaName} has <strong>${fmtNum(active.count)} active listings</strong> at a median list of <strong>${fmt(active.medianPrice)}</strong>. Inventory is distributed across ${active.under400k ? `<strong>${fmtNum(active.under400k)} homes under $400K</strong>` : 'the entry tier'}, ${active.t400_600k ? `<strong>${fmtNum(active.t400_600k)} between $400K and $600K</strong>` : 'the mid tier'}, and ${active.t600k_1m + active.t1m_2m + active.over2m ? `<strong>${fmtNum(active.t600k_1m + active.t1m_2m + active.over2m)} homes above $600K</strong>` : 'the upper tier'}.</p>
-<p><strong>${active.reducedPct}% of listings have cut price</strong> at least once, at an average reduction of 8.6% from original ask. ${active.reducedPct >= 55 ? "That's a clear buyer's-market signal — negotiate hard on any home that's been sitting more than 60 days." : active.reducedPct >= 40 ? 'That puts this submarket in balanced territory — accurate pricing wins on both sides.' : "That's a firm submarket — well-priced homes are still moving fast."}</p>` : ''}
-
-${active ? `
+${angle ? `
 <div class="take">
-  <div class="take-label">Luke's Take</div>
-  <p>${isSold && active
-    ? `Right now ${areaName} has <strong>${fmtNum(active.count)} active listings</strong> at a median of <strong>${fmt(active.medianPrice)}</strong>. <strong>${active.reducedPct}%</strong> have cut price. ${sold && sold.medianClose && active.medianPrice ? (sold.medianClose > active.medianPrice ? `Recent sales are closing <strong>above</strong> current asking averages — inventory is absorbing.` : `Recent sales are closing <strong>below</strong> current asking averages — sellers are still adjusting.`) : ''}`
-    : `Median $/sqft here is <strong>${fmt(active.medianPpsf)}</strong> versus roughly $340/sqft metro-wide. ${active.medianPpsf > 400 ? `${areaName} is running at a real premium — buyer expectations should factor in the location and finish quality that drives that.` : active.medianPpsf > 300 ? `${areaName} sits in the middle of the metro pricing distribution — it's not a bargain, but it's not paying a downtown premium.` : `${areaName} is priced below the metro median — worth a hard look for value-focused buyers.`}`
-  }</p>
+  <div class="take-label">Luke's Take on ${shortArea}</div>
+  <p>${angle}</p>
 </div>` : ''}
 
+${isSold && sold ? `
+<h2>The <em>numbers</em></h2>
+<p>Across ${sold.count} closed sales in the last ${sold.days} days, the median close in ${areaName} was <strong>${fmt(sold.medianClose)}</strong> at <strong>${fmt(sold.medianPpsf)}/sqft</strong>. Homes averaged <strong>${sold.avgDom || 'n/a'} days on market</strong>, sale-to-list ratio <strong>${sold.avgSaleToList}%</strong>, and <strong>${sold.aboveListPct}%</strong> of sales closed above the original list price.</p>` : ''}
+
+${!isSold && active ? `
+<h2>The <em>current inventory</em></h2>
+<p><strong>${fmtNum(active.count)}</strong> active listings at a median of <strong>${fmt(active.medianPrice)}</strong> and <strong>${fmt(active.medianPpsf)}/sqft</strong>. <strong>${active.reducedPct}%</strong> have already cut price. ${active.newConPct > 15 ? `New construction is <strong>${active.newConPct}%</strong> of the inventory here, meaningfully above the metro average.` : ''}</p>` : ''}
+
 ${isSold && sold && sold.topSubdivisions.length ? `
-<h2>Where sales are <em>concentrated</em></h2>
-<p class="lede">Neighborhoods and subdivisions with the most closings the last 90 days.</p>
+<h2>Where <em>sales are landing</em></h2>
 <div class="subs">
   ${sold.topSubdivisions.map(s => `
     <div class="sub">
@@ -374,19 +419,13 @@ ${isSold && sold && sold.topSubdivisions.length ? `
 
 ${isSold ? renderSalesTable(sold) : renderActiveListingsTable(active, recentActive)}
 
-<h2>Why this data <em>matters for you</em></h2>
-${isSold
-  ? `<p>If you're selling in ${areaName}, these are the exact comps a buyer's agent will cite when negotiating your list price. If you're buying, these are the numbers you should be anchoring your offers to — not the seller's asking price. This page refreshes every 30 minutes from live ACTRIS MLS data as new sales close.</p>`
-  : `<p>If you're actively looking in ${areaName}, this list is a starting point but not the full picture — new listings drop daily and the best ones move within days. For real-time alerts on new inventory in ${areaName}, request a saved search and I'll email you the moment anything matches your criteria.</p>`}
-<p>Every number on this page is drawn directly from live ACTRIS MLS data. There's no scraped or estimated data — everything here is what's actually happening.</p>
-
 </div>
 
 <section class="cta">
   <div class="cta-inner">
     <h3>${isSold ? `Need a <em>real CMA</em> for your ${areaName} home?` : `Ready to <em>tour ${areaName}</em>?`}</h3>
     <p>${isSold
-      ? 'Free comparative market analysis based on your specific address, property condition, and target sale timeline. No obligation, no sales pitch — just numbers.'
+      ? 'Free comparative market analysis based on your specific address, property condition, and target sale timeline. No obligation, no sales pitch, just numbers.'
       : 'Free consultation with a licensed Austin Realtor. Saved-search email alerts, on-the-ground neighborhood knowledge, and no pressure to make an offer before you\'re ready.'}</p>
     <a href="/about#contact" class="btn">${isSold ? 'Request Free CMA' : 'Talk to Luke'}</a>
   </div>
@@ -419,8 +458,12 @@ function renderSoldByZip(zip) {
     mode: 'sold',
     filter: { zip },
     urlPath: `/sold-homes-near-${zip}`,
-    areaName: `${zip} (${meta.name})`,
+    // Pass "78704 · South Austin" (with middle dot) — cleaner than the
+    // parenthetical form, avoids nested parens in the H1 for ZIPs whose
+    // name already has its own paren.
+    areaName: `${zip} · ${meta.name.replace(/\s*\(.*\)\s*$/, '').trim()}`,
     note: meta.note,
+    angle: AUSTIN_ZIP_ANGLES[zip] || null,
   });
 }
 
@@ -428,12 +471,15 @@ function renderSoldByNeighborhood(slug) {
   const meta = NEIGHBORHOOD_META[slug];
   if (!meta) return null;
   const filter = meta.zip ? { zip: meta.zip } : { subdivision: meta.subdivision };
+  // Neighborhood pages inherit the ZIP angle if we have one for their host ZIP.
+  const angle = meta.zip ? AUSTIN_ZIP_ANGLES[meta.zip] : null;
   return renderMarketPage({
     mode: 'sold',
     filter,
     urlPath: `/sold-homes-in-${slug}`,
     areaName: meta.name,
     note: meta.note,
+    angle,
   });
 }
 
@@ -444,8 +490,9 @@ function renderActiveByZip(zip) {
     mode: 'active',
     filter: { zip },
     urlPath: `/homes-for-sale-in-${zip}`,
-    areaName: `${zip} (${meta.name})`,
+    areaName: `${zip} · ${meta.name.replace(/\s*\(.*\)\s*$/, '').trim()}`,
     note: meta.note,
+    angle: AUSTIN_ZIP_ANGLES[zip] || null,
   });
 }
 

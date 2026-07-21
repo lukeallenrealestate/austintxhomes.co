@@ -115,7 +115,7 @@
  {
  "@context": "https://schema.org",
  "@type": "RealEstateAgent",
- "name": "Luke Allen – Austin TX Homes",
+ "name": "Luke Allen, Austin TX Homes",
  "url": "https://austintxhomes.co",
  "telephone": "+12547182567",
  "email": "Luke@austinmdg.com",
@@ -314,7 +314,7 @@
  <div>
  <div class="eyebrow">Get Honest Advice</div>
  <h2 class="section-title">Considering Seven?<br><em>Talk to Luke.</em></h2>
- <p style="font-size:.95rem;color:var(--mid);line-height:1.75;margin-bottom:1rem">I'm a licensed Austin Realtor (TREC #788149). I don't lease apartments — I sell homes and condos — but I've toured Seven and I'll give you an honest read on whether it fits your situation, or whether buying downtown instead would come out ahead over your timeline.</p>
+ <p style="font-size:.95rem;color:var(--mid);line-height:1.75;margin-bottom:1rem">I'm a licensed Austin Realtor (TREC #788149). I don't lease apartments, I sell homes and condos, but I've toured Seven and I'll give you an honest read on whether it fits your situation, or whether buying downtown instead would come out ahead over your timeline.</p>
  <p style="font-size:.95rem;color:var(--mid);line-height:1.75;margin-bottom:1rem">Free rent-vs-buy math based on your actual numbers. No obligation.</p>
  </div>
  <div class="form-box">
@@ -338,7 +338,7 @@
  <div class="field"><label>Message</label><textarea name="message" placeholder="What are you looking for?"></textarea></div>
  <button type="submit" class="submit-btn">Send to Luke</button>
  </form>
- <div class="form-success" id="seven-success">Thanks — Luke will reach out shortly.</div>
+ <div class="form-success" id="seven-success">Thanks, Luke will reach out shortly.</div>
  </div>
  </div>
  </div>
@@ -364,9 +364,9 @@
 function renderCard(plan) {
  const availClass = plan.availableNow ? 'now' : 'ask';
  const availLabel = plan.availableNow ? 'Available Now' : (plan.available || 'Contact for Availability');
- const sqftDisplay = plan.sqft ? plan.sqft.toLocaleString() : '—';
- const bathDisplay = plan.baths || '—';
- const bedDisplay = plan.beds === 0 ? 'Studio' : (plan.beds || '—');
+ const sqftDisplay = plan.sqft ? plan.sqft.toLocaleString() : ',';
+ const bathDisplay = plan.baths || ',';
+ const bedDisplay = plan.beds === 0 ? 'Studio' : (plan.beds || ',');
  return `
  <div class="fp-card" data-type="${plan.planType || ''}">
  <div class="fp-card-header">

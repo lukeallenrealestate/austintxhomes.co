@@ -51,7 +51,7 @@ function renderMarketWidget(filter, opts = {}) {
         <div class="mw-lbl">Median $/sqft</div>
       </div>
       <div class="mw-stat">
-        <div class="mw-num">${active.medianDom || '—'}</div>
+        <div class="mw-num">${active.medianDom || 'n/a'}</div>
         <div class="mw-lbl">Median DOM</div>
       </div>
       <div class="mw-stat">
@@ -63,13 +63,13 @@ function renderMarketWidget(filter, opts = {}) {
     <div class="mw-verdict mw-verdict-${heat.cls}">
       <span class="mw-verdict-label">Current Read</span>
       <span class="mw-verdict-val">${heat.label}</span>
-      <span class="mw-verdict-detail">${active.reducedPct}% of ${areaName} listings have reduced from original ask. ${active.newConPct > 15 ? `New construction is ${active.newConPct}% of inventory (${fmtNum(active.newConCount)} homes) — builder incentives are live.` : ''}</span>
+      <span class="mw-verdict-detail">${active.reducedPct}% of ${areaName} listings have reduced from original ask. ${active.newConPct > 15 ? `New construction is ${active.newConPct}% of inventory (${fmtNum(active.newConCount)} homes), builder incentives are live.` : ''}</span>
     </div>
 
     <div class="mw-tiers">
       <div class="mw-tier"><span class="mw-tier-num">${fmtNum(active.under400k)}</span><span class="mw-tier-lbl">Under $400K</span></div>
-      <div class="mw-tier"><span class="mw-tier-num">${fmtNum(active.t400_600k)}</span><span class="mw-tier-lbl">$400K,$600K</span></div>
-      <div class="mw-tier"><span class="mw-tier-num">${fmtNum(active.t600k_1m)}</span><span class="mw-tier-lbl">$600K,$1M</span></div>
+      <div class="mw-tier"><span class="mw-tier-num">${fmtNum(active.t400_600k)}</span><span class="mw-tier-lbl">$400K to $600K</span></div>
+      <div class="mw-tier"><span class="mw-tier-num">${fmtNum(active.t600k_1m)}</span><span class="mw-tier-lbl">$600K to $1M</span></div>
       <div class="mw-tier"><span class="mw-tier-num">${fmtNum(active.t1m_2m)}</span><span class="mw-tier-lbl">$1M,$2M</span></div>
       <div class="mw-tier"><span class="mw-tier-num">${fmtNum(active.over2m)}</span><span class="mw-tier-lbl">Over $2M</span></div>
     </div>
@@ -80,7 +80,7 @@ function renderMarketWidget(filter, opts = {}) {
       <div class="mw-sold-grid">
         <div><span class="mw-sold-num">${fmtNum(sold.count)}</span><span class="mw-sold-lbl">Homes Sold</span></div>
         <div><span class="mw-sold-num">${fmt(sold.medianClose)}</span><span class="mw-sold-lbl">Median Close</span></div>
-        <div><span class="mw-sold-num">${sold.avgDom || '—'}</span><span class="mw-sold-lbl">Avg DOM</span></div>
+        <div><span class="mw-sold-num">${sold.avgDom || 'n/a'}</span><span class="mw-sold-lbl">Avg DOM</span></div>
         <div><span class="mw-sold-num">${sold.aboveListPct}%</span><span class="mw-sold-lbl">Above List</span></div>
       </div>
     </div>` : ''}

@@ -4,10 +4,10 @@
 // ── Major employer proximity by city ────────────────────────────────────────
 const EMPLOYERS = {
   'Austin': [
-    { name: 'Tesla Gigafactory', dist: '15–25 min E' },
-    { name: 'Apple Campus (Domain)', dist: '20–30 min N' },
-    { name: 'Google / Meta / Indeed', dist: '10–15 min downtown' },
-    { name: 'Dell Medical School / UT Austin', dist: '10–20 min' },
+    { name: 'Tesla Gigafactory', dist: '15-25 min E' },
+    { name: 'Apple Campus (Domain)', dist: '20-30 min N' },
+    { name: 'Google / Meta / Indeed', dist: '10-15 min downtown' },
+    { name: 'Dell Medical School / UT Austin', dist: '10-20 min' },
     { name: 'Samsung Austin Semiconductor', dist: '25 min N' },
   ],
   'Round Rock': [
@@ -30,7 +30,7 @@ const EMPLOYERS = {
   'Georgetown': [
     { name: 'Dell Technologies HQ', dist: '20 min S' },
     { name: 'Apple Campus (Domain)', dist: '30 min S' },
-    { name: 'Williamson County jobs hub', dist: '5–10 min' },
+    { name: 'Williamson County jobs hub', dist: '5-10 min' },
   ],
   'Pflugerville': [
     { name: 'Samsung Austin Semiconductor', dist: '10 min W' },
@@ -44,7 +44,7 @@ const EMPLOYERS = {
     { name: 'Austin-Bergstrom Airport', dist: '20 min SW' },
   ],
   'Kyle': [
-    { name: 'Hays County job center', dist: '5–10 min' },
+    { name: 'Hays County job center', dist: '5-10 min' },
     { name: 'Tesla Gigafactory', dist: '30 min N' },
     { name: 'Downtown Austin', dist: '35 min N' },
   ],
@@ -70,7 +70,7 @@ const EMPLOYERS = {
   ],
 };
 
-// ── Neighborhood slug map — for pulling editorial context ────────────────────
+// ── Neighborhood slug map, for pulling editorial context ────────────────────
 // Maps MLS search terms → neighborhood slugs (from data/neighborhoods.js)
 const NBHD_KEYWORDS = {
   'tarrytown': 'tarrytown', 'hyde park': 'hyde-park', 'mueller': 'mueller',
@@ -118,15 +118,15 @@ function parseListingKey(slug) {
   return idx === -1 ? slug : slug.slice(idx + 2);
 }
 
-function fmt(n)      { if (!n && n !== 0) return '—'; return Number(n).toLocaleString('en-US'); }
-function fmtPrice(n) { if (!n) return '—'; return '$' + Number(n).toLocaleString('en-US'); }
+function fmt(n)      { if (!n && n !== 0) return ','; return Number(n).toLocaleString('en-US'); }
+function fmtPrice(n) { if (!n) return ','; return '$' + Number(n).toLocaleString('en-US'); }
 function fmtDate(s)  { if (!s) return null; try { return new Date(s).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }); } catch { return s; } }
-function pct(a, b, decimals = 1) { return b ? (a / b * 100).toFixed(decimals) + '%' : '—'; }
+function pct(a, b, decimals = 1) { return b ? (a / b * 100).toFixed(decimals) + '%' : ','; }
 
 // ── Investment math ─────────────────────────────────────────────────────────
 function calcInvestment(price) {
   if (!price || price < 50000) return null;
-  const estMonthlyRent = Math.round(price * 0.0048);          // 0.48% rule — conservative Austin
+  const estMonthlyRent = Math.round(price * 0.0048);          // 0.48% rule, conservative Austin
   const annualRent     = estMonthlyRent * 12;
   const grossYield     = (annualRent / price * 100).toFixed(2);
   const vacancyExp     = Math.round(annualRent * 0.40);       // 40% expenses + vacancy
@@ -149,7 +149,7 @@ function calcInvestment(price) {
   };
 }
 
-// ── DB enrichment — called from server.js before rendering ──────────────────
+// ── DB enrichment, called from server.js before rendering ──────────────────
 function enrichListing(listing, db, neighborhoods) {
   const city = listing.city || 'Austin';
   const beds = listing.bedrooms_total || 0;
@@ -172,12 +172,12 @@ function enrichListing(listing, db, neighborhoods) {
     if (row && row.avg_ppsf) market = row;
   } catch {}
 
-  // 2. Similar listings — same city, ±1 bed, similar price + sqft, NOT leases
+  // 2. Similar listings, same city, ±1 bed, similar price + sqft, NOT leases
   //    ACTRIS IDX feed doesn't expose close_price for residential sales, so we show
   //    similar ACTIVE listings currently on the market instead of sold comps.
   //    This gives buyers real price context even without closed-sale data.
   //    Filters:
-  //    - NOT leases, land, farm, commercial  (critical — was showing leases as comps)
+  //    - NOT leases, land, farm, commercial  (critical, was showing leases as comps)
   //    - list_price within ±35% of subject
   //    - living_area within ±35% of subject
   //    - NOT the subject listing itself
@@ -247,7 +247,7 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
   const ppsf  = listing.living_area > 0 ? Math.round(price / listing.living_area) : null;
   const acres = listing.lot_size_acres ? listing.lot_size_acres.toFixed(2) : null;
 
-  // Days on market — prefer the MLS field, fall back to contract-date derivation.
+  // Days on market, prefer the MLS field, fall back to contract-date derivation.
   const domRaw = listing.days_on_market;
   const domCalc = listing.listing_contract_date
     ? Math.max(0, Math.floor((Date.now() - new Date(listing.listing_contract_date).getTime()) / 86400000))
@@ -266,16 +266,16 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
     const diff = ppsf - market.avg_ppsf;
     const diffPct = Math.abs(Math.round(diff / market.avg_ppsf * 100));
     if (diff < -5) {
-      priceInsight = `At ${fmtPrice(ppsf)}/sqft, this home is <strong>${diffPct}% below</strong> the ${city} active market average of ${fmtPrice(market.avg_ppsf)}/sqft — potentially representing value relative to comparable properties currently on the market.`;
+      priceInsight = `At ${fmtPrice(ppsf)}/sqft, this home is <strong>${diffPct}% below</strong> the ${city} active market average of ${fmtPrice(market.avg_ppsf)}/sqft, potentially representing value relative to comparable properties currently on the market.`;
     } else if (diff > 5) {
-      priceInsight = `At ${fmtPrice(ppsf)}/sqft, this home is priced <strong>${diffPct}% above</strong> the ${city} active market average of ${fmtPrice(market.avg_ppsf)}/sqft, reflecting premium positioning — typically tied to finishes, lot, location, or view.`;
+      priceInsight = `At ${fmtPrice(ppsf)}/sqft, this home is priced <strong>${diffPct}% above</strong> the ${city} active market average of ${fmtPrice(market.avg_ppsf)}/sqft, reflecting premium positioning, typically tied to finishes, lot, location, or view.`;
     } else {
       priceInsight = `At ${fmtPrice(ppsf)}/sqft, this home is priced <strong>in line with the ${city} market average</strong> of ${fmtPrice(market.avg_ppsf)}/sqft across ${fmt(market.active_count)} active listings.`;
     }
   }
 
   const title    = `${addr} | ${fmtPrice(price)} | Luke Allen Austin`;
-  const metaDesc = `${addr} — ${fmtPrice(price)}, ${listing.bedrooms_total||0}bd/${listing.bathrooms_total||0}ba, ${fmt(listing.living_area)} sqft${listing.subdivision_name ? ', ' + listing.subdivision_name : ''}. ${isSold ? 'Sold.' : 'Active listing in'} ${city}, TX. Contact Luke Allen · TREC #788149.`;
+  const metaDesc = `${addr}, ${fmtPrice(price)}, ${listing.bedrooms_total||0}bd/${listing.bathrooms_total||0}ba, ${fmt(listing.living_area)} sqft${listing.subdivision_name ? ', ' + listing.subdivision_name : ''}. ${isSold ? 'Sold.' : 'Active listing in'} ${city}, TX. Contact Luke Allen · TREC #788149.`;
 
   const schemaType = (listing.property_sub_type||'').toLowerCase().includes('condo') ? 'Apartment' :
                      (listing.property_sub_type||'').toLowerCase().includes('townhouse') ? 'Townhouse' : 'SingleFamilyResidence';
@@ -292,7 +292,7 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
   };
   const agentSchema = {
     '@context': 'https://schema.org', '@type': 'RealEstateAgent',
-    name: 'Luke Allen – Austin TX Homes', url: 'https://austintxhomes.co',
+    name: 'Luke Allen, Austin TX Homes', url: 'https://austintxhomes.co',
     telephone: '+12547182567', email: 'Luke@austinmdg.com',
     aggregateRating: { '@type': 'AggregateRating', ratingValue: '5.0', reviewCount: '15', bestRating: '5', worstRating: '1' },
     sameAs: ['https://share.google/hETte82InqUPvWeNC','https://www.linkedin.com/in/lukeallentx/','https://www.instagram.com/lukeallenrealty/','https://www.tiktok.com/@austintxapartments']
@@ -308,32 +308,32 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
 
   const galleryPhotos = photoUrls.slice(0, 12).map((src, i) => `
     <div class="gallery-thumb${i===0?' gallery-main':''}" onclick="openPhoto(${i})">
-      <img src="${src}" alt="${addr} — photo ${i+1}" loading="${i<3?'eager':'lazy'}" />
+      <img src="${src}" alt="${addr}, photo ${i+1}" loading="${i<3?'eager':'lazy'}" />
     </div>`).join('');
 
   const detailRows = [
     ['Price', fmtPrice(price)], ['Status', statusLabel],
-    ['Beds', listing.bedrooms_total||'—'], ['Full Baths', listing.bathrooms_full||'—'],
-    ['Half Baths', listing.bathrooms_half||'—'],
-    ['Living Area', listing.living_area ? fmt(listing.living_area)+' sqft' : '—'],
-    ['Lot Size', acres ? `${acres} acres${listing.lot_size_sqft?' ('+fmt(listing.lot_size_sqft)+' sqft)':''}` : '—'],
-    ['Year Built', listing.year_built||'—'], ['Garage', listing.garage_spaces ? listing.garage_spaces+' spaces' : '—'],
-    ['Stories', listing.stories||'—'],
-    ['Type', [listing.property_type, listing.property_sub_type].filter(Boolean).join(' · ')||'—'],
-    ['Subdivision', listing.subdivision_name||'—'], ['County', listing.county||'—'],
-    ['Zip Code', zip||'—'], ['$/sqft', ppsf ? fmtPrice(ppsf)+'/sqft' : '—'],
-    ['Days on Market', listing.days_on_market!=null ? listing.days_on_market+' days' : '—'],
+    ['Beds', listing.bedrooms_total||','], ['Full Baths', listing.bathrooms_full||','],
+    ['Half Baths', listing.bathrooms_half||','],
+    ['Living Area', listing.living_area ? fmt(listing.living_area)+' sqft' : ','],
+    ['Lot Size', acres ? `${acres} acres${listing.lot_size_sqft?' ('+fmt(listing.lot_size_sqft)+' sqft)':''}` : ','],
+    ['Year Built', listing.year_built||','], ['Garage', listing.garage_spaces ? listing.garage_spaces+' spaces' : ','],
+    ['Stories', listing.stories||','],
+    ['Type', [listing.property_type, listing.property_sub_type].filter(Boolean).join(' · ')||','],
+    ['Subdivision', listing.subdivision_name||','], ['County', listing.county||','],
+    ['Zip Code', zip||','], ['$/sqft', ppsf ? fmtPrice(ppsf)+'/sqft' : ','],
+    ['Days on Market', listing.days_on_market!=null ? listing.days_on_market+' days' : ','],
     ['HOA', listing.association_fee ? `${fmtPrice(listing.association_fee)}/${listing.association_fee_frequency||'mo'}` : 'None / verify with agent'],
-    ['Annual Tax Est.', listing.tax_annual_amount ? fmtPrice(listing.tax_annual_amount) : '—'],
-    ['Pool', listing.pool_features && listing.pool_features!=='[]' && listing.pool_features!=='null' ? 'Yes' : '—'],
-    ['Waterfront', listing.waterfront_yn ? 'Yes' : '—'],
-    ['New Construction', listing.new_construction_yn ? 'Yes' : '—'],
-    ['MLS #', listing.listing_key||'—'], ['List Date', fmtDate(listing.listing_contract_date)||'—'],
-    ...(isSold ? [['Close Date', fmtDate(listing.close_date)||'—'],['Close Price', fmtPrice(listing.close_price)||'—']] : []),
-    ['Elementary School', listing.elementary_school||'—'],
-    ['Middle School', listing.middle_school||'—'],
-    ['High School', listing.high_school||'—'],
-    ['School District', listing.school_district||'—'],
+    ['Annual Tax Est.', listing.tax_annual_amount ? fmtPrice(listing.tax_annual_amount) : ','],
+    ['Pool', listing.pool_features && listing.pool_features!=='[]' && listing.pool_features!=='null' ? 'Yes' : ','],
+    ['Waterfront', listing.waterfront_yn ? 'Yes' : ','],
+    ['New Construction', listing.new_construction_yn ? 'Yes' : ','],
+    ['MLS #', listing.listing_key||','], ['List Date', fmtDate(listing.listing_contract_date)||','],
+    ...(isSold ? [['Close Date', fmtDate(listing.close_date)||','],['Close Price', fmtPrice(listing.close_price)||',']] : []),
+    ['Elementary School', listing.elementary_school||','],
+    ['Middle School', listing.middle_school||','],
+    ['High School', listing.high_school||','],
+    ['School District', listing.school_district||','],
   ];
 
   const detailTable = detailRows.map(([k,v]) => `
@@ -347,7 +347,7 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
   <section class="insight-section">
     <p class="section-label">Similar Homes on the Market in ${city}</p>
     <h2 class="section-title">Comparable Listings Right Now</h2>
-    <p style="font-size:.88rem;color:var(--mid);margin:0 0 1.25rem;">Homes currently for sale in ${city} with similar bedroom count, size, and price range — giving you real-time context for how this property's asking price compares to the active market.</p>
+    <p style="font-size:.88rem;color:var(--mid);margin:0 0 1.25rem;">Homes currently for sale in ${city} with similar bedroom count, size, and price range, giving you real-time context for how this property's asking price compares to the active market.</p>
     <div class="comps-table">
       <div class="comp-header">
         <span>Address</span><span>List Price</span><span>$/sqft</span><span>Beds/Baths</span><span>Sqft</span><span>DOM</span><span>Listed</span>
@@ -355,13 +355,13 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
       ${comps.map(c => {
         const cppsf = c.living_area > 0 ? Math.round(c.list_price / c.living_area) : null;
         return `<div class="comp-row">
-          <span class="comp-addr">${c.listing_key ? `<a href="/homes/${buildSlug(c)}" style="color:inherit;text-decoration:none;">` : ''}${c.unparsed_address || '—'}${c.listing_key ? '</a>' : ''}${c.subdivision_name ? '<br><small>'+c.subdivision_name+'</small>' : ''}</span>
+          <span class="comp-addr">${c.listing_key ? `<a href="/homes/${buildSlug(c)}" style="color:inherit;text-decoration:none;">` : ''}${c.unparsed_address || ','}${c.listing_key ? '</a>' : ''}${c.subdivision_name ? '<br><small>'+c.subdivision_name+'</small>' : ''}</span>
           <span>${fmtPrice(c.list_price)}</span>
-          <span>${cppsf ? fmtPrice(cppsf) : '—'}</span>
-          <span>${c.bedrooms_total||'—'} bd / ${c.bathrooms_total||'—'} ba</span>
-          <span>${c.living_area ? fmt(c.living_area)+' sqft' : '—'}</span>
-          <span>${c.days_on_market!=null ? c.days_on_market+'d' : '—'}</span>
-          <span>${c.close_date ? c.close_date.slice(0,10) : '—'}</span>
+          <span>${cppsf ? fmtPrice(cppsf) : ','}</span>
+          <span>${c.bedrooms_total||','} bd / ${c.bathrooms_total||','} ba</span>
+          <span>${c.living_area ? fmt(c.living_area)+' sqft' : ','}</span>
+          <span>${c.days_on_market!=null ? c.days_on_market+'d' : ','}</span>
+          <span>${c.close_date ? c.close_date.slice(0,10) : ','}</span>
         </div>`;
       }).join('')}
     </div>
@@ -373,7 +373,7 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
   <section class="insight-section invest-section">
     <p class="section-label">Investment Analysis</p>
     <h2 class="section-title">Rental Income Potential</h2>
-    <p style="font-size:.88rem;color:rgba(255,255,255,.65);margin:0 0 1.5rem;line-height:1.7;">The numbers below use conservative Austin-market assumptions. They are estimates — not a guarantee. Actual rents vary by condition, timing, and management. <a href="/rental-properties-for-sale-austin" style="color:var(--gold);">Read our full Austin rental property guide →</a></p>
+    <p style="font-size:.88rem;color:rgba(255,255,255,.65);margin:0 0 1.5rem;line-height:1.7;">The numbers below use conservative Austin-market assumptions. They are estimates, not a guarantee. Actual rents vary by condition, timing, and management. <a href="/rental-properties-for-sale-austin" style="color:var(--gold);">Read our full Austin rental property guide →</a></p>
     <div class="invest-grid">
       <div class="invest-card">
         <div class="invest-label">Est. Monthly Rent</div>
@@ -408,7 +408,7 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
           <span>${investment.monthlyCashFlow >= 0 ? '+' : ''}${fmtPrice(investment.monthlyCashFlow)}</span>
         </div>
       </div>
-      ${investment.monthlyCashFlow < 0 ? `<p style="font-size:.8rem;color:rgba(255,255,255,.5);margin:.75rem 0 0;line-height:1.6;">At current rates and prices, many Austin luxury properties run neutral or slightly negative on pure cash flow — <strong style="color:rgba(255,255,255,.75);">appreciation and equity paydown are the primary return drivers</strong>. BRRRR and off-market acquisitions can improve day-one cash flow. <a href="/brrrr-method-austin" style="color:var(--gold);">Learn about the BRRRR method in Austin →</a></p>` : ''}
+      ${investment.monthlyCashFlow < 0 ? `<p style="font-size:.8rem;color:rgba(255,255,255,.5);margin:.75rem 0 0;line-height:1.6;">At current rates and prices, many Austin luxury properties run neutral or slightly negative on pure cash flow, <strong style="color:rgba(255,255,255,.75);">appreciation and equity paydown are the primary return drivers</strong>. BRRRR and off-market acquisitions can improve day-one cash flow. <a href="/brrrr-method-austin" style="color:var(--gold);">Learn about the BRRRR method in Austin →</a></p>` : ''}
     </div>
   </section>` : '';
 
@@ -496,11 +496,11 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
     body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);}
     a{color:var(--gold);text-decoration:none;}a:hover{color:var(--gold-lt);}
 
-    /* sold banner — sits under nav, dark bg so nav's white text stays legible */
+    /* sold banner, sits under nav, dark bg so nav's white text stays legible */
     .sold-banner{background:#1a1a1a;color:#ccc;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding:90px 2rem 10px;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;}
     .sold-banner span:first-child{color:var(--gold);font-weight:600;}
 
-    /* hero — starts at y=0 so nav overlays dark bg (align-items:flex-end keeps content below nav zone) */
+    /* hero, starts at y=0 so nav overlays dark bg (align-items:flex-end keeps content below nav zone) */
     .hero{position:relative;background:var(--ink);min-height:540px;display:flex;align-items:flex-end;overflow:hidden;}
     ${heroPhoto?`.hero-bg{position:absolute;inset:0;background:url('${heroPhoto}') center/cover no-repeat;filter:brightness(.5);}`:'.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(184,147,90,.18) 0%,transparent 70%);}'}
     .hero-content{position:relative;z-index:2;padding:3rem 2rem 2.5rem;max-width:var(--w);margin:0 auto;width:100%;}
@@ -723,7 +723,7 @@ ${photoUrls.length > 1 ? `<div class="gallery"><div class="gallery-grid">${galle
 
     <div style="margin:1.5rem 0;padding:1.25rem;background:var(--warm);border-radius:8px;">
       <p class="section-label">Have Questions About This Property?</p>
-      <p style="margin:0 0 .65rem;font-size:.88rem;color:var(--mid);line-height:1.65;">Luke Allen (TREC #788149) has deep knowledge of ${city} and surrounding markets. Whether you're buying, selling, or just researching comparable sales — reach out for a no-pressure conversation.</p>
+      <p style="margin:0 0 .65rem;font-size:.88rem;color:var(--mid);line-height:1.65;">Luke Allen (TREC #788149) has deep knowledge of ${city} and surrounding markets. Whether you're buying, selling, or just researching comparable sales, reach out for a no-pressure conversation.</p>
       <a href="/about#contact" style="font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);font-weight:600;">Schedule a Call →</a>
     </div>
   </div>
@@ -830,8 +830,8 @@ async function submitContact(e) {
   try {
     const r=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(e.target)))});
     if(r.ok){msg.className='form-msg ok';msg.textContent='Sent! Luke will be in touch shortly.';e.target.reset();}
-    else{msg.className='form-msg err';msg.textContent='Send failed — email Luke@austinmdg.com directly.';}
-  } catch{msg.className='form-msg err';msg.textContent='Network error — email Luke@austinmdg.com.';}
+    else{msg.className='form-msg err';msg.textContent='Send failed, email Luke@austinmdg.com directly.';}
+  } catch{msg.className='form-msg err';msg.textContent='Network error, email Luke@austinmdg.com.';}
   btn.disabled=false; btn.textContent='Send Message';
 }
 
