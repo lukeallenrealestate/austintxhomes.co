@@ -221,6 +221,41 @@
     <label><input type="checkbox" id="cul-de-sac-filter" onchange="applyFilters()"> Cul-de-sac</label>
   </div>
 
+  <h4 style="margin-top:20px;">Status</h4>
+  <div class="type-checkboxes">
+    <label><input type="checkbox" id="status-active-filter" checked onchange="applyFilters()"> Active</label>
+    <label><input type="checkbox" id="status-pending-filter" onchange="applyFilters()"> Pending</label>
+    <label><input type="checkbox" id="status-closed-filter" onchange="applyFilters()"> Closed (Sold Comps)</label>
+  </div>
+
+  <div id="closed-since-wrap" style="display:none;margin-top:12px;">
+    <h4 style="margin-bottom:6px;">Closed / Pending Within</h4>
+    <select id="since-filter" onchange="applyFilters()"
+      style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;outline:none;">
+      <option value="">Any time</option>
+      <option value="7">Last 7 days</option>
+      <option value="30" selected>Last 30 days</option>
+      <option value="60">Last 60 days</option>
+      <option value="90">Last 90 days</option>
+      <option value="180">Last 180 days</option>
+      <option value="365">Last 12 months</option>
+    </select>
+  </div>
+
+  <h4 style="margin-top:20px;">Search Near Address</h4>
+  <input type="text" id="near-address-filter" placeholder="e.g. 706 Sage Ct, Austin TX"
+    style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;outline:none;margin-bottom:8px;"
+    onchange="applyFilters()" onkeydown="if(event.key==='Enter'){event.preventDefault();applyFilters();}" />
+  <select id="radius-filter" onchange="applyFilters()"
+    style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;outline:none;margin-bottom:20px;">
+    <option value="">No radius (search all matches)</option>
+    <option value="0.25">Within 0.25 miles</option>
+    <option value="0.5" selected>Within 0.5 miles</option>
+    <option value="1">Within 1 mile</option>
+    <option value="2">Within 2 miles</option>
+    <option value="5">Within 5 miles</option>
+  </select>
+
   <div class="dropdown-actions">
     <button class="btn btn-primary btn-sm" onclick="closeAllDropdowns()">Apply</button>
     <button class="btn btn-text" onclick="clearAllFilters()">Clear All</button>

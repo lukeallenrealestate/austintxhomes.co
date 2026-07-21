@@ -116,6 +116,11 @@ function syncUrlFromFilters() {
   if (f.culDeSac === 'true') params.set('culDeSac', 'true');
   if (f.forRent)      params.set('forRent', f.forRent);
   if (f.polygon)      params.set('polygon', f.polygon);
+  if (f.status)       params.set('status', f.status);
+  if (f.closedSince)  params.set('closedSince', f.closedSince);
+  if (f.pendingSince) params.set('pendingSince', f.pendingSince);
+  if (f.nearAddress)  params.set('nearAddress', f.nearAddress);
+  if (f.radiusMi)     params.set('radiusMi', f.radiusMi);
   const qs = params.toString();
   history.replaceState(null, '', qs ? '?' + qs : window.location.pathname);
 }
@@ -142,6 +147,11 @@ function applyUrlParams() {
   const newConstruction = params.get('newConstruction');
   const culDeSac = params.get('culDeSac');
   const forRent = params.get('forRent');
+  const status = params.get('status');
+  const closedSince = params.get('closedSince');
+  const pendingSince = params.get('pendingSince');
+  const nearAddress = params.get('nearAddress');
+  const radiusMi = params.get('radiusMi');
 
   if (zip) {
     currentFilters.zip = zip;
@@ -200,6 +210,23 @@ function applyUrlParams() {
     const el = document.getElementById('cul-de-sac-filter');
     if (el) el.checked = true;
   }
+  // Status multi-select + sold-comp date window + radius-from-address restore.
+  // Any of these URL-arriving means the caller shared or bookmarked a specific
+  // comp search; we hydrate the UI so their next tweak starts from that state.
+  if (status) {
+    currentFilters.status = status;
+    const parts = status.split(',').map(s => s.trim());
+    const setChk = (id, v) => { const el = document.getElementById(id); if (el) el.checked = v; };
+    setChk('status-active-filter',  parts.includes('Active'));
+    setChk('status-pending-filter', parts.includes('Pending'));
+    setChk('status-closed-filter',  parts.includes('Closed'));
+    const csw = document.getElementById('closed-since-wrap');
+    if (csw && (parts.includes('Closed') || parts.includes('Pending'))) csw.style.display = '';
+  }
+  if (closedSince) { currentFilters.closedSince = closedSince; const el = document.getElementById('since-filter'); if (el) el.value = closedSince; }
+  if (pendingSince) { currentFilters.pendingSince = pendingSince; const el = document.getElementById('since-filter'); if (el) el.value = pendingSince; }
+  if (nearAddress) { currentFilters.nearAddress = nearAddress; const el = document.getElementById('near-address-filter'); if (el) el.value = nearAddress; }
+  if (radiusMi) { currentFilters.radiusMi = radiusMi; const el = document.getElementById('radius-filter'); if (el) el.value = radiusMi; }
   if (forRent === 'true') {
     currentFilters.forRent = 'true';
     document.querySelectorAll('.filter-toggle button').forEach(b => {
@@ -861,6 +888,39 @@ function applyFilters() {
   const culDeSac = document.getElementById('cul-de-sac-filter')?.checked;
   if (culDeSac) currentFilters.culDeSac = 'true'; else delete currentFilters.culDeSac;
 
+  // Status: Active / Pending / Closed multi-select. Sends a comma-separated
+  // status= param so the backend joins with IN(...). Only writes when the
+  // caller changed away from the default (Active-only) — this keeps the
+  // Zillow-style URL clean for the 95% case.
+  const statusActive  = document.getElementById('status-active-filter')?.checked;
+  const statusPending = document.getElementById('status-pending-filter')?.checked;
+  const statusClosed  = document.getElementById('status-closed-filter')?.checked;
+  const statuses = [
+    statusActive  ? 'Active'  : null,
+    statusPending ? 'Pending' : null,
+    statusClosed  ? 'Closed'  : null,
+  ].filter(Boolean);
+  if (statuses.length && !(statuses.length === 1 && statuses[0] === 'Active')) {
+    currentFilters.status = statuses.join(',');
+  } else {
+    delete currentFilters.status;
+  }
+
+  // Date window for Closed/Pending sold-comps. Only sent when the relevant
+  // status is selected — the wrapper is display:none-toggled below.
+  const since = document.getElementById('since-filter')?.value;
+  const closedSinceWrap = document.getElementById('closed-since-wrap');
+  if (closedSinceWrap) closedSinceWrap.style.display = (statusClosed || statusPending) ? '' : 'none';
+  if (since && statusClosed) currentFilters.closedSince = since; else delete currentFilters.closedSince;
+  if (since && statusPending) currentFilters.pendingSince = since; else delete currentFilters.pendingSince;
+
+  // Search near a specific address. Server geocodes to lat/lng and applies
+  // an exact Haversine radius filter on top of a bbox pre-filter.
+  const nearAddress = document.getElementById('near-address-filter')?.value?.trim();
+  const radiusMi = document.getElementById('radius-filter')?.value;
+  if (nearAddress) currentFilters.nearAddress = nearAddress; else delete currentFilters.nearAddress;
+  if (nearAddress && radiusMi) currentFilters.radiusMi = radiusMi; else delete currentFilters.radiusMi;
+
   // Sort
   const sort = document.getElementById('sort-select')?.value;
   if (sort) currentFilters.sortBy = sort;
@@ -1023,7 +1083,9 @@ function updateFilterButtons() {
 
   const hasMore = currentFilters.minSqft || currentFilters.maxSqft || currentFilters.schoolDistrict
     || currentFilters.pool || currentFilters.waterfront || currentFilters.newConstruction || currentFilters.culDeSac
-    || currentFilters.minYear || currentFilters.maxYear;
+    || currentFilters.minYear || currentFilters.maxYear
+    || currentFilters.status || currentFilters.closedSince || currentFilters.pendingSince
+    || currentFilters.nearAddress || currentFilters.radiusMi;
   document.getElementById('more-btn')?.classList.toggle('active', !!hasMore);
 }
 
@@ -1242,6 +1304,16 @@ function clearAllFilters() {
   document.getElementById('new-construction-filter').checked = false;
   const culDeSacEl = document.getElementById('cul-de-sac-filter');
   if (culDeSacEl) culDeSacEl.checked = false;
+  // New filters: status, sold-comp window, and radius-from-address
+  const setChecked = (id, v) => { const el = document.getElementById(id); if (el) el.checked = v; };
+  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+  setChecked('status-active-filter',  true);
+  setChecked('status-pending-filter', false);
+  setChecked('status-closed-filter',  false);
+  setVal('since-filter', '30');
+  setVal('near-address-filter', '');
+  setVal('radius-filter', '0.5');
+  const csw = document.getElementById('closed-since-wrap'); if (csw) csw.style.display = 'none';
   document.getElementById('location-search').value = '';
   document.querySelectorAll('#beds-pills .pill, #baths-pills .pill').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('#type-dropdown input').forEach(i => i.checked = false);

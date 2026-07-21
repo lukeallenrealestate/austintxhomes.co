@@ -122,6 +122,106 @@ function pointInPolygon(lat, lng, polygon) {
 const countCache = new Map();
 const COUNT_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
+// Parse a "since" param: accepts "30" or "30d" as days-back, or an ISO date
+// (YYYY-MM-DD) as an explicit floor. Returns the ISO date to compare against.
+function parseSinceParam(raw) {
+  if (!raw) return null;
+  const s = String(raw).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const m = s.match(/^(\d{1,4})\s*d?$/i);
+  if (!m) return null;
+  const days = Math.min(3650, Math.max(1, parseInt(m[1], 10)));
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() - days);
+  return d.toISOString().slice(0, 10);
+}
+
+// Convert miles to a lat/lng bounding box around a center point. This is a
+// rough pre-filter: the R-Tree cuts the candidate set to a square that
+// inscribes the desired circle, then Haversine trims the leftover corners
+// in JavaScript on the final result. 1 deg lat ≈ 69 mi; 1 deg lng varies
+// with cos(lat).
+function radiusToBbox(lat, lng, miles) {
+  const latDelta = miles / 69;
+  const lngDelta = miles / (69 * Math.cos(lat * Math.PI / 180));
+  return {
+    south: lat - latDelta, north: lat + latDelta,
+    west:  lng - lngDelta, east:  lng + lngDelta,
+  };
+}
+
+// Haversine distance in miles between two lat/lng points.
+function haversineMiles(lat1, lng1, lat2, lng2) {
+  const R = 3958.8;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+// Resolve an address to {lat, lng} by trying (1) exact-ish match against MLS
+// listings in this DB, then (2) Nominatim as fallback. Cached in memory for
+// 24h since the same address typically gets searched repeatedly for CMAs.
+const geoCache = new Map();
+const GEO_CACHE_TTL = 24 * 60 * 60 * 1000;
+async function geocodeAddress(address) {
+  const key = String(address || '').trim().toLowerCase();
+  if (!key) return null;
+  const hit = geoCache.get(key);
+  if (hit && Date.now() - hit.ts < GEO_CACHE_TTL) return hit.value;
+
+  // Try the listings DB first — accurate to the parcel, zero external latency.
+  // ACTRIS addresses sometimes carry stray double-spaces after the house number,
+  // so we normalize whitespace on both sides of the comparison before LIKE-matching.
+  const beforeComma = key.split(',')[0].trim().replace(/\s+/g, ' ');
+  const parts = beforeComma.split(' ').filter(Boolean);
+  const houseNumber = parts[0] || '';
+  const streetFirstWord = parts[1] || '';
+  const streetPortion = parts.slice(0, 4).join(' ');
+  try {
+    // Try exact-ish (whole normalized street) first; fall back to number+first-word.
+    // The whitespace-normalized comparison catches "2817  Sage Ranch Dr" etc.
+    const norm = `REPLACE(REPLACE(REPLACE(lower(unparsed_address),'  ',' '),'  ',' '),'  ',' ')`;
+    let row = db.prepare(
+      `SELECT latitude AS lat, longitude AS lng, unparsed_address AS matched
+       FROM listings
+       WHERE ${norm} LIKE ? AND latitude IS NOT NULL AND longitude IS NOT NULL
+       LIMIT 1`
+    ).get('%' + streetPortion + '%');
+    if (!row && houseNumber && streetFirstWord) {
+      row = db.prepare(
+        `SELECT latitude AS lat, longitude AS lng, unparsed_address AS matched
+         FROM listings
+         WHERE ${norm} LIKE ? AND latitude IS NOT NULL AND longitude IS NOT NULL
+         LIMIT 1`
+      ).get('%' + houseNumber + '%' + streetFirstWord + '%');
+    }
+    if (row && row.lat && row.lng) {
+      const value = { lat: row.lat, lng: row.lng, source: 'mls-match', matched: row.matched };
+      geoCache.set(key, { value, ts: Date.now() });
+      return value;
+    }
+  } catch (_) {}
+
+  // Nominatim fallback. Nominatim rejects `q` combined with structured params,
+  // so append Austin TX to the freeform query only if the caller didn't.
+  try {
+    const q = /austin|tx|texas/i.test(address) ? address : (address + ', Austin, TX');
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q=${encodeURIComponent(q)}`;
+    const resp = await fetch(url, {
+      headers: { 'User-Agent': 'austintxhomes.co (Luke Allen, TREC #788149)' },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!resp.ok) return null;
+    const arr = await resp.json();
+    if (!Array.isArray(arr) || !arr[0]) return null;
+    const value = { lat: Number(arr[0].lat), lng: Number(arr[0].lon), source: 'nominatim', matched: arr[0].display_name };
+    geoCache.set(key, { value, ts: Date.now() });
+    return value;
+  } catch (_) { return null; }
+}
+
 // Shared WHERE-clause builder v2 — mirrors /search logic so /map-bundle returns
 // identical result sets for pins and cards in a single pass.
 function buildSearchWhere(q) {
@@ -131,10 +231,18 @@ function buildSearchWhere(q) {
     minSqft, maxSqft, minYear, maxYear,
     city, zip, neighborhood, schoolDistrict, keyword,
     pool, waterfront, newConstruction, culDeSac,
+    closedSince, closedAfter, pendingSince,
+    nearLat, nearLng, radiusMi,
     north, south, east, west
   } = q;
 
-  const conditions = ['mlg_can_view = 1', 'latitude IS NOT NULL', 'longitude IS NOT NULL'];
+  // ACTRIS's mlg_can_view flag governs IDX visibility for active listings.
+  // Closed and Pending statuses (used for comps) frequently ship with the flag
+  // set to 0 in the raw feed, so requiring 1 zeroes out every sold-comp search.
+  // Only enforce the flag when the caller is asking for active-only.
+  const wantsCompStatuses = status && /Closed|Pending|Active Under Contract/i.test(status);
+  const conditions = ['latitude IS NOT NULL', 'longitude IS NOT NULL'];
+  if (!wantsCompStatuses) conditions.unshift('mlg_can_view = 1');
   const values = [];
 
   if (status) {
@@ -150,6 +258,12 @@ function buildSearchWhere(q) {
   if (forRent === 'true') {
     conditions.push(`(property_type LIKE '%Lease%' OR property_type LIKE '%Rental%')`);
   } else if (forRent === 'false') {
+    conditions.push(`property_type NOT LIKE '%Lease%'`);
+  } else if (wantsCompStatuses) {
+    // Sold-comp searches default to sales only. Closed leases have close_date
+    // populated too and would otherwise dominate the results with rent numbers
+    // masquerading as sale prices. Callers who genuinely want closed leases
+    // can pass forRent=true explicitly.
     conditions.push(`property_type NOT LIKE '%Lease%'`);
   }
 
@@ -206,7 +320,38 @@ function buildSearchWhere(q) {
     )`);
   }
 
-  if (north && south && east && west) {
+  // Sold-comps use case: filter closed listings by when they actually closed.
+  // Accepts "30", "30d", or an ISO date. Applied whenever the caller wanted
+  // Closed listings — otherwise close_date is null and the filter would zero
+  // out everything.
+  const closedFloor = parseSinceParam(closedSince) || (closedAfter && /^\d{4}-\d{2}-\d{2}$/.test(closedAfter) ? closedAfter : null);
+  if (closedFloor) {
+    conditions.push(`close_date IS NOT NULL AND close_date >= ?`);
+    values.push(closedFloor);
+  }
+
+  // Pending activity within N days — uses modification_timestamp because
+  // ACTRIS doesn't expose a discrete "went pending on" date. Good enough for
+  // "which listings went under contract in the last N days" reads.
+  const pendingFloor = parseSinceParam(pendingSince);
+  if (pendingFloor) {
+    conditions.push(`modification_timestamp IS NOT NULL AND date(modification_timestamp) >= ?`);
+    values.push(pendingFloor);
+  }
+
+  // Radius search from a point. R-Tree bounding-box pre-filter here; the
+  // exact circle is enforced in JS on the returned rows (see /search).
+  if (nearLat && nearLng && radiusMi) {
+    const lat = Number(nearLat), lng = Number(nearLng), mi = Number(radiusMi);
+    if (Number.isFinite(lat) && Number.isFinite(lng) && Number.isFinite(mi) && mi > 0) {
+      const bbox = radiusToBbox(lat, lng, mi);
+      conditions.push(`rowid IN (
+        SELECT id FROM listings_rtree
+        WHERE minlat BETWEEN ? AND ? AND minlon BETWEEN ? AND ?
+      )`);
+      values.push(bbox.south, bbox.north, bbox.west, bbox.east);
+    }
+  } else if (north && south && east && west) {
     // Use the R-Tree spatial index for the bbox filter. The subquery returns
     // rowids of listings whose lat/lon points fall inside the viewport — O(log n)
     // versus the O(n) BETWEEN scan SQLite was doing before. Triggers on the
@@ -235,7 +380,7 @@ router.get('/_version', (_req, res) => {
 });
 
 // GET /api/properties/search
-router.get('/search', (req, res) => {
+router.get('/search', async (req, res) => {
   try {
     const {
       status, propertyType, subType, forRent,
@@ -243,6 +388,8 @@ router.get('/search', (req, res) => {
       minSqft, maxSqft, minYear, maxYear,
       city, zip, neighborhood, schoolDistrict, keyword,
       pool, waterfront, newConstruction, culDeSac,
+      closedSince, closedAfter, pendingSince,
+      nearAddress, radiusMi,
       sortBy, page = 1, limit = 24,
       // Map bounds
       north, south, east, west,
@@ -250,7 +397,27 @@ router.get('/search', (req, res) => {
       polygon
     } = req.query;
 
-    const conditions = ['mlg_can_view = 1', 'latitude IS NOT NULL', 'longitude IS NOT NULL'];
+    // If the caller passed a nearAddress, resolve it to lat/lng once here so
+    // the WHERE builder and the post-filter share the same coordinates.
+    let nearLat = req.query.nearLat ? Number(req.query.nearLat) : null;
+    let nearLng = req.query.nearLng ? Number(req.query.nearLng) : null;
+    let geocodedFrom = null;
+    if (nearAddress && (!Number.isFinite(nearLat) || !Number.isFinite(nearLng))) {
+      const geo = await geocodeAddress(nearAddress);
+      if (geo) {
+        nearLat = geo.lat; nearLng = geo.lng; geocodedFrom = geo;
+      } else {
+        // Address didn't resolve. Rather than silently searching the whole metro,
+        // fail loud so the frontend can prompt for a better address.
+        return res.status(400).json({ error: `Could not geocode "${nearAddress}". Try adding city or ZIP.` });
+      }
+    }
+
+    // Only enforce mlg_can_view for active-only searches — see buildSearchWhere
+    // for why closed/pending comps skip it.
+    const wantsCompStatuses = status && /Closed|Pending|Active Under Contract/i.test(status);
+    const conditions = ['latitude IS NOT NULL', 'longitude IS NOT NULL'];
+    if (!wantsCompStatuses) conditions.unshift('mlg_can_view = 1');
     const values = [];
 
     // Status
@@ -269,6 +436,10 @@ router.get('/search', (req, res) => {
     if (forRent === 'true') {
       conditions.push(`(property_type LIKE '%Lease%' OR property_type LIKE '%Rental%')`);
     } else if (forRent === 'false') {
+      conditions.push(`property_type NOT LIKE '%Lease%'`);
+    } else if (wantsCompStatuses) {
+      // Sold-comp searches default to sales only. Closed leases have close_date
+      // populated too and would otherwise dominate results with rent numbers.
       conditions.push(`property_type NOT LIKE '%Lease%'`);
     }
 
@@ -345,8 +516,30 @@ router.get('/search', (req, res) => {
       )`);
     }
 
-    // Map bounds (bounding box)
-    if (north && south && east && west) {
+    // Closed / pending date filters (see buildSearchWhere for full context).
+    const closedFloor = parseSinceParam(closedSince) || (closedAfter && /^\d{4}-\d{2}-\d{2}$/.test(closedAfter) ? closedAfter : null);
+    if (closedFloor) {
+      conditions.push(`close_date IS NOT NULL AND close_date >= ?`);
+      values.push(closedFloor);
+    }
+    const pendingFloor = parseSinceParam(pendingSince);
+    if (pendingFloor) {
+      conditions.push(`modification_timestamp IS NOT NULL AND date(modification_timestamp) >= ?`);
+      values.push(pendingFloor);
+    }
+
+    // Radius search from a point. Take precedence over the raw bbox — the
+    // caller either drew a circle or a rectangle, not both.
+    const radiusMiles = Number(radiusMi);
+    const useRadius = Number.isFinite(nearLat) && Number.isFinite(nearLng) && Number.isFinite(radiusMiles) && radiusMiles > 0;
+    if (useRadius) {
+      const bbox = radiusToBbox(nearLat, nearLng, radiusMiles);
+      conditions.push('latitude BETWEEN ? AND ?');
+      values.push(bbox.south, bbox.north);
+      conditions.push('longitude BETWEEN ? AND ?');
+      values.push(bbox.west, bbox.east);
+    } else if (north && south && east && west) {
+      // Map bounds (bounding box)
       conditions.push('latitude BETWEEN ? AND ?');
       values.push(Number(south), Number(north));
       conditions.push('longitude BETWEEN ? AND ?');
@@ -396,6 +589,14 @@ router.get('/search', (req, res) => {
       // Manual pagination
       const offset = (Number(page) - 1) * Number(limit);
       rows = rows.slice(offset, offset + Number(limit));
+    } else if (useRadius) {
+      // Radius search: fetch every candidate inside the bounding box, filter
+      // out the corners with Haversine to a true circle, then paginate.
+      const raw = db.prepare(`SELECT ${SEARCH_COLUMNS} FROM listings WHERE ${where} ORDER BY ${orderBy}`).all(values);
+      const filtered = raw.filter(r => haversineMiles(r.latitude, r.longitude, nearLat, nearLng) <= radiusMiles);
+      total = filtered.length;
+      const offset = (Number(page) - 1) * Number(limit);
+      rows = filtered.slice(offset, offset + Number(limit));
     } else {
       const offset = (Number(page) - 1) * Number(limit);
       rows = db.prepare(`SELECT ${SEARCH_COLUMNS} FROM listings WHERE ${where} ORDER BY ${orderBy} LIMIT ? OFFSET ?`)
@@ -415,7 +616,8 @@ router.get('/search', (req, res) => {
       total,
       page: Number(page),
       pages: Math.ceil(total / Number(limit)),
-      listings: rows
+      listings: rows,
+      ...(useRadius ? { searchCenter: { lat: nearLat, lng: nearLng, radiusMi: radiusMiles, geocodedFrom } } : {}),
     });
 
   } catch (err) {
