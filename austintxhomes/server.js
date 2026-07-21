@@ -1310,38 +1310,74 @@ app.get('/sitemap-index.xml', (_req, res) => {
 
 // ── Programmatic SEO: individual listing pages for $1M+ properties ─────────
 // Slug format: {address-kebab}--{listingKey}  (double-dash before key)
+// Serve individual $1M+ property pages. Crawler-hygiene choices below are why
+// this route looks paranoid — Googlebot was burning most of the domain's crawl
+// budget on this endpoint returning 404s and 500s.
 app.get('/homes/:slug', (req, res) => {
+  const slug = req.params.slug || '';
+  const ddIdx = slug.lastIndexOf('--');
+  const listingKey = ddIdx !== -1 ? slug.slice(ddIdx + 2) : slug;
+
+  let listing;
   try {
-    const slug = req.params.slug;
-    const ddIdx = slug.lastIndexOf('--');
-    const listingKey = ddIdx !== -1 ? slug.slice(ddIdx + 2) : slug;
-    const listing = listingDb.prepare('SELECT * FROM listings WHERE listing_key = ?').get(listingKey);
-    if (!listing) return res.status(404).sendFile(path.join(__dirname, 'public/site/luxury-homes.html'));
+    listing = listingDb.prepare('SELECT * FROM listings WHERE listing_key = ?').get(listingKey);
+  } catch (e) {
+    console.error('[listing page] db lookup failed:', e.message);
+    // DB blip — 503 lets Google retry later without treating this URL as gone.
+    res.setHeader('Retry-After', '300');
+    return res.status(503).sendFile(path.join(__dirname, 'public/site/luxury-homes.html'));
+  }
+
+  if (!listing) {
+    // 410 Gone (permanent) rather than 404 (transient) — the listing left the
+    // MLS and this URL is never coming back. 410 removes the URL from Google's
+    // index on the next crawl; 404 keeps it in the index queue and re-crawled.
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    return res.status(410).sendFile(path.join(__dirname, 'public/site/luxury-homes.html'));
+  }
+
+  try {
     const enriched = enrichListing(listing, listingDb, neighborhoods);
     res.setHeader('Content-Type', 'text/html');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     res.send(renderListingPage(enriched.listing, enriched));
   } catch (e) {
-    console.error('[listing page]', e.message);
-    res.status(500).send('Error loading listing');
+    console.error('[listing page] render failed for', listingKey, ':', e.message);
+    // Render error on a real listing — degrade gracefully to the luxury-homes
+    // page with 200 so Googlebot doesn't back off the whole domain. Better a
+    // slightly-off page than a 5xx that kills crawl budget site-wide.
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('X-Robots-Tag', 'noindex, follow');
+    res.status(200).sendFile(path.join(__dirname, 'public/site/luxury-homes.html'));
   }
 });
 
 // Sitemap for all $1M+ listings (active + sold — sold pages have SEO value too)
 app.get('/listing-sitemap.xml', (_req, res) => {
   try {
+    // Active-only. Closed and pending listings shouldn't invite Googlebot in —
+    // the templates now emit noindex for both, and including them in the
+    // sitemap was the biggest source of the 4,378 "Not found (404)" pile in
+    // GSC (they'd cycle Active → Closed → delisted, and by the time Google
+    // re-crawled, /homes/{key} returned 410). Priority dropped 0.8 → 0.5 so
+    // Googlebot spends more crawl budget on money pages.
     const rows = listingDb.prepare(
       `SELECT listing_key, unparsed_address, modification_timestamp
        FROM listings
-       WHERE list_price >= 1000000 OR close_price >= 1000000
+       WHERE standard_status = 'Active'
+         AND list_price >= 1000000
+         AND mlg_can_view = 1
+         AND unparsed_address IS NOT NULL
        ORDER BY modification_timestamp DESC
        LIMIT 5000`
     ).all();
     const urls = rows.map(r => {
       const addrSlug = slugifyAddress(r.unparsed_address);
       const slug = `${addrSlug}--${r.listing_key}`;
-      const lastmod = r.modification_timestamp ? r.modification_timestamp.slice(0, 10) : '2026-01-01';
-      return `  <url>\n    <loc>https://austintxhomes.co/homes/${slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`;
+      const lastmod = r.modification_timestamp ? r.modification_timestamp.slice(0, 10) : new Date().toISOString().slice(0,10);
+      return `  <url>\n    <loc>https://austintxhomes.co/homes/${slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.5</priority>\n  </url>`;
     }).join('\n');
     res.setHeader('Content-Type', 'application/xml');
     res.setHeader('Cache-Control', 'public, max-age=3600');
