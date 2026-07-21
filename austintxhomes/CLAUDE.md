@@ -58,7 +58,7 @@ Every page needs **at minimum** a `RealEstateAgent` schema block with the full s
 }
 ```
 
-> **When to update `reviewCount`:** Luke currently has 22 five-star Google reviews (verified from Google Business Profile on 2026-06-08). Update this number whenever he gets more reviews.
+> **When to update `reviewCount`:** Luke currently has 27 five-star Google reviews (verified from Google Business Profile on 2026-07-21). Update this number whenever he gets more reviews.
 
 #### Additional schema by page type:
 - **All pages** → `BreadcrumbList` (shows breadcrumb path in Google search results)
@@ -263,5 +263,5 @@ Neighborhood data lives in `data/neighborhoods.js`. New neighborhoods go there, 
 - LinkedIn: https://www.linkedin.com/in/lukeallentx/
 - Instagram: https://www.instagram.com/lukeallenrealty/
 - TikTok: https://www.tiktok.com/@austintxapartments
-- Google Reviews: 22 five-star reviews, 5.0 rating (update when this changes; last verified 2026-06-08)
+- Google Reviews: 27 five-star reviews, 5.0 rating (update when this changes; last verified 2026-07-21)
 - OG image: https://austintxhomes.co/images/luke-allen.jpg
