@@ -310,6 +310,34 @@ function runSiennaScraper(source) {
 
 cron.schedule('0 6 * * 1', () => { runSiennaScraper('weekly-cron').catch(() => {}); });
 
+// Weekly IndexNow ping — fires Monday 8am, after all three scrapers write
+// fresh data. Notifies Bing/Yandex (and downstream AI answer engines) that
+// the money-page set has updated URLs to recrawl. Wrapped in a try so a
+// bad ping can never take down the process.
+cron.schedule('0 8 * * 1', async () => {
+  try {
+    const { pingIndexNow } = require('./lib/indexnow');
+    const {
+      AUSTIN_ZIP_META: azm,
+      NEIGHBORHOOD_META: nm,
+    } = require('./templates/market-page');
+    const urls = [
+      'https://austintxhomes.co/',
+      'https://austintxhomes.co/austin-homebuyer-report-2026-q3',
+      'https://austintxhomes.co/sold-homes-austin',
+      'https://austintxhomes.co/homes-for-sale-austin',
+      ...Object.keys(azm).map(z => `https://austintxhomes.co/sold-homes-near-${z}`),
+      ...Object.keys(azm).map(z => `https://austintxhomes.co/homes-for-sale-in-${z}`),
+      ...Object.keys(nm).map(s  => `https://austintxhomes.co/sold-homes-in-${s}`),
+      'https://austintxhomes.co/sienna-at-the-thompson-austin',
+      'https://austintxhomes.co/solomon-austin-apartments',
+      'https://austintxhomes.co/seven-austin-apartments',
+      'https://austintxhomes.co/luke-allen',
+    ];
+    await pingIndexNow(urls, { source: 'weekly-cron' });
+  } catch (e) { console.warn('[indexnow] weekly cron failed:', e.message); }
+});
+
 // Same pattern for Solomon (East Austin/Mueller) and Seven (downtown 615 W 7th).
 // Both use their own scraper scripts and JSON caches so the trio can be
 // scraped in parallel without a shared state.
@@ -1335,14 +1363,18 @@ app.get('/sitemap-index.xml', (_req, res) => {
 </sitemapindex>`);
 });
 
-// ── Programmatic SEO: /sold-homes-near-{zip} for the top ~30 Austin ZIPs ───
-// Every request runs a live sold-comp query against the ACTRIS DB (results
-// are memoized 30 min in market-stats.js), so the pages stay fresh without
-// a rebuild step. Google gets the same HTML with real numbers on every crawl.
-const { renderSoldCompsPage, AUSTIN_ZIP_META } = require('./templates/sold-comps');
-app.get('/sold-homes-near-:zip(\\d{5})', (req, res) => {
-  const zip = req.params.zip;
-  const html = renderSoldCompsPage(zip);
+// ── Programmatic SEO: live-market landing pages ────────────────────────────
+// Three variants share the same template (templates/market-page.js):
+//   /sold-homes-near-{zip}                    30 pages, sold comps by ZIP
+//   /sold-homes-in-{neighborhood-slug}        10 pages, sold comps by hood
+//   /homes-for-sale-in-{zip}                  30 pages, active inventory by ZIP
+// All pull live from ACTRIS with a 30-min in-process cache in market-stats.js.
+const {
+  renderSoldByZip, renderSoldByNeighborhood, renderActiveByZip,
+  AUSTIN_ZIP_META, NEIGHBORHOOD_META,
+} = require('./templates/market-page');
+
+function serveMarketPage(html, res) {
   if (!html) {
     res.setHeader('X-Robots-Tag', 'noindex, follow');
     return res.status(410).sendFile(path.join(__dirname, 'public/site/luxury-homes.html'));
@@ -1351,15 +1383,52 @@ app.get('/sold-homes-near-:zip(\\d{5})', (req, res) => {
   res.setHeader('Cache-Control', 'public, max-age=1800');
   res.setHeader('Last-Modified', new Date().toUTCString());
   res.send(html);
+}
+
+app.get('/sold-homes-near-:zip(\\d{5})',            (req, res) => serveMarketPage(renderSoldByZip(req.params.zip),                res));
+app.get('/sold-homes-in-:slug([a-z][a-z0-9-]{2,40})', (req, res) => serveMarketPage(renderSoldByNeighborhood(req.params.slug),      res));
+app.get('/homes-for-sale-in-:zip(\\d{5})',          (req, res) => serveMarketPage(renderActiveByZip(req.params.zip),               res));
+
+// IndexNow: hosts the ownership-proof key file that Bing checks before
+// accepting our URL submissions. See lib/indexnow.js.
+const { KEY: INDEXNOW_KEY, pingIndexNow } = require('./lib/indexnow');
+app.get(`/${INDEXNOW_KEY}.txt`, (_req, res) => {
+  res.setHeader('Content-Type', 'text/plain');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.send(INDEXNOW_KEY);
 });
 
-// Hub page enumerating every /sold-homes-near-{zip} page we render. Google
-// discovers all 30 through one internal link cluster instead of needing to
-// crawl the sitemap first.
+// Admin-triggered ping. POST { urls: ["https://...","..."] } or omit to
+// re-ping the entire money-page set (built from the metadata tables).
+app.post('/api/indexnow/ping', express.json(), async (req, res) => {
+  if (req.headers['x-admin-key'] !== ADMIN_KEY) return res.status(401).json({ error: 'Unauthorized' });
+  let urls = Array.isArray(req.body && req.body.urls) ? req.body.urls : null;
+  if (!urls) {
+    urls = [
+      'https://austintxhomes.co/',
+      'https://austintxhomes.co/austin-homebuyer-report-2026-q3',
+      'https://austintxhomes.co/sold-homes-austin',
+      'https://austintxhomes.co/homes-for-sale-austin',
+      ...Object.keys(AUSTIN_ZIP_META).map(z => `https://austintxhomes.co/sold-homes-near-${z}`),
+      ...Object.keys(AUSTIN_ZIP_META).map(z => `https://austintxhomes.co/homes-for-sale-in-${z}`),
+      ...Object.keys(NEIGHBORHOOD_META).map(s => `https://austintxhomes.co/sold-homes-in-${s}`),
+      'https://austintxhomes.co/sienna-at-the-thompson-austin',
+      'https://austintxhomes.co/solomon-austin-apartments',
+      'https://austintxhomes.co/seven-austin-apartments',
+      'https://austintxhomes.co/luke-allen',
+    ];
+  }
+  const result = await pingIndexNow(urls, { source: 'admin-trigger' });
+  res.json(result);
+});
+
+// Hub: /sold-homes-austin — links every sold-comp page (by ZIP + hood).
 app.get('/sold-homes-austin', (_req, res) => {
-  const zips = Object.entries(AUSTIN_ZIP_META);
-  const rows = zips.map(([zip, meta]) =>
+  const zipRows = Object.entries(AUSTIN_ZIP_META).map(([zip, meta]) =>
     `<li><a href="/sold-homes-near-${zip}"><strong>${zip}</strong> · ${meta.name}</a><span>${meta.note}</span></li>`
+  ).join('');
+  const hoodRows = Object.entries(NEIGHBORHOOD_META).map(([slug, meta]) =>
+    `<li><a href="/sold-homes-in-${slug}"><strong>${meta.name}</strong></a><span>${meta.note}</span></li>`
   ).join('');
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, max-age=3600');
@@ -1392,11 +1461,61 @@ li span{display:block;font-size:12.5px;color:var(--mid);line-height:1.5}
 </style></head><body>
 <script src="/js/nav.js" defer></script>
 <section class="hero">
-  <div class="eyebrow">Live MLS Data · Every Austin ZIP</div>
-  <h1>Recently <em>Sold Homes</em> by ZIP</h1>
-  <p>Median close price, days on market, and sale-to-list ratio for every major Austin ZIP, updated live from ACTRIS MLS.</p>
+  <div class="eyebrow">Live MLS Data · Every Austin Submarket</div>
+  <h1>Recently <em>Sold Homes</em> in Austin</h1>
+  <p>Median close price, days on market, and sale-to-list ratio for every major Austin ZIP and neighborhood, updated live from ACTRIS MLS.</p>
 </section>
-<div class="wrap"><ul>${rows}</ul></div>
+<div class="wrap">
+  <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:1.6rem;margin-bottom:14px;color:#1a1918;">By ZIP Code</h2>
+  <ul>${zipRows}</ul>
+  <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:1.6rem;margin:32px 0 14px;color:#1a1918;">By Neighborhood</h2>
+  <ul>${hoodRows}</ul>
+</div>
+<script src="/js/footer.js" defer></script>
+</body></html>`);
+});
+
+// Hub: /homes-for-sale-austin — active-listing companion to /sold-homes-austin.
+app.get('/homes-for-sale-austin', (_req, res) => {
+  const zipRows = Object.entries(AUSTIN_ZIP_META).map(([zip, meta]) =>
+    `<li><a href="/homes-for-sale-in-${zip}"><strong>${zip}</strong> · ${meta.name}</a><span>${meta.note}</span></li>`
+  ).join('');
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.send(`<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Homes for Sale in Austin, TX by ZIP | Luke Allen Realtor</title>
+<meta name="description" content="Live active listings for every major Austin ZIP. Median list price, price-reduction rate, and days on market pulled live from ACTRIS MLS.">
+<link rel="canonical" href="https://austintxhomes.co/homes-for-sale-austin">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96"><link rel="apple-touch-icon" href="/favicon-96.png">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="geo.region" content="US-TX"><meta name="geo.placename" content="Austin, Texas">
+<meta property="og:type" content="website"><meta property="og:title" content="Homes for Sale in Austin, TX by ZIP"><meta property="og:url" content="https://austintxhomes.co/homes-for-sale-austin"><meta property="og:image" content="https://austintxhomes.co/images/luke-allen.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--gold:#b8935a;--ink:#0f0f0e;--text:#1a1918;--mid:#5c5b57;--warm:#faf8f4;--border:#e5dfd4}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--text);line-height:1.65}
+.hero{background:var(--ink);color:#fff;padding:100px 2rem 60px;text-align:center}
+.hero .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#cda96f;margin-bottom:18px;font-weight:600}
+.hero h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(2.4rem,5vw,3.6rem);font-weight:400;margin-bottom:14px}
+.hero h1 em{font-style:italic;color:#cda96f}
+.hero p{max-width:640px;margin:0 auto;color:rgba(255,255,255,.75);font-weight:300}
+.wrap{max-width:1080px;margin:0 auto;padding:56px 2rem}
+ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+li{background:var(--warm);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:4px;padding:16px 20px}
+li a{display:block;color:var(--gold);text-decoration:none;font-size:15px;margin-bottom:4px}
+li strong{color:var(--ink);font-weight:600}
+li span{display:block;font-size:12.5px;color:var(--mid);line-height:1.5}
+</style></head><body>
+<script src="/js/nav.js" defer></script>
+<section class="hero">
+  <div class="eyebrow">Live MLS Data · Every Austin ZIP</div>
+  <h1>Homes <em>For Sale</em> in Austin</h1>
+  <p>Live active inventory for every major Austin ZIP, updated every 30 minutes from ACTRIS MLS.</p>
+</section>
+<div class="wrap"><ul>${zipRows}</ul></div>
 <script src="/js/footer.js" defer></script>
 </body></html>`);
 });
