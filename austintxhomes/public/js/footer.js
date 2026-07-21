@@ -127,6 +127,8 @@
   <li><a href="/homes-with-pool-austin">Homes with Pool in Austin</a></li>
   <li><a href="/sell">Sell Your Austin Home</a></li>
   <li><a href="/what-is-my-home-worth">What Is My Home Worth?</a></li>
+  <li><a href="/sold-homes-austin">Recently Sold Homes in Austin (by ZIP)</a></li>
+  <li><a href="/homes-for-sale-austin">Homes for Sale in Austin (by ZIP)</a></li>
   <li><a href="/rentals">Austin Rentals</a></li>
   <li><a href="/sienna-at-the-thompson-austin">Sienna at the Thompson</a></li>
   <li><a href="/solomon-austin-apartments">Solomon (East Austin)</a></li>
