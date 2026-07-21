@@ -733,7 +733,7 @@ ${photoUrls.length > 1 ? `<div class="gallery"><div class="gallery-grid">${galle
     <div class="contact-card">
       <h3>Luke Allen</h3>
       <span class="agent-title">Austin Realtor · TREC #788149</span>
-      <p class="agent-creds">Austin Marketing + Development Group<br>15 Five-Star Google Reviews · 5.0 Rating</p>
+      <p class="agent-creds">Austin Marketing + Development Group<br>27 Five-Star Google Reviews · 5.0 Rating</p>
       <form class="contact-form" id="contact-form" onsubmit="submitContact(event)">
         <input type="hidden" name="listing" value="${addr.replace(/"/g,'&quot;')}" />
         <input type="hidden" name="listingKey" value="${listing.listing_key}" />

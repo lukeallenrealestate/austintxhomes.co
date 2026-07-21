@@ -82,7 +82,7 @@ module.exports = function renderBlogPost(post) {
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "5.0",
-      "reviewCount": "22",
+      "reviewCount": "27",
       "bestRating": "5",
       "worstRating": "1"
     },
@@ -489,9 +489,9 @@ module.exports = function renderBlogPost(post) {
           <span class="contact-badge">5.0 ★ Google</span>
           <span class="contact-badge">TREC #788149</span>
           <span class="contact-badge">Central Austin Specialist</span>
-          <span class="contact-badge">15 Five-Star Reviews</span>
+          <span class="contact-badge">27 Five-Star Reviews</span>
         </div>
-        <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener" class="contact-reviews-link">Read Luke Allen's 15 five-star Google reviews →</a>
+        <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener" class="contact-reviews-link">Read Luke Allen's 27 five-star Google reviews →</a>
       </div>
       <div class="contact-form-card">
         <h3>Talk to Luke Allen</h3>

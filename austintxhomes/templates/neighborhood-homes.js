@@ -63,7 +63,7 @@ module.exports = function renderNeighborhoodHomesPage(n) {
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "5.0",
-      "reviewCount": "22",
+      "reviewCount": "27",
       "bestRating": "5",
       "worstRating": "1"
     },

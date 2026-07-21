@@ -1154,12 +1154,39 @@ app.get('/condos-near-ut-austin', (_req, res) => res.sendFile(path.join(__dirnam
 app.get('/ut-austin-residency-checklist', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/ut-austin-residency-checklist.html')));
 app.get('/living-near-ut-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-near-ut-austin.html')));
 app.get('/ut-residency-guide', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/ut-residency-guide.html')));
-app.get('/austin-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-isd-homes-for-sale.html')));
-app.get('/leander-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/leander-isd-homes-for-sale.html')));
-app.get('/round-rock-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/round-rock-isd-homes-for-sale.html')));
-app.get('/lake-travis-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/lake-travis-isd-homes-for-sale.html')));
-app.get('/hays-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/hays-isd-homes-for-sale.html')));
-app.get('/pflugerville-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/pflugerville-isd-homes-for-sale.html')));
+// ── Live-market SSR: injects the market widget into existing static ISD +
+//    neighborhood pages just before <script src="/js/footer.js" ...>. Falls
+//    back to plain sendFile if anything goes wrong so a bad DB read can't
+//    take down these pages.
+const { renderMarketWidget } = require('./templates/market-widget');
+function ssrWithMarketWidget(fileName, filter, opts) {
+  return (_req, res) => {
+    const p = path.join(__dirname, 'public/site', fileName);
+    try {
+      let html = require('fs').readFileSync(p, 'utf8');
+      const widget = renderMarketWidget(filter, opts);
+      const anchor = html.indexOf('<script src="/js/footer.js"');
+      if (anchor !== -1 && widget) {
+        html = html.slice(0, anchor) + widget + '\n' + html.slice(anchor);
+      }
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=1800');
+      res.setHeader('Last-Modified', new Date().toUTCString());
+      res.send(html);
+    } catch (e) {
+      console.warn('[ssrWithMarketWidget]', fileName, '→ fallback:', e.message);
+      res.sendFile(p);
+    }
+  };
+}
+
+app.get('/austin-isd-homes-for-sale',       ssrWithMarketWidget('austin-isd-homes-for-sale.html',       { schoolDistrict: 'Austin ISD' },       { areaName: 'Austin ISD' }));
+app.get('/leander-isd-homes-for-sale',      ssrWithMarketWidget('leander-isd-homes-for-sale.html',      { schoolDistrict: 'Leander ISD' },      { areaName: 'Leander ISD' }));
+app.get('/round-rock-isd-homes-for-sale',   ssrWithMarketWidget('round-rock-isd-homes-for-sale.html',   { schoolDistrict: 'Round Rock ISD' },   { areaName: 'Round Rock ISD' }));
+app.get('/lake-travis-isd-homes-for-sale',  ssrWithMarketWidget('lake-travis-isd-homes-for-sale.html',  { schoolDistrict: 'Lake Travis ISD' },  { areaName: 'Lake Travis ISD' }));
+app.get('/hays-isd-homes-for-sale',         ssrWithMarketWidget('hays-isd-homes-for-sale.html',         { schoolDistrict: 'Hays' },             { areaName: 'Hays CISD' }));
+app.get('/pflugerville-isd-homes-for-sale', ssrWithMarketWidget('pflugerville-isd-homes-for-sale.html', { schoolDistrict: 'Pflugerville ISD' }, { areaName: 'Pflugerville ISD' }));
+app.get('/eanes-isd-homes-for-sale',        ssrWithMarketWidget('eanes-isd-homes-for-sale.html',        { schoolDistrict: 'Eanes ISD' },        { areaName: 'Eanes ISD (Westlake)' }));
 app.get('/best-realtor-eanes-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-eanes-isd.html')));
 app.get('/best-realtor-austin-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-austin-isd.html')));
 app.get('/best-realtor-leander-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-leander-isd.html')));
@@ -1173,11 +1200,11 @@ app.get('/best-realtor-78703-austin', (_req, res) => res.sendFile(path.join(__di
 app.get('/best-realtor-78722-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78722-austin.html')));
 app.get('/best-realtor-78754-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78754-austin.html')));
 app.get('/best-realtor-78731-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78731-austin.html')));
-app.get('/zilker-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/zilker-homes-for-sale.html')));
-app.get('/allandale-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/allandale-homes-for-sale.html')));
-app.get('/brentwood-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/brentwood-homes-for-sale.html')));
+app.get('/zilker-homes-for-sale',    ssrWithMarketWidget('zilker-homes-for-sale.html',    { subdivision: 'Zilker' },    { areaName: 'Zilker' }));
+app.get('/allandale-homes-for-sale', ssrWithMarketWidget('allandale-homes-for-sale.html', { subdivision: 'Allandale' }, { areaName: 'Allandale' }));
+app.get('/brentwood-homes-for-sale', ssrWithMarketWidget('brentwood-homes-for-sale.html', { subdivision: 'Brentwood' }, { areaName: 'Brentwood' }));
 app.get('/tarrytown-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-realtor.html')));
-app.get('/tarrytown-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-homes-for-sale.html')));
+app.get('/tarrytown-homes-for-sale', ssrWithMarketWidget('tarrytown-homes-for-sale.html', { subdivision: 'Tarrytown' }, { areaName: 'Tarrytown / Clarksville' }));
 app.get('/tarrytown-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-market-report.html')));
 app.get('/westlake-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/westlake-market-report.html')));
 app.get('/barton-hills-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/barton-hills-market-report.html')));
@@ -1214,7 +1241,7 @@ app.get('/brentwood-market-report', (_req, res) => res.sendFile(path.join(__dirn
 app.get('/living-in-brentwood-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-brentwood-austin.html')));
 app.get('/sell-home-brentwood-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-brentwood-austin.html')));
 app.get('/crestview-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/crestview-realtor.html')));
-app.get('/crestview-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/crestview-homes-for-sale.html')));
+app.get('/crestview-homes-for-sale', ssrWithMarketWidget('crestview-homes-for-sale.html', { subdivision: 'Crestview' }, { areaName: 'Crestview' }));
 app.get('/crestview-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/crestview-market-report.html')));
 app.get('/living-in-crestview-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-crestview-austin.html')));
 app.get('/sell-home-crestview-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-crestview-austin.html')));
@@ -1228,17 +1255,17 @@ app.get('/dripping-springs-tx-homes-for-sale', (_req, res) => res.redirect(301, 
 app.get('/living-in-dripping-springs-tx', (_req, res) => res.redirect(301, '/living-in-dripping-springs'));
 app.get('/sell-home-dripping-springs-tx', (_req, res) => res.redirect(301, '/sell-home-dripping-springs'));
 app.get('/hyde-park-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/hyde-park-realtor.html')));
-app.get('/hyde-park-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/hyde-park-homes-for-sale.html')));
+app.get('/hyde-park-homes-for-sale', ssrWithMarketWidget('hyde-park-homes-for-sale.html', { subdivision: 'Hyde Park' }, { areaName: 'Hyde Park' }));
 app.get('/hyde-park-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/hyde-park-market-report.html')));
 app.get('/living-in-hyde-park-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-hyde-park-austin.html')));
 app.get('/sell-home-hyde-park-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-hyde-park-austin.html')));
 app.get('/mueller-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/mueller-realtor.html')));
-app.get('/mueller-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/mueller-homes-for-sale.html')));
+app.get('/mueller-homes-for-sale', ssrWithMarketWidget('mueller-homes-for-sale.html', { subdivision: 'Mueller' }, { areaName: 'Mueller' }));
 app.get('/mueller-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/mueller-market-report.html')));
 app.get('/living-in-mueller-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-mueller-austin.html')));
 app.get('/sell-home-mueller-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-mueller-austin.html')));
 app.get('/east-austin-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/east-austin-realtor.html')));
-app.get('/east-austin-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/east-austin-homes-for-sale.html')));
+app.get('/east-austin-homes-for-sale', ssrWithMarketWidget('east-austin-homes-for-sale.html', { city: 'Austin', zip: '78702' }, { areaName: 'East Austin (78702)' }));
 app.get('/east-austin-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/east-austin-market-report.html')));
 
 // ── Money-keyword landing pages (SEO — targets specific high-intent Austin agent searches) ──
@@ -1306,6 +1333,72 @@ app.get('/sitemap-index.xml', (_req, res) => {
     <lastmod>${new Date().toISOString().slice(0, 10)}</lastmod>
   </sitemap>
 </sitemapindex>`);
+});
+
+// ── Programmatic SEO: /sold-homes-near-{zip} for the top ~30 Austin ZIPs ───
+// Every request runs a live sold-comp query against the ACTRIS DB (results
+// are memoized 30 min in market-stats.js), so the pages stay fresh without
+// a rebuild step. Google gets the same HTML with real numbers on every crawl.
+const { renderSoldCompsPage, AUSTIN_ZIP_META } = require('./templates/sold-comps');
+app.get('/sold-homes-near-:zip(\\d{5})', (req, res) => {
+  const zip = req.params.zip;
+  const html = renderSoldCompsPage(zip);
+  if (!html) {
+    res.setHeader('X-Robots-Tag', 'noindex, follow');
+    return res.status(410).sendFile(path.join(__dirname, 'public/site/luxury-homes.html'));
+  }
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=1800');
+  res.setHeader('Last-Modified', new Date().toUTCString());
+  res.send(html);
+});
+
+// Hub page enumerating every /sold-homes-near-{zip} page we render. Google
+// discovers all 30 through one internal link cluster instead of needing to
+// crawl the sitemap first.
+app.get('/sold-homes-austin', (_req, res) => {
+  const zips = Object.entries(AUSTIN_ZIP_META);
+  const rows = zips.map(([zip, meta]) =>
+    `<li><a href="/sold-homes-near-${zip}"><strong>${zip}</strong> · ${meta.name}</a><span>${meta.note}</span></li>`
+  ).join('');
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.send(`<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Recently Sold Homes in Austin, TX by ZIP | Luke Allen Realtor</title>
+<meta name="description" content="Live sold home data for every major Austin ZIP: 78701 through 78759. Median close price, days on market, sale-to-list ratio. Pulled weekly from ACTRIS MLS.">
+<link rel="canonical" href="https://austintxhomes.co/sold-homes-austin">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96"><link rel="apple-touch-icon" href="/favicon-96.png">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="geo.region" content="US-TX"><meta name="geo.placename" content="Austin, Texas">
+<meta property="og:type" content="website"><meta property="og:title" content="Recently Sold Homes in Austin, TX by ZIP"><meta property="og:url" content="https://austintxhomes.co/sold-homes-austin"><meta property="og:image" content="https://austintxhomes.co/images/luke-allen.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--gold:#b8935a;--ink:#0f0f0e;--text:#1a1918;--mid:#5c5b57;--warm:#faf8f4;--border:#e5dfd4}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--text);line-height:1.65}
+.hero{background:var(--ink);color:#fff;padding:100px 2rem 60px;text-align:center}
+.hero .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#cda96f;margin-bottom:18px;font-weight:600}
+.hero h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(2.4rem,5vw,3.6rem);font-weight:400;margin-bottom:14px}
+.hero h1 em{font-style:italic;color:#cda96f}
+.hero p{max-width:640px;margin:0 auto;color:rgba(255,255,255,.75);font-weight:300}
+.wrap{max-width:1080px;margin:0 auto;padding:56px 2rem}
+ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+li{background:var(--warm);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:4px;padding:16px 20px}
+li a{display:block;color:var(--gold);text-decoration:none;font-size:15px;margin-bottom:4px}
+li strong{color:var(--ink);font-weight:600}
+li span{display:block;font-size:12.5px;color:var(--mid);line-height:1.5}
+</style></head><body>
+<script src="/js/nav.js" defer></script>
+<section class="hero">
+  <div class="eyebrow">Live MLS Data · Every Austin ZIP</div>
+  <h1>Recently <em>Sold Homes</em> by ZIP</h1>
+  <p>Median close price, days on market, and sale-to-list ratio for every major Austin ZIP, updated live from ACTRIS MLS.</p>
+</section>
+<div class="wrap"><ul>${rows}</ul></div>
+<script src="/js/footer.js" defer></script>
+</body></html>`);
 });
 
 // ── Programmatic SEO: individual listing pages for $1M+ properties ─────────

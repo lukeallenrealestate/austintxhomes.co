@@ -98,7 +98,7 @@ module.exports = function renderNeighborhoodPage(n) {
   { "@type": "Neighborhood", "name": "${n.name}" }
   ],
   "hasCredential": { "@type": "EducationalOccupationalCredential", "name": "Texas Real Estate License", "identifier": "788149", "credentialCategory": "license" },
-  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5.0", "reviewCount": "22", "bestRating": "5", "worstRating": "1" },
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5.0", "reviewCount": "27", "bestRating": "5", "worstRating": "1" },
   "sameAs": ["https://share.google/hETte82InqUPvWeNC","https://www.linkedin.com/in/lukeallentx/","https://www.instagram.com/lukeallenrealty/","https://www.tiktok.com/@austintxapartments"]
   }
   </script>
