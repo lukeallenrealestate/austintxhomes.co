@@ -330,7 +330,13 @@ function replaceById(html, id, newText) {
     `(<[^>]*\\bid="${id.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}"[^>]*>)[\\s\\S]*?(</[a-zA-Z]+>)`,
     ''
   );
-  return html.replace(re, `$1${newText}$2`);
+  // Escape $ in newText so JS String.replace doesn't interpret $1, $2, $$
+  // etc. as backreferences. Bug caught 2026-07-22: SSR-injected listing
+  // prices like "$65,000" were rendering as ",000" because "$6" was
+  // being read as match-group-6 (empty). Doubling the $ makes it a
+  // literal $ per MDN.
+  const safe = String(newText).replace(/\$/g, '$$$$');
+  return html.replace(re, `$1${safe}$2`);
 }
 
 function replaceByNeighborhood(html, name, newText) {
@@ -393,8 +399,61 @@ function renderHomepage(filePath) {
     html = replaceById(html, 'sb-listings', fmtThousands(s.totalActive));
     html = replaceById(html, 'sb-price', fmtPriceCompact(s.avgPrice));
     html = replaceById(html, 'sb-dom', `${s.avgDom} days`);
+    // SSR the Recently Listed grid so Googlebot sees actual listing cards,
+    // not "Loading listings…". Fetches 3 newest active residential listings.
+    // Falls back silently to the client-side fetch if the DB query fails.
+    try {
+      const rows = listingDb.prepare(`
+        SELECT listing_key, unparsed_address, city, postal_code, list_price,
+               bedrooms_total, bathrooms_total, living_area, photos,
+               listing_contract_date
+        FROM listings
+        WHERE standard_status = 'Active'
+          AND list_price >= 250000
+          AND property_sub_type IN ('Single Family Residence','Condominium','Townhouse')
+          AND mlg_can_view = 1
+          AND unparsed_address IS NOT NULL
+          AND photos IS NOT NULL AND photos != '[]' AND photos != ''
+        ORDER BY listing_contract_date DESC
+        LIMIT 3
+      `).all();
+      if (rows.length) html = replaceById(html, 'feat-grid', renderListingCards(rows));
+    } catch (e) {
+      console.warn('[ssrInject] Recently Listed SSR failed, falling back to client-side:', e.message);
+    }
     return html;
   });
+}
+
+// Render N active-listing cards for the homepage "Recently Listed" section.
+// Matches the class shape the client-side JS was producing, so page CSS
+// styles apply identically. Address slugification follows the /homes/{slug}
+// route pattern in server.js.
+function renderListingCards(rows) {
+  return rows.map(l => {
+    const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : '';
+    const addr = [l.unparsed_address, l.city].filter(Boolean).join(', ').trim();
+    const addrEsc = addr.replace(/"/g, '&quot;');
+    const stats = [
+      l.bedrooms_total && `${l.bedrooms_total} bd`,
+      l.bathrooms_total && `${l.bathrooms_total} ba`,
+      l.living_area && `${Number(l.living_area).toLocaleString()} sqft`,
+    ].filter(Boolean).join(' · ');
+    // Match the /homes/{slug} URL shape server.js expects
+    const addrSlug = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-');
+    const href = `/homes/${addrSlug}--${l.listing_key}`;
+    let photos = [];
+    try { photos = JSON.parse(l.photos || '[]'); } catch (_) {}
+    const img = photos && photos.length ? `/api/properties/photos/${l.listing_key}/0` : '';
+    return `<a class="listing-card" href="${href}">
+      <div class="lc-img">${img ? `<img src="${img}" alt="${addrEsc}" loading="lazy" />` : ''}<span class="lc-badge">Active</span></div>
+      <div class="lc-body">
+        <div class="lc-price">${price}</div>
+        <div class="lc-addr">${addrEsc}</div>
+        <div class="lc-stats"><span>${stats}</span></div>
+      </div>
+    </a>`;
+  }).join('');
 }
 
 // Each stat card has an outer signal class (.buyer-signal / .seller-signal

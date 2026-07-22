@@ -178,7 +178,7 @@ function renderHead({ title, description, canonical, schemaBlocks }) {
 function realEstateAgentSchema() {
   return {
     '@context': 'https://schema.org',
-    '@type': 'RealEstateAgent',
+    '@type': ['RealEstateAgent','LocalBusiness'],
     name: 'Luke Allen – Austin TX Homes',
     url: 'https://austintxhomes.co',
     telephone: '+12547182567',
@@ -756,7 +756,7 @@ function renderBestRealtor(n) {
       '@context': 'https://schema.org',
       '@type': 'ProfessionalService',
       name: `Luke Allen – ${n.name} Round Rock Realtor`,
-      provider: { '@type': 'RealEstateAgent', name: 'Luke Allen' },
+      provider: { '@type': ['RealEstateAgent','LocalBusiness'], name: 'Luke Allen' },
       areaServed: { '@type': 'Place', name: `${n.name}, Round Rock, TX` },
       url: canonical
     }

@@ -291,10 +291,10 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
     offers: { '@type': 'Offer', price, priceCurrency: 'USD', availability: isActive ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut' }
   };
   const agentSchema = {
-    '@context': 'https://schema.org', '@type': 'RealEstateAgent',
+    '@context': 'https://schema.org', '@type': ['RealEstateAgent','LocalBusiness'],
     name: 'Luke Allen, Austin TX Homes', url: 'https://austintxhomes.co',
     telephone: '+12547182567', email: 'Luke@austinmdg.com',
-    aggregateRating: { '@type': 'AggregateRating', ratingValue: '5.0', reviewCount: '15', bestRating: '5', worstRating: '1' },
+    aggregateRating: { '@type': 'AggregateRating', ratingValue: '5.0', reviewCount: '27', bestRating: '5', worstRating: '1' },
     sameAs: ['https://share.google/hETte82InqUPvWeNC','https://www.linkedin.com/in/lukeallentx/','https://www.instagram.com/lukeallenrealty/','https://www.tiktok.com/@austintxapartments']
   };
   const breadcrumbSchema = {

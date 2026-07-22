@@ -47,7 +47,7 @@ module.exports = function renderNeighborhoodHomesPage(n) {
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "RealEstateAgent",
+    "@type": ["RealEstateAgent","LocalBusiness"],
     "name": "Luke Allen – Austin TX Homes",
     "url": "https://austintxhomes.co",
     "telephone": "+12547182567",

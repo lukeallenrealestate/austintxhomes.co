@@ -107,7 +107,7 @@ const NEIGHBORHOOD_META = {
 function schemaBlocks({ url, headline, description, published, faqs }) {
   const now = new Date().toISOString();
   const agent = {
-    '@context': 'https://schema.org', '@type': 'RealEstateAgent',
+    '@context': 'https://schema.org', '@type': ['RealEstateAgent','LocalBusiness'],
     name: 'Luke Allen, Austin TX Homes', url: 'https://austintxhomes.co',
     telephone: '+12547182567', email: 'Luke@austinmdg.com',
     aggregateRating: { '@type': 'AggregateRating', ratingValue: '5.0', reviewCount: '27', bestRating: '5', worstRating: '1' },
