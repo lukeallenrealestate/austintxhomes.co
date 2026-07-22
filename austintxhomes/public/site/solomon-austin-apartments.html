@@ -414,7 +414,7 @@ document.getElementById('solomon-form').addEventListener('submit', async (e) => 
  const form = e.target;
  const data = { name: form.name.value, email: form.email.value, phone: form.phone.value, planType: form.planType.value, interestedPlan: form.interestedPlan.value, message: form.message.value, source: 'solomon-austin-apartments' };
  try {
- await fetch('/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+ await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
  form.style.display = 'none';
  document.getElementById('solomon-success').style.display = 'block';
  } catch (err) { alert('Could not send. Email Luke@austinmdg.com'); }

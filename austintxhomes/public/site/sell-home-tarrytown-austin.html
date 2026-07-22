@@ -493,8 +493,12 @@
  <input type="text" id="name" name="name" placeholder="Jane Smith" required>
  </div>
  <div class="form-group">
- <label for="contact">Phone or Email</label>
- <input type="text" id="contact" name="contact" placeholder="(512) 555-0000 or email" required>
+ <label>Email</label>
+ <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+ </div>
+ <div class="form-row">
+ <label>Phone</label>
+ <input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required
  </div>
  <div class="form-group full">
  <label for="address">Your Tarrytown Address</label>

@@ -508,7 +508,8 @@
  <form id="hero-contact-form">
  <input type="hidden" name="source" value="first-time-buyers-hero" />
  <input type="text" name="name" placeholder="Your name" required />
- <input type="text" name="contact" placeholder="Email or phone" required />
+ <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+ <input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required />
  <select name="timeline" aria-label="Timeline">
  <option value="">Buying timeline</option>
  <option value="0-3mo">Within 3 months</option>

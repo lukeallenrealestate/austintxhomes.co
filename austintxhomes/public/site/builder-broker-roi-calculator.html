@@ -294,7 +294,8 @@
  <input type="hidden" name="source" value="builder-broker-roi-calculator" />
  <input type="text" name="name" placeholder="Your name" required />
  <input type="text" name="company" placeholder="Company / development entity" />
- <input type="text" name="contact" placeholder="Email or phone" required />
+ <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+ <input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required />
  <select name="projectType" aria-label="ProjectType">
  <option value="">Project type</option>
  <option value="spec">Spec home (1-3 units)</option>

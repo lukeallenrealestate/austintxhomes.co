@@ -1187,8 +1187,12 @@
  </div>
  </div>
  <div class="form-field">
- <label for="inv-contact">Phone or Email *</label>
- <input type="text" id="inv-contact" name="contact" required placeholder="Best way to reach you">
+ <label for="inv-email">Email</label>
+ <input type="email" name="email" id="inv-email" placeholder="you@example.com" autocomplete="email" required>
+ </div>
+ <div class="form-row">
+ <label for="inv-phone">Phone</label>
+ <input type="tel" name="phone" id="inv-phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required
  </div>
  <div class="form-row">
  <div class="form-field">

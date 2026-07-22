@@ -399,4 +399,106 @@
   }
   } catch (_) {}
 
+  // ── LEAD-CAPTURE SAFETY NET ────────────────────────────────────────────
+  // Historically most page-specific contact forms had no JS submit handler
+  // and no action attribute, so hitting Submit did a GET to the same page
+  // and silently dropped every lead. This global handler catches any form
+  // that hasn't already been intercepted by the page's own script, POSTs
+  // the fields to /api/contact (which forwards to email + Realtor OS CRM),
+  // and shows an inline success/error. Runs on capture so page-level
+  // handlers that call preventDefault + return still win.
+  function isContactForm(form) {
+    if (!form || form.dataset.leadHandled === 'true') return false;
+    // Skip search boxes, auth forms, and any form that opts out.
+    if (form.matches('[data-no-lead-handler]')) return false;
+    if (form.action && /\/search|\/login|\/signup|\/auth|\/subscribe|\/unsubscribe|\/calculate|\/api\//i.test(form.action)) return false;
+    // Must have a name field OR an email/contact field to be a lead form.
+    return !!(form.querySelector('input[name="name"]') && form.querySelector('input[name="email"], input[name="contact"], input[type="email"]'));
+  }
+
+  function getVal(form, sel) { const el = form.querySelector(sel); return el && el.value ? el.value.trim() : ''; }
+
+  async function submitLead(form) {
+    // Prevent double-submit by disabling the button.
+    const btn = form.querySelector('button[type="submit"], input[type="submit"]');
+    const origBtnHtml = btn ? btn.innerHTML : null;
+    if (btn) { btn.disabled = true; btn.innerHTML = 'Sending...'; }
+
+    // Extract every named input/select/textarea and coerce into the shape
+    // /api/contact expects: name, email, phone, source, plus any extras.
+    const data = {};
+    Array.from(form.elements).forEach(el => {
+      if (!el.name || el.type === 'submit' || el.type === 'button') return;
+      data[el.name] = el.value != null ? String(el.value).trim() : '';
+    });
+
+    // Default source to the current URL slug if not already set by the form.
+    if (!data.source) data.source = (window.location.pathname || '/').replace(/^\//, '') || 'home';
+
+    // Recovery: legacy forms have `name="contact"` as a combined field.
+    // If it looks like an email, promote it to `email`.
+    const looksLikeEmail = v => typeof v === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+    const looksLikePhone = v => typeof v === 'string' && /^[\d().+\-\s]{7,}$/.test(v.trim());
+    if (!data.email && data.contact && looksLikeEmail(data.contact)) data.email = data.contact;
+    if (!data.phone && data.contact && looksLikePhone(data.contact)) data.phone = data.contact;
+
+    // Build a friendly `message` field so the CRM/email has full context.
+    const parts = [];
+    if (data.notes) parts.push(data.notes);
+    if (data.message && data.message !== data.notes) parts.push(data.message);
+    if (data.intent) parts.push('Intent: ' + data.intent);
+    if (data.neighborhood) parts.push('Neighborhood: ' + data.neighborhood);
+    if (data.timeline) parts.push('Timeline: ' + data.timeline);
+    if (data.budget) parts.push('Budget: ' + data.budget);
+    if (data.interestedPlan) parts.push('Interested in: ' + data.interestedPlan);
+    if (data.planType) parts.push('Plan type: ' + data.planType);
+    if (parts.length && !data.message) data.message = parts.join(' | ');
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json().catch(() => ({}));
+      if (res.ok && !json.error) {
+        showFormMessage(form, 'Thanks. Luke will reach out shortly.', 'success');
+        form.reset();
+        // Reset button after a beat in case the user wants to submit again later
+        setTimeout(() => { if (btn) { btn.disabled = false; btn.innerHTML = origBtnHtml; } }, 3000);
+      } else {
+        const msg = json.error || 'Something went wrong. Please email Luke@austinmdg.com or call (254) 718-2567.';
+        showFormMessage(form, msg, 'error');
+        if (btn) { btn.disabled = false; btn.innerHTML = origBtnHtml; }
+      }
+    } catch (e) {
+      showFormMessage(form, 'Network error. Please email Luke@austinmdg.com or call (254) 718-2567.', 'error');
+      if (btn) { btn.disabled = false; btn.innerHTML = origBtnHtml; }
+    }
+  }
+
+  function showFormMessage(form, msg, kind) {
+    let box = form.querySelector('.lead-msg');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'lead-msg';
+      box.style.cssText = 'margin-top:12px;padding:12px 14px;border-radius:4px;font-size:14px;line-height:1.5;';
+      form.appendChild(box);
+    }
+    box.textContent = msg;
+    box.style.background = kind === 'success' ? '#e8f4ea' : '#fbeaea';
+    box.style.color = kind === 'success' ? '#2d6a30' : '#8a2020';
+    box.style.border = '1px solid ' + (kind === 'success' ? '#b7d9bb' : '#e3b0b0');
+  }
+
+  // Attach on capture so we intercept before browser's default submit fires,
+  // but page-level handlers that already call preventDefault continue to win.
+  document.addEventListener('submit', function (e) {
+    const form = e.target;
+    if (!isContactForm(form)) return;
+    e.preventDefault();
+    form.dataset.leadHandled = 'true';
+    submitLead(form);
+  }, true);
+
 })();

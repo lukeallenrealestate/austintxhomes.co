@@ -427,7 +427,8 @@
  <form id="hero-contact-form">
  <input type="hidden" name="source" value="investment-properties-hero" />
  <input type="text" name="name" placeholder="Your name" required />
- <input type="text" name="contact" placeholder="Email or phone" required />
+ <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+ <input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required />
  <select name="strategy" aria-label="Strategy">
  <option value="">Strategy</option>
  <option value="ltr">Long-term rental</option>

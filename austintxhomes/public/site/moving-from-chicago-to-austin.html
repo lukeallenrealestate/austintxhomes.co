@@ -470,7 +470,8 @@
  <form id="hero-contact-form">
  <input type="hidden" name="source" value="moving-from-chicago" />
  <input type="text" name="name" placeholder="Your name" required />
- <input type="text" name="contact" placeholder="Email or phone" required />
+ <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+ <input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required />
  <select name="budget" aria-label="Budget">
  <option value="">Budget range</option>
  <option>Under $400K</option>
@@ -1004,8 +1005,12 @@
  <input type="text" name="name" placeholder="First and last name" required>
  </div>
  <div class="form-group">
- <label>Phone or Email</label>
- <input type="text" name="contact" placeholder="Best way to reach you" required>
+ <label>Email</label>
+ <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+ </div>
+ <div class="form-row">
+ <label>Phone</label>
+ <input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required
  </div>
  </div>
  <div class="form-row">

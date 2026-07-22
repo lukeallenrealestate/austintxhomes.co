@@ -352,7 +352,8 @@
  <form id="hero-mf-form">
  <input type="hidden" name="source" value="multifamily-report-hero" />
  <input type="text" name="name" placeholder="Your name" required />
- <input type="text" name="contact" placeholder="Email or phone" required />
+ <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+ <input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required />
  <select name="interest" aria-label="Interest">
  <option value="">I&rsquo;m focused on&hellip;</option>
  <option>Buying duplex / triplex / fourplex</option>
@@ -645,7 +646,8 @@
  <form id="mf-popup-form">
  <input type="hidden" name="source" value="multifamily-report-popup" />
  <input type="text" name="name" placeholder="Your name" required />
- <input type="text" name="contact" placeholder="Email or phone" required />
+ <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+ <input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required />
  <button type="submit">Subscribe &rarr;</button>
  <p class="pop-note">No spam &middot; one email per quarter</p>
  </form>

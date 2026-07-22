@@ -287,7 +287,8 @@ section.content.dark p strong{color:#fff}
  <input type="hidden" name="source" value="austin-townhome-development-sales" />
  <div class="lf-group"><input type="text" name="name" placeholder="Your name" required /></div>
  <div class="lf-group"><input type="text" name="company" placeholder="Company / brand (optional)" /></div>
- <div class="lf-group"><input type="text" name="contact" placeholder="Phone or email" required /></div>
+ <div class="lf-group"><input type="email" name="email" placeholder="you@example.com" autocomplete="email" required /></div>
+ <div class="lf-group"><input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required /></div>
  <div class="lf-group"><input type="text" name="unitCount" placeholder="Unit count (e.g. 24)" /></div>
  <div class="lf-group"><textarea name="message" placeholder="Project address, target completion, current status..."></textarea></div>
  <button type="submit">Send Message to Luke</button>

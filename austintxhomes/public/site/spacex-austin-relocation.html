@@ -845,7 +845,8 @@
  <p>Free buyer representation. No obligation.</p>
  <form id="spacex-contact-form">
  <div class="form-group"><input type="text" name="name" placeholder="Your Name" required /></div>
- <div class="form-group"><input type="text" name="contact" placeholder="Phone or Email" required /></div>
+ <div class="form-group"><input type="email" name="email" placeholder="you@example.com" autocomplete="email" required /></div>
+ <div class="form-group"><input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required /></div>
  <div class="form-group"><input type="text" name="start_date" placeholder="Approximate SpaceX start date" /></div>
  <div class="form-group">
  <select name="budget" aria-label="Budget">

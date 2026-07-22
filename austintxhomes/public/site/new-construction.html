@@ -652,7 +652,8 @@
  <form id="nc-form">
  <input type="hidden" name="source" value="new-construction" />
  <div class="form-group"><input type="text" name="name" placeholder="Your name" required /></div>
- <div class="form-group"><input type="text" name="contact" placeholder="Phone or email" required /></div>
+ <div class="form-group"><input type="email" name="email" placeholder="you@example.com" autocomplete="email" required /></div>
+ <div class="form-group"><input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required /></div>
  <div class="form-group">
  <select name="budget" aria-label="Budget">
  <option value="">Budget range</option>

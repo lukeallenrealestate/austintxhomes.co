@@ -713,8 +713,12 @@
  <input type="text" id="s-name" name="name" required placeholder="Your name" />
  </div>
  <div class="field">
- <label for="s-contact">Phone or Email</label>
- <input type="text" id="s-contact" name="contact" required placeholder="(512) 000-0000" />
+ <label for="s-email">Email</label>
+ <input type="email" name="email" id="s-email" placeholder="you@example.com" autocomplete="email" required>
+ </div>
+ <div class="form-row">
+ <label for="s-phone">Phone</label>
+ <input type="tel" name="phone" id="s-phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required
  </div>
  </div>
  <div class="field">

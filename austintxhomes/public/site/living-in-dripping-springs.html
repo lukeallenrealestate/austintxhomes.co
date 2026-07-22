@@ -427,7 +427,8 @@
  <div class="form-title">Talk to Luke Allen</div>
  <form class="contact-form" id="contactForm">
  <input type="text" name="name" placeholder="Your name" required />
- <input type="text" name="contact" placeholder="Phone or email" required />
+ <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+ <input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required />
  <select name="intent" aria-label="What are you looking to do?">
  <option value="">Intent</option>
  <option value="Buy in Dripping Springs">Buy in Dripping Springs</option>

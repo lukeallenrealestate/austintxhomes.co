@@ -283,7 +283,8 @@ section.content.dark p strong{color:#fff}
  <p>Tell me a little about what you are looking for.</p>
  <input type="hidden" name="source" value="sell-pedernales-river-home" />
  <div class="lf-group"><input type="text" name="name" placeholder="Your name" required /></div>
- <div class="lf-group"><input type="text" name="contact" placeholder="Phone or email" required /></div>
+ <div class="lf-group"><input type="email" name="email" placeholder="you@example.com" autocomplete="email" required /></div>
+ <div class="lf-group"><input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required /></div>
  <div class="lf-group">
  <select name="intent" aria-label="What are you looking to do?">
  <option value="">I am looking to...</option>
