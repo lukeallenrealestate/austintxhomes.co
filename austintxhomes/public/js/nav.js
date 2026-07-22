@@ -24,6 +24,14 @@ fbq('track', 'PageView');
 
   // ─── CSS ────────────────────────────────────────────────────
   const css = `
+    /* Global fix: /images/luke-allen.jpg is a 800x1187 portrait. Legacy pages
+       set width in CSS but not height, so the img tag's height="1187"
+       attribute leaks through and stretches the image vertically. This rule
+       gives the browser a real height:auto default that overrides the
+       presentational attribute; any page that explicitly sets height in its
+       own CSS still wins on specificity, so avatar treatments (circle
+       crops, fixed-size squares) are unaffected. */
+    img[src$="luke-allen.jpg"] { height: auto; max-width: 100%; }
     #site-nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 300;
       height: 80px; background: transparent; backdrop-filter: none;
