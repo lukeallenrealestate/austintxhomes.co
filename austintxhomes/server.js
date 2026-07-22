@@ -321,6 +321,7 @@ cron.schedule('0 8 * * 1', async () => {
       AUSTIN_ZIP_META: azm,
       NEIGHBORHOOD_META: nm,
     } = require('./templates/market-page');
+    const nrc = require('./data/neighborhood-realtor-content');
     const urls = [
       'https://austintxhomes.co/',
       'https://austintxhomes.co/austin-homebuyer-report-2026-q3',
@@ -329,10 +330,14 @@ cron.schedule('0 8 * * 1', async () => {
       ...Object.keys(azm).map(z => `https://austintxhomes.co/sold-homes-near-${z}`),
       ...Object.keys(azm).map(z => `https://austintxhomes.co/homes-for-sale-in-${z}`),
       ...Object.keys(nm).map(s  => `https://austintxhomes.co/sold-homes-in-${s}`),
+      ...Object.keys(nrc).map(s => `https://austintxhomes.co/${s}-realtor`),
       'https://austintxhomes.co/sienna-at-the-thompson-austin',
       'https://austintxhomes.co/solomon-austin-apartments',
       'https://austintxhomes.co/seven-austin-apartments',
       'https://austintxhomes.co/luke-allen',
+      'https://austintxhomes.co/best-realtor-78703-austin',
+      'https://austintxhomes.co/best-realtor-78704-austin',
+      'https://austintxhomes.co/best-realtor-78702-austin',
     ];
     await pingIndexNow(urls, { source: 'weekly-cron' });
   } catch (e) { console.warn('[indexnow] weekly cron failed:', e.message); }
@@ -1434,10 +1439,14 @@ app.post('/api/indexnow/ping', express.json(), async (req, res) => {
       ...Object.keys(AUSTIN_ZIP_META).map(z => `https://austintxhomes.co/sold-homes-near-${z}`),
       ...Object.keys(AUSTIN_ZIP_META).map(z => `https://austintxhomes.co/homes-for-sale-in-${z}`),
       ...Object.keys(NEIGHBORHOOD_META).map(s => `https://austintxhomes.co/sold-homes-in-${s}`),
+      ...Object.keys(require('./data/neighborhood-realtor-content')).map(s => `https://austintxhomes.co/${s}-realtor`),
       'https://austintxhomes.co/sienna-at-the-thompson-austin',
       'https://austintxhomes.co/solomon-austin-apartments',
       'https://austintxhomes.co/seven-austin-apartments',
       'https://austintxhomes.co/luke-allen',
+      'https://austintxhomes.co/best-realtor-78703-austin',
+      'https://austintxhomes.co/best-realtor-78704-austin',
+      'https://austintxhomes.co/best-realtor-78702-austin',
     ];
   }
   const result = await pingIndexNow(urls, { source: 'admin-trigger' });
