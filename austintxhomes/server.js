@@ -1232,6 +1232,28 @@ app.get('/zilker-homes-for-sale',    ssrWithMarketWidget('zilker-homes-for-sale.
 app.get('/allandale-homes-for-sale', ssrWithMarketWidget('allandale-homes-for-sale.html', { subdivision: 'Allandale' }, { areaName: 'Allandale' }));
 app.get('/brentwood-homes-for-sale', ssrWithMarketWidget('brentwood-homes-for-sale.html', { subdivision: 'Brentwood' }, { areaName: 'Brentwood' }));
 app.get('/tarrytown-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-realtor.html')));
+
+// ── Micro-neighborhood Realtor pages (16) — the /neighborhood-realtor pattern
+// Adrian Salas ranks #2 for "top realtor bouldin creek" on a page like these
+// with no schema, no data, and no reviews. Ours have the full stack plus
+// live-market widget SSR-injected before the footer script, same pattern as
+// the ISD pages above.
+app.get('/bouldin-creek-realtor',   ssrWithMarketWidget('bouldin-creek-realtor.html',   { subdivision: 'Bouldin' },        { areaName: 'Bouldin Creek' }));
+app.get('/barton-hills-realtor',    ssrWithMarketWidget('barton-hills-realtor.html',    { subdivision: 'Barton Hills' },   { areaName: 'Barton Hills' }));
+app.get('/travis-heights-realtor',  ssrWithMarketWidget('travis-heights-realtor.html',  { subdivision: 'Travis Heights' }, { areaName: 'Travis Heights' }));
+app.get('/clarksville-realtor',     ssrWithMarketWidget('clarksville-realtor.html',     { subdivision: 'Clarksville' },    { areaName: 'Clarksville' }));
+app.get('/old-enfield-realtor',     ssrWithMarketWidget('old-enfield-realtor.html',     { subdivision: 'Old Enfield' },    { areaName: 'Old Enfield' }));
+app.get('/pemberton-heights-realtor', ssrWithMarketWidget('pemberton-heights-realtor.html', { subdivision: 'Pemberton' },  { areaName: 'Pemberton Heights' }));
+app.get('/deep-eddy-realtor',       ssrWithMarketWidget('deep-eddy-realtor.html',       { subdivision: 'Deep Eddy' },      { areaName: 'Deep Eddy' }));
+app.get('/rosedale-realtor',        ssrWithMarketWidget('rosedale-realtor.html',        { subdivision: 'Rosedale' },       { areaName: 'Rosedale' }));
+app.get('/old-west-austin-realtor', ssrWithMarketWidget('old-west-austin-realtor.html', { zip: '78703' },                  { areaName: 'Old West Austin' }));
+app.get('/north-loop-realtor',      ssrWithMarketWidget('north-loop-realtor.html',      { subdivision: 'North Loop' },     { areaName: 'North Loop' }));
+app.get('/west-campus-realtor',     ssrWithMarketWidget('west-campus-realtor.html',     { zip: '78705' },                  { areaName: 'West Campus' }));
+app.get('/rainey-street-realtor',   ssrWithMarketWidget('rainey-street-realtor.html',   { zip: '78701' },                  { areaName: 'Rainey Street / Downtown' }));
+app.get('/east-cesar-chavez-realtor', ssrWithMarketWidget('east-cesar-chavez-realtor.html', { subdivision: 'Cesar Chavez' }, { areaName: 'East Cesar Chavez' }));
+app.get('/holly-realtor',           ssrWithMarketWidget('holly-realtor.html',           { subdivision: 'Holly' },          { areaName: 'Holly' }));
+app.get('/chestnut-realtor',        ssrWithMarketWidget('chestnut-realtor.html',        { subdivision: 'Chestnut' },       { areaName: 'Chestnut' }));
+app.get('/govalle-realtor',         ssrWithMarketWidget('govalle-realtor.html',         { subdivision: 'Govalle' },        { areaName: 'Govalle' }));
 app.get('/tarrytown-homes-for-sale', ssrWithMarketWidget('tarrytown-homes-for-sale.html', { subdivision: 'Tarrytown' }, { areaName: 'Tarrytown / Clarksville' }));
 app.get('/tarrytown-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-market-report.html')));
 app.get('/westlake-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/westlake-market-report.html')));
