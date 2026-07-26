@@ -330,7 +330,7 @@ ${n.subAreas && n.subAreas.length ? `
   <h3>Related</h3>
   <div class="related-links">
    <a href="/austin-tx-realtor">Luke Allen &middot; Austin TX Realtor</a>
-   <a href="/best-realtor-${esc(n.zip)}-austin">Best Realtor in ${esc(n.zip)}</a>
+   ${['78702','78703','78704','78722','78731','78754'].includes(n.zip) ? `<a href="/best-realtor-${esc(n.zip)}-austin">Best Realtor in ${esc(n.zip)}</a>` : ''}
    <a href="/sold-homes-near-${esc(n.zip)}">Sold Homes in ${esc(n.zip)}</a>
    <a href="/homes-for-sale-in-${esc(n.zip)}">Homes for Sale in ${esc(n.zip)}</a>
    <a href="/austin-homebuyer-report-2026-q3">Austin Homebuyer Report Q3 2026</a>

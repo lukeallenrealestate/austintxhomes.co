@@ -1229,6 +1229,22 @@ app.get('/best-realtor-hays-isd', (_req, res) => res.sendFile(path.join(__dirnam
 app.get('/best-realtor-pflugerville-isd', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-pflugerville-isd.html')));
 app.get('/best-realtor-78704-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78704-austin.html')));
 app.get('/best-realtor-78702-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78702-austin.html')));
+
+// 301 redirects for /best-realtor-{ZIP}-austin URLs whose pages don't exist.
+// The 16 neighborhood-realtor pages generated 2026-07-22 templated in Related
+// links to these ZIP-based URLs across every rendered page; those links became
+// 404s because the pages were never built. External + internal traffic all
+// resolves via these 301s to the closest matching neighborhood-realtor page.
+// Also covers /austin-relocation-guide → /moving-to-austin, an external-only
+// backlink that surfaced in Search Console on 2026-07-26.
+app.get('/best-realtor-78701-austin', (_req, res) => res.redirect(301, '/rainey-street-realtor'));
+app.get('/best-realtor-78705-austin', (_req, res) => res.redirect(301, '/west-campus-realtor'));
+app.get('/best-realtor-78723-austin', (_req, res) => res.redirect(301, '/mueller-realtor'));
+app.get('/best-realtor-78751-austin', (_req, res) => res.redirect(301, '/hyde-park-realtor'));
+app.get('/best-realtor-78756-austin', (_req, res) => res.redirect(301, '/rosedale-realtor'));
+app.get('/westlake-hills-austin',     (_req, res) => res.redirect(301, '/best-realtor-eanes-isd'));
+app.get('/barton-creek-austin',       (_req, res) => res.redirect(301, '/best-realtor-eanes-isd'));
+app.get('/austin-relocation-guide',   (_req, res) => res.redirect(301, '/moving-to-austin'));
 app.get('/best-realtor-78703-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78703-austin.html')));
 app.get('/best-realtor-78722-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78722-austin.html')));
 app.get('/best-realtor-78754-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-realtor-78754-austin.html')));
