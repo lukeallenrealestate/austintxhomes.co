@@ -914,6 +914,18 @@ app.post('/api/admin/sync-lease-comps', (req, res) => {
     .catch(e => res.status(500).json({ error: e.message }));
 });
 
+// Defense-in-depth noindex header on every /api/ response. robots.txt already
+// disallows /api/, but Google occasionally crawls disallowed URLs anyway when
+// they're linked from indexed HTML (via img src, JS fetch, etc.) — the header
+// ensures none of them can accidentally land in the index. Reason: as of
+// 2026-07-26 GSC showed ~6-7k /api/properties/photos URLs in the "Crawled
+// currently not indexed" bucket, eating crawl budget that could reach money
+// pages instead.
+app.use('/api', (_req, res, next) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  next();
+});
+
 // ── idx-search routes (merged — no longer proxied) ───────────────────────────
 app.use('/api/properties', require('../idx-search/routes/properties'));
 app.use('/property',       require('../idx-search/routes/listing'));

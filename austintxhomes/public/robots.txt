@@ -1,6 +1,21 @@
 User-agent: *
 Allow: /
 
+# Block /api/ entirely. These endpoints return JSON or 302-redirect to R2
+# image storage — they are not indexable content. Before this block, GSC's
+# "Crawled currently not indexed" bucket was dominated by /api/properties/
+# photos/* URLs (Googlebot discovered every img src as a candidate page),
+# starving crawl budget away from the money pages. Same reasoning for
+# /search? SPA URLs with query parameters — the canonical /search page is
+# indexed once, parameter permutations are duplicates.
+Disallow: /api/
+Disallow: /search?
+Disallow: /admin
+Disallow: /account
+Disallow: /edit
+# NOT disallowing /property/ — those return 301 to /homes/*, and Google
+# needs to crawl them to process the redirect and transfer link equity.
+
 # Explicit allow for major AI crawlers and answer engines.
 # These are already allowed by the wildcard above, but explicit blocks
 # send a strong signal to bot operators and future-proof us against

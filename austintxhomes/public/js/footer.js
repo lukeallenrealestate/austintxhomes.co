@@ -138,6 +138,7 @@
   <li><a href="/sienna-at-the-thompson-austin">Sienna at the Thompson</a></li>
   <li><a href="/solomon-austin-apartments">Solomon (East Austin)</a></li>
   <li><a href="/seven-austin-apartments">Seven (Downtown)</a></li>
+  <li><a href="/apartments-near-tesla-gigafactory-austin">Apartments Near Tesla Gigafactory</a></li>
   <li><a href="/search" target="_blank" rel="noopener">Search All MLS Listings</a></li>
   <li><a href="/austin-homes-under-400k">Homes Under $400K in Austin</a></li>
   <li><a href="/austin-homes-under-500k">Homes Under $500K in Austin</a></li>
