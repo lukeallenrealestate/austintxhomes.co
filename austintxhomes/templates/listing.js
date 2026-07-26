@@ -474,7 +474,7 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
   <meta property="og:description" content="${metaDesc.replace(/"/g,'&quot;').slice(0,200)}" />
   <meta property="og:url" content="${url}" />
   <meta property="og:image" content="${heroPhoto||'https://austintxhomes.co/images/luke-allen.jpg'}" />
-  <meta name="robots" content="${isSold || isPending ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'}" />
+  <meta name="robots" content="${(isSold || isPending || (price && price < 1000000)) ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'}" />
   <meta name="geo.region" content="US-TX" />
   <meta name="geo.placename" content="${city}, Texas" />
   <meta name="twitter:card" content="summary_large_image" />

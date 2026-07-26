@@ -1610,6 +1610,19 @@ app.get('/homes/:slug', (req, res) => {
 
   try {
     const enriched = enrichListing(listing, listingDb, neighborhoods);
+    // Sub-$1M active listings: noindex header alongside the noindex meta tag
+    // in the template. Google honors either but sending both is defense in
+    // depth and lets Google act on the header without rendering the HTML.
+    // Reason: individual MLS listings under $1M look too much like Zillow /
+    // Realtor.com content to earn an index slot, and there are enough of
+    // them to eat crawl budget. Keeping >=$1M indexable — that's where
+    // luxury differentiation actually earns rankings.
+    const stdStatus = (enriched.listing.standard_status || '').toLowerCase();
+    const isLive = stdStatus !== 'closed' && stdStatus !== 'pending';
+    const belowLuxThreshold = (enriched.listing.list_price || 0) < 1_000_000;
+    if (isLive && belowLuxThreshold) {
+      res.setHeader('X-Robots-Tag', 'noindex, follow');
+    }
     res.setHeader('Content-Type', 'text/html');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     res.send(renderListingPage(enriched.listing, enriched));
