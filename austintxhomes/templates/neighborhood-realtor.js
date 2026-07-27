@@ -98,7 +98,7 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   {
   "@context": "https://schema.org",
   "@type": ["RealEstateAgent","LocalBusiness"],
-  "name": "Luke Allen – Austin TX Homes",
+  "name": "Luke Allen to Austin TX Homes",
   "url": "https://austintxhomes.co",
   "telephone": "+12547182567",
   "email": "Luke@austinmdg.com",
@@ -676,10 +676,10 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   <select name="budget" aria-label="Budget">
   <option value="">Budget range</option>
   <option value="under-500k">Under $500K</option>
-  <option value="500-750k">$500K – $750K</option>
-  <option value="750k-1m">$750K – $1M</option>
-  <option value="1m-1.5m">$1M – $1.5M</option>
-  <option value="1.5m-2m">$1.5M – $2M</option>
+  <option value="500-750k">$500K to $750K</option>
+  <option value="750k-1m">$750K to $1M</option>
+  <option value="1m-1.5m">$1M to $1.5M</option>
+  <option value="1.5m-2m">$1.5M to $2M</option>
   <option value="2m-plus">$2M+</option>
   </select>
   </div>

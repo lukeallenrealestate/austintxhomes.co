@@ -29,14 +29,14 @@ module.exports = function renderNeighborhoodHomesPage(n) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="facebook-domain-verification" content="95x8nbmaj8yii9ie0wsl3z7sgw6uqh" />
   <title>Homes for Sale in ${n.name} Austin TX | MLS Listings | Luke Allen</title>
-  <meta name="description" content="Browse all homes for sale in ${n.name}, Austin TX. Live MLS listings updated daily — every active property in ${n.name}. Luke Allen, TREC #788149." />
+  <meta name="description" content="Browse all homes for sale in ${n.name}, Austin TX. Live MLS listings updated daily - every active property in ${n.name}. Luke Allen, TREC #788149." />
   <link rel="canonical" href="https://austintxhomes.co/neighborhoods/${n.slug}/homes-for-sale" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
   <link rel="apple-touch-icon" href="/favicon-96.png" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Homes for Sale in ${n.name} Austin TX | MLS Listings | Luke Allen" />
-  <meta property="og:description" content="Browse all homes for sale in ${n.name}, Austin TX. Live MLS listings updated daily — every active property in ${n.name}. Luke Allen, TREC #788149." />
+  <meta property="og:description" content="Browse all homes for sale in ${n.name}, Austin TX. Live MLS listings updated daily - every active property in ${n.name}. Luke Allen, TREC #788149." />
   <meta property="og:url" content="https://austintxhomes.co/neighborhoods/${n.slug}/homes-for-sale" />
   <meta property="og:image" content="https://austintxhomes.co/images/luke-allen.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -48,7 +48,7 @@ module.exports = function renderNeighborhoodHomesPage(n) {
   {
     "@context": "https://schema.org",
     "@type": ["RealEstateAgent","LocalBusiness"],
-    "name": "Luke Allen – Austin TX Homes",
+    "name": "Luke Allen | Austin TX Homes",
     "url": "https://austintxhomes.co",
     "telephone": "+12547182567",
     "email": "Luke@austinmdg.com",
@@ -114,12 +114,27 @@ module.exports = function renderNeighborhoodHomesPage(n) {
 
     /* ── HERO ── */
     .hero {
-      margin-top: 64px;
+      position: relative;
       background: var(--ink);
       background-image: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,.18) 0%, transparent 70%);
-      padding: 72px 32px 64px;
+      padding: 152px 32px 72px;
       text-align: center;
+      overflow: hidden;
     }
+    .hero video {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; opacity: 0; transition: opacity .9s ease-in-out;
+      pointer-events: none; z-index: 0;
+    }
+    .hero video.ready { opacity: .38; }
+    .hero-veil {
+      position: absolute; inset: 0; z-index: 1;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,147,90,.18) 0%, transparent 70%),
+        linear-gradient(180deg, rgba(15,15,14,.55) 0%, rgba(15,15,14,.75) 100%);
+      pointer-events: none;
+    }
+    .hero > *:not(video):not(.hero-veil) { position: relative; z-index: 2; }
     .hero-eyebrow {
       font-size: 11px; letter-spacing: .15em; text-transform: uppercase;
       color: var(--gold); margin-bottom: 16px;
@@ -189,6 +204,16 @@ module.exports = function renderNeighborhoodHomesPage(n) {
       white-space: nowrap;
     }
     .filter-bar-result span { color: var(--gold); font-weight: 600; }
+
+    /* ── MAP SECTION ── */
+    .map-section { padding: 24px 32px 64px; background: var(--bg); }
+    .map-section-inner { max-width: var(--w); margin: 0 auto; }
+    #hood-map {
+      width: 100%; height: 520px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--cream);
+      overflow: hidden;
+    }
+    @media (max-width: 520px) { #hood-map { height: 360px; } }
 
     /* ── LISTINGS SECTION ── */
     .listings-section { padding: 64px 32px; background: var(--bg); }
@@ -463,9 +488,11 @@ module.exports = function renderNeighborhoodHomesPage(n) {
 
   <!-- HERO -->
   <section class="hero">
-    <p class="hero-eyebrow">${n.name} Austin TX · MLS Listings</p>
+    <video id="hv" autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
+    <div class="hero-veil"></div>
+    <p class="hero-eyebrow">${n.name} Austin TX &middot; MLS Listings</p>
     <h1>Homes for Sale in<br><em>${n.name}</em></h1>
-    <p class="hero-sub">Every active MLS listing in ${n.name}, Austin TX — updated daily. No sign-up required. Luke Allen, TREC #788149.</p>
+    <p class="hero-sub">Every active MLS listing in ${n.name}, Austin TX. Updated daily, no sign-up required. Luke Allen, TREC #788149.</p>
     <div class="hero-pills">
       <span class="pill pill-gold">Live MLS Data</span>
       <span class="pill">Updated Daily</span>
@@ -513,7 +540,7 @@ module.exports = function renderNeighborhoodHomesPage(n) {
         <option value="2000000">Under $2M</option>
         <option value="3000000">Under $3M</option>
       </select>
-      <span class="filter-bar-result">Results: <span id="result-count">—</span> listings</span>
+      <span class="filter-bar-result">Results: <span id="result-count"> - </span> listings</span>
     </div>
   </div>
 
@@ -527,6 +554,16 @@ module.exports = function renderNeighborhoodHomesPage(n) {
         <div class="listings-loading">Loading ${n.name} listings…</div>
       </div>
       <div class="pagination" id="pagination"></div>
+    </div>
+  </section>
+
+  <!-- MAP VIEW -->
+  <section class="map-section">
+    <div class="map-section-inner">
+      <p class="section-eyebrow">Map View</p>
+      <h2 class="section-title">${n.name} on the <em>Map</em></h2>
+      <p class="section-sub">Every active listing pinned. Hover for price, click to open the property page.</p>
+      <div id="hood-map"></div>
     </div>
   </section>
 
@@ -582,7 +619,7 @@ module.exports = function renderNeighborhoodHomesPage(n) {
         <div class="why-card">
           <div class="why-num">01</div>
           <h3>Local ${n.name} Knowledge</h3>
-          <p>Luke Allen knows every street, every block, and what comparable homes have actually sold for in ${n.name}. Not just MLS data — real on-the-ground knowledge.</p>
+          <p>Luke Allen knows every street, every block, and what comparable homes have actually sold for in ${n.name}. Not just MLS data - real on-the-ground knowledge.</p>
         </div>
         <div class="why-card">
           <div class="why-num">02</div>
@@ -613,7 +650,7 @@ module.exports = function renderNeighborhoodHomesPage(n) {
       <div class="contact-copy">
         <p class="section-eyebrow">${n.name} Specialist</p>
         <h2>Interested in <em>${n.name}?</em></h2>
-        <p>Luke Allen knows ${n.name} well — the best streets, which blocks to avoid, what homes are worth, and what's coming to market before it hits Zillow.</p>
+        <p>Luke Allen knows ${n.name} well - the best streets, which blocks to avoid, what homes are worth, and what's coming to market before it hits Zillow.</p>
         <p>Whether you're six months out or ready to make an offer this week, a free call can save you significant time and money.</p>
         <div class="trust-badges">
           <span class="trust-badge">⭐ <strong>5.0</strong> Google Rating</span>
@@ -644,10 +681,10 @@ module.exports = function renderNeighborhoodHomesPage(n) {
             <select name="budget" aria-label="Budget">
               <option value="">Budget range…</option>
               <option value="under-500k">Under $500K</option>
-              <option value="500k-750k">$500K–$750K</option>
-              <option value="750k-1m">$750K–$1M</option>
-              <option value="1m-1.5m">$1M–$1.5M</option>
-              <option value="1.5m-2m">$1.5M–$2M</option>
+              <option value="500k-750k">$500K to $750K</option>
+              <option value="750k-1m">$750K to $1M</option>
+              <option value="1m-1.5m">$1M to $1.5M</option>
+              <option value="1.5m-2m">$1.5M to $2M</option>
               <option value="2m+">$2M+</option>
             </select>
           </div>
@@ -711,9 +748,9 @@ module.exports = function renderNeighborhoodHomesPage(n) {
     grid.innerHTML = listings.map(function(l) {
       const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : 'Price N/A';
       const addr = l.unparsed_address || '${n.name}, Austin TX';
-      const beds = l.bedrooms_total || '\u2014';
-      const baths = l.bathrooms_total || '\u2014';
-      const sqft = l.living_area ? Number(l.living_area).toLocaleString() : '\u2014';
+      const beds = l.bedrooms_total || 'n/a';
+      const baths = l.bathrooms_total || 'n/a';
+      const sqft = l.living_area ? Number(l.living_area).toLocaleString() : 'n/a';
       const img = l.photos && l.photos[0] ? l.photos[0] : '';
       const addrSlug = (l.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\\s+/g, '-');
       const citySlug = (l.city || 'austin').toLowerCase().replace(/[^a-z]/g, '-');
@@ -782,11 +819,69 @@ module.exports = function renderNeighborhoodHomesPage(n) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(formData)
       });
-      if (res.ok) this.innerHTML = '<p style="text-align:center;padding:32px 0;color:var(--gold);font-family:Cormorant Garamond,serif;font-size:20px">Got it \u2014 Luke Allen will be in touch within 24 hours.</p>';
+      if (res.ok) this.innerHTML = '<p style="text-align:center;padding:32px 0;color:var(--gold);font-family:Cormorant Garamond,serif;font-size:20px">Got it. Luke Allen will be in touch within 24 hours.</p>';
     } catch { alert('Something went wrong. Please call or email directly.'); }
   });
 
   fetchListings(1);
+
+  // \u2500\u2500 Map view \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // Google Maps + /api/properties/map-pins. Filters to this neighborhood
+  // by subdivision_name LIKE match. Fits bounds to the actual pins so we
+  // don't need per-neighborhood lat/lng coords in data/neighborhoods.js.
+  const NBHD_MLS = ${JSON.stringify(n.mlsSearch || n.name)};
+  let hoodMap = null;
+
+  async function initHoodMap() {
+    try {
+      const configRes = await fetch('/api/config');
+      const config = await configRes.json();
+      if (!config.googleMapsKey) return;
+      const script = document.createElement('script');
+      script.src = 'https://maps.googleapis.com/maps/api/js?key=' + config.googleMapsKey + '&callback=renderHoodMap';
+      script.async = true; script.defer = true;
+      window.renderHoodMap = async function() {
+        hoodMap = new google.maps.Map(document.getElementById('hood-map'), {
+          center: { lat: 30.2672, lng: -97.7431 },
+          zoom: 13,
+          styles: [{ featureType: 'poi', stylers: [{ visibility: 'off' }] }]
+        });
+        const pinRes = await fetch('/api/properties/map-pins?neighborhood=' + encodeURIComponent(NBHD_MLS) + '&minPrice=75000');
+        const pins = await pinRes.json();
+        const bounds = new google.maps.LatLngBounds();
+        let placed = 0;
+        pins.forEach(p => {
+          if (!p.latitude || !p.longitude) return;
+          // Guard against MLS listings with bad coordinates (some come in with
+          // Costa Rica or blank lat/lng). Only accept points inside a very
+          // loose Central Texas bounding box.
+          if (p.latitude < 29.5 || p.latitude > 31.0 || p.longitude > -97.0 || p.longitude < -98.5) return;
+          const pos = { lat: p.latitude, lng: p.longitude };
+          const marker = new google.maps.Marker({
+            position: pos, map: hoodMap,
+            icon: { path: google.maps.SymbolPath.CIRCLE, scale: 6, fillColor: '#b8935a', fillOpacity: 0.9, strokeColor: '#fff', strokeWeight: 1.5 }
+          });
+          const price = p.list_price ? '$' + Number(p.list_price).toLocaleString() : '';
+          const addr = p.unparsed_address || '';
+          const iw = new google.maps.InfoWindow({
+            content: '<div style="font-family:Inter,sans-serif;padding:4px"><strong style="font-size:15px">' + price + '</strong><br><span style="font-size:12px;color:#666">' + addr + '</span></div>'
+          });
+          marker.addListener('mouseover', () => iw.open(hoodMap, marker));
+          marker.addListener('mouseout',  () => iw.close());
+          marker.addListener('click', () => {
+            const key = p.listing_key || '';
+            const cleanAddr = (p.unparsed_address || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\\s+/g, '-');
+            location.href = cleanAddr ? '/homes/' + cleanAddr + '--' + key : '/homes/' + key;
+          });
+          bounds.extend(pos);
+          placed++;
+        });
+        if (placed > 0) hoodMap.fitBounds(bounds);
+      };
+      document.head.appendChild(script);
+    } catch {}
+  }
+  initHoodMap();
 </script>
 </body>
 </html>`;

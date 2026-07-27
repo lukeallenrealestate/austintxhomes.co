@@ -1,8 +1,8 @@
 // Server-side renderer for the blog index page
 // URL: /blog
 // Returns a complete HTML string
-// posts — array of post objects (published: true, sorted newest first)
-// options — { category: string|null, page: number, totalPages: number }
+// posts - array of post objects (published: true, sorted newest first)
+// options - { category: string|null, page: number, totalPages: number }
 
 module.exports = function renderBlogIndex(posts, options) {
   const { category = null, page = 1, totalPages = 1 } = options || {};
@@ -82,7 +82,7 @@ module.exports = function renderBlogIndex(posts, options) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="facebook-domain-verification" content="95x8nbmaj8yii9ie0wsl3z7sgw6uqh" />
   <title>Austin TX Real Estate Blog | Market Updates &amp; Neighborhood Guides | Luke Allen</title>
-  <meta name="description" content="Austin TX real estate insights from Luke Allen — neighborhood market updates, buyer tips, seller guides, and local Austin coverage. Updated weekly." />
+  <meta name="description" content="Austin TX real estate insights from Luke Allen - neighborhood market updates, buyer tips, seller guides, and local Austin coverage. Updated weekly." />
   <link rel="canonical" href="https://austintxhomes.co/blog" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
@@ -92,7 +92,7 @@ module.exports = function renderBlogIndex(posts, options) {
   <meta name="geo.placename" content="Austin, Texas" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Austin TX Real Estate Blog | Market Updates &amp; Neighborhood Guides | Luke Allen" />
-  <meta property="og:description" content="Austin TX real estate insights from Luke Allen — neighborhood market updates, buyer tips, seller guides, and local Austin coverage. Updated weekly." />
+  <meta property="og:description" content="Austin TX real estate insights from Luke Allen - neighborhood market updates, buyer tips, seller guides, and local Austin coverage. Updated weekly." />
   <meta property="og:url" content="https://austintxhomes.co/blog" />
   <meta property="og:image" content="https://austintxhomes.co/images/luke-allen.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -101,7 +101,7 @@ module.exports = function renderBlogIndex(posts, options) {
   {
     "@context": "https://schema.org",
     "@type": ["RealEstateAgent","LocalBusiness"],
-    "name": "Luke Allen – Austin TX Homes",
+    "name": "Luke Allen to Austin TX Homes",
     "url": "https://austintxhomes.co",
     "telephone": "+12547182567",
     "email": "Luke@austinmdg.com",
@@ -363,7 +363,7 @@ module.exports = function renderBlogIndex(posts, options) {
   <section class="blog-hero">
     <p class="blog-hero-eyebrow">Austin TX Real Estate</p>
     <h1>Austin TX Real Estate<br><em>Blog</em></h1>
-    <p class="blog-hero-sub">Market updates, neighborhood guides, and local Austin insights from Luke Allen — TREC #788149.</p>
+    <p class="blog-hero-sub">Market updates, neighborhood guides, and local Austin insights from Luke Allen - TREC #788149.</p>
     <nav class="cat-filters" aria-label="Category filter">
       ${allPill}
       ${categoryFilterPills}
@@ -388,7 +388,7 @@ module.exports = function renderBlogIndex(posts, options) {
   <section class="blog-cta">
     <p class="blog-cta-eyebrow">Stay Informed</p>
     <h2>Get weekly Austin market updates<br>in your inbox</h2>
-    <p class="blog-cta-sub">Luke Allen sends a short weekly note on Austin real estate — prices, inventory, neighborhood trends. No spam, unsubscribe anytime.</p>
+    <p class="blog-cta-sub">Luke Allen sends a short weekly note on Austin real estate - prices, inventory, neighborhood trends. No spam, unsubscribe anytime.</p>
     <form class="blog-subscribe-form" id="blog-subscribe-form">
       <input type="hidden" name="source" value="blog-subscribe" />
       <input type="text" name="name" placeholder="Your name" required />
@@ -411,7 +411,7 @@ module.exports = function renderBlogIndex(posts, options) {
           body: JSON.stringify(data)
         });
         if (res.ok) {
-          this.innerHTML = '<p style="text-align:center;padding:20px 0;color:var(--gold);font-family:Cormorant Garamond,serif;font-size:22px;line-height:1.5">You\'re subscribed — Luke Allen will be in touch.</p>';
+          this.innerHTML = '<p style="text-align:center;padding:20px 0;color:var(--gold);font-family:Cormorant Garamond,serif;font-size:22px;line-height:1.5">You\'re subscribed - Luke Allen will be in touch.</p>';
         } else {
           alert('Something went wrong. Please try again or email Luke@austinmdg.com.');
         }

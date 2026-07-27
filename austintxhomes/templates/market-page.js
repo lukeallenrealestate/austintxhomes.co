@@ -51,40 +51,40 @@ const AUSTIN_ZIP_META = {
 
 // Per-ZIP editorial takes. Two to three sentences of Luke's actual opinion on
 // how to buy/sell in this ZIP. These are the primary differentiator against
-// Zillow/Realtor.com's cookie-cutter ZIP pages — real POV from a licensed
+// Zillow/Realtor.com's cookie-cutter ZIP pages - real POV from a licensed
 // Realtor who works these submarkets. Anything not overridden here falls back
 // to a generic-but-still-decent per-ZIP note computed inline.
 const AUSTIN_ZIP_ANGLES = {
-  '78701': "Downtown vertical inventory has been the softest condo tier in the metro for two quarters running. Motivated sellers who bought in 2021-2022 are absorbing losses; the newer 2024-2025 buildings are holding pricing better. If you're renting downtown at $2,800+/mo, run the buy-vs-rent math seriously — HOA-inclusive.",
+  '78701': "Downtown vertical inventory has been the softest condo tier in the metro for two quarters running. Motivated sellers who bought in 2021-2022 are absorbing losses; the newer 2024-2025 buildings are holding pricing better. If you're renting downtown at $2,800+/mo, run the buy-vs-rent math seriously - HOA-inclusive.",
   '78702': "East Austin's identity split shows up clearly in the sales data. New-build 1500-2000 sqft SFR trades in a different band than the older 1920s bungalows that still sit on the same block. Compare like to like when you evaluate any 78702 comp.",
-  '78703': "Tarrytown teardowns are the story. A dirt sale here is worth what the eventual new build is worth minus construction cost. Buyers looking at 'entry' 78703 listings should compare against Rosedale (78756) and Central West Austin lots — the lot value trade-off is what drives 78703's next 24 months.",
+  '78703': "Tarrytown teardowns are the story. A dirt sale here is worth what the eventual new build is worth minus construction cost. Buyers looking at 'entry' 78703 listings should compare against Rosedale (78756) and Central West Austin lots - the lot value trade-off is what drives 78703's next 24 months.",
   '78704': "78704 pricing bifurcates sharply by block. West of Lamar / Zilker sits north of $900/sqft; East of Congress / Travis Heights runs closer to $600-700/sqft; South of Oltorf / Bouldin is a third tier. Any median for 'all of 78704' hides more than it tells.",
   '78705': "West Campus condos behave like a different asset class. Parent-buyer purchases are largely cash, largely rate-insensitive, and pricing tracks UT enrollment more than local mortgage rates. If you're an investor eyeing 78705, understand you're competing against families who don't need financing.",
   '78721': "Govalle's 3-year compression against 78702 pricing is the interesting trade here. Comparable finishes east of Airport Boulevard trade 15-25% below equivalent 78702 product with similar walk-to-East-Austin access.",
-  '78722': "Cherrywood's boutique small-inventory pattern means comps are hard to run — often only 2-4 legitimate matches within a quarter. Buyers here should expect to pay close to list on a well-priced home; sellers should expect to negotiate concessions rather than price on anything sitting past 45 days.",
+  '78722': "Cherrywood's boutique small-inventory pattern means comps are hard to run - often only 2-4 legitimate matches within a quarter. Buyers here should expect to pay close to list on a well-priced home; sellers should expect to negotiate concessions rather than price on anything sitting past 45 days.",
   '78723': "The Mueller-adjacent SFR blocks (Windsor Park, Delwood, French Place) are a distinct submarket from Mueller-branded condos. Same ZIP, very different comp sets. Confirm which one your target actually is before you anchor on 78723 medians.",
   '78724': "Manor-adjacent affordability is the play. If you're priced out of Mueller or the eastern 78723 blocks, 78724 is often the answer at $75-125K less for equivalent square footage.",
   '78727': "The Domain / Q2 stadium corridor is one of the metro's clearest live-work-walk plays. Condo inventory here trades tighter than the 78758 median suggests; separate them when reading comps.",
   '78731': "Northwest Hills lots are the asset. Established landscaping, mature trees, and view corridors drive per-lot value that doesn't show in $/sqft. Comp against similarly-lotted 78703 or 78733 product, not by list price alone.",
-  '78733': "Steiner Ranch is a two-market ZIP: gated luxury on the west side, mainstream MI Homes / Toll Brothers product on the east. Understand which submarket your specific address is in — the $/sqft numbers diverge by 30-40%.",
+  '78733': "Steiner Ranch is a two-market ZIP: gated luxury on the west side, mainstream MI Homes / Toll Brothers product on the east. Understand which submarket your specific address is in - the $/sqft numbers diverge by 30-40%.",
   '78734': "Lakeway's retiree-buyer pool means downsizer 3BR under $700K moves fastest. Larger primary-residence homes with school-district appeal to Lake Travis ISD move slower but hold pricing better.",
   '78735': "Barton Creek country club buyers care about golf-course access and building age. A 2015 build with membership included trades at a materially different number than a 2005 build without.",
-  '78737': "Dripping Springs ETJ inventory is a Hill Country lifestyle purchase, not a commute purchase. Buyers doing 45+ min drives to downtown Austin should understand what they're actually paying for — larger lots, newer construction, quieter roads.",
+  '78737': "Dripping Springs ETJ inventory is a Hill Country lifestyle purchase, not a commute purchase. Buyers doing 45+ min drives to downtown Austin should understand what they're actually paying for - larger lots, newer construction, quieter roads.",
   '78738': "Bee Cave / Lakeway master-planned communities (Rough Hollow, Serene Hills, Falconhead) each have distinct HOA and amenity structures. Comps within-community are meaningful; cross-community comps require adjustment.",
   '78745': "78745 is where 78704-priced-out buyers land. Manchaca-corridor inventory offers 15-20% more house for the money vs equivalent 78704 blocks, at a ~5 minute drive penalty. That trade is legitimate for many buyers.",
-  '78746': "Westlake/Eanes ISD is the metro's true trophy submarket. Sales here move slower but prices hold — 78746 has the lowest reduction rate in the metro. If you're pricing a Westlake home, don't chase the market down; the buyer pool eventually rebuilds.",
+  '78746': "Westlake/Eanes ISD is the metro's true trophy submarket. Sales here move slower but prices hold - 78746 has the lowest reduction rate in the metro. If you're pricing a Westlake home, don't chase the market down; the buyer pool eventually rebuilds.",
   '78747': "Onion Creek's newer builder inventory (KB, Meritage, Lennar) makes for cleaner comps than most metro submarkets. Same builder, same year, same subdivision = an actual apples-to-apples comparison.",
   '78748': "78748 is a value tier just south of 78745. The commute penalty over 78745 is minimal for most workplaces; the price gap is meaningful. Worth checking if you were originally targeting 78745.",
   '78749': "Circle C master-planned buyers care about pool access, tennis, and school ratings. Non-Circle-C 78749 addresses miss those amenities and price lower even for equivalent product.",
   '78750': "Anderson Mill's 1980s-1990s stock is well-maintained but pre-open-floor-plan. Buyers coming from newer builds should tour with realistic expectations about wall-heavy layouts.",
-  '78751': "Hyde Park and North Loop draw a specific buyer profile — walkability, historic character, small-lot ownership. Comps here should be same-side-of-Duval, same-decade construction. Cross-Duval comps understate value differences.",
+  '78751': "Hyde Park and North Loop draw a specific buyer profile - walkability, historic character, small-lot ownership. Comps here should be same-side-of-Duval, same-decade construction. Cross-Duval comps understate value differences.",
   '78752': "The Highland corridor is Austin's clearest gentrification-in-progress submarket. Buyers with 5-7 year holds are the target; 1-2 year holds carry outsized redevelopment risk.",
   '78753': "78753's investor-buyer pull-back in 2024-2025 has produced entry-level inventory below $350K that hasn't been available in North Austin in 5 years. Owner-occupants have a rare window here.",
-  '78754': "78754's growth corridor pricing is builder-driven. Resale sellers should price against the newest-completed neighboring build, not against the prior resale comp — that's what the buyer pool is actually shopping against.",
+  '78754': "78754's growth corridor pricing is builder-driven. Resale sellers should price against the newest-completed neighboring build, not against the prior resale comp - that's what the buyer pool is actually shopping against.",
   '78756': "Rosedale/Allandale's tight supply keeps DOM low even in soft markets. Sellers here should expect competitive negotiation more than price cuts. Buyers should expect to move fast on well-priced product.",
   '78757': "Crestview/Brentwood value tier is the metro's best 'Central Austin lite' story. Same commute as 78703/78704 at ~40% less per square foot. If schools aren't your primary driver, this is where the math works.",
   '78758': "Domain-adjacent condo and older-SFR mix means your specific 78758 address matters more than the ZIP median. Confirm which sub-corridor you're in.",
-  '78759': "78759's established Northwest Hills patterns hold reliably — schools, tree cover, moderate elevation, steady resale. Long-hold buyers should feel comfortable underwriting to 2019-2020 pricing baselines.",
+  '78759': "78759's established Northwest Hills patterns hold reliably - schools, tree cover, moderate elevation, steady resale. Long-hold buyers should feel comfortable underwriting to 2019-2020 pricing baselines.",
 };
 
 // Neighborhood → subdivision LIKE filter mapping. Slug is what appears in the
@@ -458,7 +458,7 @@ function renderSoldByZip(zip) {
     mode: 'sold',
     filter: { zip },
     urlPath: `/sold-homes-near-${zip}`,
-    // Pass "78704 · South Austin" (with middle dot) — cleaner than the
+    // Pass "78704 · South Austin" (with middle dot) - cleaner than the
     // parenthetical form, avoids nested parens in the H1 for ZIPs whose
     // name already has its own paren.
     areaName: `${zip} · ${meta.name.replace(/\s*\(.*\)\s*$/, '').trim()}`,

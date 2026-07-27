@@ -8,7 +8,7 @@ module.exports = function renderNeighborhoodPage(n) {
   // Bake the first 6 active listings into the HTML so crawlers (and
   // pre-hydration page paints) see real cards instead of "Loading...".
   // ssrInject.getNeighborhoodListings returns { listings, total } where
-  // `total` is the precise active count for the neighborhood — drives
+  // `total` is the precise active count for the neighborhood - drives
   // both the "Active listings" stat block and the TL;DR count. Client
   // JS still runs after hydration and replaces the SSR cards with a
   // fresh fetch. Wrapped in try/catch because a DB hiccup here must
@@ -80,7 +80,7 @@ module.exports = function renderNeighborhoodPage(n) {
   {
   "@context": "https://schema.org",
   "@type": ["RealEstateAgent","LocalBusiness"],
-  "name": "Luke Allen – Austin TX Homes",
+  "name": "Luke Allen to Austin TX Homes",
   "url": "https://austintxhomes.co",
   "telephone": "+12547182567",
   "email": "Luke@austinmdg.com",
@@ -192,7 +192,7 @@ module.exports = function renderNeighborhoodPage(n) {
   }
   body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.6; }
 
-  /* HERO — dark, video-backed, matches /austin-homes-under-500k */
+  /* HERO - dark, video-backed, matches /austin-homes-under-500k */
   .hero {
   background: var(--ink); padding: 110px 2rem 72px;
   position: relative; overflow: hidden;

@@ -55,7 +55,7 @@ module.exports = function renderBlogPost(post) {
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Luke Allen – Austin TX Homes",
+      "name": "Luke Allen to Austin TX Homes",
       "url": "https://austintxhomes.co"
     },
     "description": "${post.excerpt}",
@@ -67,7 +67,7 @@ module.exports = function renderBlogPost(post) {
   {
     "@context": "https://schema.org",
     "@type": ["RealEstateAgent","LocalBusiness"],
-    "name": "Luke Allen – Austin TX Homes",
+    "name": "Luke Allen to Austin TX Homes",
     "url": "https://austintxhomes.co",
     "telephone": "+12547182567",
     "email": "Luke@austinmdg.com",
@@ -468,7 +468,7 @@ module.exports = function renderBlogPost(post) {
       <div>
         <div class="author-bio-name">Luke Allen</div>
         <div class="author-bio-title">Austin TX Realtor · TREC #788149 · Austin Marketing + Development Group</div>
-        <p class="author-bio-text">Luke Allen is a licensed Austin TX realtor specializing in Central Austin neighborhoods — Tarrytown, Hyde Park, Clarksville, Mueller, and beyond. 5.0 ★ on Google. TREC #788149.</p>
+        <p class="author-bio-text">Luke Allen is a licensed Austin TX realtor specializing in Central Austin neighborhoods - Tarrytown, Hyde Park, Clarksville, Mueller, and beyond. 5.0 ★ on Google. TREC #788149.</p>
         <div class="author-bio-links">
           <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener">Google Reviews</a>
           <a href="/about">About Luke</a>
@@ -484,7 +484,7 @@ module.exports = function renderBlogPost(post) {
       <div class="contact-copy">
         <h2>Work With<br><em>Luke Allen</em></h2>
         <p>Whether you're buying, selling, or just starting to explore the Austin market, Luke Allen is ready to help. TREC licensed, 5.0 ★ on Google, and personally hands-on with every client.</p>
-        <p>No assistants, no team handoffs — you work directly with Luke Allen from the first conversation through close.</p>
+        <p>No assistants, no team handoffs - you work directly with Luke Allen from the first conversation through close.</p>
         <div class="contact-badges">
           <span class="contact-badge">5.0 ★ Google</span>
           <span class="contact-badge">TREC #788149</span>
@@ -532,7 +532,7 @@ module.exports = function renderBlogPost(post) {
           body: JSON.stringify(data)
         });
         if (res.ok) {
-          this.innerHTML = '<p style="text-align:center;padding:40px 0;color:var(--gold-lt);font-family:Cormorant Garamond,serif;font-size:22px;line-height:1.5">Got it — Luke Allen will be in touch within 24 hours.</p>';
+          this.innerHTML = '<p style="text-align:center;padding:40px 0;color:var(--gold-lt);font-family:Cormorant Garamond,serif;font-size:22px;line-height:1.5">Got it - Luke Allen will be in touch within 24 hours.</p>';
         } else {
           alert('Something went wrong. Please call or email Luke Allen directly.');
         }

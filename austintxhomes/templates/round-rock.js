@@ -1,11 +1,11 @@
 // Server-side renderers for the Round Rock topical web at /round-rock/*
-// Exports 4 functions — each returns a full HTML string for one page type.
+// Exports 4 functions - each returns a full HTML string for one page type.
 
 function escHtml(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// Shared CSS — used by all 4 page types
+// Shared CSS - used by all 4 page types
 const SHARED_STYLES = `
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{--gold:#b8935a;--gold-lt:#cda96f;--gold-pale:#f5ede0;--ink:#0f0f0e;--text:#1a1918;--mid:#5c5b57;--light:#999690;--bg:#fff;--warm:#faf8f4;--cream:#f1ece3;--border:#e5dfd4;--r:4px;--w:1180px}
@@ -144,7 +144,7 @@ const SHARED_STYLES = `
   @media(max-width:600px){.grid{grid-template-columns:1fr}.buy-grid,.services-grid{grid-template-columns:1fr}.hero{padding:80px 20px 60px}section{padding:56px 20px}.stats-bar{padding:20px 20px}}
 `;
 
-// Shared head section — includes meta tags, schema, and font loading
+// Shared head section - includes meta tags, schema, and font loading
 function renderHead({ title, description, canonical, schemaBlocks }) {
   const schemaJson = schemaBlocks.map(b => `<script type="application/ld+json">${JSON.stringify(b)}</script>`).join('\n  ');
   return `<head>
@@ -179,7 +179,7 @@ function realEstateAgentSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': ['RealEstateAgent','LocalBusiness'],
-    name: 'Luke Allen – Austin TX Homes',
+    name: 'Luke Allen to Austin TX Homes',
     url: 'https://austintxhomes.co',
     telephone: '+12547182567',
     email: 'Luke@austinmdg.com',
@@ -217,14 +217,14 @@ function faqPageSchema(faqs) {
   };
 }
 
-// Shared contact form modal HTML — used on all 4 page types
+// Shared contact form modal HTML - used on all 4 page types
 function contactModalHtml() {
   return `
 <div id="contact-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;padding:20px">
   <div style="background:#fff;max-width:480px;width:100%;border-radius:8px;padding:36px;position:relative">
     <button onclick="closeContactModal()" style="position:absolute;top:14px;right:18px;background:none;border:none;font-size:28px;color:#999;cursor:pointer;line-height:1">×</button>
     <h3 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;margin-bottom:8px">Contact Luke</h3>
-    <p style="font-size:13px;color:#5c5b57;margin-bottom:20px">Send me a message — I respond within a few hours.</p>
+    <p style="font-size:13px;color:#5c5b57;margin-bottom:20px">Send me a message - I respond within a few hours.</p>
     <form id="modal-form">
       <input type="hidden" name="source" value="round-rock-modal" />
       <input type="text" name="name" placeholder="Your name" required style="width:100%;padding:10px 14px;margin-bottom:10px;border:1px solid #e5dfd4;border-radius:4px;font-size:14px" />
@@ -232,12 +232,12 @@ function contactModalHtml() {
       <textarea name="message" rows="4" placeholder="What can I help with?" style="width:100%;padding:10px 14px;margin-bottom:10px;border:1px solid #e5dfd4;border-radius:4px;font-size:14px;font-family:inherit;resize:vertical"></textarea>
       <button type="submit" style="width:100%;background:#b8935a;color:#fff;border:none;padding:14px;border-radius:4px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Send Message</button>
     </form>
-    <div id="modal-success" style="display:none;text-align:center;padding:40px 0;color:#cda96f;font-family:'Cormorant Garamond',serif;font-size:20px">Got it — I'll reach out within a few hours.</div>
+    <div id="modal-success" style="display:none;text-align:center;padding:40px 0;color:#cda96f;font-family:'Cormorant Garamond',serif;font-size:20px">Got it - I'll reach out within a few hours.</div>
   </div>
 </div>`;
 }
 
-// Shared JS — hero video + hero form + contact modal
+// Shared JS - hero video + hero form + contact modal
 function sharedScripts() {
   return `
 <script>
@@ -320,9 +320,9 @@ async function loadListings(page) {
       const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : 'Price N/A';
       const addr = l.unparsed_address || '';
       const cityZip = [l.city, l.postal_code].filter(Boolean).join(', ');
-      const beds = l.bedrooms_total || '—';
-      const baths = l.bathrooms_total || '—';
-      const sqft = l.living_area ? Number(l.living_area).toLocaleString() : '—';
+      const beds = l.bedrooms_total || ' - ';
+      const baths = l.bathrooms_total || ' - ';
+      const sqft = l.living_area ? Number(l.living_area).toLocaleString() : ' - ';
       const photo = (l.photos && l.photos[0]) || '';
       const isNew = l.days_on_market != null && l.days_on_market <= 3;
       const card = document.createElement('a');
@@ -355,11 +355,11 @@ loadListings(1);
 }
 
 // ============================================================
-// PAGE 1: Neighborhood HUB — /round-rock/:slug
+// PAGE 1: Neighborhood HUB - /round-rock/:slug
 // ============================================================
 function renderHub(n) {
-  const title = `${n.name} Round Rock, TX — Homes, Schools, Commute | Luke Allen`;
-  const description = `${n.name} in Round Rock, TX — median ${n.medianPrice}, ${n.schools.split(' — ')[0]}, ${n.commute.split(',')[0]}. Complete neighborhood guide from local realtor Luke Allen.`;
+  const title = `${n.name} Round Rock, TX - Homes, Schools, Commute | Luke Allen`;
+  const description = `${n.name} in Round Rock, TX - median ${n.medianPrice}, ${n.schools.split(' - ')[0]}, ${n.commute.split(',')[0]}. Complete neighborhood guide from local realtor Luke Allen.`;
   const canonical = `https://austintxhomes.co/round-rock/${n.slug}`;
 
   const schemaBlocks = [
@@ -422,7 +422,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
         </select>
         <button type="submit" class="btn-submit">Get Started</button>
       </form>
-      <div class="hero-form-success" id="hero-form-success">Got it — I'll reach out within a few hours.</div>
+      <div class="hero-form-success" id="hero-form-success">Got it - I'll reach out within a few hours.</div>
     </div>
   </div>
 </section>
@@ -430,9 +430,9 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
 <div class="stats-bar">
   <div class="stats-inner">
     <div class="stat"><div class="stat-num">${escHtml(n.medianPrice)}</div><div class="stat-label">Median Price</div></div>
-    <div class="stat"><div class="stat-num">${escHtml((n.priceRange || '').split(' – ')[0] || '—')}–${escHtml((n.priceRange || '').split(' – ')[1] || '—')}</div><div class="stat-label">Price Range</div></div>
+    <div class="stat"><div class="stat-num">${escHtml((n.priceRange || '').split(' to ')[0] || ' - ')} to ${escHtml((n.priceRange || '').split(' to ')[1] || ' - ')}</div><div class="stat-label">Price Range</div></div>
     <div class="stat"><div class="stat-num">${escHtml(n.zips.join(', '))}</div><div class="stat-label">Zip Code${n.zips.length > 1 ? 's' : ''}</div></div>
-    <div class="stat"><div class="stat-num">${escHtml(n.schools.split(' — ')[0])}</div><div class="stat-label">School District</div></div>
+    <div class="stat"><div class="stat-num">${escHtml(n.schools.split(' - ')[0])}</div><div class="stat-label">School District</div></div>
   </div>
 </div>
 
@@ -503,7 +503,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
 
 <section class="cta">
   <h2>Ready to Explore <em>${escHtml(n.name)}?</em></h2>
-  <p>I'll set up a private showing, run a cap rate analysis, or give you honest off-market intel — free. No pressure.</p>
+  <p>I'll set up a private showing, run a cap rate analysis, or give you honest off-market intel - free. No pressure.</p>
   <a href="tel:+12547182567" class="btn-gold">Call (254) 718-2567</a>
   <div style="margin-top:14px"><button onclick="openContactModal()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:13px;text-decoration:underline;cursor:pointer;font-family:inherit">Or send a message</button></div>
 </section>
@@ -516,11 +516,11 @@ ${sharedScripts()}
 }
 
 // ============================================================
-// PAGE 2: Homes for Sale — /round-rock/:slug/homes-for-sale
+// PAGE 2: Homes for Sale - /round-rock/:slug/homes-for-sale
 // ============================================================
 function renderHomesForSale(n) {
   const title = `Homes for Sale in ${n.name} Round Rock TX | ${n.medianPrice} Median | Luke Allen`;
-  const description = `Browse homes for sale in ${n.name}, Round Rock TX. Median ${n.medianPrice}, ${n.schools.split(' — ')[0]}. Updated daily from MLS. Licensed Round Rock realtor.`;
+  const description = `Browse homes for sale in ${n.name}, Round Rock TX. Median ${n.medianPrice}, ${n.schools.split(' - ')[0]}. Updated daily from MLS. Licensed Round Rock realtor.`;
   const canonical = `https://austintxhomes.co/round-rock/${n.slug}/homes-for-sale`;
 
   const schemaBlocks = [
@@ -549,7 +549,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
       <div class="hero-breadcrumb"><a href="/round-rock">Round Rock</a> &nbsp;›&nbsp; <a href="/round-rock/${n.slug}">${escHtml(n.name)}</a> &nbsp;›&nbsp; Homes for Sale</div>
       <p class="hero-eye">Homes for Sale</p>
       <h1>${escHtml(n.name)} Homes <em>For Sale</em></h1>
-      <p class="lead">Active listings in ${escHtml(n.name)}, Round Rock — updated daily from Austin MLS. Median price ${escHtml(n.medianPrice)}, range ${escHtml(n.priceRange)}.</p>
+      <p class="lead">Active listings in ${escHtml(n.name)}, Round Rock - updated daily from Austin MLS. Median price ${escHtml(n.medianPrice)}, range ${escHtml(n.priceRange)}.</p>
     </div>
     <div class="hero-form">
       <h3>${escHtml(n.name)} Buyer Help</h3>
@@ -561,13 +561,13 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
         <select name="budget" aria-label="Budget">
           <option value="">Budget range</option>
           <option>Under $400K</option>
-          <option>$400K–$550K</option>
-          <option>$550K–$700K</option>
+          <option>$400K to $550K</option>
+          <option>$550K to $700K</option>
           <option>$700K+</option>
         </select>
         <button type="submit" class="btn-submit">Get Started</button>
       </form>
-      <div class="hero-form-success" id="hero-form-success">Got it — I'll reach out within a few hours.</div>
+      <div class="hero-form-success" id="hero-form-success">Got it - I'll reach out within a few hours.</div>
     </div>
   </div>
 </section>
@@ -618,7 +618,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
 
 <section class="cta">
   <h2>Want to See <em>${escHtml(n.name)} Homes?</em></h2>
-  <p>I'll set up private showings, run cap rate analysis, and tell you about off-market options. No pressure — free consultation.</p>
+  <p>I'll set up private showings, run cap rate analysis, and tell you about off-market options. No pressure - free consultation.</p>
   <a href="tel:+12547182567" class="btn-gold">Call (254) 718-2567</a>
 </section>
 
@@ -631,11 +631,11 @@ ${listingsGridScript({ forRent: false, citySlug: n.slug, subdivisionName: n.subd
 }
 
 // ============================================================
-// PAGE 3: Homes for Rent — /round-rock/:slug/homes-for-rent
+// PAGE 3: Homes for Rent - /round-rock/:slug/homes-for-rent
 // ============================================================
 function renderHomesForRent(n) {
   const title = `Homes for Rent in ${n.name} Round Rock TX | ${n.rentRange} | Luke Allen`;
-  const description = `Browse homes for rent in ${n.name}, Round Rock TX. Rent range ${n.rentRange}, ${n.schools.split(' — ')[0]}. Updated daily from MLS. Free renter representation.`;
+  const description = `Browse homes for rent in ${n.name}, Round Rock TX. Rent range ${n.rentRange}, ${n.schools.split(' - ')[0]}. Updated daily from MLS. Free renter representation.`;
   const canonical = `https://austintxhomes.co/round-rock/${n.slug}/homes-for-rent`;
 
   const schemaBlocks = [
@@ -663,11 +663,11 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
       <div class="hero-breadcrumb"><a href="/round-rock">Round Rock</a> &nbsp;›&nbsp; <a href="/round-rock/${n.slug}">${escHtml(n.name)}</a> &nbsp;›&nbsp; Homes for Rent</div>
       <p class="hero-eye">Homes for Rent</p>
       <h1>${escHtml(n.name)} Homes <em>For Rent</em></h1>
-      <p class="lead">Current rentals in ${escHtml(n.name)}, Round Rock — updated daily from MLS. Typical rent range: ${escHtml(n.rentRange)}.</p>
+      <p class="lead">Current rentals in ${escHtml(n.name)}, Round Rock - updated daily from MLS. Typical rent range: ${escHtml(n.rentRange)}.</p>
     </div>
     <div class="hero-form">
       <h3>${escHtml(n.name)} Rental Help</h3>
-      <p>In Texas, the landlord pays my commission — renter representation is free.</p>
+      <p>In Texas, the landlord pays my commission - renter representation is free.</p>
       <form id="hero-contact-form">
         <input type="hidden" name="source" value="round-rock-${escHtml(n.slug)}-rent" />
         <input type="text" name="name" placeholder="Your name" required />
@@ -675,19 +675,19 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
         <select name="moveIn" aria-label="MoveIn">
           <option value="">Move-in timeline</option>
           <option>Within 30 days</option>
-          <option>1–3 months</option>
+          <option>1 to 3 months</option>
           <option>3+ months</option>
         </select>
         <button type="submit" class="btn-submit">Get Started</button>
       </form>
-      <div class="hero-form-success" id="hero-form-success">Got it — I'll reach out within a few hours.</div>
+      <div class="hero-form-success" id="hero-form-success">Got it - I'll reach out within a few hours.</div>
     </div>
   </div>
 </section>
 
 <div class="stats-bar">
   <div class="stats-inner">
-    <div class="stat"><div class="stat-num">${escHtml(n.rentRange.split(' – ')[0] || '—')}</div><div class="stat-label">Rent From</div></div>
+    <div class="stat"><div class="stat-num">${escHtml(n.rentRange.split(' to ')[0] || ' - ')}</div><div class="stat-label">Rent From</div></div>
     <div class="stat"><div class="stat-num">${escHtml(n.zips.join(', '))}</div><div class="stat-label">Zip Code${n.zips.length > 1 ? 's' : ''}</div></div>
     <div class="stat"><div class="stat-num">Free</div><div class="stat-label">Representation</div></div>
     <div class="stat"><div class="stat-num">Daily</div><div class="stat-label">MLS Updates</div></div>
@@ -698,7 +698,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
   <div class="section-inner">
     <p class="section-eye">Available Rentals</p>
     <h2 class="section-title">${escHtml(n.name)} Rentals <em>Available Now</em></h2>
-    <p class="section-desc">Current MLS rental listings in ${escHtml(n.name)}. Rentals move fast — contact me immediately when you find one worth seeing.</p>
+    <p class="section-desc">Current MLS rental listings in ${escHtml(n.name)}. Rentals move fast - contact me immediately when you find one worth seeing.</p>
     <div id="rr-listings-grid" class="grid"></div>
     <div id="rr-pagination" style="display:flex;justify-content:center;gap:6px;margin-top:36px"></div>
   </div>
@@ -710,15 +710,15 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
     <h2 class="section-title">Why Use a Realtor <em>to Rent in Round Rock?</em></h2>
     <div class="content-grid">
       <div class="content-body">
-        <p>In Texas, the landlord or property manager pays the agent commission — <strong>renter representation is completely free</strong>. There's no reason not to have a licensed agent in your corner.</p>
+        <p>In Texas, the landlord or property manager pays the agent commission - <strong>renter representation is completely free</strong>. There's no reason not to have a licensed agent in your corner.</p>
         <p>What you get when you work with me:</p>
-        <p><strong>Access to every MLS rental in ${escHtml(n.name)}</strong> — not just what's on Zillow or Apartments.com. MLS includes private landlords, property managers, and off-market rentals.</p>
+        <p><strong>Access to every MLS rental in ${escHtml(n.name)}</strong> - not just what's on Zillow or Apartments.com. MLS includes private landlords, property managers, and off-market rentals.</p>
         <p><strong>Lease review before you sign.</strong> Texas residential leases are dense. I walk through the key terms so you understand what you're agreeing to before committing 12 months of your life.</p>
-        <p><strong>Negotiation on your behalf.</strong> Rent, move-in date, pet deposits, lease length — most renters don't realize how much is negotiable. Having an agent ask for you is often more effective than asking yourself.</p>
+        <p><strong>Negotiation on your behalf.</strong> Rent, move-in date, pet deposits, lease length - most renters don't realize how much is negotiable. Having an agent ask for you is often more effective than asking yourself.</p>
       </div>
       <div class="highlights-card">
         <h3>Quick Facts</h3>
-        <div class="highlight"><div class="highlight-icon">💰</div><div class="highlight-body"><strong>Cost to renter</strong><span>$0 — landlord pays my commission</span></div></div>
+        <div class="highlight"><div class="highlight-icon">💰</div><div class="highlight-body"><strong>Cost to renter</strong><span>$0 - landlord pays my commission</span></div></div>
         <div class="highlight"><div class="highlight-icon">⚡</div><div class="highlight-body"><strong>Typical response time</strong><span>Same-day showings for active MLS listings</span></div></div>
         <div class="highlight"><div class="highlight-icon">📝</div><div class="highlight-body"><strong>Lease review</strong><span>I walk through key terms before you sign</span></div></div>
         <div class="highlight"><div class="highlight-icon">🔑</div><div class="highlight-body"><strong>Credit/app support</strong><span>I help you build a strong renter application</span></div></div>
@@ -729,7 +729,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
 
 <section class="cta">
   <h2>Need Help Finding a <em>${escHtml(n.name)} Rental?</em></h2>
-  <p>Rentals in desirable Round Rock neighborhoods lease in days. Let me set up showings and negotiate your lease — free.</p>
+  <p>Rentals in desirable Round Rock neighborhoods lease in days. Let me set up showings and negotiate your lease - free.</p>
   <a href="tel:+12547182567" class="btn-gold">Call (254) 718-2567</a>
 </section>
 
@@ -742,7 +742,7 @@ ${listingsGridScript({ forRent: true, citySlug: n.slug, subdivisionName: n.subdi
 }
 
 // ============================================================
-// PAGE 4: Best Realtor — /round-rock/:slug/best-realtor
+// PAGE 4: Best Realtor - /round-rock/:slug/best-realtor
 // ============================================================
 function renderBestRealtor(n) {
   const title = `Best Realtor in ${n.name} Round Rock TX | Luke Allen, TREC #788149`;
@@ -755,7 +755,7 @@ function renderBestRealtor(n) {
     {
       '@context': 'https://schema.org',
       '@type': 'ProfessionalService',
-      name: `Luke Allen – ${n.name} Round Rock Realtor`,
+      name: `Luke Allen to ${n.name} Round Rock Realtor`,
       provider: { '@type': ['RealEstateAgent','LocalBusiness'], name: 'Luke Allen' },
       areaServed: { '@type': 'Place', name: `${n.name}, Round Rock, TX` },
       url: canonical
@@ -775,7 +775,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
       <div class="hero-breadcrumb"><a href="/round-rock">Round Rock</a> &nbsp;›&nbsp; <a href="/round-rock/${n.slug}">${escHtml(n.name)}</a> &nbsp;›&nbsp; Best Realtor</div>
       <p class="hero-eye">${escHtml(n.name)} Realtor</p>
       <h1>Best Realtor in <em>${escHtml(n.name)}</em></h1>
-      <p class="lead">Luke Allen — licensed Texas realtor (TREC #788149), 5.0 Google rating, Round Rock market specialist. I help buyers, sellers, and renters in ${escHtml(n.name)} navigate the ${escHtml(n.schools.split(' — ')[0])} market with honest, data-driven guidance.</p>
+      <p class="lead">Luke Allen - licensed Texas realtor (TREC #788149), 5.0 Google rating, Round Rock market specialist. I help buyers, sellers, and renters in ${escHtml(n.name)} navigate the ${escHtml(n.schools.split(' - ')[0])} market with honest, data-driven guidance.</p>
       <div class="hero-pills">
         <span class="hero-pill">5.0 ★ Google Rating</span>
         <span class="hero-pill">TREC #788149</span>
@@ -784,7 +784,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
     </div>
     <div class="hero-form">
       <h3>Work With Luke</h3>
-      <p>Tell me what you need. No pressure, no spam — just a real conversation.</p>
+      <p>Tell me what you need. No pressure, no spam - just a real conversation.</p>
       <form id="hero-contact-form">
         <input type="hidden" name="source" value="round-rock-${escHtml(n.slug)}-realtor" />
         <input type="text" name="name" placeholder="Your name" required />
@@ -798,7 +798,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
         </select>
         <button type="submit" class="btn-submit">Start Conversation</button>
       </form>
-      <div class="hero-form-success" id="hero-form-success">Got it — I'll reach out within a few hours.</div>
+      <div class="hero-form-success" id="hero-form-success">Got it - I'll reach out within a few hours.</div>
     </div>
   </div>
 </section>
@@ -847,7 +847,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
       <div class="service-card">
         <span class="icon">🔑</span>
         <h4>Renter Representation</h4>
-        <p>Access to every MLS rental, lease review, negotiation, and advocacy. Free — landlord pays commission in Texas.</p>
+        <p>Access to every MLS rental, lease review, negotiation, and advocacy. Free - landlord pays commission in Texas.</p>
       </div>
       <div class="service-card">
         <span class="icon">📊</span>
@@ -857,7 +857,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
       <div class="service-card">
         <span class="icon">🏫</span>
         <h4>School Zone Guidance</h4>
-        <p>${escHtml(n.schools.split(' — ')[0])} — I know the exact feeder patterns and boundary maps.</p>
+        <p>${escHtml(n.schools.split(' - ')[0])} - I know the exact feeder patterns and boundary maps.</p>
       </div>
       <div class="service-card">
         <span class="icon">💼</span>
@@ -881,12 +881,12 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
       <div class="buy-card">
         <span class="icon">🏠</span>
         <h3>Round Rock Specialist</h3>
-        <p>I know every corner of Round Rock — ${escHtml(n.name)}, Teravista, Forest Creek, Behrens Ranch, and everything in between.</p>
+        <p>I know every corner of Round Rock - ${escHtml(n.name)}, Teravista, Forest Creek, Behrens Ranch, and everything in between.</p>
       </div>
       <div class="buy-card">
         <span class="icon">💬</span>
         <h3>Always Responsive</h3>
-        <p>Texts, calls, emails — I respond within a few hours during business hours, always same-day.</p>
+        <p>Texts, calls, emails - I respond within a few hours during business hours, always same-day.</p>
       </div>
     </div>
   </div>
