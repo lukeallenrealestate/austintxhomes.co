@@ -16,7 +16,8 @@
  <meta name="author" content="Luke Allen">
 
  <meta property="og:type" content="article">
- <meta property="og:title" content="Moving from New York to Austin TX | Luke Allen, Realtor"og:description" content="Moving from NYC to Austin? NY+NYC combined tax rate hits 14.8%. Austin has zero. Plus housing cost comparison, neighborhood equivalents, and the honest city trade-offs.">
+ <meta property="og:title" content="Moving from New York to Austin TX | Luke Allen, Realtor">
+ <meta property="og:description" content="Moving from NYC to Austin? NY+NYC combined tax rate hits 14.8%. Austin has zero. Plus housing cost comparison, neighborhood equivalents, and the honest city trade-offs.">
  <meta property="og:url" content="https://austintxhomes.co/moving-from-new-york-to-austin">
  <meta property="og:image" content="https://austintxhomes.co/images/og-nyc-to-austin.jpg">
  <meta property="og:site_name" content="AustinTXHomes">
@@ -200,12 +201,22 @@
  padding: 120px 0 100px;
  overflow: hidden;
  }
+ .hero video {
+ position: absolute; inset: 0; width: 100%; height: 100%;
+ object-fit: cover; opacity: 0; transition: opacity .9s ease-in-out;
+ pointer-events: none; z-index: 0;
+ }
+ .hero video.ready { opacity: .35; }
+ .hero > .container { position: relative; z-index: 2; }
  .hero::before {
  content: '';
  position: absolute;
  inset: 0;
- background: radial-gradient(ellipse 68% 58% at 50% 40%, rgba(184,147,90,0.18) 0%, transparent 70%);
+ background:
+ radial-gradient(ellipse 68% 58% at 50% 40%, rgba(184,147,90,0.18) 0%, transparent 70%),
+ linear-gradient(180deg, rgba(15,15,14,.55) 0%, rgba(15,15,14,.75) 100%);
  pointer-events: none;
+ z-index: 1;
  }
  /* NYC street grid, vertical lines at right edge */
  .hero::after {
