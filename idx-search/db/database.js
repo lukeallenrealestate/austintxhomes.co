@@ -162,6 +162,14 @@ const migrations = [
   `ALTER TABLE sync_state ADD COLUMN backfill_last_email_count INTEGER DEFAULT -1`,
   `ALTER TABLE sync_state ADD COLUMN backfill_last_email_at DATETIME`,
 
+  // Price-history anchors from the ACTRIS RESO feed. Populated by mlsSync.js
+  // on every sync; consumed by templates/listing.js to render a Price History
+  // card. Nullable — ACTRIS ships these on most active listings but not all,
+  // and closed listings often don't carry the previous-price marker.
+  `ALTER TABLE listings ADD COLUMN original_list_price REAL`,
+  `ALTER TABLE listings ADD COLUMN previous_list_price REAL`,
+  `ALTER TABLE listings ADD COLUMN price_change_timestamp TEXT`,
+
   // ─── Sprint 2: query performance ─────────────────────────────────────
   // Composite indexes for the multi-filter searches users actually run.
   // The existing idx_listings_active_date covers status+sort but combinations

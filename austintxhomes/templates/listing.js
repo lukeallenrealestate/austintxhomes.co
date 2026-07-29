@@ -342,6 +342,53 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
       <span class="detail-value">${v}</span>
     </div>`).join('');
 
+  // Price History card. Only shown when ACTRIS gave us a change to display.
+  // For sold listings we already show close_price in the hero, so a price
+  // history card would be redundant noise. Skip when nothing changed vs
+  // the original ask.
+  const origPrice = Number(listing.original_list_price) || null;
+  const prevPrice = Number(listing.previous_list_price) || null;
+  const curPrice  = Number(listing.list_price) || null;
+  const hasHistory = !isSold && curPrice && (
+    (origPrice && origPrice !== curPrice) ||
+    (prevPrice && prevPrice !== curPrice)
+  );
+  const priceHistoryHTML = hasHistory ? (() => {
+    const anchor = origPrice || prevPrice;
+    const changeAmt = anchor - curPrice;
+    const changePct = anchor > 0 ? (changeAmt / anchor) * 100 : 0;
+    const direction = changeAmt > 0 ? 'reduced' : 'increased';
+    const arrow = changeAmt > 0 ? '&#9660;' : '&#9650;';
+    const changeCls = changeAmt > 0 ? 'ph-down' : 'ph-up';
+    const origDate = fmtDate(listing.listing_contract_date);
+    const curDate  = fmtDate(listing.price_change_timestamp) || fmtDate(listing.listing_contract_date);
+    return `
+  <section class="insight-section">
+    <p class="section-label">Price History</p>
+    <h2 class="section-title">How This <em>Ask Has Moved</em></h2>
+    <p style="font-size:.88rem;color:var(--mid);margin:0 0 1.25rem;">Original list price versus what this home is asking today. Straight from the ACTRIS MLS feed, no interpretation.</p>
+    <div class="ph-rows">
+      ${origPrice ? `<div class="ph-row">
+        <span class="ph-label">Original ask${origDate ? ` &middot; ${origDate}` : ''}</span>
+        <span class="ph-val">${fmtPrice(origPrice)}</span>
+      </div>` : ''}
+      ${prevPrice && prevPrice !== origPrice ? `<div class="ph-row">
+        <span class="ph-label">Previous ask</span>
+        <span class="ph-val">${fmtPrice(prevPrice)}</span>
+      </div>` : ''}
+      <div class="ph-row ph-current">
+        <span class="ph-label">Current ask${curDate && curDate !== origDate ? ` &middot; ${curDate}` : ''}</span>
+        <span class="ph-val">${fmtPrice(curPrice)}</span>
+      </div>
+      <div class="ph-summary ${changeCls}">
+        <span class="ph-arrow">${arrow}</span>
+        <span><strong>${direction === 'reduced' ? 'Reduced' : 'Increased'} ${fmtPrice(Math.abs(changeAmt))}</strong> (${changeAmt > 0 ? '-' : '+'}${Math.abs(changePct).toFixed(1)}%) from ${origPrice ? 'original ask' : 'previous ask'}</span>
+      </div>
+    </div>
+    <p style="font-size:.72rem;color:var(--light);margin-top:1rem;">Source: ACTRIS MLS. Price change timestamp reflects the most recent adjustment on record; the feed does not expose intermediate steps between the original ask and today's ask.</p>
+  </section>`;
+  })() : '';
+
   // Comps table
   const compsHTML = comps.length ? `
   <section class="insight-section">
@@ -554,6 +601,20 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
     .insight-section.invest-section{background:var(--ink);color:#fff;border-top:none;}
     .insight-section.invest-section .section-title{color:#fff;}
 
+    /* price history */
+    .ph-rows{border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+    .ph-row{display:flex;justify-content:space-between;align-items:baseline;padding:.85rem 1.1rem;border-bottom:1px solid var(--border);gap:1rem;background:#fff;}
+    .ph-row:last-of-type{border-bottom:none;}
+    .ph-label{font-size:.82rem;color:var(--mid);letter-spacing:.02em;}
+    .ph-val{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.35rem;color:var(--text);font-weight:500;}
+    .ph-current{background:var(--warm);}
+    .ph-current .ph-label{color:var(--text);font-weight:600;}
+    .ph-current .ph-val{color:var(--gold);font-size:1.6rem;}
+    .ph-summary{padding:.9rem 1.1rem;background:#fff;display:flex;gap:.75rem;align-items:center;font-size:.9rem;color:var(--text);border-top:1px solid var(--border);}
+    .ph-summary.ph-down{background:#f3f8f4;color:#1e5a2e;}
+    .ph-summary.ph-up{background:#fbf3f2;color:#7c2d24;}
+    .ph-arrow{font-size:.75rem;line-height:1;}
+
     /* comps table */
     .comps-table{border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:.82rem;}
     .comp-header,.comp-row{display:grid;grid-template-columns:2fr 1.2fr 1fr 1.2fr 1fr .6fr 1fr;gap:0;padding:.65rem 1rem;}
@@ -762,6 +823,9 @@ ${photoUrls.length > 1 ? `<div class="gallery"><div class="gallery-grid">${galle
     </div>
   </aside>
 </div>
+
+<!-- Price History -->
+${priceHistoryHTML}
 
 <!-- Comparable Sales -->
 ${compsHTML}

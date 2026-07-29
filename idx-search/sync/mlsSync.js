@@ -26,6 +26,7 @@ const SELECT_FIELDS = [
   'PublicRemarks', 'ListAgentFullName', 'ListAgentDirectPhone', 'ListAgentEmail',
   'ListOfficeName', 'ElementarySchool', 'MiddleOrJuniorSchool', 'HighSchool',
   'DaysOnMarket', 'ListingContractDate', 'CloseDate', 'ClosePrice',
+  'OriginalListPrice', 'PreviousListPrice', 'PriceChangeTimestamp',
   'ModificationTimestamp', 'PhotosChangeTimestamp', 'MlgCanView', 'MlgCanUse',
   'PoolFeatures', 'WaterfrontYN', 'NewConstructionYN', 'StoriesTotal',
   'ParkingTotal', 'AssociationFee', 'AssociationFeeFrequency', 'TaxAnnualAmount'
@@ -47,6 +48,7 @@ const upsertListing = db.prepare(`
     list_agent_full_name, list_agent_direct_phone, list_agent_email, list_office_name,
     elementary_school, middle_school, high_school, school_district,
     days_on_market, listing_contract_date, close_date, close_price,
+    original_list_price, previous_list_price, price_change_timestamp,
     modification_timestamp, photos_change_timestamp, mlg_can_view,
     photos, pool_features, waterfront_yn, new_construction_yn,
     stories, parking_total, association_fee, association_fee_frequency,
@@ -61,6 +63,7 @@ const upsertListing = db.prepare(`
     @list_agent_full_name, @list_agent_direct_phone, @list_agent_email, @list_office_name,
     @elementary_school, @middle_school, @high_school, @school_district,
     @days_on_market, @listing_contract_date, @close_date, @close_price,
+    @original_list_price, @previous_list_price, @price_change_timestamp,
     @modification_timestamp, @photos_change_timestamp, @mlg_can_view,
     @photos, @pool_features, @waterfront_yn, @new_construction_yn,
     @stories, @parking_total, @association_fee, @association_fee_frequency,
@@ -105,6 +108,9 @@ const upsertListing = db.prepare(`
     listing_contract_date = excluded.listing_contract_date,
     close_date = excluded.close_date,
     close_price = excluded.close_price,
+    original_list_price = excluded.original_list_price,
+    previous_list_price = excluded.previous_list_price,
+    price_change_timestamp = excluded.price_change_timestamp,
     modification_timestamp = excluded.modification_timestamp,
     mlg_can_view = excluded.mlg_can_view,
     photos = excluded.photos,
@@ -189,6 +195,14 @@ function mapListing(p) {
       || (p.StandardStatus === 'Closed' ? (p.MajorChangeTimestamp || p.ACT_LastChangeTimestamp || null) : null),
     close_price: p.ClosePrice
       || (p.StandardStatus === 'Closed' ? (p.ListPrice || p.OriginalListPrice || null) : null),
+    // Price-history anchors. ACTRIS ships these as top-level RESO fields.
+    // OriginalListPrice = first ask ever assigned to this listing_key.
+    // PreviousListPrice = the ask immediately before the current one (only
+    // present after at least one price change). PriceChangeTimestamp marks
+    // when the current list_price took effect.
+    original_list_price: p.OriginalListPrice || null,
+    previous_list_price: p.PreviousListPrice || null,
+    price_change_timestamp: p.PriceChangeTimestamp || null,
     modification_timestamp: p.ModificationTimestamp || null,
     photos_change_timestamp: p.PhotosChangeTimestamp || null,
     mlg_can_view: p.MlgCanView ? 1 : 0,
