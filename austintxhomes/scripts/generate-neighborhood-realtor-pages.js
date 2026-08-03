@@ -52,7 +52,7 @@ function schemaBlocks(n) {
       recognizedBy: { '@type': 'Organization', name: 'Texas Real Estate Commission' },
       identifier: '788149'
     },
-    aggregateRating: { '@type': 'AggregateRating', ratingValue: '5.0', reviewCount: '27', bestRating: '5', worstRating: '1' },
+    aggregateRating: { '@type': 'AggregateRating', ratingValue: '5.0', reviewCount: '30', bestRating: '5', worstRating: '1' },
     sameAs: [
       'https://share.google/hETte82InqUPvWeNC',
       'https://www.linkedin.com/in/lukeallentx/',
@@ -63,7 +63,7 @@ function schemaBlocks(n) {
   const article = {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: `${n.name} Austin Realtor, Luke Allen`,
-    description: `Luke Allen is the go-to ${n.name} Realtor in Austin TX. Deep ${n.name} sub-neighborhood expertise, street-level pricing knowledge, and a 5.0 Google rating across 27 reviews.`,
+    description: `Luke Allen is the go-to ${n.name} Realtor in Austin TX. Deep ${n.name} sub-neighborhood expertise, street-level pricing knowledge, and a 5.0 Google rating across 30 reviews.`,
     url, datePublished: '2026-07-22', dateModified: new Date().toISOString().slice(0, 10),
     author: { '@type': 'Person', name: 'Luke Allen', jobTitle: 'Licensed Austin TX Realtor', url: 'https://austintxhomes.co/luke-allen',
       hasCredential: { '@type': 'EducationalOccupationalCredential', name: 'Texas Real Estate License', identifier: '788149' } },
@@ -88,7 +88,7 @@ function schemaBlocks(n) {
 function renderPage(n) {
   const url = `https://austintxhomes.co/${n.slug}-realtor`;
   const title = `${n.name} Austin Realtor | Top ${n.name} Agent | Luke Allen TREC #788149`;
-  const description = `Luke Allen is the top ${n.name} Realtor in Austin TX. Licensed since 2019, 27 five-star Google reviews, direct service. Sub-neighborhood expert in ${n.subAreas.slice(0, 3).join(', ')}.`;
+  const description = `Luke Allen is the top ${n.name} Realtor in Austin TX. Licensed since 2019, 30 five-star Google reviews, direct service. Sub-neighborhood expert in ${n.subAreas.slice(0, 3).join(', ')}.`;
   const schemas = schemaBlocks(n);
   const faqCards = n.faqs.map(f => `
     <div class="faq-item">
@@ -213,7 +213,7 @@ function renderPage(n) {
    <p class="hero-tag">${esc(n.tagline)}</p>
    <p class="hero-sub">${esc(n.heroSub)}</p>
    <div class="creds">
-    <span class="cred-item gold-item">5.0 &#9733; 27 Google Reviews</span>
+    <span class="cred-item gold-item">5.0 &#9733; 30 Google Reviews</span>
     <span class="cred-item">TREC Licensed #788149</span>
     <span class="cred-item">${esc(n.zip)} Specialist</span>
    </div>
@@ -233,7 +233,7 @@ function renderPage(n) {
   <span><strong>Luke Allen</strong> &middot; TREC #788149</span>
   <span><strong>Austin Marketing + Development Group</strong></span>
   <span>${esc(n.subAreas.join(' &middot; '))}</span>
-  <span><strong>5.0 &#9733;</strong> &middot; 27 Five-Star Reviews</span>
+  <span><strong>5.0 &#9733;</strong> &middot; 30 Five-Star Reviews</span>
  </div>
 </div>
 

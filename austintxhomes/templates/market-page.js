@@ -110,7 +110,7 @@ function schemaBlocks({ url, headline, description, published, faqs }) {
     '@context': 'https://schema.org', '@type': ['RealEstateAgent','LocalBusiness'],
     name: 'Luke Allen, Austin TX Homes', url: 'https://austintxhomes.co',
     telephone: '+12547182567', email: 'Luke@austinmdg.com',
-    aggregateRating: { '@type': 'AggregateRating', ratingValue: '5.0', reviewCount: '27', bestRating: '5', worstRating: '1' },
+    aggregateRating: { '@type': 'AggregateRating', ratingValue: '5.0', reviewCount: '30', bestRating: '5', worstRating: '1' },
     sameAs: [
       'https://share.google/hETte82InqUPvWeNC',
       'https://www.linkedin.com/in/lukeallentx/',

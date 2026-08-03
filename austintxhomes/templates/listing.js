@@ -294,7 +294,7 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
     '@context': 'https://schema.org', '@type': ['RealEstateAgent','LocalBusiness'],
     name: 'Luke Allen, Austin TX Homes', url: 'https://austintxhomes.co',
     telephone: '+12547182567', email: 'Luke@austinmdg.com',
-    aggregateRating: { '@type': 'AggregateRating', ratingValue: '5.0', reviewCount: '27', bestRating: '5', worstRating: '1' },
+    aggregateRating: { '@type': 'AggregateRating', ratingValue: '5.0', reviewCount: '30', bestRating: '5', worstRating: '1' },
     sameAs: ['https://share.google/hETte82InqUPvWeNC','https://www.linkedin.com/in/lukeallentx/','https://www.instagram.com/lukeallenrealty/','https://www.tiktok.com/@austintxapartments']
   };
   const breadcrumbSchema = {
@@ -794,7 +794,7 @@ ${photoUrls.length > 1 ? `<div class="gallery"><div class="gallery-grid">${galle
     <div class="contact-card">
       <h3>Luke Allen</h3>
       <span class="agent-title">Austin Realtor · TREC #788149</span>
-      <p class="agent-creds">Austin Marketing + Development Group<br>27 Five-Star Google Reviews · 5.0 Rating</p>
+      <p class="agent-creds">Austin Marketing + Development Group<br>30 Five-Star Google Reviews · 5.0 Rating</p>
       <form class="contact-form" id="contact-form" onsubmit="submitContact(event)">
         <input type="hidden" name="listing" value="${addr.replace(/"/g,'&quot;')}" />
         <input type="hidden" name="listingKey" value="${listing.listing_key}" />

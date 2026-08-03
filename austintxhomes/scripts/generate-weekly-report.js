@@ -282,6 +282,40 @@ async function fetchMarketData() {
       .sort((a,b) => b.count - a.count)
       .slice(0, 8);
 
+    // Per-target-ZIP stats for the ZIP-level GBP blurbs (78701 through 78704).
+    // These are the four central-Austin ZIPs Luke posts GBP updates for; each
+    // blurb gets its own send-friendly section in the email so he can
+    // copy-paste one per Google Business Profile update. Stats include price
+    // cuts (from OriginalListPrice) and closed-last-90 which the metro blurb
+    // does not break out per-ZIP.
+    const TARGET_ZIPS = ['78701', '78702', '78703', '78704'];
+    const zipStats = {};
+    for (const zip of TARGET_ZIPS) {
+      const zActive = active.filter(l => l.postal_code === zip);
+      const zClosed = closed.filter(l => l.postal_code === zip);
+      const zPrices = zActive.map(l => l.list_price).filter(Boolean);
+      const zDoms   = zActive.map(calcActiveDom).filter(d => d != null);
+      const zReduced = zActive.filter(l => l.original_list_price && l.original_list_price > l.list_price).length;
+      const zNewCon = zActive.filter(l => l.new_construction_yn).length;
+      const zClosedPrices = zClosed.map(l => l.close_price).filter(Boolean);
+      const zNewThisWeek = zActive.filter(l => {
+        const d = calcActiveDom(l);
+        return d != null && d <= 7;
+      }).length;
+      zipStats[zip] = {
+        zip,
+        count:        zActive.length,
+        medPrice:     zPrices.length ? med(zPrices) : 0,
+        avgDom:       zDoms.length ? Math.round(avg(zDoms)) : null,
+        reducedPct:   zActive.length ? Math.round(zReduced / zActive.length * 100) : 0,
+        newConCount:  zNewCon,
+        newConPct:    zActive.length ? Math.round(zNewCon / zActive.length * 100) : 0,
+        closedLast90: zClosed.length,
+        closedMed:    zClosedPrices.length ? med(zClosedPrices) : 0,
+        newThisWeek:  zNewThisWeek,
+      };
+    }
+
     // "New this week" - listings whose contract_date is within 7 days.
     // Calculated rather than relying on the sparse days_on_market field.
     const newThisWeek = active.filter(l => {
@@ -323,6 +357,7 @@ async function fetchMarketData() {
       hotCities,
       softCities,
       byZip,
+      zipStats,
     };
   } catch (e) {
     console.error('[WeeklyReport] fetchMarketData error:', e.message);
@@ -452,6 +487,73 @@ function generateGbpBlurb(data, rate, weekLabel) {
   ].filter(l => l !== null).join('\n');
 
   return lines.length > 1480 ? lines.slice(0, 1477) + '...' : lines;
+}
+
+// ── Per-ZIP GBP Blurbs (78701 / 78702 / 78703 / 78704) ───────────────────────
+// One blurb per ZIP so Luke can paste each as its own Google Business Profile
+// update. Same 1500-char GBP limit as the metro blurb. Each blurb ends with
+// a Learn More URL pointing at the highest-intent page for that ZIP; the
+// URL choice per ZIP was decided 2026-07-22 in the GBP-update plan.
+const ZIP_META = {
+  '78701': {
+    area:      'Downtown Austin (Rainey Street, 2nd Street District, Warehouse District)',
+    learnMore: 'https://austintxhomes.co/sold-homes-near-78701',
+  },
+  '78702': {
+    area:      'East Austin (East Cesar Chavez, Holly, Chestnut, Govalle)',
+    learnMore: 'https://austintxhomes.co/sold-homes-near-78702',
+  },
+  '78703': {
+    area:      'Central West Austin (Tarrytown, Clarksville, Old Enfield, Pemberton Heights)',
+    learnMore: 'https://austintxhomes.co/best-realtor-78703-austin',
+  },
+  '78704': {
+    area:      'South Austin (Bouldin Creek, Travis Heights, Zilker, Barton Hills)',
+    learnMore: 'https://austintxhomes.co/sold-homes-near-78704',
+  },
+};
+
+function generateZipBlurb(zStat, weekLabel) {
+  const meta = ZIP_META[zStat.zip];
+  if (!meta || !zStat.count) return null;
+  const marketRead = zStat.reducedPct >= 55 ? "Buyer's market"
+                   : zStat.reducedPct >= 40 ? 'Balanced'
+                   : "Seller's market";
+
+  const lines = [
+    `${zStat.zip} Austin Market Update: ${weekLabel}`,
+    ``,
+    `${meta.area}`,
+    ``,
+    `Market Snapshot: ${fmtNum(zStat.count)} active listings, ${zStat.newThisWeek} new this week. Median list price ${fmt(zStat.medPrice)}. ${zStat.reducedPct}% of ${zStat.zip} listings have reduced from original ask.`,
+    ``,
+    `Key Metrics:`,
+    `• Active listings: ${fmtNum(zStat.count)}`,
+    `• Median list price: ${fmt(zStat.medPrice)}`,
+    zStat.avgDom != null ? `• Days on market: ${zStat.avgDom}` : null,
+    `• Price cuts: ${zStat.reducedPct}% of listings`,
+    zStat.newConPct >= 5 ? `• New construction: ${zStat.newConPct}% of active (${fmtNum(zStat.newConCount)} homes)` : null,
+    zStat.closedLast90 > 0 ? `• Closed last 90 days: ${fmtNum(zStat.closedLast90)} (median ${fmt(zStat.closedMed)})` : null,
+    ``,
+    `Current read on ${zStat.zip}: ${marketRead}.`,
+    ``,
+    `Buying or selling in ${zStat.zip}? Free buyer representation with Luke Allen, Austin Realtor (TREC #788149). See live comps and neighborhood market data:`,
+    ``,
+    meta.learnMore,
+  ].filter(l => l !== null).join('\n');
+
+  return lines.length > 1480 ? lines.slice(0, 1477) + '...' : lines;
+}
+
+function generateAllZipBlurbs(zipStatsObj, weekLabel) {
+  const out = [];
+  for (const zip of ['78701', '78702', '78703', '78704']) {
+    const zStat = zipStatsObj[zip];
+    if (!zStat) continue;
+    const blurb = generateZipBlurb(zStat, weekLabel);
+    if (blurb) out.push({ zip, blurb, learnMore: ZIP_META[zip].learnMore });
+  }
+  return out;
 }
 
 // ── Full Blog Post HTML ───────────────────────────────────────────────────────
@@ -644,7 +746,7 @@ ${internalLinks}`;
 }
 
 // ── Email ─────────────────────────────────────────────────────────────────────
-async function sendEmail(gbpBlurb, blogPost, weekLabel) {
+async function sendEmail(gbpBlurb, zipBlurbs, blogPost, weekLabel) {
   if (!nodemailer) { console.warn('[WeeklyReport] nodemailer unavailable - skipping email'); return; }
   const user = process.env.EMAIL_USER, pass = process.env.EMAIL_PASS;
   if (!user || !pass) { console.warn('[WeeklyReport] EMAIL_USER/PASS not set - skipping email'); return; }
@@ -670,17 +772,43 @@ h2{font-family:Georgia,serif;font-weight:400;color:#b8935a;font-size:.95rem;text
 </style></head><body>
 <h1>Austin Market Reports - ${weekLabel}</h1>
 <p style="color:#5c5b57">Two reports generated from live MLS data. The GBP blurb is ready to paste. The blog post is live.</p>
-<h2>Report 1 - Google Business Profile (paste as-is)</h2>
+<h2>Report 1 - Google Business Profile: Metro (paste as-is)</h2>
 <p style="font-size:.82rem;color:#999">Character count: ${gbpBlurb.length} / 1500</p>
 <div class="gbp">${gbpBlurb.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-<h2 style="margin-top:2rem">Report 2 - Blog Post Published</h2>
+
+${zipBlurbs.map((zb, i) => `
+<h2 style="margin-top:2rem">Report ${i + 2} - GBP Update: ${zb.zip} (paste as-is)</h2>
+<p style="font-size:.82rem;color:#999">Character count: ${zb.blurb.length} / 1500 &middot; Learn More URL: <a href="${zb.learnMore}" style="color:#b8935a">${zb.learnMore.replace('https://austintxhomes.co','')}</a></p>
+<div class="gbp">${zb.blurb.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+`).join('')}
+
+<h2 style="margin-top:2rem">Report ${2 + zipBlurbs.length} - Blog Post Published</h2>
 <p><strong>${blogPost.title}</strong></p>
 <p style="font-size:.9rem;color:#5c5b57">${blogPost.excerpt}</p>
 <p><a href="https://austintxhomes.co/blog/${blogPost.slug}" class="btn">View Live Post →</a></p>
 <div class="foot">Generated by AustinTXHomes weekly report system · Every Monday 9am CDT<br>
 Luke Allen, TREC #788149 · austintxhomes.co</div>
 </body></html>`,
-    text: `Austin Market Reports - ${weekLabel}\n\nGBP BLURB (copy/paste):\n\n${gbpBlurb}\n\nBLOG POST:\nhttps://austintxhomes.co/blog/${blogPost.slug}`,
+    text: [
+      `Austin Market Reports - ${weekLabel}`,
+      ``,
+      `METRO GBP BLURB (copy/paste):`,
+      ``,
+      gbpBlurb,
+      ...zipBlurbs.map(zb => [
+        ``,
+        `─────────────────────`,
+        ``,
+        `${zb.zip} GBP BLURB (copy/paste). Learn More URL: ${zb.learnMore}`,
+        ``,
+        zb.blurb,
+      ].join('\n')),
+      ``,
+      `─────────────────────`,
+      ``,
+      `BLOG POST:`,
+      `https://austintxhomes.co/blog/${blogPost.slug}`,
+    ].join('\n'),
   });
 
   console.log(`[WeeklyReport] Email sent → ${TO_EMAIL}`);
@@ -739,8 +867,9 @@ module.exports = async function generateWeeklyReport(weeklyReportsRef = [], opts
 
   console.log(`[WeeklyReport] MLS: ${data.totalActive} active, median ${fmt(data.medianPrice)}, ${data.avgDom} DOM`);
 
-  const gbpBlurb = generateGbpBlurb(data, rate, wLabel);
-  const blogPost = generateBlogPost(data, rate, angle, wLabel, dateFmt, slug);
+  const gbpBlurb  = generateGbpBlurb(data, rate, wLabel);
+  const zipBlurbs = generateAllZipBlurbs(data.zipStats || {}, wLabel);
+  const blogPost  = generateBlogPost(data, rate, angle, wLabel, dateFmt, slug);
 
   // Persist - replace in place if the slug already exists (backfill case)
   try {
@@ -758,7 +887,7 @@ module.exports = async function generateWeeklyReport(weeklyReportsRef = [], opts
   appendSitemap(slug);
 
   if (opts.sendEmail !== false) {
-    try { await sendEmail(gbpBlurb, blogPost, wLabel); }
+    try { await sendEmail(gbpBlurb, zipBlurbs, blogPost, wLabel); }
     catch (e) { console.error('[WeeklyReport] Email failed:', e.message); }
   }
 

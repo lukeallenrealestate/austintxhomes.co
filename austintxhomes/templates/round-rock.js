@@ -876,7 +876,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
       <div class="buy-card">
         <span class="icon">⭐</span>
         <h3>5.0 Google Rating</h3>
-        <p>27 Five-Star Reviews from buyers and sellers across the Austin metro. No pressure, no spin, straight talk.</p>
+        <p>30 Five-Star Reviews from buyers and sellers across the Austin metro. No pressure, no spin, straight talk.</p>
       </div>
       <div class="buy-card">
         <span class="icon">🏠</span>

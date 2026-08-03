@@ -107,7 +107,7 @@ module.exports = function renderBlogPost(rawPost) {
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "5.0",
-      "reviewCount": "27",
+      "reviewCount": "30",
       "bestRating": "5",
       "worstRating": "1"
     },
@@ -147,9 +147,18 @@ module.exports = function renderBlogPost(rawPost) {
     }
     body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.6; }
 
+    /* ── NAV BACKDROP ──
+       Site-wide nav is fixed, 80px tall, transparent bg at scroll-top and
+       gains a dark bg on scroll. The blog-post page opens with .post-hero on
+       a near-white warm bg, so at scroll-top the nav's white text sits over
+       near-white and disappears. Dark ink strip below gives the nav
+       something to sit over before scroll. ── */
+    .nav-backdrop {
+      height: 80px; background: var(--ink); width: 100%;
+    }
+
     /* ── HERO STRIP (warm bg) ── */
     .post-hero {
-      margin-top: 64px;
       background: var(--warm);
       border-bottom: 1px solid var(--border);
       padding: 56px 32px 48px;
@@ -428,6 +437,7 @@ module.exports = function renderBlogPost(rawPost) {
 </head>
 <body>
 <script src="/js/nav.js"></script>
+<div class="nav-backdrop" aria-hidden="true"></div>
 
   <!-- ── POST HERO (warm bg) ── -->
   <section class="post-hero">
@@ -468,7 +478,7 @@ module.exports = function renderBlogPost(rawPost) {
         <div class="sidebar-card-label">About the Author</div>
         <div class="sidebar-author-name">Luke Allen</div>
         <div class="sidebar-author-title">Austin TX Realtor · TREC #788149</div>
-        <div class="sidebar-author-rating">5.0 ★ on Google · 27 Reviews</div>
+        <div class="sidebar-author-rating">5.0 ★ on Google · 30 Reviews</div>
         <div class="sidebar-author-links">
           <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener">Read Google Reviews →</a>
         </div>
@@ -514,9 +524,9 @@ module.exports = function renderBlogPost(rawPost) {
           <span class="contact-badge">5.0 ★ Google</span>
           <span class="contact-badge">TREC #788149</span>
           <span class="contact-badge">Central Austin Specialist</span>
-          <span class="contact-badge">27 Five-Star Reviews</span>
+          <span class="contact-badge">30 Five-Star Reviews</span>
         </div>
-        <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener" class="contact-reviews-link">Read Luke Allen's 27 five-star Google reviews →</a>
+        <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener" class="contact-reviews-link">Read Luke Allen's 30 five-star Google reviews →</a>
       </div>
       <div class="contact-form-card">
         <h3>Talk to Luke Allen</h3>
