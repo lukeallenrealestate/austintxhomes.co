@@ -457,7 +457,7 @@
  .form-sub { font-size: 12px; color: rgba(255,255,255,0.35); margin-bottom: 24px; }
  .form-group { margin-bottom: 14px; }
  .form-group label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
- .form-group input.form-group select {
+ .form-group input, .form-group select {
  width: 100%;
  background: rgba(255,255,255,0.07);
  border: 1px solid rgba(255,255,255,0.12);
@@ -470,7 +470,7 @@
  transition: border-color .2s;
  }
  .form-group input::placeholder { color: rgba(255,255,255,0.28); }
- .form-group input:focus.form-group select:focus { border-color: rgba(184,147,90,0.5); }
+ .form-group input:focus, .form-group select:focus { border-color: rgba(184,147,90,0.5); }
  .form-group select { color: rgba(255,255,255,0.75); }
  .form-group select option { background: #1a1918; color: #fff; }
  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -478,13 +478,72 @@
  .form-btn:hover { background: var(--gold-lt); }
  .form-success { font-size: 15px; font-style: italic; color: var(--gold-lt); text-align: center; padding: 24px 0; }
 
- /* ── Mobile ── */
+ /* ── Hero-form: the actual contact form on this page uses these class names,
+    not the .form-group/.form-btn pattern the CTA-section CSS above targets. ── */
+ .hero-form {
+ background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+ border-radius: var(--r); padding: 28px; margin-top: 40px;
+ max-width: 460px;
+ backdrop-filter: blur(4px);
+ }
+ .hero-form h3 {
+ font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600;
+ color: #fff; margin-bottom: 6px;
+ }
+ .hero-form > p {
+ font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.55;
+ margin-bottom: 20px;
+ }
+ .hero-form form { display: flex; flex-direction: column; gap: 10px; }
+ .hero-form input, .hero-form select {
+ width: 100%;
+ background: rgba(255,255,255,0.07);
+ border: 1px solid rgba(255,255,255,0.15);
+ border-radius: var(--r);
+ padding: 11px 14px;
+ font-family: 'Inter', sans-serif;
+ font-size: 14px;
+ color: #fff;
+ outline: none;
+ transition: border-color .2s, background .2s;
+ }
+ .hero-form input::placeholder { color: rgba(255,255,255,0.35); }
+ .hero-form input:focus, .hero-form select:focus {
+ border-color: rgba(184,147,90,0.55); background: rgba(255,255,255,0.09);
+ }
+ .hero-form select { color: rgba(255,255,255,0.75); appearance: none;
+ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.5)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+ background-repeat: no-repeat; background-position: right 14px center;
+ padding-right: 36px;
+ }
+ .hero-form select option { background: #1a1918; color: #fff; }
+ .hero-form .btn-submit {
+ width: 100%; margin-top: 6px; padding: 13px;
+ background: var(--gold); border: none; border-radius: var(--r);
+ font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+ color: #fff; cursor: pointer; letter-spacing: 0.08em; text-transform: uppercase;
+ transition: background .2s;
+ }
+ .hero-form .btn-submit:hover { background: var(--gold-lt); }
+ .hero-form-success {
+ display: none;
+ font-size: 15px; font-style: italic; color: var(--gold-lt);
+ text-align: center; padding: 20px 0 4px;
+ }
+ .hero-form-success.show { display: block; }
+
+ /* ── Mobile ──
+    Previous rules chained the class names (.two-col.two-col-wide.checklist-grid.cta-grid)
+    which required all four classes on the same element. Those classes actually
+    live on separate grid containers, so the compound selectors matched nothing
+    and the mobile collapse never fired. Comma-separated so each grid collapses. ── */
  @media (max-width: 900px) {
- .two-col.two-col-wide.checklist-grid.cta-grid { grid-template-columns: 1fr; gap: 32px; }
- .tax-cards.why-grid.industry-grid { grid-template-columns: 1fr; }
- .nbhd-grid.nyc-map-grid { grid-template-columns: 1fr 1fr; }
- .school-grid.compare-grid.faq-grid { grid-template-columns: 1fr 1fr; }
+ .two-col, .two-col-wide, .checklist-grid, .cta-grid { grid-template-columns: 1fr; gap: 32px; }
+ .tax-cards, .why-grid, .industry-grid { grid-template-columns: 1fr; }
+ .nbhd-grid, .nyc-map-grid { grid-template-columns: 1fr 1fr; }
+ .school-grid, .compare-grid, .faq-grid { grid-template-columns: 1fr 1fr; }
  .form-row { grid-template-columns: 1fr; }
+ .hero-form { max-width: 100%; margin-top: 32px; }
  .tax-banner { flex-direction: column; gap: 16px; }
  }
  @media (max-width: 600px) {
