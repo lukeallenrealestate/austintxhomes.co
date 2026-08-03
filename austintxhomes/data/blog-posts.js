@@ -33,7 +33,7 @@ module.exports = [
   <span class="stat-label">Sold Over Asking Price</span>
 </div>
 
-<p>What do these numbers tell us? Tarrytown is moving. 28 days on market is brisk by any measure - the homes that are sitting longer than that are either priced aggressively or have issues that the market is correctly discounting. And with 34% of sales going over asking, well-priced homes in good condition are still generating competition. This isn't a frenzy like 2021-2022, but it's a seller-favorable market, particularly in the $800K–$1.4M range where buyer demand is thickest.</p>
+<p>What do these numbers tell us? Tarrytown is moving. 28 days on market is brisk by any measure - the homes that are sitting longer than that are either priced aggressively or have issues that the market is correctly discounting. And with 34% of sales going over asking, well-priced homes in good condition are still generating competition. This isn't a frenzy like 2021-2022, but it's a seller-favorable market, particularly in the $800K to $1.4M range where buyer demand is thickest.</p>
 
 <h2>What Sold Recently</h2>
 
@@ -49,13 +49,13 @@ module.exports = [
 
 <p>With roughly 40 active listings, Tarrytown is sitting at about 2.2 months of supply - which by conventional real estate standards remains a seller's market (typically defined as anything under 3 months). But inventory is not uniform across price tiers, and understanding the tiers matters.</p>
 
-<p>At <strong>$750K–$1.1M</strong>, there are maybe 12-15 homes available at any given time, and they move fast. This is the most competitive tier because it captures both move-up buyers from other Austin neighborhoods and buyers who are stretching to get into Tarrytown. Well-priced homes in this range that show well are typically under contract within two weeks.</p>
+<p>At <strong>$750K to $1.1M</strong>, there are maybe 12-15 homes available at any given time, and they move fast. This is the most competitive tier because it captures both move-up buyers from other Austin neighborhoods and buyers who are stretching to get into Tarrytown. Well-priced homes in this range that show well are typically under contract within two weeks.</p>
 
-<p>At <strong>$1.1M–$1.75M</strong>, there are slightly more options, and buyers here tend to be more selective. They can afford to wait for the right property, so condition and layout matter even more. Homes that haven't been thoughtfully updated can sit in this range even when comparable renovated homes are flying off the market.</p>
+<p>At <strong>$1.1M to $1.75M</strong>, there are slightly more options, and buyers here tend to be more selective. They can afford to wait for the right property, so condition and layout matter even more. Homes that haven't been thoughtfully updated can sit in this range even when comparable renovated homes are flying off the market.</p>
 
 <p>Above <strong>$2M</strong>, you're looking at a different conversation entirely - custom builds, significant lot acquisitions, or fully reimagined estates. Days on market stretch to 60-90+ in this tier, and pricing is almost entirely driven by the specific property. This is where comparable sales analysis gets genuinely difficult.</p>
 
-<p>The deals - and I use that word carefully in Tarrytown - exist in properties that need work. If you have the appetite for a renovation and access to reliable contractors, there are opportunities in the $650K–$850K range for homes that haven't been touched in 30 years. You're buying the neighborhood and the lot; you're creating the house.</p>
+<p>The deals - and I use that word carefully in Tarrytown - exist in properties that need work. If you have the appetite for a renovation and access to reliable contractors, there are opportunities in the $650K to $850K range for homes that haven't been touched in 30 years. You're buying the neighborhood and the lot; you're creating the house.</p>
 
 <h2>Advice for Buyers in This Market</h2>
 
@@ -81,7 +81,7 @@ module.exports = [
 
 <p>My take on where this market is headed over the next 90 days: I don't see a dramatic shift in either direction for Tarrytown. The factors that make this neighborhood expensive - the location, the school zones, the lot sizes, the walkability to the lake and to downtown - haven't changed. Supply isn't going to dramatically expand because there's simply no more land to build on.</p>
 
-<p>What I do expect is continued stratification by price tier. The $750K–$1.25M range will stay competitive through spring. Higher-end properties will remain price-sensitive and will continue to require patience. Interest rates are the wildcard - if we see meaningful movement down, expect demand to increase noticeably in that sub-$1M tier where buyer purchasing power is most sensitive to monthly payments.</p>
+<p>What I do expect is continued stratification by price tier. The $750K to $1.25M range will stay competitive through spring. Higher-end properties will remain price-sensitive and will continue to require patience. Interest rates are the wildcard - if we see meaningful movement down, expect demand to increase noticeably in that sub-$1M tier where buyer purchasing power is most sensitive to monthly payments.</p>
 
 <p>If you're a buyer who's been waiting for a "better time," I'd encourage you to think carefully about what you're waiting for. Tarrytown has appreciated meaningfully over the last decade precisely because it's supply-constrained and desirable. That doesn't mean prices only go up - but it does mean the factors driving demand are structural, not cyclical.</p>
 
@@ -118,8 +118,8 @@ module.exports = [
   <tbody>
   <tr>
   <td>Price Range</td>
-  <td>$750K–$4M+</td>
-  <td>$400K–$1.1M</td>
+  <td>$750K to $4M+</td>
+  <td>$400K to $1.1M</td>
   </tr>
   <tr>
   <td>Elementary School</td>
@@ -254,7 +254,7 @@ module.exports = [
 
 <p>Austin sits on expansive clay soils. Those soils shrink and swell with moisture, which means virtually every older Austin home has experienced some foundation movement. The question isn't whether there's been movement - it's whether the movement is within normal tolerances or indicative of ongoing structural issues. A general home inspector may flag foundation cracks; a structural engineer or a specialized foundation inspector will tell you what those cracks actually mean and whether you should be concerned.</p>
 
-<p>For homes over 40 years old, I routinely recommend a separate sewer scope inspection in addition to the general inspection. Cast iron drain lines from that era are susceptible to root intrusion and corrosion, and a sewer repair can run $5,000–$25,000. It's a $150 inspection that can save you from a very expensive surprise. Electrical panels, roofing, and HVAC systems on older Central Austin homes also deserve close attention. Know what you're inheriting before you close.</p>
+<p>For homes over 40 years old, I routinely recommend a separate sewer scope inspection in addition to the general inspection. Cast iron drain lines from that era are susceptible to root intrusion and corrosion, and a sewer repair can run $5,000 to $25,000. It's a $150 inspection that can save you from a very expensive surprise. Electrical panels, roofing, and HVAC systems on older Central Austin homes also deserve close attention. Know what you're inheriting before you close.</p>
 
 <h2>6. The First Week of a Listing Is Everything</h2>
 
@@ -276,7 +276,7 @@ module.exports = [
 
 <h2>9. Don't Skip the Flood Zone Check</h2>
 
-<p>Central Austin has meaningful flood risk in specific areas, and it's not always obvious from the street. Properties near Shoal Creek, Waller Creek, the Colorado River, and their tributaries can fall within FEMA flood zones that require flood insurance - and that insurance can cost $2,000–$5,000+ per year, which adds meaningfully to your carrying costs and may affect your resale value.</p>
+<p>Central Austin has meaningful flood risk in specific areas, and it's not always obvious from the street. Properties near Shoal Creek, Waller Creek, the Colorado River, and their tributaries can fall within FEMA flood zones that require flood insurance - and that insurance can cost $2,000 to $5,000+ per year, which adds meaningfully to your carrying costs and may affect your resale value.</p>
 
 <p>Before you get emotionally attached to a home, check the FEMA Flood Map Service Center (msc.fema.gov) with the specific address. Look at whether the property is in Zone AE (high risk, insurance typically required by lenders), Zone X (minimal risk), or somewhere in between. For properties near creeks, it's worth understanding not just the current flood zone designation but the history of flood events in the area - FEMA maps are updated periodically and don't always reflect recent changes in hydrology.</p>
 
@@ -284,9 +284,9 @@ module.exports = [
 
 <h2>10. Budget for the Full Picture</h2>
 
-<p>The purchase price is the starting point, not the ending point. In Austin, property taxes are among the highest in the country - Travis County effective rates run roughly 1.8–2.1% of assessed value annually. On a $900,000 home, that's $16,200–$18,900 per year in property taxes alone. You can apply for the homestead exemption once you've owned and occupied the home as your primary residence, which provides some relief and caps annual appraisal increases, but you won't receive that benefit in your first year.</p>
+<p>The purchase price is the starting point, not the ending point. In Austin, property taxes are among the highest in the country - Travis County effective rates run roughly 1.8 to 2.1% of assessed value annually. On a $900,000 home, that's $16,200 to $18,900 per year in property taxes alone. You can apply for the homestead exemption once you've owned and occupied the home as your primary residence, which provides some relief and caps annual appraisal increases, but you won't receive that benefit in your first year.</p>
 
-<p>Closing costs for buyers in Texas typically run 2–3% of the purchase price, covering loan origination fees, title insurance, survey, and other transaction costs. On a $900K purchase, budget $18,000–$27,000 in closing costs that you'll need in cash at closing in addition to your down payment. Most Central Austin neighborhoods don't have HOA fees - that's one genuine advantage of the older neighborhoods here - but verify before you assume. And factor in the inevitable first-year maintenance on an older home: HVAC service, minor repairs, possibly a fence, possibly landscaping. Budget $10,000–$20,000 for first-year home costs beyond the purchase.</p>
+<p>Closing costs for buyers in Texas typically run 2 to 3% of the purchase price, covering loan origination fees, title insurance, survey, and other transaction costs. On a $900K purchase, budget $18,000 to $27,000 in closing costs that you'll need in cash at closing in addition to your down payment. Most Central Austin neighborhoods don't have HOA fees - that's one genuine advantage of the older neighborhoods here - but verify before you assume. And factor in the inevitable first-year maintenance on an older home: HVAC service, minor repairs, possibly a fence, possibly landscaping. Budget $10,000 to $20,000 for first-year home costs beyond the purchase.</p>
 
 <p>None of this should scare you off. Homeownership in Central Austin is one of the best long-term wealth-building decisions available to people who can access it. But go in with clear eyes about what monthly ownership actually costs vs. the number you see on the listing page.</p>
 
@@ -328,17 +328,17 @@ module.exports = [
 
 <p><strong>Kitchens and baths can pay off - if they truly need it, and if you do them right.</strong> A kitchen that's genuinely outdated (original 1970s cabinets, no counter space, bad layout) is holding back your sale price and limiting your buyer pool. A modest but thoughtful renovation - paint the cabinets, replace the hardware, new countertops, new light fixtures - can return more than it costs. A full gut renovation of a functioning kitchen almost never pencils out for a sale; you're investing $60,000 to recover $40,000.</p>
 
-<p>What doesn't pay off right now: the gray LVP and white quartz aesthetic that swept Austin from 2019–2022. That look is everywhere, buyers can tell when it's been slapped in for a flip, and it no longer commands the premium it once did. If that's your home's update, price accordingly - don't expect to recoup the renovation cost from sophisticated Central Austin buyers who've toured 40 homes.</p>
+<p>What doesn't pay off right now: the gray LVP and white quartz aesthetic that swept Austin from 2019 to 2022. That look is everywhere, buyers can tell when it's been slapped in for a flip, and it no longer commands the premium it once did. If that's your home's update, price accordingly - don't expect to recoup the renovation cost from sophisticated Central Austin buyers who've toured 40 homes.</p>
 
-<p><strong>Curb appeal matters more than most sellers realize.</strong> A buyer's first impression is formed before they walk through the door - from the street, in the listing photos. Fresh paint on the front door, power-washed driveway, trimmed landscaping, and mulched beds cost $500–$2,000 and improve your listing photos and in-person impressions dramatically. This is almost always the highest-return investment a seller can make.</p>
+<p><strong>Curb appeal matters more than most sellers realize.</strong> A buyer's first impression is formed before they walk through the door - from the street, in the listing photos. Fresh paint on the front door, power-washed driveway, trimmed landscaping, and mulched beds cost $500 to $2,000 and improve your listing photos and in-person impressions dramatically. This is almost always the highest-return investment a seller can make.</p>
 
 <p><strong>Deferred maintenance items need to be addressed.</strong> That cracked fascia board, the missing fence panel, the HVAC that rattles - these things get flagged in inspection and become negotiating chips for buyers. Fix them before you list. It's almost always cheaper to address deferred maintenance on your terms than to negotiate credits under contract pressure.</p>
 
-<h2>Timing: Why February–May Is the Window</h2>
+<h2>Timing: Why February to May Is the Window</h2>
 
 <p>Spring is genuinely the best time to sell in Austin, and the reasons are specific and concrete - not just seasonal sentiment. The Casis Elementary enrollment calendar drives significant buyer activity in Tarrytown in Q1. Families who want their kids in Casis for the following fall need to be under contract by March or April to close with enough lead time to get enrollment handled. If you're in the Casis zone, this is real demand that's active right now and will taper off as summer approaches.</p>
 
-<p>Corporate relocation buyers - a significant buyer segment in Austin given the number of major employers - typically need to be settled by August for fall starts. Their shopping window is January through April. By May, the pool of relo buyers starts to shrink. And the general buyer pool follows the school calendar: families with kids in school prefer to move in summer, which means they need to find a home in spring. These patterns are consistent year over year and they create real demand concentration in the February–May window.</p>
+<p>Corporate relocation buyers - a significant buyer segment in Austin given the number of major employers - typically need to be settled by August for fall starts. Their shopping window is January through April. By May, the pool of relo buyers starts to shrink. And the general buyer pool follows the school calendar: families with kids in school prefer to move in summer, which means they need to find a home in spring. These patterns are consistent year over year and they create real demand concentration in the February to May window.</p>
 
 <p>If you're considering selling and you've been waiting, the window is currently open. Every week you delay into summer reduces your buyer pool.</p>
 
@@ -354,7 +354,7 @@ module.exports = [
 
 <p>I recommend pre-listing inspections to most of my seller clients, and this surprises people. Why would you pay to have an inspector find problems with your own home? Because finding them on your terms is infinitely better than finding them on the buyer's terms.</p>
 
-<p>Here's what happens when a buyer discovers a major issue during their inspection: they either walk, or they negotiate a credit under contract pressure, often inflating the actual cost of the repair. When you know about the issue before you list, you can get contractor bids, fix what makes sense to fix, and disclose the rest with actual repair estimates in hand. A seller who says "we're aware of the HVAC issue and have three bids in the $4,500–$6,000 range" is in a completely different position than a seller who gets ambushed by the same finding in the middle of a transaction.</p>
+<p>Here's what happens when a buyer discovers a major issue during their inspection: they either walk, or they negotiate a credit under contract pressure, often inflating the actual cost of the repair. When you know about the issue before you list, you can get contractor bids, fix what makes sense to fix, and disclose the rest with actual repair estimates in hand. A seller who says "we're aware of the HVAC issue and have three bids in the $4,500 to $6,000 range" is in a completely different position than a seller who gets ambushed by the same finding in the middle of a transaction.</p>
 
 <p>Pre-listing inspections also build buyer confidence. A seller who voluntarily provides inspection findings and documentation signals that they have nothing to hide - and sophisticated buyers in this market notice and appreciate that transparency.</p>
 

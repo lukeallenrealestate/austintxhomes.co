@@ -5,14 +5,14 @@
  * ──────────────────────────────────────
  * Runs every Monday at 9am CDT via cron in server.js.
  * Produces two outputs:
- *   1. Google Business Profile blurb (<1500 chars) — emailed to Luke
- *   2. Full SEO blog post (HTML) — published live to /blog/:slug
+ *   1. Google Business Profile blurb (<1500 chars) - emailed to Luke
+ *   2. Full SEO blog post (HTML) - published live to /blog/:slug
  *
  * Data: live MLS via merged server (localhost:3002) + FRED mortgage rates
  * Email: Gmail SMTP from idx-search .env credentials
  *
  * Optional env vars:
- *   FRED_API_KEY — free key from https://freddie.stlouisfed.org/docs/api/api_key.html
+ *   FRED_API_KEY - free key from https://freddie.stlouisfed.org/docs/api/api_key.html
  *                  enables real-time 30-year mortgage rate in reports
  */
 
@@ -51,9 +51,9 @@ function weekRange(d = new Date()) {
   const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
   const opts = { month: 'long', day: 'numeric' };
   if (mon.getMonth() === sun.getMonth()) {
-    return `${mon.toLocaleDateString('en-US', opts).replace(/\s\d{4}/, '')}–${sun.getDate()}, ${sun.getFullYear()}`;
+    return `${mon.toLocaleDateString('en-US', opts).replace(/\s\d{4}/, '')} to ${sun.getDate()}, ${sun.getFullYear()}`;
   }
-  return `${mon.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} – ${sun.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
+  return `${mon.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} to ${sun.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
 }
 
 function dateFormatted(d = new Date()) {
@@ -102,27 +102,27 @@ async function fetchMortgageRate(prevRate = null) {
 // ── Fetch MLS Market Data ─────────────────────────────────────────────────────
 //
 // HISTORY: Earlier versions of this function pulled data via HTTP from the local
-// IDX API with `limit=1000` — which silently capped EVERY weekly report at the
+// IDX API with `limit=1000` - which silently capped EVERY weekly report at the
 // first 1000 listings out of ~22,000 active. That made the "Austin market report"
 // a sample-of-the-newest-1000 report, with statistics skewed toward whatever
 // ZIP codes had the highest fresh-listing turnover that week.
 //
 // This version reads ACTRIS MLS data directly from the SQLite database (the
-// same DB the IDX server reads from — better-sqlite3 is synchronous and
+// same DB the IDX server reads from - better-sqlite3 is synchronous and
 // extremely fast). No limit. Every active for-sale listing in the Austin
 // metro is included. The median, mean, $/sqft, DOM, and reduction-rate
 // numbers are now true market-wide aggregates.
 //
 // Key methodology improvements vs. the API-fetch approach:
-//   1. No 1000-listing cap — we aggregate ALL 22K+ active listings
+//   1. No 1000-listing cap - we aggregate ALL 22K+ active listings
 //   2. Price-reduction rate computed from raw_data.OriginalListPrice (truth)
 //      instead of the days_on_market > 14 PROXY (which conflated stale
 //      Active flags with reduced listings)
-//   3. Calculated DOM from listing_contract_date for active stats — the
+//   3. Calculated DOM from listing_contract_date for active stats - the
 //      MLS days_on_market field is sparse and unreliable; the contract-date
 //      derivation matches what the neighborhood deep-dive reports use
 //   4. Closed-sales absorption uses the available 90-day window scaled to
-//      a monthly rate — the previous 30-day filter returned zero when the
+//      a monthly rate - the previous 30-day filter returned zero when the
 //      most recent MLS sync was older than 30 days
 async function fetchMarketData() {
   let listingDb;
@@ -140,7 +140,7 @@ async function fetchMarketData() {
 
     // ── Active for-sale: every single listing, no limit ────────────────────
     // Pull only the columns we aggregate to keep memory reasonable on a
-    // 22K-row pull. raw_data is the expensive blob — we leave it on the row
+    // 22K-row pull. raw_data is the expensive blob - we leave it on the row
     // for reduction-rate but only json_extract the one field we need.
     const active = listingDb.prepare(`
       SELECT listing_key, list_price, living_area, days_on_market, city, postal_code,
@@ -175,7 +175,7 @@ async function fetchMarketData() {
         AND list_price >= 75000
     `).all();
 
-    // Segment slices — derived from the full active set, not separate fetches
+    // Segment slices - derived from the full active set, not separate fetches
     const condos = active.filter(l =>
       l.property_sub_type === 'Condominium' || l.property_sub_type === 'Condo');
     const newCon = active.filter(l => l.new_construction_yn === 1);
@@ -282,7 +282,7 @@ async function fetchMarketData() {
       .sort((a,b) => b.count - a.count)
       .slice(0, 8);
 
-    // "New this week" — listings whose contract_date is within 7 days.
+    // "New this week" - listings whose contract_date is within 7 days.
     // Calculated rather than relying on the sparse days_on_market field.
     const newThisWeek = active.filter(l => {
       const d = calcActiveDom(l);
@@ -423,10 +423,10 @@ function generateGbpBlurb(data, rate, weekLabel) {
     : '';
 
   const bottomLine = absorption === 'buyer'
-    ? `Buyers hold strongest leverage in years. Sellers must price right—overpriced homes are sitting ${avgDom}+ days.`
+    ? `Buyers hold strongest leverage in years. Sellers must price right - overpriced homes are sitting ${avgDom}+ days.`
     : absorption === 'seller'
     ? `Well-priced homes are moving fast. Buyers should get pre-approved and act decisively in this ${mktLine}.`
-    : `Market stabilizing. Accurate pricing wins on both sides—overpriced listings are sitting, fairly priced homes are moving.`;
+    : `Market stabilizing. Accurate pricing wins on both sides - overpriced listings are sitting, fairly priced homes are moving.`;
 
   const lines = [
     `Austin Real Estate Weekly Update: ${weekLabel}`,
@@ -469,8 +469,8 @@ function generateBlogPost(data, rate, angle, weekLabel, dateFmt, slug) {
 
   const tierChart = svgStackedBar('Active Listings by Price Range', [
     { label: 'Under $400K',  count: under400k },
-    { label: '$400K–$600K',  count: t400_600k },
-    { label: '$600K–$1M',    count: t600k_1m  },
+    { label: '$400K to $600K',  count: t400_600k },
+    { label: '$600K to $1M',    count: t600k_1m  },
     { label: 'Over $1M',     count: over1m    },
   ], totalActive);
 
@@ -488,24 +488,24 @@ function generateBlogPost(data, rate, angle, weekLabel, dateFmt, slug) {
       <td style="padding:.65rem 1rem;text-align:center">${c.count}</td>
       <td style="padding:.65rem 1rem;text-align:right;color:#b8935a;font-weight:600">${fmtK(c.medPrice)}</td>
       <td style="padding:.65rem 1rem;text-align:center">${c.avgDom} days</td>
-      ${c.s2l != null ? `<td style="padding:.65rem 1rem;text-align:center;color:${c.s2l >= 100 ? '#5b9e5c' : '#c0392b'}">${c.s2l.toFixed(1)}%</td>` : '<td style="padding:.65rem 1rem;text-align:center;color:#999">—</td>'}
+      ${c.s2l != null ? `<td style="padding:.65rem 1rem;text-align:center;color:${c.s2l >= 100 ? '#5b9e5c' : '#c0392b'}">${c.s2l.toFixed(1)}%</td>` : '<td style="padding:.65rem 1rem;text-align:center;color:#999"> - </td>'}
     </tr>`).join('');
 
   const rateBlock = rate ? `
 <div class="data-highlight"><span class="stat">${rate.current.toFixed(2)}%</span><span class="stat-label">30-Yr Fixed (Freddie Mac PMMS)</span></div>` : '';
 
   const titles = [
-    `Austin Real Estate Market Report — ${weekLabel}`,
-    `Austin Home Prices & Inventory — ${weekLabel}`,
-    `Austin Market Update by City & Zip — ${weekLabel}`,
-    `Austin Buyer vs. Seller Market Analysis — ${weekLabel}`,
+    `Austin Real Estate Market Report - ${weekLabel}`,
+    `Austin Home Prices & Inventory - ${weekLabel}`,
+    `Austin Market Update by City & Zip - ${weekLabel}`,
+    `Austin Buyer vs. Seller Market Analysis - ${weekLabel}`,
   ];
 
   const excerpts = [
-    `Austin real estate weekly report: ${fmtNum(totalActive)} active listings, median ${fmt(medianPrice)}, avg ${avgDom} DOM${monthsSupply ? `, ${monthsSupply} months supply` : ''}. Full MLS breakdown with charts — ${weekLabel}.`,
+    `Austin real estate weekly report: ${fmtNum(totalActive)} active listings, median ${fmt(medianPrice)}, avg ${avgDom} DOM${monthsSupply ? `, ${monthsSupply} months supply` : ''}. Full MLS breakdown with charts - ${weekLabel}.`,
     `Austin home prices week of ${dateFmt}: median ${fmt(medianPrice)}, ${fmt(avgPpsf)}/sqft, ${fmtNum(totalActive)} active. Price tier breakdown, top zip codes, and city-by-city comparison.`,
-    `Austin real estate by city — ${weekLabel}. Top markets: ${hotCities.slice(0,2).map(c=>c.city).join(', ')}. Full zip code and city table with DOM and pricing data.`,
-    `Austin ${mktWord} analysis — ${weekLabel}. ${fmtNum(totalActive)} active listings${monthsSupply ? `, ${monthsSupply} months supply` : ''}, avg ${avgDom} DOM. What buyers and sellers need to know right now.`,
+    `Austin real estate by city - ${weekLabel}. Top markets: ${hotCities.slice(0,2).map(c=>c.city).join(', ')}. Full zip code and city table with DOM and pricing data.`,
+    `Austin ${mktWord} analysis - ${weekLabel}. ${fmtNum(totalActive)} active listings${monthsSupply ? `, ${monthsSupply} months supply` : ''}, avg ${avgDom} DOM. What buyers and sellers need to know right now.`,
   ];
 
   const heroVideo = `
@@ -539,7 +539,7 @@ function generateBlogPost(data, rate, angle, weekLabel, dateFmt, slug) {
 </div>`;
 
   const cityTableBlock = cities.length ? `
-<h2>Austin Real Estate by City — ${weekLabel}</h2>
+<h2>Austin Real Estate by City - ${weekLabel}</h2>
 <div style="overflow-x:auto;border-radius:8px;border:1px solid #e5dfd4;margin:1.5rem 0">
   <table style="width:100%;border-collapse:collapse;font-size:.9rem">
     <thead style="background:#0f0f0e">
@@ -558,12 +558,12 @@ function generateBlogPost(data, rate, angle, weekLabel, dateFmt, slug) {
 </div>` : '';
 
   const condoBlock = condoMedian ? `
-<h2>Austin Condo Market — ${weekLabel}</h2>
+<h2>Austin Condo Market - ${weekLabel}</h2>
 <p>The Austin condo segment shows distinct dynamics from single-family homes. With ${fmtNum(condoCount)} active condo listings at a median price of ${fmt(condoMedian)} and average ${condoAvgDom} days on market, condos are tracking ${condoAvgDom > avgDom ? 'slower than' : 'in line with'} the broader market. Downtown and central Austin condo buyers currently have meaningful negotiating leverage, particularly on resale units competing with newer inventory.</p>` : '';
 
   const newConBlock = newConPct ? `
-<h2>New Construction — ${weekLabel}</h2>
-<p>${newConPct}% of active Austin listings (${fmtNum(newConCount)} homes) are new construction. Builders in the Austin metro are actively using incentives to move inventory: rate buydowns to the low-to-mid 5% range, closing cost credits of $10,000–$25,000, and extended rate locks up to 8 months. For buyers who can work with a longer timeline, new construction with builder incentives can represent a better effective rate than resale purchases with conventional financing.</p>` : '';
+<h2>New Construction - ${weekLabel}</h2>
+<p>${newConPct}% of active Austin listings (${fmtNum(newConCount)} homes) are new construction. Builders in the Austin metro are actively using incentives to move inventory: rate buydowns to the low-to-mid 5% range, closing cost credits of $10,000 to $25,000, and extended rate locks up to 8 months. For buyers who can work with a longer timeline, new construction with builder incentives can represent a better effective rate than resale purchases with conventional financing.</p>` : '';
 
   const internalLinks = `
 <div style="margin:2rem 0;padding:1.5rem;background:#faf8f4;border:1px solid #e5dfd4;border-radius:8px">
@@ -591,21 +591,21 @@ function generateBlogPost(data, rate, angle, weekLabel, dateFmt, slug) {
     const mo       = rate.current / 100 / 12;
     const payment  = Math.round(loanAmt * mo / (1 - Math.pow(1 + mo, -360)));
     return `
-<h2>Mortgage Rate Context — ${weekLabel}</h2>
+<h2>Mortgage Rate Context - ${weekLabel}</h2>
 <p>The 30-year fixed mortgage rate is <strong>${rate.current.toFixed(2)}%</strong> this week per Freddie Mac's Primary Mortgage Market Survey${rate.wowChange != null ? ` (${rate.wowChange > 0 ? '+' : ''}${rate.wowChange.toFixed(2)}% from last week)` : ''}. ${rate.yoyBps != null ? `Rates are <strong>${Math.abs(rate.yoyBps)} basis points ${rate.yoyBps < 0 ? 'lower' : 'higher'}</strong> than one year ago when they averaged ${rate.yearAgo ? rate.yearAgo.toFixed(2) + '%' : 'higher'}.` : ''} At Austin's median list price of ${fmt(medianPrice)} with 20% down, a buyer financing ${fmt(loanAmt)} at ${rate.current.toFixed(2)}% carries a principal and interest payment of approximately <strong>${fmt(payment)}/month</strong>.</p>`;
   })() : '';
 
   const content = `
 ${heroVideo}
 
-<p>This is the live Austin MLS snapshot for <strong>${weekLabel}</strong> — real listing data, updated at report generation time. Not a national estimate. Not Zillow. The actual active inventory and market metrics as of this week.</p>
+<p>This is the live Austin MLS snapshot for <strong>${weekLabel}</strong> - real listing data, updated at report generation time. Not a national estimate. Not Zillow. The actual active inventory and market metrics as of this week.</p>
 
 ${keyMetricsBlock}
 
-<h2>Market Overview — ${weekLabel}</h2>
-<p>Austin's housing market has <strong>${fmtNum(totalActive)} active for-sale listings</strong> this week${monthsSupply != null ? ` with ${monthsSupply} months of supply — ${monthsSupply < 3 ? "a seller's market by conventional definition" : monthsSupply < 6 ? "approaching balanced territory" : "firmly in buyer's market territory"}` : ''}. The median list price of ${fmt(medianPrice)} and average ${avgDom} days on market tell a story of ${avgDom < 30 ? 'strong demand — homes in good condition are moving quickly' : avgDom < 60 ? 'a methodical market where buyers are taking their time and sellers need accurate pricing' : 'a market that has shifted in buyers\' favor — overpriced listings are sitting and accumulating days on market'}.</p>
+<h2>Market Overview - ${weekLabel}</h2>
+<p>Austin's housing market has <strong>${fmtNum(totalActive)} active for-sale listings</strong> this week${monthsSupply != null ? ` with ${monthsSupply} months of supply - ${monthsSupply < 3 ? "a seller's market by conventional definition" : monthsSupply < 6 ? "approaching balanced territory" : "firmly in buyer's market territory"}` : ''}. The median list price of ${fmt(medianPrice)} and average ${avgDom} days on market tell a story of ${avgDom < 30 ? 'strong demand - homes in good condition are moving quickly' : avgDom < 60 ? 'a methodical market where buyers are taking their time and sellers need accurate pricing' : 'a market that has shifted in buyers\' favor - overpriced listings are sitting and accumulating days on market'}.</p>
 
-<p>${priceReducedPct}% of active Austin listings have seen a price reduction. ${priceReducedPct > 30 ? 'This elevated price-cut rate signals that sellers initially overpriced and are adjusting to meet the market.' : priceReducedPct > 15 ? 'A moderate number of sellers are recalibrating after overpricing at list.' : 'Relatively few sellers are cutting — most are pricing to the current market from day one.'}</p>
+<p>${priceReducedPct}% of active Austin listings have seen a price reduction. ${priceReducedPct > 30 ? 'This elevated price-cut rate signals that sellers initially overpriced and are adjusting to meet the market.' : priceReducedPct > 15 ? 'A moderate number of sellers are recalibrating after overpricing at list.' : 'Relatively few sellers are cutting - most are pricing to the current market from day one.'}</p>
 
 ${tierChart}
 
@@ -620,10 +620,10 @@ ${condoBlock}
 ${newConBlock}
 
 <h2>What This Means for Buyers</h2>
-<p>${absorption === 'buyer' ? `Buyers hold their strongest leverage in years. With ${avgDom} average days on market and ${monthsSupply ? monthsSupply + ' months of supply' : 'elevated inventory'}, there's time to be selective. Use inspection results as a negotiating tool, ask for closing cost assistance, and don't be afraid to submit below asking on homes that have been sitting. ${aboveListPct != null ? `Only ${aboveListPct.toFixed(1)}% of recent sales went above list — competitive offers aren't required.` : ''}` : absorption === 'seller' ? `Even in a seller's market, buyer preparation is everything. Get fully pre-approved before touring, be ready to move within 24–48 hours on the right home. ${aboveListPct != null ? `${aboveListPct.toFixed(1)}% of recent sales went above asking price — well-priced homes in good condition are attracting competition.` : ''}` : `In a balanced market, execution matters. Come in with a clean, pre-approved offer. Modest negotiation on price or concessions is reasonable — just don't lowball on homes that are correctly priced.`}</p>
+<p>${absorption === 'buyer' ? `Buyers hold their strongest leverage in years. With ${avgDom} average days on market and ${monthsSupply ? monthsSupply + ' months of supply' : 'elevated inventory'}, there's time to be selective. Use inspection results as a negotiating tool, ask for closing cost assistance, and don't be afraid to submit below asking on homes that have been sitting. ${aboveListPct != null ? `Only ${aboveListPct.toFixed(1)}% of recent sales went above list - competitive offers aren't required.` : ''}` : absorption === 'seller' ? `Even in a seller's market, buyer preparation is everything. Get fully pre-approved before touring, be ready to move within 24 to 48 hours on the right home. ${aboveListPct != null ? `${aboveListPct.toFixed(1)}% of recent sales went above asking price - well-priced homes in good condition are attracting competition.` : ''}` : `In a balanced market, execution matters. Come in with a clean, pre-approved offer. Modest negotiation on price or concessions is reasonable - just don't lowball on homes that are correctly priced.`}</p>
 
 <h2>What This Means for Sellers</h2>
-<p>${absorption === 'buyer' ? `Pricing accuracy is not optional. Homes priced above market are sitting ${avgDom}+ days and ultimately selling for less than they would have at an accurate list price. Buyers are comparing everything. Presentation, professional photography, and MLS syndication quality matter more in a slower market — they determine whether you get showings at all.` : absorption === 'seller' ? `Well-priced homes in good condition are moving. The mistake sellers make even in a seller's market is chasing the top of comp range when their home doesn't support it. Price correctly from day one — you'll get more offers and sell faster than a home that starts too high and cuts.` : `Price based on recent closed comps, not what you need to net or what similar homes were selling for 18 months ago. The current Austin market will tell you quickly if you're off — days on market compound fast when a home is overpriced.`}</p>
+<p>${absorption === 'buyer' ? `Pricing accuracy is not optional. Homes priced above market are sitting ${avgDom}+ days and ultimately selling for less than they would have at an accurate list price. Buyers are comparing everything. Presentation, professional photography, and MLS syndication quality matter more in a slower market - they determine whether you get showings at all.` : absorption === 'seller' ? `Well-priced homes in good condition are moving. The mistake sellers make even in a seller's market is chasing the top of comp range when their home doesn't support it. Price correctly from day one - you'll get more offers and sell faster than a home that starts too high and cuts.` : `Price based on recent closed comps, not what you need to net or what similar homes were selling for 18 months ago. The current Austin market will tell you quickly if you're off - days on market compound fast when a home is overpriced.`}</p>
 
 ${cta}
 ${internalLinks}`;
@@ -645,9 +645,9 @@ ${internalLinks}`;
 
 // ── Email ─────────────────────────────────────────────────────────────────────
 async function sendEmail(gbpBlurb, blogPost, weekLabel) {
-  if (!nodemailer) { console.warn('[WeeklyReport] nodemailer unavailable — skipping email'); return; }
+  if (!nodemailer) { console.warn('[WeeklyReport] nodemailer unavailable - skipping email'); return; }
   const user = process.env.EMAIL_USER, pass = process.env.EMAIL_PASS;
-  if (!user || !pass) { console.warn('[WeeklyReport] EMAIL_USER/PASS not set — skipping email'); return; }
+  if (!user || !pass) { console.warn('[WeeklyReport] EMAIL_USER/PASS not set - skipping email'); return; }
 
   const transport = nodemailer.createTransport({
     host:   process.env.EMAIL_HOST || 'smtp.gmail.com',
@@ -659,7 +659,7 @@ async function sendEmail(gbpBlurb, blogPost, weekLabel) {
   await transport.sendMail({
     from:    `"${process.env.EMAIL_FROM_NAME || 'Luke Allen'}" <${user}>`,
     to:      TO_EMAIL,
-    subject: `Austin Market Reports — ${weekLabel}`,
+    subject: `Austin Market Reports - ${weekLabel}`,
     html: `<!DOCTYPE html><html><head><meta charset="UTF-8">
 <style>body{font-family:Inter,sans-serif;color:#1a1918;max-width:680px;margin:0 auto;padding:1.5rem}
 h1{font-family:Georgia,serif;font-weight:400;color:#0f0f0e}
@@ -668,19 +668,19 @@ h2{font-family:Georgia,serif;font-weight:400;color:#b8935a;font-size:.95rem;text
 .btn{display:inline-block;background:#b8935a;color:#fff;padding:.7rem 1.75rem;border-radius:4px;text-decoration:none;font-size:.9rem}
 .foot{font-size:11px;color:#999;margin-top:2rem;border-top:1px solid #e5dfd4;padding-top:1rem}
 </style></head><body>
-<h1>Austin Market Reports — ${weekLabel}</h1>
+<h1>Austin Market Reports - ${weekLabel}</h1>
 <p style="color:#5c5b57">Two reports generated from live MLS data. The GBP blurb is ready to paste. The blog post is live.</p>
-<h2>Report 1 — Google Business Profile (paste as-is)</h2>
+<h2>Report 1 - Google Business Profile (paste as-is)</h2>
 <p style="font-size:.82rem;color:#999">Character count: ${gbpBlurb.length} / 1500</p>
 <div class="gbp">${gbpBlurb.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-<h2 style="margin-top:2rem">Report 2 — Blog Post Published</h2>
+<h2 style="margin-top:2rem">Report 2 - Blog Post Published</h2>
 <p><strong>${blogPost.title}</strong></p>
 <p style="font-size:.9rem;color:#5c5b57">${blogPost.excerpt}</p>
 <p><a href="https://austintxhomes.co/blog/${blogPost.slug}" class="btn">View Live Post →</a></p>
 <div class="foot">Generated by AustinTXHomes weekly report system · Every Monday 9am CDT<br>
 Luke Allen, TREC #788149 · austintxhomes.co</div>
 </body></html>`,
-    text: `Austin Market Reports — ${weekLabel}\n\nGBP BLURB (copy/paste):\n\n${gbpBlurb}\n\nBLOG POST:\nhttps://austintxhomes.co/blog/${blogPost.slug}`,
+    text: `Austin Market Reports - ${weekLabel}\n\nGBP BLURB (copy/paste):\n\n${gbpBlurb}\n\nBLOG POST:\nhttps://austintxhomes.co/blog/${blogPost.slug}`,
   });
 
   console.log(`[WeeklyReport] Email sent → ${TO_EMAIL}`);
@@ -698,21 +698,21 @@ function appendSitemap(slug) {
 // ── Main export ───────────────────────────────────────────────────────────────
 //
 // Options:
-//   targetDate  — optional ISO date string (YYYY-MM-DD). When provided, the
+//   targetDate  - optional ISO date string (YYYY-MM-DD). When provided, the
 //                 report's slug, week-range label, and displayed date are
 //                 derived from that date instead of today. Used to regenerate
 //                 a specific week's report after a bug-fix. If a stored
 //                 report already exists with the resulting slug, it is
 //                 REPLACED IN PLACE (preserving array position) instead of
-//                 unshifting a duplicate — so the public /blog/{slug} URL
+//                 unshifting a duplicate - so the public /blog/{slug} URL
 //                 keeps its Google indexing and any inbound links.
-//   sendEmail   — set to false to skip the notification email. Useful for
+//   sendEmail   - set to false to skip the notification email. Useful for
 //                 backfill regenerations where Luke doesn't need another
 //                 email for a week he's already been briefed on.
 module.exports = async function generateWeeklyReport(weeklyReportsRef = [], opts = {}) {
   const targetDate = opts.targetDate ? new Date(opts.targetDate + 'T12:00:00Z') : new Date();
   if (isNaN(targetDate.getTime())) {
-    console.warn('[WeeklyReport] Invalid targetDate — aborting:', opts.targetDate);
+    console.warn('[WeeklyReport] Invalid targetDate - aborting:', opts.targetDate);
     return null;
   }
   const angle   = getISOWeek(targetDate) % 4;
@@ -720,7 +720,7 @@ module.exports = async function generateWeeklyReport(weeklyReportsRef = [], opts
   const dateFmt = dateFormatted(targetDate);
   const slug    = `austin-market-report-${slugDate(targetDate)}`;
 
-  console.log(`[WeeklyReport] Generating — ${wLabel} (angle ${angle})${opts.targetDate ? ' [BACKFILL]' : ''}`);
+  console.log(`[WeeklyReport] Generating - ${wLabel} (angle ${angle})${opts.targetDate ? ' [BACKFILL]' : ''}`);
 
   // Pull previous rate from most recent stored report for week-over-week diff
   const prevRate = weeklyReportsRef.length > 0 && weeklyReportsRef[0].mortgageRate
@@ -730,19 +730,19 @@ module.exports = async function generateWeeklyReport(weeklyReportsRef = [], opts
   const [data, rate] = await Promise.all([fetchMarketData(), fetchMortgageRate(prevRate)]);
 
   if (!data) {
-    console.warn('[WeeklyReport] No MLS data — aborting');
+    console.warn('[WeeklyReport] No MLS data - aborting');
     return null;
   }
 
   if (rate) console.log(`[WeeklyReport] Freddie Mac rate: ${rate.current}% (wow: ${rate.wowChange != null ? rate.wowChange : 'N/A'}, yoy: ${rate.yoyBps != null ? rate.yoyBps + 'bps' : 'N/A'})`);
-  else      console.log(`[WeeklyReport] Freddie Mac fetch failed — mortgage rates omitted from this report`);
+  else      console.log(`[WeeklyReport] Freddie Mac fetch failed - mortgage rates omitted from this report`);
 
   console.log(`[WeeklyReport] MLS: ${data.totalActive} active, median ${fmt(data.medianPrice)}, ${data.avgDom} DOM`);
 
   const gbpBlurb = generateGbpBlurb(data, rate, wLabel);
   const blogPost = generateBlogPost(data, rate, angle, wLabel, dateFmt, slug);
 
-  // Persist — replace in place if the slug already exists (backfill case)
+  // Persist - replace in place if the slug already exists (backfill case)
   try {
     const existingIdx = weeklyReportsRef.findIndex(p => p.slug === slug);
     if (existingIdx >= 0) {

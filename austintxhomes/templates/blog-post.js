@@ -2,7 +2,32 @@
 // URL: /blog/:slug
 // Returns a complete HTML string for the given post object
 
-module.exports = function renderBlogPost(post) {
+// Runtime dash sanitizer. weekly-reports.json on Render's persistent disk
+// can outlive a generator fix (Aug 3 2026 case: fixed generator shipped
+// AFTER Monday's cron ran, so the stored post still had em/en dashes even
+// though every future post won't). This scrub runs on every render so any
+// stale-data post gets normalized before hitting the page. Cheap - one
+// pass over string fields, doesn't touch code or numbers.
+function scrubDashes(v) {
+  if (typeof v === 'string') {
+    return v.replace(/ — /g, ' - ')
+            .replace(/—/g,   ' - ')
+            .replace(/–/g,   ' to ')
+            .replace(/&mdash;/g, ' - ')
+            .replace(/&ndash;/g, ' to ')
+            .replace(/  to  /g, ' to ');
+  }
+  if (Array.isArray(v)) return v.map(scrubDashes);
+  if (v && typeof v === 'object') {
+    const out = {};
+    for (const k of Object.keys(v)) out[k] = scrubDashes(v[k]);
+    return out;
+  }
+  return v;
+}
+
+module.exports = function renderBlogPost(rawPost) {
+  const post = scrubDashes(rawPost);
 
   const tagPills = (post.tags || []).map(t =>
     `<span class="tag">${t}</span>`
@@ -443,7 +468,7 @@ module.exports = function renderBlogPost(post) {
         <div class="sidebar-card-label">About the Author</div>
         <div class="sidebar-author-name">Luke Allen</div>
         <div class="sidebar-author-title">Austin TX Realtor · TREC #788149</div>
-        <div class="sidebar-author-rating">5.0 ★ on Google · 15 Reviews</div>
+        <div class="sidebar-author-rating">5.0 ★ on Google · 27 Reviews</div>
         <div class="sidebar-author-links">
           <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener">Read Google Reviews →</a>
         </div>
