@@ -142,6 +142,77 @@ app.use((req, res, next) => {
   next();
 });
 
+// ── E-E-A-T author block injection ────────────────────────────────────────────
+// Wraps res.sendFile so any HTML page in public/site/ gets a visible "About the
+// Author" block injected before the footer script tag. Adds visible SQEG /
+// E-E-A-T signals (author identity, credentials, reputation, contact, last
+// updated) to every page without editing 237 individual routes.
+//
+// Skip conditions:
+//  1. Response already includes the block sentinel (dynamic templates that
+//     inject the block themselves - blog-post, listing, market pages)
+//  2. URL is on the skip-list (About / Luke Allen pages already ARE the
+//     author page; the apartment-form has its own trust bar)
+//  3. File isn't HTML (images, favicons, etc.)
+const { authorBlockHTML, AUTHOR_BLOCK_MARKER } = require('./lib/author-block');
+const AUTHOR_BLOCK_SKIP = new Set([
+  '/',
+  '/about',
+  '/luke-allen',
+  '/find-my-apartment',
+  '/contact',
+]);
+function injectAuthorBlock(html, lastUpdated) {
+  if (typeof html !== 'string' || !html.includes('<body')) return html;
+  if (html.includes(AUTHOR_BLOCK_MARKER)) return html;
+  const block = authorBlockHTML({ lastUpdated: lastUpdated || new Date() });
+  const footerAnchor = html.indexOf('<script src="/js/footer.js"');
+  const bodyClose = html.lastIndexOf('</body>');
+  const anchor = footerAnchor !== -1 ? footerAnchor : bodyClose;
+  if (anchor !== -1) return html.slice(0, anchor) + block + '\n' + html.slice(anchor);
+  return html + block;
+}
+
+app.use((req, res, next) => {
+  if (AUTHOR_BLOCK_SKIP.has(req.path)) return next();
+
+  // Wrap res.sendFile — covers the 237 direct-sendFile routes for static HTML.
+  const origSendFile = res.sendFile.bind(res);
+  res.sendFile = function (fp, ...rest) {
+    if (typeof fp !== 'string' || !fp.endsWith('.html') || !fp.includes('/public/site/')) {
+      return origSendFile(fp, ...rest);
+    }
+    try {
+      let html = require('fs').readFileSync(fp, 'utf8');
+      if (html.includes(AUTHOR_BLOCK_MARKER)) return origSendFile(fp, ...rest);
+      let mtime = null;
+      try { mtime = require('fs').statSync(fp).mtime; } catch {}
+      html = injectAuthorBlock(html, mtime);
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(html);
+    } catch (e) {
+      console.warn('[author-block sendFile]', fp, 'fallback:', e.message);
+      return origSendFile(fp, ...rest);
+    }
+  };
+
+  // Wrap res.send — covers routes that read + template HTML themselves
+  // (sienna floorplans, ssrInject.renderHomepage, indexnow, etc.). Only
+  // acts on full HTML strings that contain <body>; JSON, text/api, and
+  // fragment responses pass through untouched.
+  const origSend = res.send.bind(res);
+  res.send = function (body, ...rest) {
+    if (typeof body === 'string' && body.length > 500 && body.includes('<body') && !body.includes(AUTHOR_BLOCK_MARKER)) {
+      try { body = injectAuthorBlock(body); } catch (e) {
+        console.warn('[author-block send]', req.path, 'fallback:', e.message);
+      }
+    }
+    return origSend(body, ...rest);
+  };
+
+  next();
+});
+
 // Start scheduled alert checks (2-hour interval, first run after 10 min warmup)
 alertEngine.startScheduledChecks(dealEngine.getDeals);
 
@@ -1211,9 +1282,20 @@ function ssrWithMarketWidget(fileName, filter, opts) {
     try {
       let html = require('fs').readFileSync(p, 'utf8');
       const widget = renderMarketWidget(filter, opts);
+      // Also inject the author block for E-E-A-T signal (uses file mtime
+      // as the last-updated date). Skips if the page already contains one.
+      let block = '';
+      if (!html.includes(AUTHOR_BLOCK_MARKER)) {
+        let mtime = null;
+        try { mtime = require('fs').statSync(p).mtime; } catch {}
+        block = authorBlockHTML({ lastUpdated: mtime });
+      }
       const anchor = html.indexOf('<script src="/js/footer.js"');
-      if (anchor !== -1 && widget) {
-        html = html.slice(0, anchor) + widget + '\n' + html.slice(anchor);
+      if (anchor !== -1) {
+        // Order: market widget first (topical data), then author block, then footer
+        html = html.slice(0, anchor) + (widget || '') + '\n' + block + '\n' + html.slice(anchor);
+      } else if (widget) {
+        html = html + widget + block;
       }
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.setHeader('Cache-Control', 'public, max-age=1800');

@@ -444,6 +444,10 @@ ${isSold ? renderSalesTable(sold) : renderActiveListingsTable(active, recentActi
   </div>
 </section>
 
+${require('../lib/author-block').dataSourceStripHTML({ source: 'ACTRIS MLS', refreshedAt: new Date(), methodology: isSold ? 'closed-comp aggregation, last 180 days' : 'active-inventory snapshot' })}
+
+${require('../lib/author-block').authorBlockHTML({ lastUpdated: new Date(), pageLabel: 'About Luke Allen, ' + areaName + ' Realtor' })}
+
 <script src="/js/footer.js" defer></script>
 </body>
 </html>`;

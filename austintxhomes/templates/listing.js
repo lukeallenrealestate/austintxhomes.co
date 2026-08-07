@@ -869,6 +869,8 @@ ${employersHTML}
   </div>
 </div>
 
+${require('../lib/author-block').authorBlockHTML({ lastUpdated: listing.modification_timestamp || new Date() })}
+
 <script src="/js/footer.js"></script>
 
 <div id="lightbox">

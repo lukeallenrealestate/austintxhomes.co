@@ -554,6 +554,8 @@ module.exports = function renderBlogPost(rawPost) {
     </div>
   </section>
 
+${require('../lib/author-block').authorBlockHTML({ lastUpdated: post.dateModified || post.date || post.publishedAt, pageLabel: 'About the Author of this Market Report' })}
+
 <script src="/js/footer.js"></script>
 
   <script>

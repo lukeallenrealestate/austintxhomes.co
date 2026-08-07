@@ -695,6 +695,8 @@ module.exports = function renderNeighborhoodHomesPage(n) {
     </div>
   </section>
 
+${require("../lib/author-block").authorBlockHTML({ lastUpdated: new Date(), pageLabel: "About Luke Allen, Your " + n.name + " Realtor" })}
+
 <script src="/js/footer.js"></script>
 
 <script>

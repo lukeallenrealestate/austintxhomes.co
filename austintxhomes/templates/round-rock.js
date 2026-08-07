@@ -509,6 +509,8 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
 </section>
 
 ${contactModalHtml()}
+${require("../lib/author-block").authorBlockHTML({ lastUpdated: new Date(), pageLabel: "About Luke Allen, Your Round Rock Realtor" })}
+
 <script src="/js/footer.js"></script>
 ${sharedScripts()}
 </body>
