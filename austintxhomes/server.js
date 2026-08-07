@@ -1028,6 +1028,7 @@ app.get('/rental-properties-for-sale-austin', (_req, res) => res.sendFile(path.j
 app.get('/cash-flowing-properties-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/cash-flowing-properties-austin.html')));
 app.get('/buy',           (_req, res) => res.sendFile(path.join(__dirname, 'public/site/buy.html')));
 app.get('/rentals',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/rentals.html')));
+app.get('/find-my-apartment', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/find-my-apartment.html')));
 app.get('/neighborhoods',     (_req, res) => {
   try {
     res.set('Content-Type', 'text/html; charset=utf-8');
