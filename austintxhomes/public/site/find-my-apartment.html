@@ -297,6 +297,27 @@
    border: 1px solid #eecfcb;
   }
 
+  /* Per-field validation error state */
+  .field.invalid input,
+  .field.invalid select {
+   border-color: #c0392b;
+   background: #fdf5f4;
+  }
+  .field.invalid input:focus,
+  .field.invalid select:focus {
+   border-color: #c0392b;
+   box-shadow: 0 0 0 3px rgba(192,57,43,.15);
+  }
+  .field-error {
+   display: none;
+   margin-top: 6px;
+   font-size: 12.5px;
+   color: #c0392b;
+   font-weight: 500;
+   line-height: 1.4;
+  }
+  .field.invalid .field-error { display: block; }
+
   /* ── TRUST BAR ── */
   .trust-bar {
    background: #fff;
@@ -368,34 +389,53 @@
    <div class="form-divider">About you</div>
 
    <div class="field-row">
-    <div class="field">
+    <div class="field" id="field-fn">
      <label for="fn">First name<span class="req">*</span></label>
      <input type="text" id="fn" name="first_name" autocomplete="given-name" required inputmode="text" />
+     <div class="field-error">Please enter your first name.</div>
     </div>
-    <div class="field">
+    <div class="field" id="field-ln">
      <label for="ln">Last name<span class="req">*</span></label>
      <input type="text" id="ln" name="last_name" autocomplete="family-name" required inputmode="text" />
+     <div class="field-error">Please enter your last name.</div>
     </div>
    </div>
 
-   <div class="field">
+   <div class="field" id="field-phone">
     <label for="phone">Phone<span class="req">*</span></label>
     <input type="tel" id="phone" name="phone" autocomplete="tel" required inputmode="tel"
-           placeholder="(512) 555-1234" pattern="[\d().+\-\s]{7,}" />
+           placeholder="(512) 555-1234" />
+    <div class="field-error">Please enter a real 10-digit US phone number.</div>
    </div>
 
-   <div class="field">
+   <div class="field" id="field-email">
     <label for="email">Email<span class="req">*</span></label>
     <input type="email" id="email" name="email" autocomplete="email" required inputmode="email"
            placeholder="you@example.com" />
+    <div class="field-error">Please enter a real email address so Luke can send you options.</div>
    </div>
 
-   <div class="field">
+   <div class="field" id="field-move">
     <label for="move_in">Move-in date<span class="req">*</span></label>
     <input type="date" id="move_in" name="move_in_date" required />
+    <div class="field-error">Please pick your target move-in date.</div>
    </div>
 
    <div class="form-divider">Preferences <span style="font-weight:400;letter-spacing:0;text-transform:none;color:var(--light);font-size:12px;margin-left:6px;">(optional)</span></div>
+
+   <div class="field">
+    <label for="budget">Monthly budget</label>
+    <select id="budget" name="budget" data-placeholder="true">
+     <option value="">Not sure yet</option>
+     <option value="Under $1,500/mo">Under $1,500/mo</option>
+     <option value="$1,500 to $2,000/mo">$1,500 to $2,000/mo</option>
+     <option value="$2,000 to $2,500/mo">$2,000 to $2,500/mo</option>
+     <option value="$2,500 to $3,000/mo">$2,500 to $3,000/mo</option>
+     <option value="$3,000 to $4,000/mo">$3,000 to $4,000/mo</option>
+     <option value="$4,000 to $5,000/mo">$4,000 to $5,000/mo</option>
+     <option value="$5,000+/mo">$5,000+/mo</option>
+    </select>
+   </div>
 
    <div class="field-row">
     <div class="field">
@@ -474,40 +514,134 @@
 </div>
 
 <script>
- // Keep the hidden `name` field synced with first_name + last_name as the
- // user types. /api/contact requires a single `name` field to accept the
- // lead; using two visible inputs is nicer UX but needs the combine step.
  (function () {
-  const fn = document.getElementById('fn');
-  const ln = document.getElementById('ln');
-  const hn = document.getElementById('composed-name');
-  function sync() {
+  const form = document.getElementById('apt-form');
+  const fn   = document.getElementById('fn');
+  const ln   = document.getElementById('ln');
+  const hn   = document.getElementById('composed-name');
+  const phone = document.getElementById('phone');
+  const email = document.getElementById('email');
+  const move  = document.getElementById('move_in');
+
+  // ── Real validators ────────────────────────────────────────────────
+  // Email: pragmatic RFC-ish regex. Requires local@domain.tld, blocks
+  // things like `a@b`, `test@test`, `noemail`, trailing/leading dots
+  // in the local part, and single-char TLDs. Not perfect (no one's is)
+  // but catches the low-effort garbage.
+  const EMAIL_RE = /^[a-zA-Z0-9](?:[a-zA-Z0-9._%+-]{0,62}[a-zA-Z0-9])?@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+  function isValidEmail(v) {
+   if (!v) return false;
+   const s = v.trim();
+   if (!EMAIL_RE.test(s)) return false;
+   if (s.includes('..')) return false;
+   // Domain part shouldn't be literally the local part (test@test.com is
+   // sketchy but valid; test@test isn't). Also reject a few obviously
+   // fake domains people type when they don't want to give you their email.
+   const domain = s.split('@')[1].toLowerCase();
+   const fakes = ['test.com','test.test','example.com','example.org','none.com','nothing.com','fake.com','asdf.com','a.com'];
+   if (fakes.includes(domain)) return false;
+   return true;
+  }
+
+  // Phone: strip non-digits, require exactly 10 (US) or 11 (leading 1)
+  // and enforce NANP rules - first digit of area code AND exchange must
+  // be 2-9. Blocks 0000000000, 1111111111, 2000000000 style junk while
+  // accepting every legitimate US number regardless of formatting.
+  function isValidPhone(v) {
+   if (!v) return false;
+   let digits = v.replace(/\D/g, '');
+   if (digits.length === 11 && digits[0] === '1') digits = digits.slice(1);
+   if (digits.length !== 10) return false;
+   // NANP: area code + exchange first digit must be 2-9
+   if (digits[0] < '2' || digits[3] < '2') return false;
+   // Reject all-same-digit (5555555555, 0000000000)
+   if (/^(.)\1{9}$/.test(digits)) return false;
+   return true;
+  }
+
+  function isValidDate(v) {
+   if (!v) return false;
+   // Native date input returns YYYY-MM-DD or empty. Accept anything the
+   // browser considered a valid date - don't require future dates
+   // because someone signing up on their move-in day is a real case.
+   return /^\d{4}-\d{2}-\d{2}$/.test(v);
+  }
+
+  // ── Per-field state ────────────────────────────────────────────────
+  const validators = [
+   { field: 'field-fn',    input: fn,    check: v => v.trim().length > 0 },
+   { field: 'field-ln',    input: ln,    check: v => v.trim().length > 0 },
+   { field: 'field-phone', input: phone, check: isValidPhone },
+   { field: 'field-email', input: email, check: isValidEmail },
+   { field: 'field-move',  input: move,  check: isValidDate },
+  ];
+
+  function setValid(entry, valid) {
+   const wrap = document.getElementById(entry.field);
+   if (!wrap) return;
+   if (valid) wrap.classList.remove('invalid');
+   else       wrap.classList.add('invalid');
+  }
+
+  // Live: as user types, if the field is currently marked invalid and
+  // they've fixed it, clear the error. Don't ADD errors mid-type.
+  validators.forEach(entry => {
+   entry.input.addEventListener('input', () => {
+    const wrap = document.getElementById(entry.field);
+    if (wrap && wrap.classList.contains('invalid') && entry.check(entry.input.value)) {
+     setValid(entry, true);
+    }
+   });
+   // On blur (leaving the field), validate if user actually put something in.
+   entry.input.addEventListener('blur', () => {
+    if (entry.input.value.trim()) setValid(entry, entry.check(entry.input.value));
+   });
+  });
+
+  // Keep the hidden `name` field synced (/api/contact requires it).
+  function syncName() {
    hn.value = ((fn.value || '') + ' ' + (ln.value || '')).trim();
   }
-  fn.addEventListener('input', sync);
-  ln.addEventListener('input', sync);
- })();
+  fn.addEventListener('input', syncName);
+  ln.addEventListener('input', syncName);
 
- // Prepend move-in date to the notes field on submit so it lands in the
- // lead email + CRM `notes` payload. Beds/baths/neighborhood are already
- // known field names the global handler picks up automatically. Runs at
- // window capture, which fires before /js/footer.js's document capture
- // listener reads the form values.
- window.addEventListener('submit', function (e) {
-  const f = e.target;
-  if (f && f.id === 'apt-form') {
-   const move = f.move_in_date && f.move_in_date.value;
-   if (move) {
+  // ── Submit: validate everything, block if any fail ─────────────────
+  // Window capture fires BEFORE /js/footer.js's document capture, so if
+  // we preventDefault + stopImmediatePropagation here the global lead
+  // handler never runs. First invalid field gets focused.
+  window.addEventListener('submit', function (e) {
+   const f = e.target;
+   if (!f || f.id !== 'apt-form') return;
+
+   let firstInvalid = null;
+   validators.forEach(entry => {
+    const ok = entry.check(entry.input.value);
+    setValid(entry, ok);
+    if (!ok && !firstInvalid) firstInvalid = entry.input;
+   });
+
+   if (firstInvalid) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    firstInvalid.focus();
+    // Scroll into view on mobile in case the invalid field is off-screen
+    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+   }
+
+   // All valid - prepend move-in date to `notes` so it lands in the
+   // lead email + CRM. Beds/baths/neighborhood already handled by
+   // the global handler's automatic message compilation.
+   const mv = move.value;
+   if (mv) {
     const existing = (f.notes.value || '').trim();
-    const line = 'Move-in date: ' + move;
-    // Idempotent: don't stack the line on retries if submit fails and
-    // the user tries again.
+    const line = 'Move-in date: ' + mv;
     if (!existing.startsWith(line)) {
      f.notes.value = line + (existing ? '\n\n' + existing : '');
     }
    }
-  }
- }, true);
+  }, true);
+ })();
 </script>
 <script src="/js/footer.js"></script>
 </body>
