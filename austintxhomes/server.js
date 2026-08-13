@@ -161,6 +161,9 @@ const AUTHOR_BLOCK_SKIP = new Set([
   '/luke-allen',
   '/find-my-apartment',
   '/contact',
+  '/admin',
+  '/account',
+  '/search',
 ]);
 function injectAuthorBlock(html, lastUpdated) {
   if (typeof html !== 'string' || !html.includes('<body')) return html;
@@ -659,6 +662,17 @@ app.get('/search', (req, res) => {
 // /account — logged-in users' dashboard (saved searches, favorites)
 app.get('/account', (_req, res) => {
   res.sendFile(path.join(IDX_PUBLIC, 'account.html'));
+});
+
+// /admin — admin dashboard. Serves idx-search/public/admin.html, whose
+// admin.js hits /api/admin/{stats,users,activity,users/:id/favorites,
+// users/:id/searches} - all guarded by requireAdmin (JWT role='admin').
+// Also matches the /admin.html link in the top nav of /search
+// (auth.js reveals the button when user.role === 'admin'); Express's
+// static extensions:['html'] setting 301-strips the .html suffix, so
+// both /admin and /admin.html resolve to this handler.
+app.get('/admin', (_req, res) => {
+  res.sendFile(path.join(IDX_PUBLIC, 'admin.html'));
 });
 
 // Sienna at the Thompson floor plans — reads JSON file, cached 1 hour
