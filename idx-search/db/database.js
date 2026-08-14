@@ -170,6 +170,24 @@ const migrations = [
   `ALTER TABLE listings ADD COLUMN previous_list_price REAL`,
   `ALTER TABLE listings ADD COLUMN price_change_timestamp TEXT`,
 
+  // Per-(saved-search, listing) send log so we never notify the same client
+  // about the same listing twice. Previously runAlertJob deduped by
+  // modification_timestamp >= last_alerted_at at the SEARCH level - which
+  // meant any listing that got touched in MLS for any reason (photo update,
+  // description edit, status flip and back) re-fired notifications for
+  // every match. Now: only send a listing if it's brand new to this search
+  // OR the current list_price is strictly lower than last_price_sent
+  // (price-drop reason). `reason` records which for the email template.
+  `CREATE TABLE IF NOT EXISTS saved_search_sent (
+    saved_search_id INTEGER NOT NULL,
+    listing_key     TEXT    NOT NULL,
+    last_price_sent REAL,
+    reason          TEXT,
+    sent_at         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (saved_search_id, listing_key)
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_sss_search ON saved_search_sent(saved_search_id)`,
+
   // ─── Sprint 2: query performance ─────────────────────────────────────
   // Composite indexes for the multi-filter searches users actually run.
   // The existing idx_listings_active_date covers status+sort but combinations

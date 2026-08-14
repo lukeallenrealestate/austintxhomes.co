@@ -79,6 +79,20 @@ function buildFilterConditions(filters) {
   return { conditions, values };
 }
 
+// Per-(search, listing) dedup lookup + record. Kept small so it fits in
+// one prepared-statement round-trip per search.
+const getSentForSearch = db.prepare(
+  `SELECT listing_key, last_price_sent FROM saved_search_sent WHERE saved_search_id = ?`
+);
+const recordSent = db.prepare(
+  `INSERT INTO saved_search_sent (saved_search_id, listing_key, last_price_sent, reason, sent_at)
+   VALUES (?, ?, ?, ?, ?)
+   ON CONFLICT(saved_search_id, listing_key) DO UPDATE SET
+     last_price_sent = excluded.last_price_sent,
+     reason = excluded.reason,
+     sent_at = excluded.sent_at`
+);
+
 async function runAlertJob() {
   if (!process.env.EMAIL_HOST) return; // Email not configured, skip
 
@@ -97,34 +111,53 @@ async function runAlertJob() {
       const filters = JSON.parse(search.filters);
       const { conditions, values } = buildFilterConditions(filters);
 
-      // Only listings newer than last alert (or last 24h if never alerted)
-      const since = search.last_alerted_at || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-      conditions.push(`modification_timestamp >= ?`);
-      values.push(since);
-
+      // No modification_timestamp gate anymore - dedup happens per
+      // listing via saved_search_sent below. This is what lets us catch
+      // price drops: a listing that already alerted might still qualify
+      // for a fresh notification if its list_price has since dropped.
       const where = conditions.join(' AND ');
-      let listings = db.prepare(`
+      let candidates = db.prepare(`
         SELECT listing_key, list_price, unparsed_address, city,
                bedrooms_total, bathrooms_total, living_area, photos,
-               latitude, longitude
+               latitude, longitude, modification_timestamp
         FROM listings WHERE ${where}
-        ORDER BY modification_timestamp DESC LIMIT 200
+        ORDER BY modification_timestamp DESC LIMIT 500
       `).all(values);
 
-      // Apply polygon filter if saved search includes a drawn area
       if (filters.polygon) {
         try {
           const poly = typeof filters.polygon === 'string' ? JSON.parse(filters.polygon) : filters.polygon;
           if (Array.isArray(poly) && poly.length > 2) {
-            listings = listings.filter(l => l.latitude && l.longitude && pointInPolygon(l.latitude, l.longitude, poly));
+            candidates = candidates.filter(l => l.latitude && l.longitude && pointInPolygon(l.latitude, l.longitude, poly));
           }
         } catch {}
       }
 
-      if (!listings.length) continue;
+      if (!candidates.length) continue;
+
+      // Load per-listing send history for THIS saved search. Map keys to
+      // last_price_sent so we can detect price drops in O(1) per candidate.
+      const sentRows = getSentForSearch.all(search.id);
+      const sentMap = new Map(sentRows.map(r => [r.listing_key, r.last_price_sent]));
+
+      const toNotify = [];
+      for (const l of candidates) {
+        const priorPrice = sentMap.get(l.listing_key);
+        if (priorPrice === undefined) {
+          // Never sent for this search - fresh match
+          toNotify.push({ ...l, reason: 'new' });
+        } else if (l.list_price != null && priorPrice != null && l.list_price < priorPrice) {
+          // Previously sent, but the price has since dropped - re-notify
+          // with a price-drop label so the email template can call it out.
+          toNotify.push({ ...l, reason: 'price_drop', prior_price: priorPrice });
+        }
+        // Otherwise skip: already sent and price hasn't dropped.
+      }
+
+      if (!toNotify.length) continue;
 
       // Cap at 50 for the email
-      const emailListings = listings.slice(0, 50);
+      const emailListings = toNotify.slice(0, 50);
 
       await sendNewListingsAlert({
         to: search.email,
@@ -133,10 +166,21 @@ async function runAlertJob() {
         listings: emailListings
       });
 
-      db.prepare(`UPDATE saved_searches SET last_alerted_at = ? WHERE id = ?`)
-        .run(new Date().toISOString(), search.id);
+      // Record every listing we sent so we don't re-send unless its price
+      // drops. Uses a single transaction for atomicity across N inserts.
+      const now = new Date().toISOString();
+      const tx = db.transaction((items) => {
+        for (const l of items) recordSent.run(search.id, l.listing_key, l.list_price, l.reason, now);
+      });
+      tx(emailListings);
 
-      console.log(`[ALERTS] Sent ${emailListings.length} new listing(s) to ${search.email} for "${search.name}"`);
+      // Keep last_alerted_at on the saved_searches row for account-page display,
+      // even though it no longer drives dedup logic.
+      db.prepare(`UPDATE saved_searches SET last_alerted_at = ? WHERE id = ?`).run(now, search.id);
+
+      const newCount = emailListings.filter(l => l.reason === 'new').length;
+      const dropCount = emailListings.filter(l => l.reason === 'price_drop').length;
+      console.log(`[ALERTS] Sent ${emailListings.length} to ${search.email} for "${search.name}" (${newCount} new, ${dropCount} price drops)`);
     } catch (err) {
       console.error(`[ALERTS] Failed for search ${search.id}:`, err.message);
     }

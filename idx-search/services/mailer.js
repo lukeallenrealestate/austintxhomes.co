@@ -53,14 +53,31 @@ async function sendNewListingsAlert({ to, searchName, filters, listings }) {
     const sqft = l.living_area ? `${Math.round(l.living_area).toLocaleString()} sqft` : '';
     const detail = [beds, baths, sqft].filter(Boolean).join(' · ');
     const url = `${siteUrl}${site.property(l.listing_key)}`;
-    const photo = l.photos ? JSON.parse(l.photos)[0] : null;
+    // Use the /api proxy for photos (302 to R2) so email images don't
+    // break when the raw MLS Grid ?expires token rotates. Recipients
+    // often open weekly digests days after send.
+    const photo = l.photos && (JSON.parse(l.photos)[0] || null)
+      ? `${siteUrl}/api/properties/photos/${l.listing_key}/0`
+      : null;
+
+    // Price-drop badge + delta if the alertJob flagged this as a
+    // re-notification because the price dropped since last send.
+    const isDrop = l.reason === 'price_drop' && l.prior_price != null && l.list_price != null;
+    const dropDelta = isDrop ? l.prior_price - l.list_price : 0;
+    const dropPct   = isDrop && l.prior_price > 0 ? Math.round((dropDelta / l.prior_price) * 100) : 0;
+    const badge = isDrop
+      ? `<span style="display:inline-block;background:#dcfce7;color:#166534;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin-bottom:6px;">Price Drop &#9660; $${dropDelta.toLocaleString()} (${dropPct}%)</span><br/>`
+      : '';
+    const priorPriceLine = isDrop
+      ? `<span style="font-size:12px;color:#9ca3af;text-decoration:line-through;margin-left:6px;">${formatPrice(l.prior_price)}</span>`
+      : '';
 
     return `
       <tr>
         <td style="padding:16px;border-bottom:1px solid #e5e7eb;vertical-align:top;">
           ${photo ? `<a href="${url}"><img src="${photo}" alt="" width="120" style="border-radius:8px;display:block;margin-bottom:8px;" /></a>` : ''}
-          <a href="${url}" style="font-weight:600;font-size:15px;color:${accent};text-decoration:none;">${addr}</a><br/>
-          <span style="font-size:18px;font-weight:700;color:#111;">${formatPrice(l.list_price)}</span><br/>
+          ${badge}<a href="${url}" style="font-weight:600;font-size:15px;color:${accent};text-decoration:none;">${addr}</a><br/>
+          <span style="font-size:18px;font-weight:700;color:#111;">${formatPrice(l.list_price)}</span>${priorPriceLine}<br/>
           <span style="font-size:13px;color:#6b7280;">${detail}</span><br/>
           <a href="${url}" style="display:inline-block;margin-top:8px;padding:6px 14px;background:${accent};color:#fff;border-radius:6px;text-decoration:none;font-size:13px;">View Home</a>
         </td>

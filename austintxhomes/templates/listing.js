@@ -191,14 +191,37 @@ function enrichListing(listing, db, neighborhoods) {
     const minSqft = subjectSqft ? Math.round(subjectSqft * 0.65) : 500;
     const maxSqft = subjectSqft ? Math.round(subjectSqft * 1.35) : 99999;
 
+    // 1-mile radius around subject via lat/lng bounding box. Uses a box
+    // rather than haversine because SQLite is much faster on straight
+    // range comparisons (indexable) than trig-per-row math, and buyers
+    // don't care whether the comp is 0.98 vs 1.02 miles - "nearby" is
+    // what matters. 1 mile north/south = 0.01449 degrees latitude
+    // (constant). 1 mile east/west at Austin's ~30.3 latitude =
+    // 1 / cos(30.3 deg) * 0.01449 = 0.01679 degrees longitude.
+    // Only apply when subject has coords - if lat/lng is null we fall
+    // back to the city filter alone so a coord-less listing still shows
+    // comps rather than an empty section.
+    const lat = listing.latitude;
+    const lng = listing.longitude;
+    const haveCoords = Number.isFinite(lat) && Number.isFinite(lng);
+    const latDelta = 0.01449;   // 1 mile in degrees latitude
+    const lngDelta = 0.01679;   // 1 mile in degrees longitude at Austin latitude
+
+    const geoWhere = haveCoords
+      ? 'AND latitude BETWEEN ? AND ? AND longitude BETWEEN ? AND ?'
+      : 'AND city = ?';
+    const geoValues = haveCoords
+      ? [lat - latDelta, lat + latDelta, lng - lngDelta, lng + lngDelta]
+      : [city];
+
     comps = db.prepare(`
       SELECT unparsed_address, list_price AS close_price, list_price, bedrooms_total,
              bathrooms_total, living_area, listing_contract_date AS close_date,
-             days_on_market, subdivision_name, listing_key
+             days_on_market, subdivision_name, listing_key, latitude, longitude
       FROM listings
-      WHERE city = ?
-        AND mlg_can_view = 1
+      WHERE mlg_can_view = 1
         AND standard_status = 'Active'
+        ${geoWhere}
         AND list_price BETWEEN ? AND ?
         AND living_area BETWEEN ? AND ?
         AND bedrooms_total BETWEEN ? AND ?
@@ -209,7 +232,7 @@ function enrichListing(listing, db, neighborhoods) {
         AND listing_key != ?
       ORDER BY ABS(list_price - ?) ASC
       LIMIT 5
-    `).all(city, minPrice, maxPrice, minSqft, maxSqft,
+    `).all(...geoValues, minPrice, maxPrice, minSqft, maxSqft,
            Math.max(0, beds - 1), beds + 1,
            listing.listing_key, subjectPrice);
   } catch (e) { console.warn('[comps]', e.message); }

@@ -431,7 +431,10 @@ function renderHomepage(filePath) {
 // route pattern in server.js.
 function renderListingCards(rows) {
   return rows.map(l => {
-    const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : '';
+    const isRental = l.property_type && (l.property_type.includes('Lease') || l.property_type.includes('Rental'));
+    const price = l.list_price
+      ? '$' + Number(l.list_price).toLocaleString() + (isRental ? '<span style="font-size:.7em;color:var(--light);font-weight:400;">/mo</span>' : '')
+      : '';
     const addr = [l.unparsed_address, l.city].filter(Boolean).join(', ').trim();
     const addrEsc = addr.replace(/"/g, '&quot;');
     const stats = [

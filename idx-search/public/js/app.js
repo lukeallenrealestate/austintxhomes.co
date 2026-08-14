@@ -645,18 +645,27 @@ function setupPriceSlider() {
   minSlider.addEventListener('change', commitSlider);
   maxSlider.addEventListener('change', commitSlider);
 
-  // Number input edits → sync slider position. The inputs already have
-  // onchange="applyFilters()" inline, so we just reposition the thumbs.
-  minNum.addEventListener('input', () => {
-    const v = parseInt(minNum.value, 10) || 0;
-    minSlider.value = priceToIndex(v);
-    updateVisuals();
-  });
-  maxNum.addEventListener('input', () => {
-    const v = parseInt(maxNum.value, 10) || PRICE_STEPS[PRICE_STEPS.length - 1];
-    maxSlider.value = priceToIndex(v);
-    updateVisuals();
-  });
+  // Number input edits → sync slider position + label only. Do NOT call
+  // updateVisuals() here because updateVisuals writes back to the number
+  // inputs, which wipes whatever the user is typing mid-keystroke ("1" →
+  // parsed → snapped to nearest PRICE_STEP → written back as "" or "50000",
+  // depending on the step). The inline onchange="applyFilters()" on the
+  // input still fires on blur/enter to commit the value.
+  const syncSliderFromNum = (num, slider, label) => {
+    const v = parseInt(num.value, 10) || 0;
+    slider.value = priceToIndex(v);
+    const idx = parseInt(slider.value, 10);
+    const maxStepIdx = PRICE_STEPS.length - 1;
+    if (label === minLabel) {
+      label.textContent = idx === 0 ? 'Any' : fmtPriceCompact(PRICE_STEPS[idx]);
+      fill.style.left = (idx / 40) * 100 + '%';
+    } else {
+      label.textContent = idx === maxStepIdx ? 'Any' : fmtPriceCompact(PRICE_STEPS[idx]);
+      fill.style.right = (100 - (idx / 40) * 100) + '%';
+    }
+  };
+  minNum.addEventListener('input', () => syncSliderFromNum(minNum, minSlider, minLabel));
+  maxNum.addEventListener('input', () => syncSliderFromNum(maxNum, maxSlider, maxLabel));
 
   updateVisuals();
 }

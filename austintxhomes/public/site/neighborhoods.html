@@ -233,7 +233,14 @@
  .footer-legal a { color: rgba(255,255,255,0.4); text-decoration: none; }
 
  /* HIDDEN for filter */
- .nbhd-card[data-hidden="true"].area-section[data-hidden="true"] { display: none; }
+ /* Same class-chain-vs-comma bug pattern I fixed on moving-from-new-york:
+    the compound selector required an element to have BOTH .nbhd-card AND
+    .area-section classes, which is impossible - they live on separate
+    elements. Result: nothing ever got hidden, so the filter tabs at the
+    top of the page appeared broken. Comma-separated so each element
+    responds to its own data-hidden attribute. */
+ .nbhd-card[data-hidden="true"],
+ .area-section[data-hidden="true"] { display: none; }
 
  @media (max-width: 900px) {
  .nbhd-grid { grid-template-columns: 1fr 1fr; }

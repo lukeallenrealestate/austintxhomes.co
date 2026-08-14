@@ -20,7 +20,7 @@ function formatPrice(price) {
 }
 
 function formatSqft(sqft) {
-  if (!sqft) return '—';
+  if (!sqft) return 'n/a';
   return sqft.toLocaleString() + ' sqft';
 }
 
@@ -70,11 +70,18 @@ function renderCardCarousel(listing, photos) {
   }
   const capped = photos.slice(0, 5);
   const alt = (listing.unparsed_address || '').replace(/"/g, '&quot;');
+  // Use the /api/properties/photos/{key}/{idx} proxy instead of the raw
+  // photos[i] URL. Raw MLS Grid URLs carry an `expires=` token that
+  // rotates every ~14 days; when it flips, cached listings that were
+  // rendered with the old token show broken images. The proxy 302s to
+  // R2 (never expires) and always resolves.
+  const key = listing.listing_key;
   const slides = capped.map((url, i) => {
+    const src = `/api/properties/photos/${key}/${i}`;
     if (i === 0) {
-      return `<img class="carousel-slide" src="${url}" alt="${alt}" loading="lazy" />`;
+      return `<img class="carousel-slide" src="${src}" alt="${alt}" loading="lazy" />`;
     }
-    return `<img class="carousel-slide" data-src="${url}" alt="" loading="lazy" />`;
+    return `<img class="carousel-slide" data-src="${src}" alt="" loading="lazy" />`;
   }).join('');
   const dots = capped.length > 1
     ? `<div class="carousel-dots">${capped.map((_, i) => `<span class="dot${i === 0 ? ' active' : ''}"></span>`).join('')}</div>`

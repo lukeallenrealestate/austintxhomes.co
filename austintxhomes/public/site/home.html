@@ -1417,14 +1417,19 @@ fetch('/api/properties/search?limit=3&status=Active')
  const items = d.listings || d.data || [];
  if (!items.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--light);font-size:13px;">Browse all active listings →</div>'; return; }
  grid.innerHTML = items.map(l => {
- const price = l.list_price ? '$' + Number(l.list_price).toLocaleString() : '';
+ const isRental = l.property_type && (l.property_type.includes('Lease') || l.property_type.includes('Rental'));
+ const price = l.list_price
+ ? '$' + Number(l.list_price).toLocaleString() + (isRental ? '<span style="font-size:.7em;color:var(--light);font-weight:400;">/mo</span>' : '')
+ : '';
  const addr = [l.unparsed_address, l.city].filter(Boolean).join(', ');
  const stats = [
  l.bedrooms_total && l.bedrooms_total + ' bd',
  l.bathrooms_total && l.bathrooms_total + ' ba',
  l.living_area && Number(l.living_area).toLocaleString() + ' sqft'
  ].filter(Boolean).join(' · ');
- const img = l.photos?.[0] || l.primary_photo || '';
+ // Use /api proxy (302 to R2, never expires) instead of raw MLS Grid URL
+ // whose ?expires token rotates every ~14 days and breaks cached pages.
+ const img = l.listing_key ? `/api/properties/photos/${l.listing_key}/0` : '';
  return `<a class="listing-card" href="${makePropertyUrl(l)}">
  <div class="lc-img">
  ${img ? `<img src="${img}" alt="${addr}" loading="lazy" />` : ''}
