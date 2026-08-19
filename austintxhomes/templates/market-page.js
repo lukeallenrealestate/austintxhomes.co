@@ -286,7 +286,15 @@ function renderMarketPage(config) {
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
   <link rel="apple-touch-icon" href="/favicon-96.png" />
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <!-- Noindexed 2026-08 as part of the aggressive quality pivot after the
+       May 2026 Google update classified templated content unfavorably. These
+       pages (30 sold-homes-near-{ZIP} + 30 homes-for-sale-in-{ZIP} + 10
+       sold-homes-in-{neighborhood}) are pure templated shape - each ZIP or
+       neighborhood renders the same data-table layout with different
+       filter args. Removing from the index is the classifier signal
+       "we pruned the templated content." We'll rebuild individual pages
+       one at a time as unique-content pieces and un-noindex per-page. -->
+  <meta name="robots" content="noindex, follow" />
   <meta name="geo.region" content="US-TX" />
   <meta name="geo.placename" content="Austin, Texas" />
   <meta property="og:type" content="article" />
