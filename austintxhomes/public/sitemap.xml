@@ -1856,4 +1856,10 @@
   <url><loc>https://austintxhomes.co/holly-realtor</loc><priority>0.9</priority><changefreq>weekly</changefreq><lastmod>2026-07-22</lastmod></url>
   <url><loc>https://austintxhomes.co/chestnut-realtor</loc><priority>0.9</priority><changefreq>weekly</changefreq><lastmod>2026-07-22</lastmod></url>
   <url><loc>https://austintxhomes.co/govalle-realtor</loc><priority>0.9</priority><changefreq>weekly</changefreq><lastmod>2026-07-22</lastmod></url>
+  <url>
+    <loc>https://austintxhomes.co/tesla-austin-relocation</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-08-19</lastmod>
+  </url>
 </urlset>
