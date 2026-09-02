@@ -754,13 +754,25 @@ async function doContact(e) {
  btn.textContent = 'Sending…'; btn.disabled = true;
  const data = {};
  new FormData(f).forEach((v, k) => data[k] = v);
+ // /api/contact requires a single `name` field. Compose it from
+ // first_name + last_name so the API accepts the submission - without
+ // this the endpoint returned 400 "Please enter your name" and the
+ // toast fell back to the generic "Something went wrong" message.
+ data.name = ((data.first_name || '') + ' ' + (data.last_name || '')).trim();
+ if (!data.source) data.source = 'about';
  try {
  const res = await fetch('/api/contact', {
  method: 'POST', headers: { 'Content-Type': 'application/json' },
  body: JSON.stringify(data)
  });
- showToast(res.ok ? 'Message sent! Luke will be in touch soon.' : 'Something went wrong, please email Luke@austinmdg.com');
- if (res.ok) f.reset();
+ const json = await res.json().catch(() => ({}));
+ if (res.ok && !json.error) {
+ showToast('Message sent! Luke will be in touch soon.');
+ f.reset();
+ } else {
+ // Surface the actual API error so future bugs are visible
+ showToast(json.error || 'Something went wrong, please email Luke@austinmdg.com');
+ }
  } catch { showToast('Could not send, please call (254) 718-2567.'); }
  btn.textContent = 'Send Message'; btn.disabled = false;
 }
