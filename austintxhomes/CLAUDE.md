@@ -130,30 +130,51 @@ Only add to the primary nav if it's a top-level service (Buy, Sell, Neighborhood
 
 **Hero pattern (REQUIRED on every content page with a dark hero):**
 
-Every dark-hero page on this site uses the same background video with a darkening veil over it. The gold radial glow lives in the veil, not the background. Match this exactly — leaving the video off makes a page look inconsistent with the rest of the site, and Luke will catch it.
+Every dark-hero page on this site uses the same background video with a darkening veil over it, and the video BLEEDS UNDER the fixed navigation bar — no separate `.nav-backdrop` div. The gold radial glow lives in the veil. Match this exactly — leaving the video off, or blocking the nav zone with a solid backdrop, makes a page look inconsistent with the rest of the site, and Luke will catch it.
 
-HTML (inside `<section class="hero">`, as the FIRST two children before any content):
+HTML (right after `<script src="/js/nav.js"></script>` — NO `.nav-backdrop` div before the hero):
 ```html
+<script src="/js/nav.js"></script>
+
 <section class="hero">
  <video autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
  <div class="hero-veil"></div>
- <!-- hero content goes here -->
+ <!-- hero content goes here (eyebrow, h1, sub, meta, cta) -->
 </section>
 ```
 
 CSS (drop into the `<style>` block):
 ```css
-.hero { position: relative; overflow: hidden; background: var(--ink); color: #fff; /* your padding + text-align */ }
-.hero video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.4s ease; z-index: 0; }
+.hero {
+ position: relative; overflow: hidden;
+ background: var(--ink); color: #fff;
+ padding: 132px 24px 72px; /* top padding clears the 80px fixed nav + 52px breathing room */
+ text-align: center;
+}
+.hero video {
+ position: absolute; inset: 0;
+ width: 100%; height: 100%;
+ object-fit: cover;
+ opacity: 0; transition: opacity 1.4s ease;
+ z-index: 0;
+}
 .hero video.ready { opacity: 0.5; } /* 0.4-0.6 typical; higher = more video, lower = more solid */
-.hero-veil { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse 80% 65% at 50% 40%, rgba(184,147,90,.22) 0%, transparent 70%), linear-gradient(180deg, rgba(15,15,14,.72) 0%, rgba(15,15,14,.62) 100%); pointer-events: none; }
+.hero-veil {
+ position: absolute; inset: 0; z-index: 1;
+ background:
+  radial-gradient(ellipse 80% 65% at 50% 40%, rgba(184,147,90,.22) 0%, transparent 70%),
+  linear-gradient(180deg, rgba(15,15,14,.72) 0%, rgba(15,15,14,.62) 100%);
+ pointer-events: none;
+}
 .hero > *:not(video):not(.hero-veil) { position: relative; z-index: 2; }
 ```
 
-Notes:
-- `data-src` (not `src`) — `/js/footer.js` handles the deferred load and adds `.ready` when it can play, so the video fades in gracefully instead of flashing
-- The stacking rule at the bottom is required or your hero text disappears under the veil
-- Never delete the video and gradient-only hero unless the page is intentionally light-themed (e.g., blog posts use the nav-backdrop pattern with a warm-bg hero instead)
+Rules and gotchas:
+- **Top padding must clear the fixed nav.** Nav is 80px tall. Use `padding-top: 132px` (80 + 52) as the default so the eyebrow doesn't hide under the nav. Bump higher (`152px`) if the hero has a lot of vertical content.
+- **Never add `.nav-backdrop`** on a dark-hero page. The whole point of this pattern is the video showing through the nav zone. The nav's white text stays readable because the dark veil covers the top 72% of the video area.
+- **`data-src` not `src`** — `/js/footer.js` handles the deferred load and adds `.ready` when the video can play, so it fades in gracefully instead of flashing.
+- **Stacking rule is required** or the hero text disappears under the veil.
+- Light-themed pages (blog posts) use a different pattern: `.nav-backdrop` div with a warm-bg hero below it, so nav has its own solid strip. That is the correct behavior for THOSE pages only — never mix the two patterns.
 
 ### 10. API Integration (listing pages)
 - Endpoint: `/api/properties/search` (not `/api/listings`)

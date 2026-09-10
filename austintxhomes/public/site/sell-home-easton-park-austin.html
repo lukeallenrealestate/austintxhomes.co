@@ -148,9 +148,7 @@
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); background: var(--bg); line-height: 1.7; -webkit-font-smoothing: antialiased; font-size: 17px; }
 
-  .nav-backdrop { height: 80px; background: var(--ink); width: 100%; }
-
-  .hero { position: relative; overflow: hidden; background: var(--ink); color: #fff; padding: 72px 24px 72px; text-align: center; }
+  .hero { position: relative; overflow: hidden; background: var(--ink); color: #fff; padding: 132px 24px 72px; text-align: center; }
   .hero video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.4s ease; z-index: 0; }
   .hero video.ready { opacity: 0.5; }
   .hero-veil { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse 80% 65% at 50% 40%, rgba(184,147,90,.22) 0%, transparent 70%), linear-gradient(180deg, rgba(15,15,14,.72) 0%, rgba(15,15,14,.62) 100%); pointer-events: none; }
@@ -231,7 +229,6 @@
 </head>
 <body>
 <script src="/js/nav.js"></script>
-<div class="nav-backdrop" aria-hidden="true"></div>
 
 <section class="hero">
  <video autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
