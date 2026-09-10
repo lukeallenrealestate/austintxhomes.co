@@ -1115,6 +1115,7 @@ app.get('/buy',           (_req, res) => res.sendFile(path.join(__dirname, 'publ
 app.get('/rentals',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/rentals.html')));
 app.get('/find-my-apartment', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/find-my-apartment.html')));
 app.get('/apollo-austin-relocation',     (_req, res) => res.sendFile(path.join(__dirname, 'public/site/apollo-austin-relocation.html')));
+app.get('/crowdstrike-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/crowdstrike-austin-relocation.html')));
 app.get('/sell-home-easton-park-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-easton-park-austin.html')));
 app.get('/easton-park-realtor',        (_req, res) => res.sendFile(path.join(__dirname, 'public/site/easton-park-realtor.html')));
 app.get('/neighborhoods',     (_req, res) => {

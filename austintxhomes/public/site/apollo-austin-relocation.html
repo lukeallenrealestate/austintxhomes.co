@@ -211,6 +211,15 @@
    .field-row { grid-template-columns: 1fr; }
    .compare-table .row { grid-template-columns: 1fr; gap: 4px; padding: 12px 14px; }
   }
+ .related-guides { margin: 44px 0 8px; padding: 26px 0 0; border-top: 1px solid var(--border); }
+ .rg-eyebrow { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 14px; }
+ .rg-links { display: grid; gap: 12px; }
+ .article .rg-link { display: flex; gap: 14px; padding: 16px 18px; background: var(--warm); border: 1px solid var(--border); border-radius: var(--r); text-decoration: none; align-items: flex-start; transition: border-color .15s, background .15s; }
+ .article .rg-link:hover { border-color: var(--gold); background: #fff; }
+ .rg-arrow { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--gold); line-height: 1; margin-top: 2px; flex-shrink: 0; font-style: italic; }
+ .rg-body { display: flex; flex-direction: column; gap: 4px; }
+ .rg-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-weight: 500; color: var(--ink); line-height: 1.25; }
+ .rg-desc { font-size: 13.5px; color: var(--mid); line-height: 1.55; }
  </style>
 </head>
 <body>
@@ -376,6 +385,33 @@
  <p>Apollo's move to Austin is a big deal for the city and a bigger deal for the professionals inside Apollo who are figuring out where to live. This page is not going to answer every question. What it is going to do is put me in front of you as an option before you land in Austin, so that when you are ready to start looking, you already have an agent who has thought about your specific situation.</p>
 
  <p>Send me a note using the form below and I will follow up within 24 hours with an initial submarket read for your family, comp band, and timeline. No pressure. No obligation. If you decide to work with someone else, no hard feelings. If you decide to work with me, I will earn it.</p>
+
+ <aside class="related-guides" aria-labelledby="rg-heading">
+  <div class="rg-eyebrow" id="rg-heading">Related Austin relocation guides</div>
+  <div class="rg-links">
+   <a class="rg-link" href="/crowdstrike-austin-relocation">
+    <span class="rg-arrow">&rarr;</span>
+    <span class="rg-body">
+     <span class="rg-title">CrowdStrike Austin Relocation Playbook</span>
+     <span class="rg-desc">Two-track buyer playbook: Rainey Street condos for walk-to-HQ IC engineers and Tarrytown / Westlake for the senior tier.</span>
+    </span>
+   </a>
+   <a class="rg-link" href="/tesla-austin-relocation">
+    <span class="rg-arrow">&rarr;</span>
+    <span class="rg-body">
+     <span class="rg-title">Tesla Austin Relocation Playbook</span>
+     <span class="rg-desc">Gigafactory commute economics and why Tesla employees cluster in Easton Park.</span>
+    </span>
+   </a>
+   <a class="rg-link" href="/amd-austin-relocation">
+    <span class="rg-arrow">&rarr;</span>
+    <span class="rg-body">
+     <span class="rg-title">AMD Austin Relocation Playbook</span>
+     <span class="rg-desc">Why AMD engineers land in the Northwest Austin corridor and how RSU math plays out.</span>
+    </span>
+   </a>
+  </div>
+ </aside>
 
 </article>
 
