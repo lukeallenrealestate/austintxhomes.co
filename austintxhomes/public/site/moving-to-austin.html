@@ -316,33 +316,87 @@
 
  /* LEAD FORM */
  .cta-section { background: var(--ink); }
- .cta-inner { max-width: var(--w); margin: 0 auto; display: grid; grid-template-columns: 1fr 420px; gap: 5rem; align-items: start; }
+ .cta-inner { max-width: var(--w); margin: 0 auto; display: grid; grid-template-columns: 1fr 480px; gap: 5rem; align-items: start; }
  .cta-copy h2 { font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 300; color: #fff; line-height: 1.15; margin-bottom: 1rem; }
  .cta-copy h2 em { font-style: italic; color: var(--gold-lt); }
  .cta-copy p { font-size: 15px; color: rgba(255,255,255,0.62); line-height: 1.78; margin-bottom: 1rem; }
  .cta-copy .proof { margin-top: 2rem; display: flex; flex-direction: column; gap: .6rem; }
  .proof-item { font-size: 13px; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: .6rem; }
  .proof-item::before { content: '✓'; color: var(--gold); font-weight: 700; }
+
  .cta-form-wrap {
- background: rgba(255,255,255,0.05); border: 1px solid rgba(184,147,90,0.2);
- border-radius: var(--r); padding: 2.5rem 2rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(184,147,90,0.28);
+  border-radius: 10px;
+  padding: 2.4rem 2.2rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
  }
- .cta-form-wrap h3 { font-family: var(--serif); font-size: 1.5rem; color: #fff; margin-bottom: .3rem; font-weight: 400; }
- .cta-form-wrap > p { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 1.5rem; }
- .form-group { margin-bottom: .9rem; }
- .form-group input.form-group select.form-group textarea {
- width: 100%; padding: .7rem 1rem;
- background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
- border-radius: var(--r); color: #fff; font-family: var(--sans); font-size: .9rem;
- transition: border-color .2s;
+ .cta-form-eyebrow {
+  font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--gold); font-weight: 700; margin-bottom: 10px;
  }
- .form-group input::placeholder.form-group textarea::placeholder { color: rgba(255,255,255,0.3); }
- .form-group input:focus.form-group select:focus.form-group textarea:focus { outline: none; border-color: var(--gold); }
- .form-group select option { background: #1a1918; }
- .form-group textarea { resize: vertical; min-height: 80px; }
- .form-submit { width: 100%; background: var(--gold); color: #fff; border: none; padding: .9rem; border-radius: var(--r); font-family: var(--sans); font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: background .2s; margin-top: .25rem; }
+ .cta-form-wrap h3 {
+  font-family: var(--serif); font-size: 1.9rem; color: #fff;
+  margin-bottom: .55rem; font-weight: 400; line-height: 1.2;
+ }
+ .cta-form-wrap h3 em { font-style: italic; color: var(--gold-lt); }
+ .cta-form-sub {
+  font-size: 13.5px; color: rgba(255,255,255,0.6);
+  margin-bottom: 1.8rem; line-height: 1.6;
+ }
+
+ .form { display: grid; gap: 14px; }
+ .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+ .form-field { display: flex; flex-direction: column; gap: 6px; }
+ .form-field label {
+  font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase;
+  font-weight: 600; color: rgba(255,255,255,0.72);
+ }
+ .form-field input,
+ .form-field select,
+ .form-field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 6px;
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 14.5px;
+  transition: border-color .18s, background .18s, box-shadow .18s;
+ }
+ .form-field input::placeholder,
+ .form-field textarea::placeholder { color: rgba(255,255,255,0.32); }
+ .form-field input:focus,
+ .form-field select:focus,
+ .form-field textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 0 3px rgba(184,147,90,0.14);
+ }
+ .form-field select option { background: #1a1918; color: #fff; }
+ .form-field textarea { resize: vertical; min-height: 90px; }
+ .field-error { font-size: 12px; color: #e57a72; margin-top: 2px; display: none; }
+ .field-error.show { display: block; }
+
+ .form-submit {
+  width: 100%; background: var(--gold); color: #fff; border: none;
+  padding: 15px; border-radius: 6px;
+  font-family: var(--sans); font-size: 13px; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase;
+  cursor: pointer; transition: background .2s, transform .08s;
+  margin-top: 4px;
+ }
  .form-submit:hover { background: var(--gold-lt); }
- .form-note { font-size: .72rem; color: rgba(255,255,255,0.3); text-align: center; margin-top: .6rem; }
+ .form-submit:active { transform: translateY(1px); }
+ .form-note {
+  font-size: 11.5px; letter-spacing: .04em;
+  color: rgba(255,255,255,0.4); text-align: center; margin-top: 14px;
+ }
+ .form-msg { margin-top: 16px; padding: 13px 14px; border-radius: 6px; font-size: 13.5px; display: none; }
+ .form-msg.ok { display: block; background: rgba(46,92,27,0.22); border: 1px solid rgba(120,175,90,0.4); color: #cde5b8; }
+ .form-msg.err { display: block; background: rgba(143,31,26,0.22); border: 1px solid rgba(200,80,72,0.5); color: #f2c1bd; }
 
  /* FOOTER */
  footer { background: var(--ink); color: rgba(255,255,255,0.4); padding: 40px 2rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.07); }
@@ -368,6 +422,8 @@
  .col-grid { grid-template-columns: 1fr; }
  .nbhd-grid { grid-template-columns: 1fr; }
  .section { padding: 56px 1.25rem; }
+ .form-row { grid-template-columns: 1fr; }
+ .cta-form-wrap { padding: 1.75rem 1.4rem; }
  }
  </style>
 </head>
@@ -808,37 +864,70 @@
  </div>
  </div>
  <div class="cta-form-wrap">
- <h3>Let's Talk Austin</h3>
- <p>Tell me a little about your move and I'll follow up within 24 hours.</p>
- <form id="reloc-form">
- <input type="hidden" name="source" value="moving-to-austin" />
- <div class="form-group"><input type="text" name="name" placeholder="Your name" required /></div>
- <div class="form-group"><input type="email" name="email" placeholder="you@example.com" autocomplete="email" required /></div>
- <div class="form-group"><input type="tel" name="phone" placeholder="(512) 555-1234" autocomplete="tel" pattern="[\d().+\-\s]{7,}" required /></div>
- <div class="form-group">
- <select name="timeline" aria-label="Timeline">
- <option value="">When are you planning to move?</option>
- <option>Within 3 months</option>
- <option>3 to 6 months</option>
- <option>6 to 12 months</option>
- <option>Just exploring options</option>
- </select>
- </div>
- <div class="form-group">
- <select name="budget" aria-label="Budget">
- <option value="">Budget range</option>
- <option>Under $400K</option>
- <option>$400K to $600K</option>
- <option>$600K to $900K</option>
- <option>$900K to $1.5M</option>
- <option>$1.5M+</option>
- </select>
- </div>
- <div class="form-group"><input type="text" name="from" placeholder="Moving from (city/state)" /></div>
- <div class="form-group"><textarea name="notes" placeholder="Anything else I should know? (neighborhood interests, must-haves, job location, etc.)"></textarea></div>
- <button type="submit" class="form-submit">Send Message to Luke</button>
- <p class="form-note">I'll respond within 24 hours - usually same day.</p>
- </form>
+  <div class="cta-form-eyebrow">Free 30-minute call</div>
+  <h3>Let's talk <em>Austin</em></h3>
+  <p class="cta-form-sub">Tell me a little about your move. I'll follow up within 24 hours with a first-pass read on submarkets that fit your budget, timeline, and life stage.</p>
+  <form id="reloc-form" class="form" novalidate>
+   <input type="hidden" name="source" value="moving-to-austin" />
+   <input type="hidden" name="type" value="Buyer" />
+   <div class="form-row">
+    <div class="form-field">
+     <label for="mta-first">First name</label>
+     <input id="mta-first" name="first_name" type="text" autocomplete="given-name" required />
+     <div class="field-error" data-for="first_name">Please enter your first name.</div>
+    </div>
+    <div class="form-field">
+     <label for="mta-last">Last name</label>
+     <input id="mta-last" name="last_name" type="text" autocomplete="family-name" required />
+     <div class="field-error" data-for="last_name">Please enter your last name.</div>
+    </div>
+   </div>
+   <div class="form-row">
+    <div class="form-field">
+     <label for="mta-email">Email</label>
+     <input id="mta-email" name="email" type="email" autocomplete="email" required />
+     <div class="field-error" data-for="email">Please enter a valid email address.</div>
+    </div>
+    <div class="form-field">
+     <label for="mta-phone">Phone</label>
+     <input id="mta-phone" name="phone" type="tel" autocomplete="tel" required />
+     <div class="field-error" data-for="phone">Please enter a real 10 digit US phone number.</div>
+    </div>
+   </div>
+   <div class="form-field">
+    <label for="mta-timeline">Timeline</label>
+    <select id="mta-timeline" name="timeline" required>
+     <option value="">When are you planning to move?</option>
+     <option>Within 3 months</option>
+     <option>3 to 6 months</option>
+     <option>6 to 12 months</option>
+     <option>Just exploring options</option>
+    </select>
+    <div class="field-error" data-for="timeline">Please pick a timeline.</div>
+   </div>
+   <div class="form-field">
+    <label for="mta-budget">Budget range (optional)</label>
+    <select id="mta-budget" name="budget">
+     <option value="">Choose one</option>
+     <option>Under $400K</option>
+     <option>$400K to $600K</option>
+     <option>$600K to $900K</option>
+     <option>$900K to $1.5M</option>
+     <option>$1.5M+</option>
+    </select>
+   </div>
+   <div class="form-field">
+    <label for="mta-from">Moving from (optional)</label>
+    <input id="mta-from" name="from" type="text" placeholder="e.g. San Francisco, CA" />
+   </div>
+   <div class="form-field">
+    <label for="mta-notes">Anything else I should know (optional)</label>
+    <textarea id="mta-notes" name="notes" placeholder="Neighborhood interests, job location, must-haves"></textarea>
+   </div>
+   <button type="submit" class="form-submit">Send message to Luke</button>
+   <p class="form-note">I'll respond within 24 hours, usually same day.</p>
+   <div class="form-msg" id="mta-form-msg"></div>
+  </form>
  </div>
  </div>
 </section>
@@ -867,20 +956,73 @@ document.querySelectorAll('.faq-q').forEach(q => {
 });
 
 // Lead form
-document.getElementById('reloc-form').addEventListener('submit', async function(e) {
- e.preventDefault();
- const data = Object.fromEntries(new FormData(this));
- try {
- const res = await fetch('/api/contact', {
- method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+(function () {
+ const form = document.getElementById('reloc-form');
+ const msg = document.getElementById('mta-form-msg');
+ const FAKE_DOMAINS = ['test.com','example.com','fake.com','sample.com','domain.com','mail.com','asdf.com','abc.com','123.com','xxx.com','fakemail.com','tempmail.com','mailinator.com','guerrillamail.com','trashmail.com','yopmail.com','sharklasers.com','dispostable.com','mytemp.email'];
+
+ function showFieldErr(name, on) {
+  const el = form.querySelector('[data-for="' + name + '"]');
+  if (el) el.classList.toggle('show', on);
+ }
+ function validEmail(v) {
+  if (!v) return false;
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  if (!re.test(v)) return false;
+  const domain = v.split('@')[1].toLowerCase();
+  return !FAKE_DOMAINS.includes(domain);
+ }
+ function validPhone(v) {
+  const digits = (v || '').replace(/\D/g, '');
+  if (digits.length !== 10 && !(digits.length === 11 && digits.startsWith('1'))) return false;
+  const ten = digits.length === 11 ? digits.slice(1) : digits;
+  if (['0','1'].includes(ten[0])) return false;
+  if (ten[3] === '0' || ten[3] === '1') return false;
+  return true;
+ }
+
+ form.addEventListener('submit', async function (e) {
+  e.preventDefault();
+  ['first_name','last_name','email','phone','timeline'].forEach(n => showFieldErr(n, false));
+  msg.className = 'form-msg'; msg.textContent = '';
+
+  const data = Object.fromEntries(new FormData(form).entries());
+  let ok = true;
+  if (!data.first_name || !data.first_name.trim()) { showFieldErr('first_name', true); ok = false; }
+  if (!data.last_name || !data.last_name.trim()) { showFieldErr('last_name', true); ok = false; }
+  if (!validEmail(data.email)) { showFieldErr('email', true); ok = false; }
+  if (!validPhone(data.phone)) { showFieldErr('phone', true); ok = false; }
+  if (!data.timeline) { showFieldErr('timeline', true); ok = false; }
+  if (!ok) return;
+
+  data.name = (data.first_name + ' ' + data.last_name).trim();
+  data.message =
+   'Timeline: ' + data.timeline +
+   (data.budget ? (' | Budget: ' + data.budget) : '') +
+   (data.from ? (' | From: ' + data.from) : '') +
+   (data.notes ? (' | Notes: ' + data.notes) : '');
+
+  try {
+   const res = await fetch('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+   });
+   const json = await res.json().catch(() => ({}));
+   if (res.ok) {
+    msg.className = 'form-msg ok';
+    msg.textContent = 'Got it. I will follow up within 24 hours, usually same day, with a first-pass submarket read.';
+    form.reset();
+   } else {
+    msg.className = 'form-msg err';
+    msg.textContent = 'Something went wrong: ' + (json.error || 'please try again in a moment.');
+   }
+  } catch (err) {
+   msg.className = 'form-msg err';
+   msg.textContent = 'Network error. Please try again in a moment.';
+  }
  });
- if (res.ok) {
- this.innerHTML = '<p style="text-align:center;padding:48px 0;font-family:\'Cormorant Garamond\',serif;font-size:22px;color:var(--gold-lt);line-height:1.5">Got it - I\'ll be in touch<br>within 24 hours.</p>';
- }
- } catch {
- alert('Something went wrong. Please call or email directly.');
- }
-});
+})();
 </script>
 </body>
 </html>
