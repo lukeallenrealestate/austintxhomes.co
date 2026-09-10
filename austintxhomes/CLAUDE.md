@@ -217,6 +217,63 @@ Check both screenshots for:
 
 If Puppeteer is not installed: `npm install puppeteer` in the austintxhomes directory.
 
+### 12. Uniqueness — every new page must be genuinely different (REQUIRED)
+
+Google's May 2026 update classifier demoted templated content site-wide. It cost us ~102 pages of indexed traffic. Every new money page or content page must pass a uniqueness check before it ships, or it will drag the whole site's classifier score back down.
+
+**The rule:** two pages on this site can share facts (they cover the same market) but must never share **phrasing, narrative structure, or analytical angle**. A buyer page and a seller page for the same neighborhood are the highest-risk case because the underlying material is the same — you must actively rewrite each shared paragraph with different framing, verb choices, and sentence structure.
+
+**Required uniqueness check before shipping any new page:**
+
+```bash
+python3 <<'PY'
+import re
+from pathlib import Path
+NEW = 'public/site/{new-slug}.html'
+NEIGHBORS = [
+  # list the 3-5 most thematically similar existing pages here
+  'public/site/sell-home-easton-park-austin.html',
+  'public/site/apollo-austin-relocation.html',
+  'public/site/tesla-austin-relocation.html',
+]
+def text(html):
+  html = re.sub(r'<script[^>]*>.*?</script>', ' ', html, flags=re.S)
+  html = re.sub(r'<style[^>]*>.*?</style>', ' ', html, flags=re.S)
+  return re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', html)).strip()
+def shingles(t, n=8):
+  w = t.split()
+  return {' '.join(w[i:i+n]) for i in range(len(w)-n+1)}
+BOILER = ['Phone', 'email', 'Timeline', 'Within', 'TREC', 'Austin TX Homes',
+          'digit', 'Please', 'a real', 'Realtor', 'Contact', 'ACTRIS MLS, pulled',
+          '30 to 60 days', '60 to 90 days', '3 to 6 months', 'Not sure yet',
+          'Under $400K', 'Full name', 'first name', 'last name', 'Budget (optional)']
+b = shingles(text(Path(NEW).read_text()))
+for n in NEIGHBORS:
+  o = b & shingles(text(Path(n).read_text()))
+  subst = [x for x in o if not any(k in x for k in BOILER)]
+  print(f"{n:<55} substantive overlaps: {len(subst)}")
+  for x in subst[:6]: print(f"  - {x}")
+PY
+```
+
+**Thresholds:**
+- **>10 substantive 8-gram overlaps with any single neighbor page → rewrite required.** Rewrite the overlapping paragraphs with different narrative framing before shipping.
+- **0-5 substantive overlaps → ship it.** Anything remaining will be citations, byline, or unavoidable facts (e.g. "$75/month HOA").
+- Boilerplate that IS allowed to repeat across pages: form validation copy, budget/timeline dropdowns, author byline, ACTRIS MLS citation, contact form structure.
+
+**Buyer vs seller pages for the same neighborhood — required framing differences:**
+- Buyer page angle: which pod to target, how to negotiate the incentive stack, what daily life looks like, resale-vs-new math from the buyer's checkbook.
+- Seller page angle: how to price against the builder's net-of-incentive, what documentation wins the disclosure packet, how long homes are sitting, buyer profile from the seller's counter-party lens.
+- Facts (HOA dues, amenities, geography, MLS stats) can be identical. Sentences describing them must be recomposed with different subjects, verbs, and clause order.
+- FAQ questions and answers on the two pages must not overlap in wording. Different questions are best; if the same underlying question must be asked, the answer must be reframed for the opposite side of the transaction.
+
+**Never do these:**
+- Never copy a paragraph from an existing page and change 2-3 words. That still shows up as an 8-gram match and gets caught by the classifier.
+- Never use identical bulleted lists for factual content across pages (amenity lists, pod lists, etc.). Rewrite as prose on at least one of the two pages, or change the list ordering + phrasing meaningfully.
+- Never reuse a "bottom line" closer paragraph structure across pages. Each closer should be structurally distinct.
+
+Run the shingle check as the last step before commit. If overlap is above the threshold, rewrite and rerun before shipping.
+
 ---
 
 ## Site Structure Reference
