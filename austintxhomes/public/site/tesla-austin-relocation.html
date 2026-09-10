@@ -138,9 +138,11 @@
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); background: var(--bg); line-height: 1.7; -webkit-font-smoothing: antialiased; font-size: 17px; }
 
-  .nav-backdrop { height: 80px; background: var(--ink); width: 100%; }
-
-  .hero { background: var(--ink); background-image: radial-gradient(ellipse 80% 65% at 50% 40%, rgba(184,147,90,.20) 0%, transparent 70%); color: #fff; padding: 72px 24px 72px; text-align: center; }
+  .hero { position: relative; overflow: hidden; background: var(--ink); color: #fff; padding: 132px 24px 72px; text-align: center; }
+  .hero video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.4s ease; z-index: 0; }
+  .hero video.ready { opacity: 0.5; }
+  .hero-veil { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse 80% 65% at 50% 40%, rgba(184,147,90,.22) 0%, transparent 70%), linear-gradient(180deg, rgba(15,15,14,.72) 0%, rgba(15,15,14,.62) 100%); pointer-events: none; }
+  .hero > *:not(video):not(.hero-veil) { position: relative; z-index: 2; }
   .hero-eyebrow { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 16px; }
   .hero h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 400; font-size: clamp(32px, 5.2vw, 56px); line-height: 1.1; letter-spacing: -0.01em; margin: 0 auto 20px; max-width: 780px; }
   .hero h1 em { font-style: italic; color: var(--gold-lt); }
@@ -210,7 +212,7 @@
 
   @media (max-width: 640px) {
    .article { padding: 40px 20px 60px; }
-   .hero { padding: 56px 20px 56px; }
+   .hero { padding: 100px 20px 56px; }
    .snapshot { padding: 22px 20px 16px; }
    .case-study { padding: 24px 22px; }
    .field-row { grid-template-columns: 1fr; }
@@ -228,9 +230,10 @@
 </head>
 <body>
 <script src="/js/nav.js"></script>
-<div class="nav-backdrop" aria-hidden="true"></div>
 
 <section class="hero">
+ <video autoplay muted loop playsinline preload="none" data-src="/videos/hero-video.mp4"></video>
+ <div class="hero-veil"></div>
  <p class="hero-eyebrow">Tesla Gigafactory &middot; Austin Relocation Guide</p>
  <h1>Buying a home in Austin when you work at <em>Tesla Gigafactory</em></h1>
  <p class="hero-sub">Where Tesla employees actually end up living, the real commute times, and the two mistakes I see them make. From a realtor who has helped 10+ Tesla employees relocate since 2025.</p>
