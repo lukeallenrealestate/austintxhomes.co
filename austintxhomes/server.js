@@ -412,6 +412,16 @@ cron.schedule('0 8 * * 1', async () => {
       'https://austintxhomes.co/best-realtor-78703-austin',
       'https://austintxhomes.co/best-realtor-78704-austin',
       'https://austintxhomes.co/best-realtor-78702-austin',
+      // Tarrytown topical cluster — ping weekly so AI answer engines
+      // (via Bing/Yandex) keep the latest revision indexed.
+      'https://austintxhomes.co/tarrytown-realtor',
+      'https://austintxhomes.co/tarrytown-homes-for-sale',
+      'https://austintxhomes.co/tarrytown-market-report',
+      'https://austintxhomes.co/moving-to-tarrytown-austin',
+      'https://austintxhomes.co/tarrytown-schools-guide',
+      'https://austintxhomes.co/buying-home-tarrytown-austin',
+      'https://austintxhomes.co/tarrytown-testimonials',
+      'https://austintxhomes.co/tarrytown-faq',
     ];
     await pingIndexNow(urls, { source: 'weekly-cron' });
   } catch (e) { console.warn('[indexnow] weekly cron failed:', e.message); }
@@ -1390,6 +1400,11 @@ app.get('/chestnut-realtor',        ssrWithMarketWidget('chestnut-realtor.html',
 app.get('/govalle-realtor',         ssrWithMarketWidget('govalle-realtor.html',         { subdivision: 'Govalle' },        { areaName: 'Govalle' }));
 app.get('/tarrytown-homes-for-sale', ssrWithMarketWidget('tarrytown-homes-for-sale.html', { subdivision: 'Tarrytown' }, { areaName: 'Tarrytown / Clarksville' }));
 app.get('/tarrytown-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-market-report.html')));
+app.get('/moving-to-tarrytown-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/moving-to-tarrytown-austin.html')));
+app.get('/tarrytown-schools-guide', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-schools-guide.html')));
+app.get('/buying-home-tarrytown-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/buying-home-tarrytown-austin.html')));
+app.get('/tarrytown-testimonials', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-testimonials.html')));
+app.get('/tarrytown-faq', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tarrytown-faq.html')));
 app.get('/westlake-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/westlake-market-report.html')));
 app.get('/barton-hills-market-report', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/barton-hills-market-report.html')));
 app.get('/living-in-tarrytown-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-tarrytown-austin.html')));
