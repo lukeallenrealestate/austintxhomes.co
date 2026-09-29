@@ -1127,6 +1127,146 @@ app.get('/find-my-apartment', (_req, res) => res.sendFile(path.join(__dirname, '
 app.get('/apollo-austin-relocation',     (_req, res) => res.sendFile(path.join(__dirname, 'public/site/apollo-austin-relocation.html')));
 app.get('/crowdstrike-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/crowdstrike-austin-relocation.html')));
 app.get('/1031-exchange-austin-texas', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/1031-exchange-austin-texas.html')));
+
+/**
+ * /assumable-mortgage-homes-austin
+ *
+ * SSR route: reads the template, queries the ACTRIS DB for Active listings
+ * whose public_remarks mention "assumable", parses the disclosed rate out
+ * of the remarks, renders the listing cards, and substitutes them into the
+ * template markers. Sorted by lowest disclosed rate by default; ?sort=
+ * accepts rate | price-asc | price-desc.
+ *
+ * The rate parser is intentionally conservative — it only pulls a value
+ * when it appears near "assumable" or a loan-type keyword, and only when
+ * the resulting rate is a plausible sub-market rate (under 6.5%). Rates
+ * above that get shown as "rate not disclosed" so a listing that just
+ * mentions a market-rate number in a different context does not fake a
+ * rate on the card.
+ */
+app.get('/assumable-mortgage-homes-austin', (req, res) => {
+  try {
+    const listingDb = require(path.join(__dirname, '..', 'idx-search', 'db', 'database'));
+    const db = listingDb.db || listingDb;
+    const sort = req.query.sort || 'rate';
+
+    const rows = db.prepare(`
+      SELECT listing_key, unparsed_address, city, postal_code, list_price,
+             bedrooms_total, bathrooms_total, living_area, photos, public_remarks
+      FROM listings
+      WHERE standard_status = 'Active'
+        AND public_remarks LIKE '%assumable%'
+        AND list_price > 0
+      LIMIT 500
+    `).all();
+
+    function parseRate(remarks) {
+      if (!remarks) return null;
+      // Find rates near assumable / VA / FHA / USDA keywords, plausible range 1.5%-6.5%
+      const rateRe = /(\d(?:\.\d{1,3})?)\s*%/g;
+      const lower = remarks.toLowerCase();
+      const matches = [];
+      let m;
+      while ((m = rateRe.exec(remarks)) !== null) {
+        const val = parseFloat(m[1]);
+        if (!(val >= 1.5 && val <= 6.5)) continue;
+        // Check proximity to assumable/loan-type keywords (within 120 chars either side)
+        const pos = m.index;
+        const window = lower.slice(Math.max(0, pos - 120), Math.min(lower.length, pos + 120));
+        if (/(assumable|assumption|assume|\bva\b|\bfha\b|\busda\b|loan|rate|mortgage)/.test(window)) {
+          matches.push(val);
+        }
+      }
+      if (!matches.length) return null;
+      return Math.min(...matches);
+    }
+
+    function detectLoanType(remarks) {
+      if (!remarks) return null;
+      const r = remarks.toUpperCase();
+      if (/\bVA\b/.test(r) && /(ASSUMABLE|ASSUMPTION|ASSUME)/.test(r)) return 'VA';
+      if (/\bFHA\b/.test(r) && /(ASSUMABLE|ASSUMPTION|ASSUME)/.test(r)) return 'FHA';
+      if (/\bUSDA\b/.test(r) && /(ASSUMABLE|ASSUMPTION|ASSUME)/.test(r)) return 'USDA';
+      return null;
+    }
+
+    const enriched = rows.map(l => ({
+      ...l,
+      rate: parseRate(l.public_remarks),
+      loantype: detectLoanType(l.public_remarks),
+    }));
+
+    let sorted = enriched.slice();
+    if (sort === 'price-asc') {
+      sorted.sort((a, b) => a.list_price - b.list_price);
+    } else if (sort === 'price-desc') {
+      sorted.sort((a, b) => b.list_price - a.list_price);
+    } else {
+      // rate: rates first (ascending), then no-rate listings by price ascending
+      sorted.sort((a, b) => {
+        if (a.rate != null && b.rate != null) return a.rate - b.rate;
+        if (a.rate != null) return -1;
+        if (b.rate != null) return 1;
+        return a.list_price - b.list_price;
+      });
+    }
+
+    const top = sorted.slice(0, 60);
+
+    function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function slug(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-').replace(/-+/g,'-'); }
+
+    const cards = top.map(l => {
+      const addr = [l.unparsed_address, l.city].filter(Boolean).join(', ').trim();
+      const stats = [
+        l.bedrooms_total ? `${l.bedrooms_total} bd` : null,
+        l.bathrooms_total ? `${l.bathrooms_total} ba` : null,
+        l.living_area ? `${Number(l.living_area).toLocaleString()} sqft` : null,
+      ].filter(Boolean).join(' · ');
+      let photoUrl = '';
+      try {
+        const photos = JSON.parse(l.photos || '[]');
+        if (photos.length) photoUrl = `/api/properties/photos/${l.listing_key}/0`;
+      } catch (_) {}
+      const href = `/homes/${slug(l.unparsed_address)}--${l.listing_key}`;
+      const rateBadge = l.rate != null
+        ? `<span class="lc-rate-badge">${l.rate}% rate</span>`
+        : `<span class="lc-rate-badge no-rate">Rate not disclosed</span>`;
+      const loantypeBadge = l.loantype
+        ? `<span class="lc-loantype-badge">${esc(l.loantype)}</span>`
+        : '';
+      return `<a class="listing-card" href="${href}">
+      <div class="lc-img">${photoUrl ? `<img src="${photoUrl}" alt="${esc(addr)}" loading="lazy" />` : ''}${rateBadge}${loantypeBadge}</div>
+      <div class="lc-body">
+        <div class="lc-price">$${Number(l.list_price).toLocaleString()}</div>
+        <div class="lc-addr">${esc(addr)}</div>
+        <div class="lc-stats"><span>${esc(stats)}</span></div>
+      </div>
+    </a>`;
+    }).join('\n');
+
+    const noInventory = `<div class="no-inventory" style="grid-column:1/-1"><strong>No active assumable listings in the feed right now.</strong>Assumable inventory turns over fast. Sign up below and I will email you as soon as new inventory hits the MLS.</div>`;
+
+    const now = new Date();
+    const updatedStr = now.toLocaleString('en-US', { timeZone: 'America/Chicago', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' CT';
+    const lastmodIso = now.toISOString().slice(0, 10);
+
+    let html = fs.readFileSync(path.join(__dirname, 'public/site/assumable-mortgage-homes-austin.html'), 'utf8');
+    html = html
+      .replace(/__ACTIVE_COUNT__/g, String(enriched.length))
+      .replace(/__UPDATED__/g, esc(updatedStr))
+      .replace(/__LASTMOD__/g, lastmodIso)
+      .replace('<!-- __ASSUMABLE_LISTINGS__ -->', cards || noInventory);
+
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=900'); // 15 min
+    res.send(html);
+  } catch (e) {
+    console.warn('[assumable-mortgage-homes-austin] SSR failed, sending static template:', e.message);
+    res.sendFile(path.join(__dirname, 'public/site/assumable-mortgage-homes-austin.html'));
+  }
+});
+
 app.get('/sell-home-easton-park-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-easton-park-austin.html')));
 app.get('/easton-park-realtor',        (_req, res) => res.sendFile(path.join(__dirname, 'public/site/easton-park-realtor.html')));
 app.get('/neighborhoods',     (_req, res) => {
