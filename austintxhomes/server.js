@@ -1131,6 +1131,7 @@ app.get('/sell-house-fast-austin', (_req, res) => res.sendFile(path.join(__dirna
 app.get('/short-term-rental-investment-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/short-term-rental-investment-austin.html')));
 app.get('/mid-term-rental-investment-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/mid-term-rental-investment-austin.html')));
 app.get('/travis-county-property-tax-protest', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/travis-county-property-tax-protest.html')));
+app.get('/divorce-house-sale-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/divorce-house-sale-austin.html')));
 
 /**
  * /assumable-mortgage-homes-austin
