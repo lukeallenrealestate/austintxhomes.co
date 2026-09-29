@@ -1127,6 +1127,7 @@ app.get('/find-my-apartment', (_req, res) => res.sendFile(path.join(__dirname, '
 app.get('/apollo-austin-relocation',     (_req, res) => res.sendFile(path.join(__dirname, 'public/site/apollo-austin-relocation.html')));
 app.get('/crowdstrike-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/crowdstrike-austin-relocation.html')));
 app.get('/1031-exchange-austin-texas', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/1031-exchange-austin-texas.html')));
+app.get('/sell-house-fast-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-house-fast-austin.html')));
 
 /**
  * /assumable-mortgage-homes-austin
