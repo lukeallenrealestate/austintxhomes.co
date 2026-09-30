@@ -1134,6 +1134,7 @@ app.get('/travis-county-property-tax-protest', (_req, res) => res.sendFile(path.
 app.get('/divorce-house-sale-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/divorce-house-sale-austin.html')));
 app.get('/moving-from-california-to-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/moving-from-california-to-austin.html')));
 app.get('/downsizing-in-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/downsizing-in-austin.html')));
+app.get('/new-construction-buyer-agent-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/new-construction-buyer-agent-austin.html')));
 
 /**
  * /assumable-mortgage-homes-austin
