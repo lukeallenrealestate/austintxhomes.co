@@ -1136,6 +1136,7 @@ app.get('/moving-from-california-to-austin', (_req, res) => res.sendFile(path.jo
 app.get('/downsizing-in-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/downsizing-in-austin.html')));
 app.get('/new-construction-buyer-agent-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/new-construction-buyer-agent-austin.html')));
 app.get('/first-time-homebuyer-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/first-time-homebuyer-austin.html')));
+app.get('/austin-luxury-home-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-luxury-home-realtor.html')));
 
 /**
  * /assumable-mortgage-homes-austin
