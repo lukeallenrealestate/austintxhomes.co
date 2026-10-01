@@ -1324,6 +1324,7 @@ app.get('/moving-from-oregon-to-austin', (_req, res) => res.sendFile(path.join(_
 app.get('/moving-from-minnesota-to-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/moving-from-minnesota-to-austin.html')));
 app.get('/sun-city-georgetown-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sun-city-georgetown-realtor.html')));
 app.get('/westlake-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/westlake-realtor.html')));
+app.get('/lakeway-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/lakeway-realtor.html')));
 app.get('/google-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/google-austin-relocation.html')));
 app.get('/indeed-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/indeed-austin-relocation.html')));
 app.get('/amd-austin-relocation',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/amd-austin-relocation.html')));
