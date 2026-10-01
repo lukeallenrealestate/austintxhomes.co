@@ -1313,6 +1313,7 @@ app.get('/samsung-austin-relocation', (_req, res) => res.sendFile(path.join(__di
 app.get('/dell-austin-relocation',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/dell-austin-relocation.html')));
 app.get('/ibm-austin-relocation',    (_req, res) => res.sendFile(path.join(__dirname, 'public/site/ibm-austin-relocation.html')));
 app.get('/oracle-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/oracle-austin-relocation.html')));
+app.get('/austin-vs-dallas-comparison', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-vs-dallas-comparison.html')));
 app.get('/google-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/google-austin-relocation.html')));
 app.get('/indeed-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/indeed-austin-relocation.html')));
 app.get('/amd-austin-relocation',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/amd-austin-relocation.html')));
