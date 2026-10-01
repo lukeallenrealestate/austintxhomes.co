@@ -1321,6 +1321,7 @@ app.get('/moving-from-colorado-to-austin', (_req, res) => res.sendFile(path.join
 app.get('/moving-from-massachusetts-to-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/moving-from-massachusetts-to-austin.html')));
 app.get('/moving-from-new-jersey-to-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/moving-from-new-jersey-to-austin.html')));
 app.get('/moving-from-oregon-to-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/moving-from-oregon-to-austin.html')));
+app.get('/moving-from-minnesota-to-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/moving-from-minnesota-to-austin.html')));
 app.get('/google-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/google-austin-relocation.html')));
 app.get('/indeed-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/indeed-austin-relocation.html')));
 app.get('/amd-austin-relocation',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/amd-austin-relocation.html')));
