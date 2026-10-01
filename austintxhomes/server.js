@@ -1314,6 +1314,7 @@ app.get('/dell-austin-relocation',   (_req, res) => res.sendFile(path.join(__dir
 app.get('/ibm-austin-relocation',    (_req, res) => res.sendFile(path.join(__dirname, 'public/site/ibm-austin-relocation.html')));
 app.get('/oracle-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/oracle-austin-relocation.html')));
 app.get('/austin-vs-dallas-comparison', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-vs-dallas-comparison.html')));
+app.get('/austin-vs-houston-comparison', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-vs-houston-comparison.html')));
 app.get('/google-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/google-austin-relocation.html')));
 app.get('/indeed-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/indeed-austin-relocation.html')));
 app.get('/amd-austin-relocation',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/amd-austin-relocation.html')));
