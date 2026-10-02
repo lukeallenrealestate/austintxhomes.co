@@ -61,6 +61,25 @@
  <script type="application/ld+json">
  {
   "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "415 Colorado Austin: Downtown Luxury High-Rise Tour",
+  "description": "Walkthrough tour of 415 Colorado, the 47-story mixed-use luxury tower at 5th and Colorado in downtown Austin. 328 residences on floors 19 through 47 above Class-A office. Covers floor plan tiers, the 46th-floor sky lounge, 19th-floor pool deck, and the Walk Score 99 downtown location.",
+  "thumbnailUrl": "https://i.ytimg.com/vi/SoxsMo8Xok4/maxresdefault.jpg",
+  "uploadDate": "2026-10-02",
+  "contentUrl": "https://youtu.be/SoxsMo8Xok4",
+  "embedUrl": "https://www.youtube.com/embed/SoxsMo8Xok4",
+  "publisher": {
+   "@type": "Organization",
+   "name": "Austin TX Homes",
+   "url": "https://austintxhomes.co",
+   "logo": { "@type": "ImageObject", "url": "https://austintxhomes.co/images/luke-allen.jpg" }
+  }
+ }
+ </script>
+
+ <script type="application/ld+json">
+ {
+  "@context": "https://schema.org",
   "@type": "ApartmentComplex",
   "name": "415 Colorado",
   "url": "https://austintxhomes.co/415-colorado",
@@ -220,8 +239,18 @@
   .qs-label { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--mid); font-weight: 600; }
   .qs-detail { font-size: 12px; color: var(--mid); margin-top: 6px; line-height: 1.4; }
 
+  /* Video embed */
+  .video-section { background: #fff; padding: 72px 24px 48px; }
+  .video-inner { max-width: 980px; margin: 0 auto; text-align: center; }
+  .video-eyebrow { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 10px; }
+  .video-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36px; font-weight: 500; margin: 0 auto 10px; max-width: 760px; line-height: 1.15; letter-spacing: -.005em; }
+  .video-title em { font-style: italic; color: var(--gold); }
+  .video-sub { color: var(--mid); font-size: 15px; margin: 0 auto 28px; max-width: 640px; line-height: 1.6; }
+  .video-frame { position: relative; width: 100%; padding-top: 56.25%; background: var(--ink); border-radius: 10px; overflow: hidden; box-shadow: 0 24px 60px -24px rgba(15,15,14,.3); }
+  .video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
   /* Building story */
-  .story-section { padding: 72px 24px 56px; background: #fff; }
+  .story-section { padding: 56px 24px; background: #fff; }
   .story-inner { max-width: 820px; margin: 0 auto; }
   .story-eyebrow { text-align: center; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 10px; }
   .story-title { text-align: center; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 40px; font-weight: 500; margin: 0 auto 18px; max-width: 760px; line-height: 1.15; letter-spacing: -.005em; }
@@ -440,6 +469,23 @@
    <div class="qs-num"><em>2025</em></div>
    <div class="qs-label">Delivered</div>
    <div class="qs-detail">New construction, current-generation finishes</div>
+  </div>
+ </div>
+</section>
+
+<section class="video-section" id="walkthrough">
+ <div class="video-inner">
+  <div class="video-eyebrow">The walkthrough video on this building</div>
+  <h2 class="video-title">Watch the <em>415 Colorado walkthrough</em></h2>
+  <p class="video-sub">A full tour inside 415 Colorado covering residential floor plans, the 19th-floor pool and amenity level, the 46th-floor sky lounge, and the downtown Austin walkability from the front door. Shot and narrated by Luke Allen.</p>
+  <div class="video-frame">
+   <iframe
+    src="https://www.youtube.com/embed/SoxsMo8Xok4"
+    title="415 Colorado Austin: Downtown Luxury High-Rise Tour"
+    loading="lazy"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen></iframe>
   </div>
  </div>
 </section>
