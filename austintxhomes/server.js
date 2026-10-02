@@ -1326,6 +1326,7 @@ app.get('/sun-city-georgetown-realtor', (_req, res) => res.sendFile(path.join(__
 app.get('/westlake-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/westlake-realtor.html')));
 app.get('/lakeway-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/lakeway-realtor.html')));
 app.get('/dripping-springs-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/dripping-springs-realtor.html')));
+app.get('/415-colorado', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/415-colorado.html')));
 app.get('/google-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/google-austin-relocation.html')));
 app.get('/indeed-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/indeed-austin-relocation.html')));
 app.get('/amd-austin-relocation',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/amd-austin-relocation.html')));
