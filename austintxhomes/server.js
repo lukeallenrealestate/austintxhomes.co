@@ -111,6 +111,10 @@ app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// westlakehomesatx.com is a separate Westlake/Eanes ISD site served from this
+// same process and DB. It answers its own hosts and lets only /api/* through.
+app.use(require('./westlake').hostRouter);
+
 // Redirect non-canonical hostnames (e.g. replit.app subdomains) to the real
 // domain. Allowlist: canonical austintxhomes.co, localhost/127.* for dev,
 // and *.onrender.com so we can test the Render deploy before DNS cutover
@@ -118,6 +122,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   const host = req.hostname;
   const allowed = !host
+    || req.isWestlake
     || host === 'austintxhomes.co'
     || host === 'localhost'
     || host.startsWith('127.')
@@ -1328,6 +1333,7 @@ app.get('/lakeway-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'pu
 app.get('/dripping-springs-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/dripping-springs-realtor.html')));
 app.get('/415-colorado', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/415-colorado.html')));
 app.get('/bee-cave-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/bee-cave-realtor.html')));
+app.get('/steiner-ranch-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/steiner-ranch-realtor.html')));
 app.get('/google-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/google-austin-relocation.html')));
 app.get('/indeed-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/indeed-austin-relocation.html')));
 app.get('/amd-austin-relocation',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/amd-austin-relocation.html')));
