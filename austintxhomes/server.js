@@ -1138,7 +1138,7 @@ app.get('/rental-properties-for-sale-austin', (_req, res) => res.sendFile(path.j
 app.get('/cash-flowing-properties-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/cash-flowing-properties-austin.html')));
 app.get('/buy',           (_req, res) => res.sendFile(path.join(__dirname, 'public/site/buy.html')));
 app.get('/rentals',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/rentals.html')));
-app.get('/find-my-apartment', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/find-my-apartment.html')));
+app.get('/find-my-apartment', (_req, res) => res.redirect(301, '/rentals'));
 app.get('/apollo-austin-relocation',     (_req, res) => res.sendFile(path.join(__dirname, 'public/site/apollo-austin-relocation.html')));
 app.get('/crowdstrike-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/crowdstrike-austin-relocation.html')));
 app.get('/1031-exchange-austin-texas', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/1031-exchange-austin-texas.html')));
@@ -1318,11 +1318,13 @@ app.get('/condos',                (_req, res) => res.sendFile(path.join(__dirnam
 app.get('/cost-of-living',        (_req, res) => res.sendFile(path.join(__dirname, 'public/site/cost-of-living.html')));
 app.get('/tesla-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tesla-austin-relocation.html')));
 app.get('/tesla-austin-employee-relocation', (_req, res) => res.redirect(301, '/tesla-austin-relocation'));
-app.get('/spacex-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/spacex-austin-relocation.html')));
-app.get('/spacex-austin-employee-relocation', (_req, res) => res.redirect(301, '/spacex-austin-relocation'));
-app.get('/spacex-bastrop-relocation', (_req, res) => res.redirect(301, '/spacex-austin-relocation'));
-app.get('/starlink-bastrop-relocation', (_req, res) => res.redirect(301, '/spacex-austin-relocation'));
-app.get('/apartments-near-tesla-gigafactory-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/apartments-near-tesla-gigafactory-austin.html')));
+// SpaceX is in Boca Chica rather than Austin; redirect noindexed SpaceX
+// relocation pages to the general moving-to-Austin playbook.
+app.get('/spacex-austin-relocation', (_req, res) => res.redirect(301, '/moving-to-austin'));
+app.get('/spacex-austin-employee-relocation', (_req, res) => res.redirect(301, '/moving-to-austin'));
+app.get('/spacex-bastrop-relocation', (_req, res) => res.redirect(301, '/moving-to-austin'));
+app.get('/starlink-bastrop-relocation', (_req, res) => res.redirect(301, '/moving-to-austin'));
+app.get('/apartments-near-tesla-gigafactory-austin', (_req, res) => res.redirect(301, '/tesla-austin-relocation'));
 app.get('/apple-austin-relocation',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/apple-austin-relocation.html')));
 app.get('/samsung-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/samsung-austin-relocation.html')));
 app.get('/dell-austin-relocation',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/dell-austin-relocation.html')));
@@ -1668,26 +1670,33 @@ app.get('/austin-property-taxes-explained-travis-county',         (_req, res) =>
 app.get('/modern-homes-with-pools-78704',                         (_req, res) => res.sendFile(path.join(__dirname, 'public/site/modern-homes-with-pools-78704.html')));
 app.get('/new-construction-homes-south-austin-no-hoa',            (_req, res) => res.sendFile(path.join(__dirname, 'public/site/new-construction-homes-south-austin-no-hoa.html')));
 app.get('/tips-negotiating-strong-buyers-market-austin',          (_req, res) => res.sendFile(path.join(__dirname, 'public/site/tips-negotiating-strong-buyers-market-austin.html')));
-app.get('/best-upcoming-neighborhoods-apple-campus-north-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-upcoming-neighborhoods-apple-campus-north-austin.html')));
-app.get('/affordable-suburbs-samsung-semiconductor-taylor',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/affordable-suburbs-samsung-semiconductor-taylor.html')));
+// Templated employer-adjacent SEO pages, now redirected to the authoritative
+// relocation money pages for the same employer.
+app.get('/best-upcoming-neighborhoods-apple-campus-north-austin', (_req, res) => res.redirect(301, '/apple-austin-relocation'));
+app.get('/affordable-suburbs-samsung-semiconductor-taylor',       (_req, res) => res.redirect(301, '/samsung-austin-relocation'));
 app.get('/austin-areas-highest-yoy-property-appreciation-tech-jobs', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-areas-highest-yoy-property-appreciation-tech-jobs.html')));
 app.get('/austin-homebuyer-report-2026-q3', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-homebuyer-report-2026-q3.html')));
 app.get('/living-in-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/living-in-east-austin.html')));
 app.get('/sell-home-east-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-east-austin.html')));
-app.get('/homes-for-sale-near-tesla-gigafactory', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-tesla-gigafactory.html')));
-app.get('/homes-for-sale-near-tesla-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-tesla-austin.html')));
-app.get('/homes-for-sale-near-apple-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-apple-austin.html')));
-app.get('/homes-for-sale-near-samsung-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-samsung-austin.html')));
-app.get('/homes-for-sale-near-google-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-google-austin.html')));
-app.get('/homes-for-sale-near-dell-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-dell-austin.html')));
-app.get('/homes-for-sale-near-ibm-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-ibm-austin.html')));
-app.get('/homes-for-sale-near-oracle-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-oracle-austin.html')));
-app.get('/homes-for-sale-near-indeed-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-indeed-austin.html')));
-app.get('/homes-for-sale-near-amd-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-amd-austin.html')));
-app.get('/homes-for-sale-near-amazon-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-amazon-austin.html')));
-app.get('/homes-for-sale-near-meta-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-meta-austin.html')));
-app.get('/homes-for-sale-near-nvidia-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-nvidia-austin.html')));
-app.get('/homes-for-sale-near-salesforce-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/homes-for-sale-near-salesforce-austin.html')));
+// Templated apartment-finder pages replaced by 301 redirects to the parent
+// employer money pages. Each noindexed landing used to serve a thin generated
+// listing block that hurt the site classifier post-May 2026 Google update.
+// 301 preserves whatever URL authority Google already assigned and sends it
+// to the authoritative relocation playbook for the same employer.
+app.get('/homes-for-sale-near-tesla-gigafactory', (_req, res) => res.redirect(301, '/tesla-austin-relocation'));
+app.get('/homes-for-sale-near-tesla-austin', (_req, res) => res.redirect(301, '/tesla-austin-relocation'));
+app.get('/homes-for-sale-near-apple-austin', (_req, res) => res.redirect(301, '/apple-austin-relocation'));
+app.get('/homes-for-sale-near-samsung-austin', (_req, res) => res.redirect(301, '/samsung-austin-relocation'));
+app.get('/homes-for-sale-near-google-austin', (_req, res) => res.redirect(301, '/google-austin-relocation'));
+app.get('/homes-for-sale-near-dell-austin', (_req, res) => res.redirect(301, '/dell-austin-relocation'));
+app.get('/homes-for-sale-near-ibm-austin', (_req, res) => res.redirect(301, '/ibm-austin-relocation'));
+app.get('/homes-for-sale-near-oracle-austin', (_req, res) => res.redirect(301, '/oracle-austin-relocation'));
+app.get('/homes-for-sale-near-indeed-austin', (_req, res) => res.redirect(301, '/indeed-austin-relocation'));
+app.get('/homes-for-sale-near-amd-austin', (_req, res) => res.redirect(301, '/amd-austin-relocation'));
+app.get('/homes-for-sale-near-amazon-austin', (_req, res) => res.redirect(301, '/amazon-austin-relocation'));
+app.get('/homes-for-sale-near-meta-austin', (_req, res) => res.redirect(301, '/meta-austin-relocation'));
+app.get('/homes-for-sale-near-nvidia-austin', (_req, res) => res.redirect(301, '/nvidia-austin-relocation'));
+app.get('/homes-for-sale-near-salesforce-austin', (_req, res) => res.redirect(301, '/salesforce-austin-relocation'));
 app.get('/fix-and-flip-calculator-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/fix-and-flip-calculator-austin.html')));
 
 // Cash flow unsubscribe (GET so email links work directly)
