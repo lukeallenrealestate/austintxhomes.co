@@ -113,7 +113,17 @@ app.use(express.urlencoded({ extended: true }));
 
 // westlakehomesatx.com is a separate Westlake/Eanes ISD site served from this
 // same process and DB. It answers its own hosts and lets only /api/* through.
-app.use(require('./westlake').hostRouter);
+// The westlake/ module is intentionally not committed to git; on deploy targets
+// that don't have it (Render), skip mounting rather than crashing on startup.
+try {
+  app.use(require('./westlake').hostRouter);
+} catch (err) {
+  if (err && err.code === 'MODULE_NOT_FOUND') {
+    console.warn('[server] westlake module not present; skipping westlakehomesatx.com host router');
+  } else {
+    throw err;
+  }
+}
 
 // Redirect non-canonical hostnames (e.g. replit.app subdomains) to the real
 // domain. Allowlist: canonical austintxhomes.co, localhost/127.* for dev,
