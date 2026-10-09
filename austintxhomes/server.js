@@ -1401,6 +1401,10 @@ app.get('/sell-home-during-divorce-austin', (_req, res) => res.sendFile(path.joi
 app.get('/buying-home-after-divorce-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/buying-home-after-divorce-austin.html')));
 app.get('/spouse-buyout-refinance-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/spouse-buyout-refinance-austin.html')));
 app.get('/court-ordered-home-sale-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/court-ordered-home-sale-austin.html')));
+app.get('/austin-airbnb-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-airbnb-realtor.html')));
+app.get('/austin-investment-property-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-investment-property-realtor.html')));
+app.get('/austin-str-friendly-neighborhoods', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-str-friendly-neighborhoods.html')));
+app.get('/brrrr-strategy-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/brrrr-strategy-austin.html')));
 app.get('/austin-buyers-or-sellers-market', (_req, res) => {
   try {
     res.set('Content-Type', 'text/html; charset=utf-8');
