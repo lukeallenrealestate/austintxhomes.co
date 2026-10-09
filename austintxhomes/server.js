@@ -1399,6 +1399,8 @@ app.get('/employer-relocation-austin', (_req, res) => res.sendFile(path.join(__d
 app.get('/divorce-realtor-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/divorce-realtor-austin.html')));
 app.get('/sell-home-during-divorce-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-home-during-divorce-austin.html')));
 app.get('/buying-home-after-divorce-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/buying-home-after-divorce-austin.html')));
+app.get('/spouse-buyout-refinance-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/spouse-buyout-refinance-austin.html')));
+app.get('/court-ordered-home-sale-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/court-ordered-home-sale-austin.html')));
 app.get('/austin-buyers-or-sellers-market', (_req, res) => {
   try {
     res.set('Content-Type', 'text/html; charset=utf-8');
