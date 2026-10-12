@@ -1409,6 +1409,10 @@ app.get('/texas-first-time-buyer-programs', (_req, res) => res.sendFile(path.joi
 app.get('/fha-loan-austin-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/fha-loan-austin-realtor.html')));
 app.get('/first-time-buyer-austin-neighborhoods', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/first-time-buyer-austin-neighborhoods.html')));
 app.get('/austin-down-payment-assistance', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-down-payment-assistance.html')));
+app.get('/austin-senior-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-senior-realtor.html')));
+app.get('/downsizing-realtor-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/downsizing-realtor-austin.html')));
+app.get('/55-plus-communities-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/55-plus-communities-austin.html')));
+app.get('/aging-in-place-renovation-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/aging-in-place-renovation-austin.html')));
 app.get('/austin-buyers-or-sellers-market', (_req, res) => {
   try {
     res.set('Content-Type', 'text/html; charset=utf-8');
