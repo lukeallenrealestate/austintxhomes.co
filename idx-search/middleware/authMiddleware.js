@@ -22,4 +22,29 @@ function requireAdmin(req, res, next) {
   });
 }
 
-module.exports = { requireAuth, requireAdmin };
+/**
+ * Server-to-server authentication for internal endpoints that expose
+ * MlgCanView=false listings, comp analysis, and other data that would
+ * violate MLS compliance if exposed publicly. Only Realtor-OS (and other
+ * server-side consumers Luke runs) should call these endpoints.
+ *
+ * Expects header: X-Internal-API-Key: <shared secret>
+ * The secret is INTERNAL_API_KEY in both idx-search's .env and Realtor-OS's
+ * Render env vars. Rotation is just: regenerate, update both sides.
+ *
+ * If INTERNAL_API_KEY is unset, this middleware refuses everything — fail
+ * closed, so a forgotten env var never leaks data to the public internet.
+ */
+function requireInternalKey(req, res, next) {
+  const configured = process.env.INTERNAL_API_KEY;
+  if (!configured) {
+    return res.status(503).json({ error: 'Internal API not configured on this server' });
+  }
+  const supplied = req.headers['x-internal-api-key'];
+  if (!supplied || supplied !== configured) {
+    return res.status(401).json({ error: 'Invalid internal API key' });
+  }
+  next();
+}
+
+module.exports = { requireAuth, requireAdmin, requireInternalKey };

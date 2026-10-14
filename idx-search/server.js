@@ -4,7 +4,11 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const cron = require('node-cron');
-const { syncListings, refreshPhotos } = require('./sync/mlsSync');
+const {
+  syncListings, refreshPhotos,
+  syncInvisibleActive, syncClosedResidential,
+  syncClosedLeases, syncClosedSales,
+} = require('./sync/mlsSync');
 const photoBackfill = require('./sync/photoBackfill');
 const { runAlertJob } = require('./services/alertJob');
 
@@ -49,6 +53,10 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/favorites', require('./routes/favorites'));
 app.use('/api/searches', require('./routes/searches'));
 app.use('/api/admin', require('./routes/admin'));
+// Internal API — server-to-server endpoints gated by X-Internal-API-Key.
+// Exposes MlgCanView=false listings + comp/market/deal queries that aren't
+// appropriate on the public site.
+app.use('/api/internal', require('./routes/internal'));
 
 // /api/listings is an alias for /api/properties/search that normalises
 // the param names used by the marketing-site pages:
@@ -300,6 +308,37 @@ cron.schedule('5 * * * *', () => {
 cron.schedule('30 * * * *', () => {
   runAlertJob().catch(console.error);
 });
+
+// Market-coverage syncs — fill in MlgCanView=false listings + closed Residential
+// comp pool. These power Realtor-OS deal-finder queries and are internal-only
+// (writers force mlg_can_view=0; public austintxhomes.co pages filter them out).
+// Invisible-Active runs once/day (full snapshot of ~2-5k rows), closed-Residential
+// runs twice/day (incremental via ModificationTimestamp cutoff).
+cron.schedule('45 2 * * *', () => {
+  console.log('[CRON] Nightly invisible-Active + closed-Residential comp sync...');
+  syncInvisibleActive().catch(console.error);
+});
+cron.schedule('15 */12 * * *', () => {
+  console.log('[CRON] Twice-daily closed-Residential comp sync...');
+  syncClosedResidential({ daysBack: 365 }).catch(console.error);
+});
+// Kick off once on startup if the DB hasn't seen an invisible-Active pass yet —
+// the quickest way to confirm the sync works and backfill into a fresh DB.
+setTimeout(() => {
+  const db = require('./db/database');
+  try {
+    const row = db.prepare(
+      `SELECT COUNT(*) AS n FROM listings WHERE mlg_can_view = 0 AND standard_status = 'Active'`
+    ).get();
+    if (!row || row.n < 50) {
+      console.log(`[STARTUP] Only ${row?.n || 0} invisible-Active rows; running backfill...`);
+      syncInvisibleActive().catch(console.error);
+      syncClosedResidential({ daysBack: 365 }).catch(console.error);
+    }
+  } catch (err) {
+    console.warn('[STARTUP] Invisible-Active count check failed:', err.message);
+  }
+}, 30_000);
 
 // Photo backfill scheduling lives inside photoBackfill.js itself, triggered by the
 // post-sync hook in mlsSync.js. We discovered that setInterval/setTimeout/cron from

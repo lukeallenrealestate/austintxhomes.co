@@ -618,4 +618,121 @@ async function syncClosedSales({ daysBack = 180 } = {}) {
   return grandTotal;
 }
 
-module.exports = { syncListings, refreshPhotos, syncClosedLeases, syncClosedSales };
+// ─── Market-analysis coverage: full ACTRIS snapshot ──────────────────────
+// The main sync filters MlgCanView=true at initial-import time, so listings
+// whose agents opted out of syndication never enter the DB (unless they later
+// get a modification touch that catches them in incremental). These two
+// functions close that gap so market-analysis queries from Realtor-OS see
+// the real inventory, not a syndication-only sample.
+//
+// Compliance: both writers call batchUpsertLeaseComps() which forces
+// mlg_can_view=0 on the row. Public austintxhomes.co pages filter on
+// mlg_can_view=1, so these invisible rows never render for site visitors.
+// They are reachable only through endpoints that require the INTERNAL_API_KEY.
+
+/**
+ * Snapshot every Active (sale OR lease) listing in ACTRIS, regardless of
+ * MlgCanView. Backfills the pool of listings that MlgCanView=true initial
+ * sync missed. Not timestamp-filtered — this is a periodic full snapshot of
+ * Active-only (bounded by the live inventory, roughly 10-20k rows).
+ */
+async function syncInvisibleActive() {
+  if (!TOKEN) {
+    console.warn('[INV-SYNC] No MLSGRID_ACCESS_TOKEN set — skipping');
+    return 0;
+  }
+  const filterParts = [
+    `OriginatingSystemName eq '${SYSTEM}'`,
+    `StandardStatus eq 'Active'`,
+    `MlgCanView eq false`,
+  ];
+  const filter = encodeURIComponent(filterParts.join(' and '));
+  let url = `${BASE_URL}/Property?$filter=${filter}&$expand=Media&$top=1000`;
+
+  let totalSynced = 0;
+  let pageCount = 0;
+  console.log('[INV-SYNC] Fetching all Active MlgCanView=false listings...');
+
+  while (url) {
+    try {
+      pageCount++;
+      console.log(`[INV-SYNC] Page ${pageCount}...`);
+      const data = await fetchPage(url);
+      const records = data.value || [];
+      if (!records.length) break;
+
+      const mapped = records.map(mapListing);
+      const TX_CHUNK = 100;
+      let pageSaved = 0;
+      for (let i = 0; i < mapped.length; i += TX_CHUNK) {
+        pageSaved += batchUpsertLeaseComps(mapped.slice(i, i + TX_CHUNK));
+        await new Promise(r => setImmediate(r));
+      }
+      totalSynced += pageSaved;
+      url = data['@odata.nextLink'] || null;
+    } catch (err) {
+      console.error(`[INV-SYNC] Error on page ${pageCount}:`, err.message);
+      break;
+    }
+  }
+  console.log(`[INV-SYNC] Done. Snapshot ${totalSynced} invisible Active listings (${pageCount} pages).`);
+  return totalSynced;
+}
+
+/**
+ * Sync closed Residential (SFR + condo) sales — the comp pool that
+ * market-analysis queries need. Mirrors syncClosedSales() for Residential
+ * Income / Commercial, but scoped to the PropertyType that covers
+ * owner-occupied homes and condos for sale. Bypasses MlgCanView: closed
+ * sales are comps, not display listings.
+ */
+async function syncClosedResidential({ daysBack = 365 } = {}) {
+  if (!TOKEN) {
+    console.warn('[RES-SYNC] No MLSGRID_ACCESS_TOKEN set — skipping');
+    return 0;
+  }
+  const cutoff = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000);
+  const cutoffTs = cutoff.toISOString();
+  const filterParts = [
+    `OriginatingSystemName eq '${SYSTEM}'`,
+    `PropertyType eq 'Residential'`,
+    `StandardStatus eq 'Closed'`,
+    `ModificationTimestamp gt ${cutoffTs}`,
+  ];
+  const filter = encodeURIComponent(filterParts.join(' and '));
+  let url = `${BASE_URL}/Property?$filter=${filter}&$top=1000`;
+
+  let totalSynced = 0;
+  let pageCount = 0;
+  console.log(`[RES-SYNC] Fetching closed Residential sales since ${cutoffTs}...`);
+
+  while (url) {
+    try {
+      pageCount++;
+      console.log(`[RES-SYNC] Page ${pageCount}...`);
+      const data = await fetchPage(url);
+      const records = data.value || [];
+      if (!records.length) break;
+
+      const mapped = records.map(mapListing);
+      const TX_CHUNK = 100;
+      let pageSaved = 0;
+      for (let i = 0; i < mapped.length; i += TX_CHUNK) {
+        pageSaved += batchUpsertLeaseComps(mapped.slice(i, i + TX_CHUNK));
+        await new Promise(r => setImmediate(r));
+      }
+      totalSynced += pageSaved;
+      url = data['@odata.nextLink'] || null;
+    } catch (err) {
+      console.error(`[RES-SYNC] Error on page ${pageCount}:`, err.message);
+      break;
+    }
+  }
+  console.log(`[RES-SYNC] Done. Synced ${totalSynced} closed Residential comps (${pageCount} pages).`);
+  return totalSynced;
+}
+
+module.exports = {
+  syncListings, refreshPhotos, syncClosedLeases, syncClosedSales,
+  syncInvisibleActive, syncClosedResidential,
+};
