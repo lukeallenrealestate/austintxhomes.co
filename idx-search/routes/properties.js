@@ -222,11 +222,25 @@ async function geocodeAddress(address) {
   } catch (_) { return null; }
 }
 
+// Public-facing endpoints must never surface Closed (sold) listings. Admin and
+// internal routes handle their own filtering and bypass this. Strip "Closed"
+// (case-insensitive) from any user-supplied status filter before it reaches the
+// WHERE clause. Returns null if nothing survives, so the caller falls through
+// to the default Active-only path.
+function sanitizePublicStatus(raw) {
+  if (!raw) return null;
+  const kept = String(raw)
+    .split(',')
+    .map(s => s.trim())
+    .filter(s => s && !/^closed$/i.test(s));
+  return kept.length ? kept.join(',') : null;
+}
+
 // Shared WHERE-clause builder v2 — mirrors /search logic so /map-bundle returns
 // identical result sets for pins and cards in a single pass.
 function buildSearchWhere(q) {
   const {
-    status, propertyType, subType, forRent,
+    propertyType, subType, forRent,
     minPrice, maxPrice, minBeds, maxBeds, minBaths,
     minSqft, maxSqft, minYear, maxYear,
     city, zip, neighborhood, schoolDistrict, keyword,
@@ -235,12 +249,14 @@ function buildSearchWhere(q) {
     nearLat, nearLng, radiusMi,
     north, south, east, west
   } = q;
+  const status = sanitizePublicStatus(q.status);
 
   // ACTRIS's mlg_can_view flag governs IDX visibility for active listings.
-  // Closed and Pending statuses (used for comps) frequently ship with the flag
-  // set to 0 in the raw feed, so requiring 1 zeroes out every sold-comp search.
-  // Only enforce the flag when the caller is asking for active-only.
-  const wantsCompStatuses = status && /Closed|Pending|Active Under Contract/i.test(status);
+  // Pending statuses (used for comps) frequently ship with the flag set to 0
+  // in the raw feed, so requiring 1 zeroes out those comp searches too. Only
+  // enforce the flag when the caller is asking for active-only. (Closed is
+  // stripped above for public callers; internal routes have their own handling.)
+  const wantsCompStatuses = status && /Pending|Active Under Contract/i.test(status);
   const conditions = ['latitude IS NOT NULL', 'longitude IS NOT NULL'];
   if (!wantsCompStatuses) conditions.unshift('mlg_can_view = 1');
   const values = [];
@@ -383,7 +399,7 @@ router.get('/_version', (_req, res) => {
 router.get('/search', async (req, res) => {
   try {
     const {
-      status, propertyType, subType, forRent,
+      propertyType, subType, forRent,
       minPrice, maxPrice, minBeds, maxBeds, minBaths,
       minSqft, maxSqft, minYear, maxYear,
       city, zip, neighborhood, schoolDistrict, keyword,
@@ -396,6 +412,9 @@ router.get('/search', async (req, res) => {
       // Polygon (JSON string of [{lat,lng},...])
       polygon
     } = req.query;
+    // Public endpoint: strip "Closed" from any user-supplied status filter.
+    // Admin and internal routes have their own handling and bypass this.
+    const status = sanitizePublicStatus(req.query.status);
 
     // If the caller passed a nearAddress, resolve it to lat/lng once here so
     // the WHERE builder and the post-filter share the same coordinates.
@@ -414,8 +433,8 @@ router.get('/search', async (req, res) => {
     }
 
     // Only enforce mlg_can_view for active-only searches — see buildSearchWhere
-    // for why closed/pending comps skip it.
-    const wantsCompStatuses = status && /Closed|Pending|Active Under Contract/i.test(status);
+    // for why pending comps skip it. (Closed is already stripped above.)
+    const wantsCompStatuses = status && /Pending|Active Under Contract/i.test(status);
     const conditions = ['latitude IS NOT NULL', 'longitude IS NOT NULL'];
     if (!wantsCompStatuses) conditions.unshift('mlg_can_view = 1');
     const values = [];
@@ -629,10 +648,12 @@ router.get('/search', async (req, res) => {
 // GET /api/properties/map-pins — lightweight for map rendering
 router.get('/map-pins', (req, res) => {
   try {
-    const { north, south, east, west, polygon, status, forRent, minPrice, maxPrice,
+    const { north, south, east, west, polygon, forRent, minPrice, maxPrice,
             minBeds, minBaths, propertyType, subType,
             city, zip, neighborhood, schoolDistrict,
             minSqft, maxSqft, minYear, maxYear, pool, waterfront, newConstruction, keyword } = req.query;
+    // Public endpoint: strip "Closed" from any user-supplied status filter.
+    const status = sanitizePublicStatus(req.query.status);
 
     const conditions = ['mlg_can_view = 1', 'latitude IS NOT NULL', 'longitude IS NOT NULL'];
     const values = [];
@@ -1367,6 +1388,13 @@ router.get('/:listingKey', (req, res) => {
   try {
     const row = db.prepare('SELECT * FROM listings WHERE listing_key = ?').get(req.params.listingKey);
     if (!row) return res.status(404).json({ error: 'Not found' });
+    // Public endpoint: hide Closed (sold) listings. Treat as not-found rather
+    // than returning a different code so direct URLs don't leak that the
+    // listing exists. Admin and internal routes serve closed listings
+    // through their own endpoints.
+    if (row.standard_status === 'Closed') {
+      return res.status(404).json({ error: 'Not found' });
+    }
     const photos = tryParse(row.photos, []);
     const r2Photos = tryParse(row.photos_r2, []);
     row.photos = resolvePhotos(photos, row.listing_key, r2Photos);
