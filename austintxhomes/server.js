@@ -1413,6 +1413,11 @@ app.get('/austin-senior-realtor', (_req, res) => res.sendFile(path.join(__dirnam
 app.get('/downsizing-realtor-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/downsizing-realtor-austin.html')));
 app.get('/55-plus-communities-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/55-plus-communities-austin.html')));
 app.get('/aging-in-place-renovation-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/aging-in-place-renovation-austin.html')));
+app.get('/austin-new-construction-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-new-construction-realtor.html')));
+app.get('/david-weekley-homes-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/david-weekley-homes-austin.html')));
+app.get('/taylor-morrison-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/taylor-morrison-austin.html')));
+app.get('/pulte-homes-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/pulte-homes-austin.html')));
+app.get('/new-build-negotiation-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/new-build-negotiation-austin.html')));
 app.get('/austin-buyers-or-sellers-market', (_req, res) => {
   try {
     res.set('Content-Type', 'text/html; charset=utf-8');
