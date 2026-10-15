@@ -53,7 +53,10 @@ const IDX_SERVER = `http://localhost:${PORT}`; // self-reference for internal HT
 const IDX_PUBLIC = path.join(__dirname, '../idx-search/public');
 
 // MLS sync + alert engine (merged — now runs in this process)
-const { syncListings, refreshPhotos, syncClosedLeases, syncClosedSales } = require('../idx-search/sync/mlsSync');
+const {
+  syncListings, refreshPhotos, syncClosedLeases, syncClosedSales,
+  syncInvisibleActive, syncClosedResidential,
+} = require('../idx-search/sync/mlsSync');
 const { runAlertJob } = require('../idx-search/services/alertJob');
 const r2Service = require('../idx-search/services/r2');
 // Ensure idx-search photo cache directory exists.
@@ -338,6 +341,36 @@ cron.schedule('30 7 * * *', () => {
   console.log('[SALES-SYNC] Daily closed sale comp sync...');
   syncClosedSales().catch(console.error);
 });
+
+// Full MLS coverage for Realtor-OS deal-finder — nightly at 2:45am CDT (7:45 UTC).
+// Pulls Active MlgCanView=false listings so apartments / condos whose agents
+// opted out of syndication still appear for tour planning + market analysis.
+// Writer forces mlg_can_view=0 so public search still hides them.
+cron.schedule('45 7 * * *', () => {
+  console.log('[INV-SYNC] Nightly invisible-Active snapshot...');
+  syncInvisibleActive().catch(console.error);
+});
+// Closed Residential comps — twice daily to keep the deal-finder comp pool fresh.
+cron.schedule('15 */12 * * *', () => {
+  console.log('[RES-SYNC] Closed Residential comp sync...');
+  syncClosedResidential({ daysBack: 365 }).catch(console.error);
+});
+// One-shot startup backfill if the invisible-Active pool is empty.
+setTimeout(() => {
+  try {
+    const db = require('../idx-search/db/database');
+    const row = db.prepare(
+      `SELECT COUNT(*) AS n FROM listings WHERE mlg_can_view = 0 AND standard_status = 'Active'`
+    ).get();
+    if (!row || row.n < 50) {
+      console.log(`[STARTUP] Only ${row?.n || 0} invisible-Active rows; running backfill...`);
+      syncInvisibleActive().catch(console.error);
+      syncClosedResidential({ daysBack: 365 }).catch(console.error);
+    }
+  } catch (err) {
+    console.warn('[STARTUP] Invisible-Active count check failed:', err.message);
+  }
+}, 60_000);
 
 // Bulk photo URL refresh — once per hour at :05.
 // MLS signed URLs expire in ~1 hour, so daily refresh left 22+ hours of stale
@@ -1045,6 +1078,11 @@ app.use('/api/searches',   require('../idx-search/routes/searches'));
 app.use('/api/admin',      require('../idx-search/routes/admin'));
 app.use('/api/admin-cms',  require('./routes/admin-cms'));
 app.use('/api/contact',    require('../idx-search/routes/contact'));
+// Internal API — server-to-server endpoints gated by X-Internal-API-Key.
+// Used by Realtor-OS for full MLS coverage (including MlgCanView=false
+// listings) plus comps / market stats / deal-finder queries. Public
+// austintxhomes.co pages never hit these. See idx-search/routes/internal.js.
+app.use('/api/internal',   require('../idx-search/routes/internal'));
 
 // /api/listings — alias for /api/properties/search used by marketing-site pages
 app.get('/api/listings', (req, res) => {
