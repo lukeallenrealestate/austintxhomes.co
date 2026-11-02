@@ -494,14 +494,18 @@ function generateGbpBlurb(data, rate, weekLabel) {
 // update. Same 1500-char GBP limit as the metro blurb. Each blurb ends with
 // a Learn More URL pointing at the highest-intent page for that ZIP; the
 // URL choice per ZIP was decided 2026-07-22 in the GBP-update plan.
+// Learn More URLs retired 2026-11-02: previously pointed at /sold-homes-near-{zip}
+// which displayed closed sale prices — a Texas MLS compliance violation. Replaced
+// with /homes-for-sale-in-{zip} (active inventory only). 78703 already pointed
+// at the realtor authority page and stays as-is.
 const ZIP_META = {
   '78701': {
     area:      'Downtown Austin (Rainey Street, 2nd Street District, Warehouse District)',
-    learnMore: 'https://austintxhomes.co/sold-homes-near-78701',
+    learnMore: 'https://austintxhomes.co/homes-for-sale-in-78701',
   },
   '78702': {
     area:      'East Austin (East Cesar Chavez, Holly, Chestnut, Govalle)',
-    learnMore: 'https://austintxhomes.co/sold-homes-near-78702',
+    learnMore: 'https://austintxhomes.co/homes-for-sale-in-78702',
   },
   '78703': {
     area:      'Central West Austin (Tarrytown, Clarksville, Old Enfield, Pemberton Heights)',
@@ -509,7 +513,7 @@ const ZIP_META = {
   },
   '78704': {
     area:      'South Austin (Bouldin Creek, Travis Heights, Zilker, Barton Hills)',
-    learnMore: 'https://austintxhomes.co/sold-homes-near-78704',
+    learnMore: 'https://austintxhomes.co/homes-for-sale-in-78704',
   },
 };
 

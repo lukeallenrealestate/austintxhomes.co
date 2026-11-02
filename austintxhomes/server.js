@@ -447,11 +447,8 @@ cron.schedule('0 8 * * 1', async () => {
     const urls = [
       'https://austintxhomes.co/',
       'https://austintxhomes.co/austin-homebuyer-report-2026-q3',
-      'https://austintxhomes.co/sold-homes-austin',
       'https://austintxhomes.co/homes-for-sale-austin',
-      ...Object.keys(azm).map(z => `https://austintxhomes.co/sold-homes-near-${z}`),
       ...Object.keys(azm).map(z => `https://austintxhomes.co/homes-for-sale-in-${z}`),
-      ...Object.keys(nm).map(s  => `https://austintxhomes.co/sold-homes-in-${s}`),
       ...Object.keys(nrc).map(s => `https://austintxhomes.co/${s}-realtor`),
       'https://austintxhomes.co/sienna-at-the-thompson-austin',
       'https://austintxhomes.co/solomon-austin-apartments',
@@ -1791,14 +1788,17 @@ app.get('/sitemap-index.xml', (_req, res) => {
 });
 
 // ── Programmatic SEO: live-market landing pages ────────────────────────────
-// Three variants share the same template (templates/market-page.js):
-//   /sold-homes-near-{zip}                    30 pages, sold comps by ZIP
-//   /sold-homes-in-{neighborhood-slug}        10 pages, sold comps by hood
-//   /homes-for-sale-in-{zip}                  30 pages, active inventory by ZIP
-// All pull live from ACTRIS with a 30-min in-process cache in market-stats.js.
+// Active-only. The /sold-homes-* variants were retired 2026-11-02 because
+// displaying closed sale prices to the public is a Texas MLS compliance
+// violation; the three sold-homes patterns below now 301-redirect to their
+// active-inventory equivalents. Access to closed data remains available
+// through the authenticated /api/internal/* comp endpoints.
+//   /sold-homes-near-{zip}            → 301 → /homes-for-sale-in-{zip}
+//   /sold-homes-in-{slug}             → 301 → /{slug}-realtor (or hub)
+//   /sold-homes-austin                → 301 → /homes-for-sale-austin
+//   /homes-for-sale-in-{zip}          Live, active inventory only
 const {
-  renderSoldByZip, renderSoldByNeighborhood, renderActiveByZip,
-  AUSTIN_ZIP_META, NEIGHBORHOOD_META,
+  renderActiveByZip, AUSTIN_ZIP_META, NEIGHBORHOOD_META,
 } = require('./templates/market-page');
 
 function serveMarketPage(html, res) {
@@ -1812,8 +1812,12 @@ function serveMarketPage(html, res) {
   res.send(html);
 }
 
-app.get('/sold-homes-near-:zip(\\d{5})',            (req, res) => serveMarketPage(renderSoldByZip(req.params.zip),                res));
-app.get('/sold-homes-in-:slug([a-z][a-z0-9-]{2,40})', (req, res) => serveMarketPage(renderSoldByNeighborhood(req.params.slug),      res));
+// Compliance retirements: never serve closed sale prices publicly.
+app.get('/sold-homes-near-:zip(\\d{5})', (req, res) =>
+  res.redirect(301, `/homes-for-sale-in-${req.params.zip}`));
+app.get('/sold-homes-in-:slug([a-z][a-z0-9-]{2,40})', (req, res) =>
+  res.redirect(301, `/${req.params.slug}-realtor`));
+
 app.get('/homes-for-sale-in-:zip(\\d{5})',          (req, res) => serveMarketPage(renderActiveByZip(req.params.zip),               res));
 
 // IndexNow: hosts the ownership-proof key file that Bing checks before
@@ -1834,11 +1838,8 @@ app.post('/api/indexnow/ping', express.json(), async (req, res) => {
     urls = [
       'https://austintxhomes.co/',
       'https://austintxhomes.co/austin-homebuyer-report-2026-q3',
-      'https://austintxhomes.co/sold-homes-austin',
       'https://austintxhomes.co/homes-for-sale-austin',
-      ...Object.keys(AUSTIN_ZIP_META).map(z => `https://austintxhomes.co/sold-homes-near-${z}`),
       ...Object.keys(AUSTIN_ZIP_META).map(z => `https://austintxhomes.co/homes-for-sale-in-${z}`),
-      ...Object.keys(NEIGHBORHOOD_META).map(s => `https://austintxhomes.co/sold-homes-in-${s}`),
       ...Object.keys(require('./data/neighborhood-realtor-content')).map(s => `https://austintxhomes.co/${s}-realtor`),
       'https://austintxhomes.co/sienna-at-the-thompson-austin',
       'https://austintxhomes.co/solomon-austin-apartments',
@@ -1853,58 +1854,10 @@ app.post('/api/indexnow/ping', express.json(), async (req, res) => {
   res.json(result);
 });
 
-// Hub: /sold-homes-austin — links every sold-comp page (by ZIP + hood).
-app.get('/sold-homes-austin', (_req, res) => {
-  const zipRows = Object.entries(AUSTIN_ZIP_META).map(([zip, meta]) =>
-    `<li><a href="/sold-homes-near-${zip}"><strong>${zip}</strong> · ${meta.name}</a><span>${meta.note}</span></li>`
-  ).join('');
-  const hoodRows = Object.entries(NEIGHBORHOOD_META).map(([slug, meta]) =>
-    `<li><a href="/sold-homes-in-${slug}"><strong>${meta.name}</strong></a><span>${meta.note}</span></li>`
-  ).join('');
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, max-age=3600');
-  res.send(`<!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Recently Sold Homes in Austin, TX by ZIP | Luke Allen Realtor</title>
-<meta name="description" content="Live sold home data for every major Austin ZIP: 78701 through 78759. Median close price, days on market, sale-to-list ratio. Pulled weekly from ACTRIS MLS.">
-<link rel="canonical" href="https://austintxhomes.co/sold-homes-austin">
-<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96"><link rel="apple-touch-icon" href="/favicon-96.png">
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
-<meta name="geo.region" content="US-TX"><meta name="geo.placename" content="Austin, Texas">
-<meta property="og:type" content="website"><meta property="og:title" content="Recently Sold Homes in Austin, TX by ZIP"><meta property="og:url" content="https://austintxhomes.co/sold-homes-austin"><meta property="og:image" content="https://austintxhomes.co/images/luke-allen.jpg">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap">
-<style>
-:root{--gold:#b8935a;--ink:#0f0f0e;--text:#1a1918;--mid:#5c5b57;--warm:#faf8f4;--border:#e5dfd4}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',system-ui,sans-serif;color:var(--text);line-height:1.65}
-.hero{background:var(--ink);color:#fff;padding:100px 2rem 60px;text-align:center}
-.hero .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#cda96f;margin-bottom:18px;font-weight:600}
-.hero h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(2.4rem,5vw,3.6rem);font-weight:400;margin-bottom:14px}
-.hero h1 em{font-style:italic;color:#cda96f}
-.hero p{max-width:640px;margin:0 auto;color:rgba(255,255,255,.75);font-weight:300}
-.wrap{max-width:1080px;margin:0 auto;padding:56px 2rem}
-ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
-li{background:var(--warm);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:4px;padding:16px 20px}
-li a{display:block;color:var(--gold);text-decoration:none;font-size:15px;margin-bottom:4px}
-li strong{color:var(--ink);font-weight:600}
-li span{display:block;font-size:12.5px;color:var(--mid);line-height:1.5}
-</style></head><body>
-<script src="/js/nav.js" defer></script>
-<section class="hero">
-  <div class="eyebrow">Live MLS Data · Every Austin Submarket</div>
-  <h1>Recently <em>Sold Homes</em> in Austin</h1>
-  <p>Median close price, days on market, and sale-to-list ratio for every major Austin ZIP and neighborhood, updated live from ACTRIS MLS.</p>
-</section>
-<div class="wrap">
-  <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:1.6rem;margin-bottom:14px;color:#1a1918;">By ZIP Code</h2>
-  <ul>${zipRows}</ul>
-  <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:1.6rem;margin:32px 0 14px;color:#1a1918;">By Neighborhood</h2>
-  <ul>${hoodRows}</ul>
-</div>
-<script src="/js/footer.js" defer></script>
-</body></html>`);
-});
+// Retired 2026-11-02 for Texas MLS compliance (closed sale prices cannot be
+// disclosed publicly). 301 redirect preserves link equity and sends anyone
+// landing here to the active-listings hub instead.
+app.get('/sold-homes-austin', (_req, res) => res.redirect(301, '/homes-for-sale-austin'));
 
 // Hub: /homes-for-sale-austin — active-listing companion to /sold-homes-austin.
 app.get('/homes-for-sale-austin', (_req, res) => {
