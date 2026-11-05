@@ -50,6 +50,19 @@ async function loadSavedSearches() {
 
     document.getElementById('searches-loading').style.display = 'none';
 
+    // Deep link from alert email: /account.html#search=<id>. If the hash
+    // names a search this user owns, bounce them straight into the
+    // running search view instead of making them click through the list.
+    const hash = (window.location.hash || '').match(/^#search=(\d+)/);
+    if (hash) {
+      const wanted = Number(hash[1]);
+      const target = searches.find(s => s.id === wanted);
+      if (target) {
+        window.location.replace('/search?' + filtersToQuery(target.filters));
+        return;
+      }
+    }
+
     if (!searches.length) {
       document.getElementById('searches-empty').style.display = 'block';
       return;

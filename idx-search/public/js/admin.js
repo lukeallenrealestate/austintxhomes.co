@@ -96,7 +96,10 @@ async function loadUsers() {
 
     tbody.innerHTML = users.map(u => `
       <tr>
-        <td><strong>${esc(u.name)}</strong></td>
+        <td>
+          <strong>${esc(u.name)}</strong>
+          ${u.status === 'pending' ? '<span class="status-pending-badge">Pending</span>' : ''}
+        </td>
         <td>${esc(u.email)}</td>
         <td>${u.phone ? esc(u.phone) : '—'}</td>
         <td>${formatDate(u.created_at)}</td>
@@ -104,6 +107,11 @@ async function loadUsers() {
         <td style="text-align:center;">${u.favorite_count}</td>
         <td style="text-align:center;">${u.search_count}</td>
         <td>
+          ${u.status === 'pending' ? `
+            <button class="btn btn-outline" style="font-size:12px;padding:4px 10px;margin-right:4px;" onclick="resendInvite(${u.id})">Resend invite</button>
+            <button class="btn btn-outline" style="font-size:12px;padding:4px 10px;margin-right:4px;" onclick="copyActivationLink('${esc(u.activationUrl || '')}')">Copy link</button>
+          ` : ''}
+          <button class="btn btn-outline" style="font-size:12px;padding:4px 10px;" onclick="buildForExistingClient(${u.id}, ${JSON.stringify(u.name).replace(/"/g,'&quot;')})">Build search</button>
           <button class="expand-user-btn" onclick="toggleUserDetail(${u.id}, this)">View ▾</button>
         </td>
       </tr>
@@ -232,3 +240,203 @@ function timeSince(date) {
 function esc(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
+
+// ─── Build-for-client modal ────────────────────────────────────
+let bfcTab = 'crm';
+let bfcSelected = null;      // { id, name, email, phone } from CRM pick
+let bfcCrmConfigured = null; // null=unknown, true=CRM online, false=not configured
+let bfcQueryDebounce = null;
+
+function openBuildForClientModal() {
+  bfcSelected = null;
+  document.getElementById('bfc-error').style.display = 'none';
+  document.getElementById('bfc-crm-query').value = '';
+  document.getElementById('bfc-crm-results').innerHTML = '';
+  document.getElementById('bfc-new-name').value = '';
+  document.getElementById('bfc-new-email').value = '';
+  document.getElementById('bfc-new-phone').value = '';
+  document.getElementById('bfc-new-sendinvite').checked = true;
+  switchBfcTab('crm');
+  document.getElementById('build-for-client-modal').classList.add('open');
+  // Initial load — empty query returns a short list of recent contacts
+  // (or triggers the "not configured" message if the env isn't set).
+  loadBfcCrmResults('');
+  setTimeout(() => document.getElementById('bfc-crm-query')?.focus(), 50);
+}
+
+function closeBuildForClientModal() {
+  document.getElementById('build-for-client-modal').classList.remove('open');
+}
+
+function switchBfcTab(tab) {
+  bfcTab = tab;
+  document.getElementById('bfc-tab-crm').classList.toggle('active', tab === 'crm');
+  document.getElementById('bfc-tab-new').classList.toggle('active', tab === 'new');
+  document.getElementById('bfc-crm-panel').style.display = tab === 'crm' ? '' : 'none';
+  document.getElementById('bfc-new-panel').style.display = tab === 'new' ? '' : 'none';
+  document.getElementById('bfc-error').style.display = 'none';
+}
+
+async function loadBfcCrmResults(query) {
+  const statusEl = document.getElementById('bfc-crm-status');
+  const resultsEl = document.getElementById('bfc-crm-results');
+  statusEl.textContent = 'Searching...';
+  resultsEl.innerHTML = '';
+  try {
+    const res = await Auth.apiFetch('/api/admin/crm/contacts?q=' + encodeURIComponent(query));
+    if (!res?.ok) { statusEl.textContent = 'Could not reach Realtor-OS.'; return; }
+    const data = await res.json();
+    bfcCrmConfigured = !!data.configured;
+
+    if (!data.configured) {
+      statusEl.innerHTML = 'Realtor-OS isn\'t connected yet. Switch to <a href="#" onclick="switchBfcTab(\'new\');return false;" style="color:var(--blue);">Create new</a> to enter a client manually.';
+      return;
+    }
+    if (data.error) {
+      statusEl.textContent = 'Realtor-OS error: ' + data.error;
+      return;
+    }
+    if (!data.contacts.length) {
+      statusEl.textContent = query ? 'No contacts match that search.' : 'No contacts yet in Realtor-OS.';
+      return;
+    }
+    statusEl.textContent = `${data.contacts.length} contact${data.contacts.length !== 1 ? 's' : ''}`;
+    resultsEl.innerHTML = data.contacts.map(c => `
+      <div class="bfc-crm-result" data-id="${esc(c.id)}" data-name="${esc(c.name || '')}" data-email="${esc(c.email || '')}" data-phone="${esc(c.phone || '')}"
+           onclick="selectBfcCrmResult(this)">
+        <div style="flex:1;min-width:0;">
+          <div class="bfc-name">${esc(c.name || '(no name)')}</div>
+          <div class="bfc-meta">${esc(c.email || '')}${c.phone ? ' · ' + esc(c.phone) : ''}</div>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    statusEl.textContent = 'Something went wrong: ' + err.message;
+  }
+}
+
+function selectBfcCrmResult(el) {
+  document.querySelectorAll('.bfc-crm-result.selected').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  bfcSelected = {
+    id: el.dataset.id,
+    name: el.dataset.name,
+    email: el.dataset.email,
+    phone: el.dataset.phone
+  };
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const q = document.getElementById('bfc-crm-query');
+  q?.addEventListener('input', () => {
+    clearTimeout(bfcQueryDebounce);
+    bfcQueryDebounce = setTimeout(() => loadBfcCrmResults(q.value.trim()), 220);
+  });
+  document.getElementById('build-for-client-modal')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('build-for-client-modal')) closeBuildForClientModal();
+  });
+});
+
+async function submitBuildForClient() {
+  const errEl = document.getElementById('bfc-error');
+  errEl.style.display = 'none';
+
+  let payload;
+  if (bfcTab === 'crm') {
+    if (!bfcSelected) { errEl.textContent = 'Pick a contact first, or switch to Create new.'; errEl.style.display = 'block'; return; }
+    if (!bfcSelected.email) { errEl.textContent = 'This Realtor-OS contact has no email on file. Add one in CRM first.'; errEl.style.display = 'block'; return; }
+    payload = {
+      name: bfcSelected.name || 'Client',
+      email: bfcSelected.email,
+      phone: bfcSelected.phone || null,
+      crmContactId: bfcSelected.id,
+      sendInvite: true
+    };
+  } else {
+    const name = document.getElementById('bfc-new-name').value.trim();
+    const email = document.getElementById('bfc-new-email').value.trim();
+    const phone = document.getElementById('bfc-new-phone').value.trim();
+    const sendInvite = document.getElementById('bfc-new-sendinvite').checked;
+    if (!name || !email) { errEl.textContent = 'Name and email are required.'; errEl.style.display = 'block'; return; }
+    payload = { name, email, phone, sendInvite };
+  }
+
+  const btn = document.getElementById('bfc-submit');
+  const originalText = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Saving...';
+
+  try {
+    const res = await Auth.apiFetch('/api/admin/clients', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    if (!res?.ok) {
+      const j = await res.json().catch(() => ({}));
+      errEl.textContent = j.error || `Failed (${res?.status || 'network'})`;
+      errEl.style.display = 'block';
+      return;
+    }
+    const data = await res.json();
+    // Hand off to the search page in build-for-client mode. The banner
+    // over there reads these params and the Save Search button posts to
+    // /api/admin/clients/:userId/searches instead of the normal path.
+    const params = new URLSearchParams({
+      building_for: String(data.user.id),
+      client_name: data.user.name || '',
+      client_email: data.user.email || ''
+    });
+    window.location.href = '/?' + params.toString();
+  } catch (err) {
+    errEl.textContent = 'Something went wrong: ' + err.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = originalText;
+  }
+}
+
+async function resendInvite(userId) {
+  try {
+    const res = await Auth.apiFetch(`/api/admin/clients/${userId}/resend-invite`, { method: 'POST' });
+    if (!res?.ok) {
+      const j = await res.json().catch(() => ({}));
+      showToast(j.error || 'Failed to resend', 'error');
+      return;
+    }
+    const data = await res.json();
+    showToast(data.sent ? 'Invite resent' : 'Link regenerated (email not configured)', 'success');
+    loadUsers();
+  } catch {
+    showToast('Failed to resend', 'error');
+  }
+}
+
+function copyActivationLink(url) {
+  if (!url) { showToast('No activation link available', 'error'); return; }
+  navigator.clipboard?.writeText(url);
+  showToast('Activation link copied', 'success');
+}
+
+function buildForExistingClient(userId, clientName) {
+  const params = new URLSearchParams({
+    building_for: String(userId),
+    client_name: clientName || ''
+  });
+  window.location.href = '/?' + params.toString();
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.className = `toast ${type || ''} visible`;
+  setTimeout(() => t.classList.remove('visible'), 3000);
+}
+
+window.openBuildForClientModal = openBuildForClientModal;
+window.closeBuildForClientModal = closeBuildForClientModal;
+window.switchBfcTab = switchBfcTab;
+window.selectBfcCrmResult = selectBfcCrmResult;
+window.submitBuildForClient = submitBuildForClient;
+window.resendInvite = resendInvite;
+window.copyActivationLink = copyActivationLink;
+window.buildForExistingClient = buildForExistingClient;

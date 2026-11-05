@@ -26,9 +26,12 @@
   </div>
 
   <div id="admin-main" style="display:none;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;">
       <h1 style="font-size:28px;font-weight:800;">Admin Dashboard</h1>
-      <div style="display:flex;align-items:center;gap:12px;">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="openBuildForClientModal()">
+          <span style="margin-right:4px;">+</span> Build search for client
+        </button>
         <div class="sync-badge">
           <div class="sync-dot"></div>
           <span id="sync-status-text">Checking sync...</span>
@@ -77,6 +80,87 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ─── Build Search For Client modal ─────────────────────────── -->
+<div class="modal-overlay" id="build-for-client-modal">
+  <div class="modal" style="max-width:520px;">
+    <button class="modal-close" onclick="closeBuildForClientModal()">&times;</button>
+    <h2>Build a search for a client</h2>
+    <p class="modal-subtitle" style="margin-top:4px;">
+      Pick a contact from Realtor-OS or create a new one. On save we'll create a pending
+      account, email them an activation link, and open the search page in build-for-client mode.
+    </p>
+
+    <!-- Tabs -->
+    <div class="bfc-tabs" style="display:flex;gap:4px;margin:16px 0 12px;border-bottom:1px solid var(--border);">
+      <button class="bfc-tab active" id="bfc-tab-crm" type="button" onclick="switchBfcTab('crm')">From CRM</button>
+      <button class="bfc-tab" id="bfc-tab-new" type="button" onclick="switchBfcTab('new')">Create new</button>
+    </div>
+
+    <!-- CRM picker -->
+    <div id="bfc-crm-panel">
+      <div class="form-group">
+        <input type="text" id="bfc-crm-query" placeholder="Search name, email, or phone..." autocomplete="off" />
+      </div>
+      <div id="bfc-crm-status" style="font-size:13px;color:var(--text-light);margin-bottom:8px;"></div>
+      <div id="bfc-crm-results" style="max-height:260px;overflow:auto;border:1px solid var(--border);border-radius:var(--radius);"></div>
+    </div>
+
+    <!-- New client form -->
+    <div id="bfc-new-panel" style="display:none;">
+      <div class="form-group">
+        <label>Full name</label>
+        <input type="text" id="bfc-new-name" placeholder="e.g. Jane Smith" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="bfc-new-email" placeholder="jane@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Phone <span style="color:var(--text-light);font-weight:400;">(optional)</span></label>
+        <input type="tel" id="bfc-new-phone" placeholder="(512) 555-1234" />
+      </div>
+      <label class="alert-toggle-row" style="margin-top:4px;">
+        <div>
+          <div style="font-weight:600;font-size:14px;">Email them the activation link now</div>
+          <div style="font-size:12px;color:var(--text-light);margin-top:2px;">They'll click a link to set their password and view the search.</div>
+        </div>
+        <input type="checkbox" id="bfc-new-sendinvite" class="alert-toggle-checkbox" checked />
+        <span class="alert-toggle-track"></span>
+      </label>
+    </div>
+
+    <div id="bfc-error" style="color:#b91c1c;font-size:13px;margin-top:10px;display:none;"></div>
+
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn btn-outline" style="flex:1;" onclick="closeBuildForClientModal()">Cancel</button>
+      <button class="btn btn-primary" style="flex:2;justify-content:center;" id="bfc-submit" onclick="submitBuildForClient()">Continue to search &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bfc-tab {
+    background: none; border: none; cursor: pointer;
+    padding: 10px 14px; font-weight: 600; color: var(--text-light);
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .bfc-tab.active { color: var(--text); border-bottom-color: var(--blue, #1877F2); }
+  .bfc-crm-result {
+    padding: 10px 12px; border-bottom: 1px solid var(--border);
+    cursor: pointer; display: flex; align-items: center; gap: 10px;
+  }
+  .bfc-crm-result:last-child { border-bottom: none; }
+  .bfc-crm-result:hover { background: var(--bg, #f8fafc); }
+  .bfc-crm-result.selected { background: #eef4ff; }
+  .bfc-crm-result .bfc-name { font-weight: 600; font-size: 14px; }
+  .bfc-crm-result .bfc-meta { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+  .status-pending-badge {
+    display:inline-block; background:#fef3c7; color:#92400e;
+    font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;
+    text-transform:uppercase; letter-spacing:.04em; margin-left:6px;
+  }
+</style>
 
 <script src="/js/auth.js"></script>
 <script src="/js/admin.js"></script>

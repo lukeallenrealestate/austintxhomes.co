@@ -256,7 +256,32 @@ const migrations = [
      VALUES ('delete', OLD.rowid, OLD.unparsed_address, OLD.city, OLD.postal_code, OLD.subdivision_name, OLD.school_district);
      INSERT INTO listings_fts(rowid, unparsed_address, city, postal_code, subdivision_name, school_district)
      VALUES (NEW.rowid, NEW.unparsed_address, NEW.city, NEW.postal_code, NEW.subdivision_name, NEW.school_district);
-   END`
+   END`,
+
+  // Admin-created client accounts: Luke builds a search for a prospect
+  // inside /admin.html before they've ever signed up. We write the user
+  // row immediately (so saved_searches can reference user_id), mark it
+  // status='pending' so login + registration refuse to touch it, and
+  // hand the client an activation link that takes a password and flips
+  // the row to 'active'. password stays empty-string until activation.
+  //   status: 'active' (default — public signup) | 'pending' (needs activation) | 'disabled'
+  //   activation_token: random 32-byte hex, consumed on activate, nulled after
+  //   activation_expires: 30-day TTL — a fresh invite regenerates the token
+  //   created_by_user_id: admin who invited this client. Powers alert BCC.
+  //   crm_contact_id: Realtor-OS contact ID so the two systems stay linked.
+  `ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'active'`,
+  `ALTER TABLE users ADD COLUMN activation_token TEXT`,
+  `ALTER TABLE users ADD COLUMN activation_expires DATETIME`,
+  `ALTER TABLE users ADD COLUMN created_by_user_id INTEGER`,
+  `ALTER TABLE users ADD COLUMN crm_contact_id TEXT`,
+  `CREATE INDEX IF NOT EXISTS idx_users_activation ON users(activation_token)`,
+  `CREATE INDEX IF NOT EXISTS idx_users_status ON users(status)`,
+
+  // Which admin built this saved search? Non-null iff the search was
+  // created via /admin.html "Build search for client" — the alert job
+  // uses this to BCC the admin on every notification so Luke sees
+  // exactly what each client gets emailed.
+  `ALTER TABLE saved_searches ADD COLUMN created_by_user_id INTEGER`
 ];
 migrations.forEach(sql => { try { db.exec(sql); } catch {} });
 

@@ -266,6 +266,11 @@ app.post('/api/admin/refresh-photos', async (req, res) => {
   res.json({ message: 'Photo refresh started in background' });
 });
 
+// Clean URL for the activation page (/activate?token=...)
+app.get('/activate', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'activate.html'));
+});
+
 // SPA fallback
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

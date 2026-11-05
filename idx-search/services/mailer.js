@@ -39,7 +39,7 @@ function alertSite(filters) {
   };
 }
 
-async function sendNewListingsAlert({ to, searchName, filters, listings }) {
+async function sendNewListingsAlert({ to, bcc, searchName, filters, listings, savedSearchId, clientName }) {
   const fromName = process.env.EMAIL_FROM_NAME || 'Luke Allen';
   const fromEmail = process.env.EMAIL_FROM || process.env.EMAIL_USER;
   const site = alertSite(filters);
@@ -87,6 +87,18 @@ async function sendNewListingsAlert({ to, searchName, filters, listings }) {
   const more = listings.length > 10
     ? `<p style="text-align:center;color:#6b7280;font-size:13px;">+ ${listings.length - 10} more new listings matching your search</p>` : '';
 
+  // Primary CTA: deep-link into the client's saved-search view when we
+  // know its id. The account page reads #search=<id> and auto-opens
+  // that search's results. Falls back to the browse page otherwise.
+  const ctaUrl = savedSearchId
+    ? `${siteUrl}/account.html#search=${savedSearchId}`
+    : `${siteUrl}${site.browse}`;
+  const ctaLabel = savedSearchId ? 'See your saved search' : 'View all homes';
+
+  const greeting = clientName
+    ? `Hi ${escHtml(clientName.split(' ')[0])},`
+    : 'Hi there!';
+
   const html = `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:600px;margin:0 auto;background:#fff;">
       <div style="background:${accent};padding:24px 32px;">
@@ -95,13 +107,16 @@ async function sendNewListingsAlert({ to, searchName, filters, listings }) {
       </div>
       <div style="padding:24px 32px;">
         <p style="color:#374151;margin:0 0 16px;">
-          Hi there! We found <strong>${listings.length} new listing${listings.length !== 1 ? 's' : ''}</strong> matching your saved search.
+          ${greeting} We found <strong>${listings.length} new listing${listings.length !== 1 ? 's' : ''}</strong> matching your saved search.
         </p>
         <table width="100%" cellpadding="0" cellspacing="0">${listingRows}</table>
         ${more}
         <div style="margin-top:24px;text-align:center;">
-          <a href="${siteUrl}${site.browse}" style="display:inline-block;padding:12px 28px;background:${accent};color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">View all homes</a>
+          <a href="${ctaUrl}" style="display:inline-block;padding:14px 32px;background:${accent};color:#fff;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;">${ctaLabel}</a>
         </div>
+        <p style="margin:18px 0 0;text-align:center;color:#9ca3af;font-size:12px;">
+          You'll be asked to log in. Haven't finished setting up your account yet? The link in your welcome email still works.
+        </p>
       </div>
       <div style="background:#f9fafb;padding:16px 32px;border-top:1px solid #e5e7eb;font-size:12px;color:#9ca3af;text-align:center;">
         You're receiving this because you saved a search on ${escHtml(site.name)}.<br/>
@@ -109,10 +124,63 @@ async function sendNewListingsAlert({ to, searchName, filters, listings }) {
       </div>
     </div>`;
 
-  await transporter.sendMail({
+  const mailOpts = {
     from: `"${fromName}" <${fromEmail}>`,
     to,
     subject: `${listings.length} new listing${listings.length !== 1 ? 's' : ''} for "${searchName}"`,
+    html
+  };
+  if (bcc) mailOpts.bcc = bcc;
+  await transporter.sendMail(mailOpts);
+}
+
+// ─── Activation invite ──────────────────────────────────────────
+// Sent when Luke sets up a client in /admin.html. Explains that their
+// account is already created and they just need to pick a password to
+// view the saved search he built for them.
+async function sendActivationInvite({ to, clientName, inviterName, activationUrl }) {
+  const fromName = process.env.EMAIL_FROM_NAME || 'Luke Allen';
+  const fromEmail = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+  const accent = '#b8935a';
+  const first = (clientName || '').split(' ')[0] || 'there';
+  const inviter = inviterName || 'Luke';
+
+  const html = `
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:560px;margin:0 auto;background:#fff;">
+      <div style="background:${accent};padding:28px 32px;">
+        <h1 style="color:#fff;margin:0;font-size:22px;">Your Austin TX Homes account is ready</h1>
+      </div>
+      <div style="padding:28px 32px;color:#374151;">
+        <p style="margin:0 0 14px;font-size:16px;">Hi ${escHtml(first)},</p>
+        <p style="margin:0 0 14px;">
+          ${escHtml(inviter)} already set up your Austin TX Homes account and built a saved
+          home search tailored to what you're looking for. You just need to create a password
+          to view it and start getting new-listing alerts the moment they hit the market.
+        </p>
+        <div style="margin:24px 0;text-align:center;">
+          <a href="${activationUrl}" style="display:inline-block;padding:14px 32px;background:${accent};color:#fff;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;">Create your password &amp; view your search</a>
+        </div>
+        <p style="margin:0 0 6px;font-size:13px;color:#6b7280;">
+          Or paste this link into your browser:<br/>
+          <span style="word-break:break-all;color:#6b7280;">${activationUrl}</span>
+        </p>
+        <p style="margin:18px 0 0;font-size:13px;color:#6b7280;">
+          This link is good for 30 days. If it expires, reply to this email and I'll send a new one.
+        </p>
+        <p style="margin:18px 0 0;font-size:14px;">
+          Looking forward to helping you find the right home.<br/>
+          ${escHtml(inviter)}
+        </p>
+      </div>
+      <div style="background:#f9fafb;padding:16px 32px;border-top:1px solid #e5e7eb;font-size:12px;color:#9ca3af;text-align:center;">
+        ${fromName} &middot; <a href="mailto:${fromEmail}" style="color:#9ca3af;">${fromEmail}</a>
+      </div>
+    </div>`;
+
+  await transporter.sendMail({
+    from: `"${fromName}" <${fromEmail}>`,
+    to,
+    subject: `Your Austin TX Homes account is ready. Just set a password.`,
     html
   });
 }
@@ -134,4 +202,4 @@ async function sendMail({ to, subject, html, text }) {
   });
 }
 
-module.exports = { sendNewListingsAlert, sendMail };
+module.exports = { sendNewListingsAlert, sendActivationInvite, sendMail };

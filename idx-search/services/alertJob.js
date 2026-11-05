@@ -96,12 +96,23 @@ const recordSent = db.prepare(
 async function runAlertJob() {
   if (!process.env.EMAIL_HOST) return; // Email not configured, skip
 
+  // Admin-created searches carry created_by_user_id on the saved_search
+  // row. We join to that admin's user row to pick up the BCC address so
+  // Luke sees every alert his clients get. For public-signup searches
+  // created_by_user_id is NULL and admin_email comes back NULL -> no BCC.
+  // Pending clients (status='pending') don't get alerts yet — they
+  // haven't activated their email as a legit recipient.
   const searches = db.prepare(`
     SELECT ss.id, ss.name, ss.filters, ss.last_alerted_at,
-           u.email, u.name AS full_name
+           ss.created_by_user_id,
+           u.email, u.name AS full_name, u.status,
+           admin.email AS admin_email
     FROM saved_searches ss
     JOIN users u ON u.id = ss.user_id
-    WHERE ss.alert_enabled = 1 AND u.email IS NOT NULL
+    LEFT JOIN users admin ON admin.id = ss.created_by_user_id AND admin.role = 'admin'
+    WHERE ss.alert_enabled = 1
+      AND u.email IS NOT NULL
+      AND u.status = 'active'
   `).all();
 
   if (!searches.length) return;
@@ -161,9 +172,12 @@ async function runAlertJob() {
 
       await sendNewListingsAlert({
         to: search.email,
+        bcc: search.admin_email || null,
         searchName: search.name,
         filters,
-        listings: emailListings
+        listings: emailListings,
+        savedSearchId: search.id,
+        clientName: search.full_name
       });
 
       // Record every listing we sent so we don't re-send unless its price
@@ -180,7 +194,8 @@ async function runAlertJob() {
 
       const newCount = emailListings.filter(l => l.reason === 'new').length;
       const dropCount = emailListings.filter(l => l.reason === 'price_drop').length;
-      console.log(`[ALERTS] Sent ${emailListings.length} to ${search.email} for "${search.name}" (${newCount} new, ${dropCount} price drops)`);
+      const bccNote = search.admin_email ? ` [bcc:${search.admin_email}]` : '';
+      console.log(`[ALERTS] Sent ${emailListings.length} to ${search.email}${bccNote} for "${search.name}" (${newCount} new, ${dropCount} price drops)`);
     } catch (err) {
       console.error(`[ALERTS] Failed for search ${search.id}:`, err.message);
     }

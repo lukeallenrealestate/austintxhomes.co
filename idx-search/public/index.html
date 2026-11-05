@@ -54,6 +54,16 @@
 </head>
 <body>
 
+<!-- Build-for-client banner: shown when ?building_for=<userId> is in the URL -->
+<div id="building-for-banner" style="display:none;background:#1f2937;color:#fff;padding:12px 20px;font-size:14px;z-index:1000;position:sticky;top:0;">
+  <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <span style="background:#b8935a;color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;">Admin mode</span>
+    <span>Building a saved search for <strong id="building-for-name">client</strong>.</span>
+    <span style="color:#9ca3af;font-size:13px;" id="building-for-email"></span>
+    <a href="/admin.html" style="margin-left:auto;color:#fff;text-decoration:underline;font-size:13px;">Cancel &amp; back to admin</a>
+  </div>
+</div>
+
 <!-- HEADER -->
 <header class="header">
   <a href="https://austintxhomes.co" class="header-logo"><img src="/images/logo.png" alt="AustinTXHomes — Luke Allen" /></a>
@@ -428,21 +438,21 @@
 <div class="modal-overlay" id="save-search-modal">
   <div class="modal">
     <button class="modal-close" onclick="document.getElementById('save-search-modal').classList.remove('open')">×</button>
-    <h2>Save This Search</h2>
-    <p class="modal-subtitle">Give this search a name to easily find it later</p>
+    <h2 id="save-search-title">Save This Search</h2>
+    <p class="modal-subtitle" id="save-search-subtitle">Give this search a name to easily find it later</p>
     <div class="form-group">
       <label>Search Name</label>
       <input type="text" id="search-name-input" placeholder="e.g. 3BR homes in South Austin under $600k" />
     </div>
-    <label class="alert-toggle-row">
+    <label class="alert-toggle-row" id="save-search-alert-row">
       <div>
-        <div style="font-weight:600;font-size:14px;">Email me new listings</div>
-        <div style="font-size:12px;color:var(--text-light);margin-top:2px;">Get notified when new homes match this search</div>
+        <div style="font-weight:600;font-size:14px;" id="save-search-alert-label">Email me new listings</div>
+        <div style="font-size:12px;color:var(--text-light);margin-top:2px;" id="save-search-alert-sub">Get notified when new homes match this search</div>
       </div>
       <input type="checkbox" id="alert-enabled-input" class="alert-toggle-checkbox" />
       <span class="alert-toggle-track"></span>
     </label>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;" onclick="confirmSaveSearch()">Save Search</button>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;" onclick="confirmSaveSearch()" id="save-search-submit">Save Search</button>
   </div>
 </div>
 

@@ -2035,8 +2035,58 @@ function switchView(view) {
   }
 }
 
+// ---- Build-for-client mode ----
+// When /admin.html sends Luke here with ?building_for=<userId>, we show
+// a top banner, change the Save Search modal copy, and route the save
+// to /api/admin/clients/:userId/searches (which flags the search as
+// admin-created so the alert job BCCs Luke).
+function getBuildingForContext() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('building_for');
+  if (!id) return null;
+  return {
+    userId: Number(id),
+    clientName: params.get('client_name') || 'client',
+    clientEmail: params.get('client_email') || ''
+  };
+}
+
+function initBuildingForBanner() {
+  const ctx = getBuildingForContext();
+  if (!ctx) return;
+  // Only admins can be in this mode.
+  if (!Auth.isLoggedIn() || !Auth.isAdmin()) return;
+  const banner = document.getElementById('building-for-banner');
+  if (banner) {
+    document.getElementById('building-for-name').textContent = ctx.clientName;
+    const emailEl = document.getElementById('building-for-email');
+    if (emailEl) emailEl.textContent = ctx.clientEmail ? '(' + ctx.clientEmail + ')' : '';
+    banner.style.display = 'block';
+  }
+}
+document.addEventListener('DOMContentLoaded', initBuildingForBanner);
+
 // ---- Save Search ----
 function saveSearch() {
+  const ctx = getBuildingForContext();
+
+  if (ctx && Auth.isAdmin()) {
+    // Building for a client: skip the public-signup prompt. The modal
+    // copy changes to reflect that this saves TO the client's account.
+    const title = document.getElementById('save-search-title');
+    const sub = document.getElementById('save-search-subtitle');
+    const label = document.getElementById('save-search-alert-label');
+    const altSub = document.getElementById('save-search-alert-sub');
+    if (title) title.textContent = `Save this search for ${ctx.clientName}`;
+    if (sub) sub.textContent = `We'll save it to ${ctx.clientName}'s account. You'll be BCC'd on every alert email they get.`;
+    if (label) label.textContent = `Email ${ctx.clientName.split(' ')[0]} when new listings match`;
+    if (altSub) altSub.textContent = 'On by default for client searches. You\'re BCC\'d.';
+    const alertInput = document.getElementById('alert-enabled-input');
+    if (alertInput) alertInput.checked = true;
+    document.getElementById('save-search-modal').classList.add('open');
+    return;
+  }
+
   if (!Auth.isLoggedIn()) {
     openAuthModal('signup');
     return;
@@ -2053,8 +2103,13 @@ async function confirmSaveSearch() {
   const originalText = btn?.textContent;
   if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
 
+  const ctx = getBuildingForContext();
+  const endpoint = (ctx && Auth.isAdmin())
+    ? `/api/admin/clients/${ctx.userId}/searches`
+    : '/api/searches';
+
   try {
-    const res = await Auth.apiFetch('/api/searches', {
+    const res = await Auth.apiFetch(endpoint, {
       method: 'POST',
       body: JSON.stringify({ name, filters: currentFilters, alert_enabled })
     });
@@ -2072,7 +2127,13 @@ async function confirmSaveSearch() {
     document.getElementById('save-search-modal').classList.remove('open');
     document.getElementById('search-name-input').value = '';
     if (document.getElementById('alert-enabled-input')) document.getElementById('alert-enabled-input').checked = false;
-    showToast(alert_enabled ? 'Search saved! You\'ll get email alerts for new listings.' : 'Search saved!', 'success');
+
+    if (ctx && Auth.isAdmin()) {
+      showToast(`Search saved to ${ctx.clientName}'s account. Redirecting to admin...`, 'success');
+      setTimeout(() => { window.location.href = '/admin.html'; }, 1400);
+    } else {
+      showToast(alert_enabled ? 'Search saved! You\'ll get email alerts for new listings.' : 'Search saved!', 'success');
+    }
   } catch (err) {
     console.error('[saveSearch] exception', err);
     showToast('Failed to save search: ' + (err?.message || 'network error'), 'error');

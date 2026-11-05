@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const db = require('../db/database');
 const { requireAuth } = require('../middleware/authMiddleware');
 
@@ -24,8 +25,20 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 8 characters' });
     }
 
-    const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email.toLowerCase());
-    if (existing) return res.status(409).json({ error: 'Email already registered' });
+    const existing = db.prepare('SELECT id, status, activation_token FROM users WHERE email = ?').get(email.toLowerCase());
+    if (existing) {
+      // If this email was already set up by the admin ("pending") and
+      // never activated, don't let the public signup clobber it — point
+      // the person at the activation flow instead. The invite email they
+      // received carries the token; if they lost it, Luke can resend.
+      if (existing.status === 'pending') {
+        return res.status(409).json({
+          error: 'This email was already set up for you by Luke. Check your inbox for the activation link, or ask Luke to resend it.',
+          needsActivation: true
+        });
+      }
+      return res.status(409).json({ error: 'Email already registered' });
+    }
 
     const hashed = await bcrypt.hash(password, 12);
     const adminEmail = process.env.ADMIN_EMAIL || '';
@@ -74,6 +87,21 @@ router.post('/login', async (req, res) => {
     const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email.toLowerCase());
     if (!user) return res.status(401).json({ error: 'Invalid email or password' });
 
+    // Admin-created accounts live as status='pending' until the client
+    // visits the activation link and creates a password. A pending row
+    // has an empty password hash (bcrypt would still fail-close here,
+    // but a dedicated 403 lets the UI route them to /activate).
+    if (user.status === 'pending') {
+      return res.status(403).json({
+        error: 'Luke set up your account but you haven\'t finished signing up yet. Check your email for the activation link, or ask Luke to resend it.',
+        needsActivation: true,
+        email: user.email
+      });
+    }
+    if (user.status === 'disabled') {
+      return res.status(403).json({ error: 'This account is disabled. Contact Luke if this is a mistake.' });
+    }
+
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ error: 'Invalid email or password' });
 
@@ -121,8 +149,98 @@ router.post('/change-password', requireAuth, async (req, res) => {
   }
 });
 
+// ─── Account activation ──────────────────────────────────────────
+// GET /api/auth/activate/:token — look up a pending invite so the
+// activation page can show the client's name, who invited them, and
+// which saved search is waiting. Returns 410 if the token is expired
+// or already consumed.
+router.get('/activate/:token', (req, res) => {
+  const row = db.prepare(`
+    SELECT u.id, u.email, u.name, u.phone, u.status, u.activation_expires,
+           u.created_by_user_id,
+           inviter.name AS invited_by_name
+    FROM users u
+    LEFT JOIN users inviter ON inviter.id = u.created_by_user_id
+    WHERE u.activation_token = ?
+  `).get(req.params.token);
+
+  if (!row) return res.status(404).json({ error: 'This activation link is invalid or has already been used.' });
+  if (row.status !== 'pending') {
+    return res.status(410).json({ error: 'This account has already been activated. Please log in.' });
+  }
+  if (row.activation_expires && new Date(row.activation_expires) < new Date()) {
+    return res.status(410).json({ error: 'This activation link has expired. Ask Luke to send a new one.' });
+  }
+
+  // Which saved search(es) were set up for them?
+  const searches = db.prepare(`
+    SELECT id, name, filters
+    FROM saved_searches WHERE user_id = ? ORDER BY created_at DESC
+  `).all(row.id).map(s => ({ ...s, filters: tryParseJson(s.filters, {}) }));
+
+  res.json({
+    email: row.email,
+    name: row.name,
+    phone: row.phone,
+    invitedBy: row.invited_by_name || 'Luke Allen',
+    searches
+  });
+});
+
+// POST /api/auth/activate/:token — client submits a password. Flips the
+// account to active, hashes the password, clears the token, and returns
+// a JWT so the page can log them in and redirect to their saved search.
+router.post('/activate/:token', async (req, res) => {
+  try {
+    const { password, name, phone } = req.body || {};
+    if (!password || password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    const row = db.prepare(`SELECT * FROM users WHERE activation_token = ?`).get(req.params.token);
+    if (!row) return res.status(404).json({ error: 'This activation link is invalid or has already been used.' });
+    if (row.status !== 'pending') {
+      return res.status(410).json({ error: 'This account has already been activated. Please log in.' });
+    }
+    if (row.activation_expires && new Date(row.activation_expires) < new Date()) {
+      return res.status(410).json({ error: 'This activation link has expired. Ask Luke to send a new one.' });
+    }
+
+    const hashed = await bcrypt.hash(password, 12);
+    db.prepare(`
+      UPDATE users SET
+        password = ?,
+        status = 'active',
+        activation_token = NULL,
+        activation_expires = NULL,
+        name = COALESCE(NULLIF(?, ''), name),
+        phone = COALESCE(NULLIF(?, ''), phone),
+        last_login = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(hashed, name || '', phone || '', row.id);
+
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id);
+    const search = db.prepare(
+      `SELECT id FROM saved_searches WHERE user_id = ? ORDER BY created_at DESC LIMIT 1`
+    ).get(user.id);
+
+    res.json({
+      token: signToken(user),
+      user: safeUser(user),
+      savedSearchId: search ? search.id : null
+    });
+  } catch (err) {
+    console.error('[AUTH] activate failed:', err.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+function tryParseJson(s, fallback) {
+  try { return JSON.parse(s); } catch { return fallback; }
+}
+
 function safeUser(u) {
-  const { password, ...safe } = u;
+  const { password, activation_token, ...safe } = u;
   return safe;
 }
 
