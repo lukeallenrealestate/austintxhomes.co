@@ -1693,7 +1693,10 @@ async function renderFilterOutlines() {
     window._outlineDebug.stage = 'fetching';
     window._outlineDebug.url = url;
     const r = await fetch(url);
-    const list = await r.json();
+    const rawText = await r.text();
+    window._outlineDebug.rawTextLen = rawText.length;
+    window._outlineDebug.rawSample = rawText.slice(0, 200);
+    const list = JSON.parse(rawText);
     window._outlineDebug.stage = 'fetched';
     window._outlineDebug.listLen = list.length;
     window._outlineDebug.hasGeoms = list.map(x => !!x.geometry);
