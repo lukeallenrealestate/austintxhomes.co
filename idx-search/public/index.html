@@ -54,8 +54,10 @@
 </head>
 <body>
 
-<!-- Build-for-client banner: shown when ?building_for=<userId> is in the URL -->
-<div id="building-for-banner" style="display:none;background:#1f2937;color:#fff;padding:12px 20px;font-size:14px;z-index:1000;position:sticky;top:0;">
+<!-- Build-for-client banner: shown when ?building_for=<userId> is in the URL.
+     Fixed to the viewport top so the header + filter-bar can be pushed down
+     below it via the body.admin-mode CSS overrides directly below. -->
+<div id="building-for-banner" style="display:none;background:#1f2937;color:#fff;padding:12px 20px;font-size:14px;z-index:2000;position:fixed;top:0;left:0;right:0;">
   <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
     <span style="background:#b8935a;color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;">Admin mode</span>
     <span>Building a saved search for <strong id="building-for-name">client</strong>.</span>
@@ -63,6 +65,19 @@
     <a href="/admin.html" style="margin-left:auto;color:#fff;text-decoration:underline;font-size:13px;">Cancel &amp; back to admin</a>
   </div>
 </div>
+<style>
+  /* When the banner is visible (body.admin-mode toggled on by app.js), shift
+     every top-anchored chunk of the search UI down by --banner-h so the
+     banner doesn't cover the search bar, filter bar, or sticky results-count.
+     --banner-h is set by initBuildingForBanner() after it measures the live
+     banner height (accounts for wrap on narrow viewports). */
+  :root { --banner-h: 0px; }
+  body.admin-mode .header         { top: var(--banner-h) !important; }
+  body.admin-mode .filter-bar     { top: calc(var(--header-h) + var(--banner-h)) !important; }
+  body.admin-mode .main           { padding-top: calc(var(--header-h) + var(--filter-h) + var(--banner-h)) !important; }
+  body.admin-mode .filter-dropdown{ top: calc(var(--header-h) + var(--filter-h) + var(--banner-h)) !important; }
+  body.admin-mode .view-controls  { top: calc(var(--header-h) + var(--filter-h) + var(--banner-h)) !important; }
+</style>
 
 <!-- HEADER -->
 <header class="header">

@@ -1004,8 +1004,16 @@ function renderFilterChips() {
   if (f.newConstruction === 'true') chips.push({ label: 'New Construction', key: 'newConstruction' });
   if (f.culDeSac === 'true')        chips.push({ label: 'Cul-de-sac',       key: 'culDeSac' });
   if (f.forRent === 'true')         chips.push({ label: 'For Rent',         key: 'forRent' });
-  if (f.city)         chips.push({ label: 'City: ' + f.city.split(',')[0], key: 'city' });
-  if (f.zip)          chips.push({ label: 'ZIP: ' + f.zip.split(',')[0],    key: 'zip' });
+  // One chip per city / zip so the user can see every stacked value AND
+  // remove them one at a time. Composite keys ("zip:78722", "city:Austin")
+  // are handled below in removeFilterChip to strip the single value out
+  // of the comma-separated list.
+  if (f.city) f.city.split(',').map(c => c.trim()).filter(Boolean).forEach(c =>
+    chips.push({ label: 'City: ' + c, key: 'city:' + c })
+  );
+  if (f.zip) f.zip.split(',').map(z => z.trim()).filter(Boolean).forEach(z =>
+    chips.push({ label: 'ZIP: ' + z, key: 'zip:' + z })
+  );
   if (f.neighborhood) chips.push({ label: f.neighborhood, key: 'neighborhood' });
   if (f.keyword)      chips.push({ label: '"' + f.keyword + '"', key: 'keyword' });
 
@@ -1068,6 +1076,15 @@ function removeFilterChip(key) {
   } else if (key === 'forRent') {
     currentFilters.forRent = 'false';
     document.querySelectorAll('.filter-toggle button').forEach(b => b.classList.toggle('active', b.dataset.type === 'buy'));
+  } else if (key.startsWith('city:') || key.startsWith('zip:')) {
+    // Composite key removes a single stacked value: city:Austin or
+    // zip:78722. Falls back to deleting the whole filter when the last
+    // value is pulled.
+    const [field, val] = [key.split(':')[0], key.slice(key.indexOf(':') + 1)];
+    const remaining = (currentFilters[field] || '').split(',')
+      .map(s => s.trim()).filter(Boolean).filter(x => x !== val);
+    if (remaining.length) currentFilters[field] = remaining.join(',');
+    else delete currentFilters[field];
   } else if (key === 'city' || key === 'zip' || key === 'neighborhood' || key === 'keyword') {
     delete currentFilters[key];
     const input = document.getElementById('location-search');
@@ -1402,15 +1419,26 @@ function setupAutocomplete() {
       hideAutocomplete();
       const q = input.value.trim();
       if (q) {
-        delete currentFilters.keyword;
-        delete currentFilters.city;
-        delete currentFilters.zip;
-        delete currentFilters.neighborhood;
-        delete currentFilters.schoolDistrict;
-        // Detect zip (5 digits) or city-like input to route to proper filter
-        if (/^\d{5}$/.test(q)) {
-          currentFilters.zip = q;
+        const isZip = /^\d{5}$/.test(q);
+        if (isZip) {
+          // Append to the existing ZIP list (dedup). Other location types
+          // clear so the two don't compete — you can't filter by city AND
+          // zip simultaneously in this UI. Input clears so the next Enter
+          // adds another ZIP without the user having to delete the prior.
+          const existing = (currentFilters.zip || '').split(',').map(s => s.trim()).filter(Boolean);
+          if (!existing.includes(q)) existing.push(q);
+          delete currentFilters.keyword;
+          delete currentFilters.city;
+          delete currentFilters.neighborhood;
+          delete currentFilters.schoolDistrict;
+          currentFilters.zip = existing.join(',');
+          input.value = '';
         } else {
+          delete currentFilters.keyword;
+          delete currentFilters.city;
+          delete currentFilters.zip;
+          delete currentFilters.neighborhood;
+          delete currentFilters.schoolDistrict;
           currentFilters.keyword = q;
         }
         currentPage = 1;
@@ -1485,13 +1513,29 @@ function hideAutocomplete() {
 }
 
 async function selectAutocomplete(type, value, listingKey) {
-  document.getElementById('location-search').value = value;
+  const searchInput = document.getElementById('location-search');
+  // For stackable types (city, zip) we clear the input so the user can
+  // immediately type the next one. Non-stackable types keep the selected
+  // label visible in the input, matching the pre-existing single-select UX.
+  if (type === 'city' || type === 'zip') searchInput.value = '';
+  else searchInput.value = value;
   hideAutocomplete();
 
   if (type === 'address' && listingKey) {
     window.location.href = `/homes/${listingKey}`;
     return;
   }
+
+  // For city + zip, APPEND to the existing comma-separated list (dedup)
+  // so the user can stack e.g. 78722 + 78731 + 78703 in a single search.
+  // Other location filter types are mutually exclusive and clear.
+  const appendCsv = (existing, v) => {
+    const arr = (existing || '').split(',').map(s => s.trim()).filter(Boolean);
+    if (!arr.includes(v)) arr.push(v);
+    return arr.join(',');
+  };
+  const nextCity = type === 'city' ? appendCsv(currentFilters.city, value) : null;
+  const nextZip  = type === 'zip'  ? appendCsv(currentFilters.zip,  value) : null;
 
   // Clear location filters and previous map bounds
   delete currentFilters.keyword;
@@ -1505,8 +1549,8 @@ async function selectAutocomplete(type, value, listingKey) {
   delete currentFilters.west;
   delete currentFilters.polygon;
 
-  if (type === 'city') currentFilters.city = value;
-  else if (type === 'zip') currentFilters.zip = value;
+  if (type === 'city') currentFilters.city = nextCity;
+  else if (type === 'zip') currentFilters.zip = nextZip;
   else if (type === 'school') currentFilters.schoolDistrict = value;
   else if (type === 'neighborhood') {
     // Try to fetch a real boundary polygon from OpenStreetMap
@@ -2069,12 +2113,24 @@ function initBuildingForBanner() {
   // Only admins can be in this mode.
   if (!Auth.isLoggedIn() || !Auth.isAdmin()) return;
   const banner = document.getElementById('building-for-banner');
-  if (banner) {
-    document.getElementById('building-for-name').textContent = ctx.clientName;
-    const emailEl = document.getElementById('building-for-email');
-    if (emailEl) emailEl.textContent = ctx.clientEmail ? '(' + ctx.clientEmail + ')' : '';
-    banner.style.display = 'block';
-  }
+  if (!banner) return;
+  document.getElementById('building-for-name').textContent = ctx.clientName;
+  const emailEl = document.getElementById('building-for-email');
+  if (emailEl) emailEl.textContent = ctx.clientEmail ? '(' + ctx.clientEmail + ')' : '';
+  banner.style.display = 'block';
+
+  // Push the whole fixed/sticky layout down by the banner's measured height
+  // (so it covers nothing). The CSS in index.html keys off body.admin-mode
+  // + --banner-h, so set both and the layout cascades.
+  const applyBannerHeight = () => {
+    const h = banner.offsetHeight || 44;
+    document.documentElement.style.setProperty('--banner-h', h + 'px');
+  };
+  document.body.classList.add('admin-mode');
+  applyBannerHeight();
+  // Re-measure on resize because the banner can wrap on narrow viewports
+  // and change height.
+  window.addEventListener('resize', applyBannerHeight);
 }
 document.addEventListener('DOMContentLoaded', initBuildingForBanner);
 
