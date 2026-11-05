@@ -208,21 +208,40 @@ router.post('/clients', async (req, res) => {
       : null;
 
     // Send the activation email on fresh invites + resends. Never on an
-    // already-active user (we didn't change anything).
-    if (sendInvite && user.status === 'pending' && process.env.EMAIL_HOST) {
-      sendActivationInvite({
-        to: user.email,
-        clientName: user.name,
-        inviterName: req.user.name || 'Luke Allen',
-        activationUrl
-      }).catch(e => console.warn('[AUTH] activation email failed:', e.message));
+    // already-active user (we didn't change anything). Awaited so the
+    // admin UI knows whether to show "Email sent" vs "Email failed — use
+    // the Copy Link button". Previously this was fire-and-forget which
+    // bit us on lallenncaa@gmail.com: SMTP silently rejected or Gmail
+    // routed it to spam and Luke had no signal either way.
+    let emailSent = false;
+    let emailError = null;
+    if (sendInvite && user.status === 'pending') {
+      if (!process.env.EMAIL_HOST) {
+        emailError = 'Email not configured on this server';
+      } else {
+        try {
+          await sendActivationInvite({
+            to: user.email,
+            clientName: user.name,
+            inviterName: req.user.name || 'Luke Allen',
+            activationUrl
+          });
+          emailSent = true;
+          console.log(`[AUTH] activation email sent to ${user.email}`);
+        } catch (e) {
+          emailError = e.message || 'Unknown email error';
+          console.warn(`[AUTH] activation email to ${user.email} failed:`, emailError);
+        }
+      }
     }
 
     res.json({
       user: safeUser(user),
       activationUrl,
       resent,
-      invited: sendInvite && user.status === 'pending'
+      invited: sendInvite && user.status === 'pending',
+      emailSent,
+      emailError
     });
   } catch (err) {
     console.error('[ADMIN] create client failed:', err.message);
@@ -274,16 +293,27 @@ router.post('/clients/:userId/resend-invite', async (req, res) => {
   const siteUrl = (process.env.SITE_URL || 'http://localhost:3000').replace(/\/+$/, '');
   const activationUrl = `${siteUrl}/activate?token=${token}`;
 
-  if (process.env.EMAIL_HOST) {
-    sendActivationInvite({
-      to: row.email,
-      clientName: row.name,
-      inviterName: req.user.name || 'Luke Allen',
-      activationUrl
-    }).catch(e => console.warn('[AUTH] resend activation email failed:', e.message));
+  let emailSent = false;
+  let emailError = null;
+  if (!process.env.EMAIL_HOST) {
+    emailError = 'Email not configured on this server';
+  } else {
+    try {
+      await sendActivationInvite({
+        to: row.email,
+        clientName: row.name,
+        inviterName: req.user.name || 'Luke Allen',
+        activationUrl
+      });
+      emailSent = true;
+      console.log(`[AUTH] resend activation email sent to ${row.email}`);
+    } catch (e) {
+      emailError = e.message || 'Unknown email error';
+      console.warn(`[AUTH] resend activation email to ${row.email} failed:`, emailError);
+    }
   }
 
-  res.json({ activationUrl, sent: !!process.env.EMAIL_HOST });
+  res.json({ activationUrl, sent: emailSent, emailError });
 });
 
 function safeUser(u) {

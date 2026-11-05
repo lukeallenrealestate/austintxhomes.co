@@ -377,6 +377,18 @@ async function submitBuildForClient() {
       return;
     }
     const data = await res.json();
+
+    // If this was a fresh invite and the email delivery failed, do NOT
+    // silently redirect - Luke needs to know so he can copy/paste the
+    // activation link to the client manually. Show the link inline with
+    // a one-click copy, and a "Continue anyway" button. If the email
+    // sent successfully (or the admin opted out of invite), proceed to
+    // the search page immediately.
+    if (data.invited && !data.emailSent) {
+      showEmailFailureFallback(data);
+      return;
+    }
+
     // Hand off to the search page in build-for-client mode. The banner
     // over there reads these params and the Save Search button posts to
     // /api/admin/clients/:userId/searches instead of the normal path.
@@ -407,11 +419,55 @@ async function resendInvite(userId) {
       return;
     }
     const data = await res.json();
-    showToast(data.sent ? 'Invite resent' : 'Link regenerated (email not configured)', 'success');
+    if (data.sent) {
+      showToast('Invite resent (check inbox + spam folder)', 'success');
+    } else {
+      // Server generated a fresh token but couldn't deliver the email -
+      // surface the link so Luke can paste it directly to the client.
+      showEmailFailureFallback({
+        user: { id: userId, email: '' },
+        activationUrl: data.activationUrl,
+        emailError: data.emailError || 'Email delivery failed'
+      });
+    }
     loadUsers();
   } catch {
     showToast('Failed to resend', 'error');
   }
+}
+
+// Renders a prominent card in the Build-for-client modal when the
+// invite email could not be delivered. Shows the activation URL with a
+// one-click copy, the specific error, and a Continue button that
+// proceeds to the search page so the admin can still build the search.
+function showEmailFailureFallback(data) {
+  const errEl = document.getElementById('bfc-error');
+  const u = data.user || {};
+  errEl.innerHTML = `
+    <div style="background:#fef3c7;border:1px solid #fcd34d;color:#92400e;padding:12px;border-radius:6px;text-align:left;">
+      <div style="font-weight:700;margin-bottom:6px;">Client created, but the activation email didn't send</div>
+      <div style="font-size:12px;margin-bottom:10px;">${esc(data.emailError || 'Unknown delivery error')}. Copy the link below and send it to ${esc(u.email || 'the client')} yourself.</div>
+      <div style="display:flex;gap:6px;align-items:center;background:#fff;border:1px solid #e5e7eb;border-radius:4px;padding:8px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;word-break:break-all;">
+        <span style="flex:1;">${esc(data.activationUrl || '')}</span>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button class="btn btn-outline" style="font-size:12px;padding:6px 10px;flex:1;" onclick="copyActivationLink('${esc(data.activationUrl || '').replace(/'/g, "\\'")}')">Copy link</button>
+        <button class="btn btn-primary" style="font-size:12px;padding:6px 10px;flex:2;justify-content:center;" onclick="continueAfterEmailFailure(${u.id}, '${esc(u.name || '').replace(/'/g, "\\'")}', '${esc(u.email || '').replace(/'/g, "\\'")}')">Continue to search &rarr;</button>
+      </div>
+    </div>
+  `;
+  errEl.style.display = 'block';
+  const btn = document.getElementById('bfc-submit');
+  if (btn) { btn.disabled = false; btn.textContent = 'Continue to search →'; }
+}
+
+function continueAfterEmailFailure(userId, clientName, clientEmail) {
+  const params = new URLSearchParams({
+    building_for: String(userId),
+    client_name: clientName || '',
+    client_email: clientEmail || ''
+  });
+  window.location.href = '/search?' + params.toString();
 }
 
 function copyActivationLink(url) {
@@ -444,3 +500,4 @@ window.submitBuildForClient = submitBuildForClient;
 window.resendInvite = resendInvite;
 window.copyActivationLink = copyActivationLink;
 window.buildForExistingClient = buildForExistingClient;
+window.continueAfterEmailFailure = continueAfterEmailFailure;

@@ -1028,6 +1028,85 @@ router.get('/neighborhood-boundary', async (req, res) => {
   }
 });
 
+// GET /api/properties/zip-boundary?zip=78722,78731 — returns an array of
+// GeoJSON geometries, one per zip (nulls where no boundary was found).
+// Cached in process memory indefinitely since ZIP boundaries don't change.
+// Used by app.js to draw outlined zip overlays on the map search view
+// without touching the filter state (the filter stays postal_code IN()).
+const zipBoundaryCache = new Map();
+router.get('/zip-boundary', async (req, res) => {
+  const raw = (req.query.zip || '').trim();
+  if (!raw) return res.json([]);
+  const zips = raw.split(',').map(s => s.trim()).filter(z => /^\d{5}$/.test(z));
+  if (!zips.length) return res.json([]);
+
+  const results = await Promise.all(zips.map(async zip => {
+    if (zipBoundaryCache.has(zip)) return { zip, geometry: zipBoundaryCache.get(zip) };
+    try {
+      // Nominatim structured query — postalcode + country filter returns
+      // the ZIP boundary relation when one exists for that code.
+      const url = 'https://nominatim.openstreetmap.org/search?' +
+        'postalcode=' + encodeURIComponent(zip) +
+        '&country=us' +
+        '&format=geojson&polygon_geojson=1&limit=1';
+      const r = await fetch(url, {
+        headers: { 'User-Agent': 'austintxhomes.co/1.0 (Luke@austinmdg.com)' }
+      });
+      const data = await r.json();
+      const feature = data.features?.find(f =>
+        f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon'
+      );
+      const geom = feature?.geometry || null;
+      zipBoundaryCache.set(zip, geom);
+      return { zip, geometry: geom };
+    } catch (e) {
+      zipBoundaryCache.set(zip, null);
+      return { zip, geometry: null };
+    }
+  }));
+
+  res.set('Cache-Control', 'public, max-age=86400');
+  res.json(results);
+});
+
+// GET /api/properties/city-boundary?city=Austin,Pflugerville — array of
+// {city, geometry}. Same pattern as zip-boundary, using Nominatim's city
+// + state + country structured query.
+const cityBoundaryCache = new Map();
+router.get('/city-boundary', async (req, res) => {
+  const raw = (req.query.city || '').trim();
+  if (!raw) return res.json([]);
+  const cities = raw.split(',').map(s => s.trim()).filter(Boolean);
+  if (!cities.length) return res.json([]);
+
+  const results = await Promise.all(cities.map(async city => {
+    const key = city.toLowerCase();
+    if (cityBoundaryCache.has(key)) return { city, geometry: cityBoundaryCache.get(key) };
+    try {
+      const url = 'https://nominatim.openstreetmap.org/search?' +
+        'city=' + encodeURIComponent(city) +
+        '&state=texas&country=us' +
+        '&format=geojson&polygon_geojson=1&limit=1';
+      const r = await fetch(url, {
+        headers: { 'User-Agent': 'austintxhomes.co/1.0 (Luke@austinmdg.com)' }
+      });
+      const data = await r.json();
+      const feature = data.features?.find(f =>
+        f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon'
+      );
+      const geom = feature?.geometry || null;
+      cityBoundaryCache.set(key, geom);
+      return { city, geometry: geom };
+    } catch (e) {
+      cityBoundaryCache.set(key, null);
+      return { city, geometry: null };
+    }
+  }));
+
+  res.set('Cache-Control', 'public, max-age=86400');
+  res.json(results);
+});
+
 // GET /api/properties/cash-flowing — active Austin listings whose PITI < best nearby closed lease rent
 
 // Live 30-yr fixed rate — fetched from MortgageNewsDaily, cached 4 hours

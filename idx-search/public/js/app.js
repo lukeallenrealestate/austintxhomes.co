@@ -1635,6 +1635,78 @@ function drawNeighborhoodPolygon(geometry) {
   return true;
 }
 
+// ─── Filter outlines on the map ───────────────────────────────
+// When a zip or city filter is active and the user flips to map view,
+// we fetch the boundary geometry from OSM via /api/properties/{zip,city}-boundary
+// and draw a non-interactive outlined overlay so the user can see what
+// area the filter actually spans. These overlays are VISUAL ONLY and
+// never touch currentFilters.polygon (which is reserved for freehand
+// drawings + neighborhood polygons that drive postal_code-independent
+// filtering). Zip/city filtering stays via the existing IN (?) list.
+let filterOutlines = [];
+let _outlineKey = '';
+function clearFilterOutlines() {
+  filterOutlines.forEach(p => p.setMap(null));
+  filterOutlines = [];
+}
+function drawFilterOutlineFromGeometry(geometry) {
+  if (!geometry || !googleMap) return null;
+  const polys = geometry.type === 'MultiPolygon'
+    ? geometry.coordinates
+    : [geometry.coordinates];
+  const bounds = new google.maps.LatLngBounds();
+  const shapes = [];
+  polys.forEach(poly => {
+    const path = poly[0].map(([lng, lat]) => ({ lat, lng }));
+    if (path.length < 3) return;
+    path.forEach(p => bounds.extend(p));
+    shapes.push(new google.maps.Polygon({
+      paths: path,
+      strokeColor: '#b8935a',
+      strokeOpacity: 0.95,
+      strokeWeight: 2,
+      fillColor: '#b8935a',
+      fillOpacity: 0.05,
+      clickable: false,
+      map: googleMap
+    }));
+  });
+  return { shapes, bounds };
+}
+async function renderFilterOutlines() {
+  if (currentView !== 'map' || !googleMap) return;
+  const zips = (currentFilters.zip || '').split(',').map(s => s.trim()).filter(Boolean);
+  const cities = (currentFilters.city || '').split(',').map(s => s.trim()).filter(Boolean);
+  // Zip outlines take priority when both are set (zips are more precise).
+  const kind = zips.length ? 'zip' : (cities.length ? 'city' : null);
+  const key = kind + '|' + (zips.length ? zips.join(',') : cities.join(','));
+  if (key === _outlineKey) return; // nothing to redraw
+  _outlineKey = key;
+  clearFilterOutlines();
+  if (!kind) return;
+
+  try {
+    const url = kind === 'zip'
+      ? '/api/properties/zip-boundary?zip=' + encodeURIComponent(zips.join(','))
+      : '/api/properties/city-boundary?city=' + encodeURIComponent(cities.join(','));
+    const r = await fetch(url);
+    const list = await r.json();
+    const allBounds = new google.maps.LatLngBounds();
+    let drewAny = false;
+    list.forEach(item => {
+      const result = drawFilterOutlineFromGeometry(item.geometry);
+      if (!result) return;
+      drewAny = true;
+      filterOutlines.push(...result.shapes);
+      result.bounds && result.bounds.toJSON && allBounds.union(result.bounds);
+    });
+    // Only pan/zoom to fit if no listing-pin zoom has happened yet.
+    if (drewAny && !allBounds.isEmpty() && !mapPins.length) {
+      googleMap.fitBounds(allBounds, 40);
+    }
+  } catch { /* soft fail - map still works without outline */ }
+}
+
 // Zoom map to fit all pins matching the current location filter (city/zip/neighborhood)
 async function zoomMapToFilter() {
   if (!googleMap || !gmapsLoaded) {
@@ -1763,6 +1835,12 @@ const MAP_PAGE_SIZE = 20; // Zillow shows ~20/page in the sidebar
 
 async function loadMapPins() {
   if (!googleMap) return;
+
+  // Re-render the zip/city filter outlines whenever map pins reload -
+  // this covers filter edits made while already in map view (e.g. the
+  // user adds a second ZIP). renderFilterOutlines is a no-op if the
+  // current zip/city key matches what's already drawn.
+  renderFilterOutlines();
 
   if (mapBundleAbort) mapBundleAbort.abort();
   mapBundleAbort = new AbortController();
@@ -2069,6 +2147,7 @@ function switchView(view) {
         loadMapPins();
         loadMapCards();
       }
+      renderFilterOutlines();
     } else {
       // First time the user opens map view — kick off the Maps bundle now.
       // initMap's 'idle' listener will fire loadMapPins/loadMapCards once ready.
@@ -2076,6 +2155,10 @@ function switchView(view) {
     }
   } else {
     loadListings();
+    // Leaving map view — drop outlines so the next return re-draws from
+    // the (possibly changed) current filters cleanly.
+    clearFilterOutlines();
+    _outlineKey = '';
   }
 }
 
