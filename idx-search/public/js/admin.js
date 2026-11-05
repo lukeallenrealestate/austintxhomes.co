@@ -380,12 +380,16 @@ async function submitBuildForClient() {
     // Hand off to the search page in build-for-client mode. The banner
     // over there reads these params and the Save Search button posts to
     // /api/admin/clients/:userId/searches instead of the normal path.
+    // On austintxhomes.co "/" is the marketing homepage; the IDX search
+    // SPA lives at "/search". idx-search standalone serves it at "/" via
+    // the SPA fallback, so we try "/search" first and let that resolve
+    // correctly in both environments.
     const params = new URLSearchParams({
       building_for: String(data.user.id),
       client_name: data.user.name || '',
       client_email: data.user.email || ''
     });
-    window.location.href = '/?' + params.toString();
+    window.location.href = '/search?' + params.toString();
   } catch (err) {
     errEl.textContent = 'Something went wrong: ' + err.message;
     errEl.style.display = 'block';
@@ -421,7 +425,7 @@ function buildForExistingClient(userId, clientName) {
     building_for: String(userId),
     client_name: clientName || ''
   });
-  window.location.href = '/?' + params.toString();
+  window.location.href = '/search?' + params.toString();
 }
 
 function showToast(msg, type) {
