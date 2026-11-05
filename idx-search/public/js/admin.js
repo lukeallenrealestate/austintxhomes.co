@@ -112,6 +112,7 @@ async function loadUsers() {
             <button class="btn btn-outline" style="font-size:12px;padding:4px 10px;margin-right:4px;" onclick="copyActivationLink('${esc(u.activationUrl || '')}')">Copy link</button>
           ` : ''}
           <button class="btn btn-outline" style="font-size:12px;padding:4px 10px;" onclick="buildForExistingClient(${u.id}, ${JSON.stringify(u.name).replace(/"/g,'&quot;')})">Build search</button>
+          <button class="btn btn-outline" style="font-size:12px;padding:4px 10px;color:#b91c1c;border-color:#fecaca;" onclick="deleteUser(${u.id}, ${JSON.stringify(u.email).replace(/"/g,'&quot;')})">Delete</button>
           <button class="expand-user-btn" onclick="toggleUserDetail(${u.id}, this)">View ▾</button>
         </td>
       </tr>
@@ -389,6 +390,21 @@ async function submitBuildForClient() {
       return;
     }
 
+    // Attached to an already-active user (no email sent because they
+    // already have an account). Surface this explicitly so Luke doesn't
+    // wonder why no invite went out - and so he knows the existing
+    // user's saved search will just gain one more search.
+    if (!data.invited && data.user && !data.activationUrl) {
+      const confirm = window.confirm(
+        `${data.user.name} (${data.user.email}) already has an active account.\n\n` +
+        `No activation email will be sent. The new saved search will be attached to their ` +
+        `existing account. Continue?\n\n` +
+        `Tip: if you want to start fresh, cancel here and delete the user first using the ` +
+        `Delete button on the users table.`
+      );
+      if (!confirm) return;
+    }
+
     // Hand off to the search page in build-for-client mode. The banner
     // over there reads these params and the Save Search button posts to
     // /api/admin/clients/:userId/searches instead of the normal path.
@@ -484,6 +500,28 @@ function buildForExistingClient(userId, clientName) {
   window.location.href = '/search?' + params.toString();
 }
 
+async function deleteUser(userId, email) {
+  const ok = window.confirm(
+    `Delete ${email}?\n\n` +
+    `This permanently removes the user, their saved searches, favorites, ` +
+    `and new-listing alert history. Cannot be undone.`
+  );
+  if (!ok) return;
+  try {
+    const res = await Auth.apiFetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+    if (!res?.ok) {
+      const j = await res.json().catch(() => ({}));
+      showToast(j.error || 'Failed to delete', 'error');
+      return;
+    }
+    showToast(`Deleted ${email}`, 'success');
+    loadUsers();
+    loadStats();
+  } catch (err) {
+    showToast('Failed to delete: ' + err.message, 'error');
+  }
+}
+
 function showToast(msg, type) {
   const t = document.getElementById('toast');
   if (!t) return;
@@ -501,3 +539,4 @@ window.resendInvite = resendInvite;
 window.copyActivationLink = copyActivationLink;
 window.buildForExistingClient = buildForExistingClient;
 window.continueAfterEmailFailure = continueAfterEmailFailure;
+window.deleteUser = deleteUser;

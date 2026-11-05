@@ -276,6 +276,40 @@ router.post('/clients/:userId/searches', (req, res) => {
   });
 });
 
+// DELETE /api/admin/users/:userId — hard-delete a client account.
+// Cleans up favorites, saved_searches, and the per-(search, listing)
+// send log so no orphans are left. SQLite's foreign_keys pragma is OFF
+// by default on this DB, so each table is wiped explicitly instead of
+// relying on ON DELETE CASCADE. Refuses to delete admin accounts so
+// one typo can't lock Luke out.
+router.delete('/users/:userId', (req, res) => {
+  const userId = Number(req.params.userId);
+  if (!userId) return res.status(400).json({ error: 'Invalid user id' });
+  const row = db.prepare('SELECT id, email, role FROM users WHERE id = ?').get(userId);
+  if (!row) return res.status(404).json({ error: 'User not found' });
+  if (row.role === 'admin') return res.status(403).json({ error: 'Cannot delete admin accounts' });
+
+  const tx = db.transaction((uid) => {
+    // Grab the user's saved_search ids first so we can wipe their sent-log rows.
+    const searchIds = db.prepare('SELECT id FROM saved_searches WHERE user_id = ?').all(uid).map(r => r.id);
+    if (searchIds.length) {
+      const placeholders = searchIds.map(() => '?').join(',');
+      db.prepare(`DELETE FROM saved_search_sent WHERE saved_search_id IN (${placeholders})`).run(...searchIds);
+    }
+    db.prepare('DELETE FROM saved_searches WHERE user_id = ?').run(uid);
+    db.prepare('DELETE FROM favorites WHERE user_id = ?').run(uid);
+    db.prepare('DELETE FROM users WHERE id = ?').run(uid);
+  });
+  try {
+    tx(userId);
+    console.log(`[ADMIN] ${req.user.name || 'admin'} deleted user ${row.email} (id ${userId})`);
+    res.json({ deleted: true, email: row.email });
+  } catch (err) {
+    console.error('[ADMIN] delete user failed:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST /api/admin/clients/:userId/resend-invite — generate a fresh
 // activation token + expiry and email it. Only valid while the account
 // is still 'pending'.
