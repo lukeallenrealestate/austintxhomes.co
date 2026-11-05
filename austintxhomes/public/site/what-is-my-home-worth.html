@@ -171,6 +171,14 @@
   .addr-form { max-width: 620px; margin: 0 auto; background: #fff; border-radius: 6px; padding: 10px; display: flex; gap: 8px; box-shadow: 0 10px 40px rgba(0,0,0,.35); }
   .addr-form input { flex: 1; padding: 16px 18px; font-size: 16px; font-family: inherit; color: var(--text); background: transparent; border: none; outline: none; }
   .addr-form input::placeholder { color: var(--light); }
+  /* Google Places suggestion dropdown - override default styling to match site */
+  .pac-container { font-family: 'Inter', sans-serif !important; border-radius: 6px !important; margin-top: 4px !important; box-shadow: 0 12px 36px rgba(0,0,0,.18) !important; border: 1px solid var(--border) !important; z-index: 10000 !important; }
+  .pac-item { padding: 10px 14px !important; font-size: 14.5px !important; color: var(--text) !important; border-top: 1px solid var(--border) !important; cursor: pointer !important; }
+  .pac-item:first-child { border-top: none !important; }
+  .pac-item:hover, .pac-item-selected { background: var(--warm) !important; }
+  .pac-item-query { font-size: 14.5px !important; color: var(--ink) !important; font-weight: 600 !important; }
+  .pac-matched { color: var(--gold) !important; font-weight: 700 !important; }
+  .pac-icon { display: none !important; }
   .addr-form button { padding: 16px 24px; background: var(--gold); color: #fff; border: none; border-radius: 4px; font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; font-family: inherit; white-space: nowrap; }
   .addr-form button:hover { background: #a37f49; }
   .addr-form button:disabled { opacity: .7; cursor: not-allowed; }
@@ -295,7 +303,7 @@
  <p class="hero-sub">Enter your address. Get a live ZIP-level market snapshot in seconds, plus a human-written CMA from Luke Allen back to you within 24 hours. Free, no obligation.</p>
 
  <form class="addr-form" id="addr-form" novalidate>
-  <input type="text" id="addr-input" placeholder="123 Main St, Austin TX 78704" autocomplete="street-address" />
+  <input type="text" id="addr-input" placeholder="Start typing your address..." autocomplete="off" />
   <button type="submit" id="addr-btn">See my home's value</button>
  </form>
  <p class="addr-note">Texas is a non-disclosure state. Closed sale prices are not public record, which is why Zestimate and Redfin Estimate miss by 10 to 25 percent on Austin homes. A licensed Texas Realtor's CMA uses real closed MLS comps.</p>
@@ -363,7 +371,7 @@
    <p class="form-sub">Reply within 24 hours, direct from Luke.</p>
    <div class="form-field">
     <label for="cma-address">Home address</label>
-    <input type="text" id="cma-address" name="address" placeholder="123 Main St, Austin TX 78704" autocomplete="street-address" required />
+    <input type="text" id="cma-address" name="address" placeholder="Start typing your address..." autocomplete="off" required />
    </div>
    <div class="form-grid">
     <div class="form-field">
@@ -551,6 +559,82 @@
  const cmaForm = document.getElementById('cma-form');
  const cmaMsg = document.getElementById('cma-msg');
  const cmaBtn = document.getElementById('cma-btn');
+ // ─── Google Places Autocomplete ───────────────────────────────────
+ // Help users finish an address they've started typing. Bounds restrict
+ // suggestions to the Austin metro + surrounding counties so people typing
+ // "922 e 41st" get "922 E 41st St, Austin, TX 78751" immediately.
+ // Both the hero input and the CMA form address input use the same wiring.
+ // On hero: when a place is picked, auto-submit so the user gets the ZIP
+ // snapshot the moment they pick a suggestion (no extra click needed).
+ (async function initPlaces() {
+  let apiKey = '';
+  try {
+   const r = await fetch('/api/config');
+   const cfg = await r.json();
+   apiKey = cfg.googleMapsKey || '';
+  } catch { return; }
+  if (!apiKey) return;
+  if (window.google && window.google.maps && window.google.maps.places) {
+   wireAutocomplete();
+   return;
+  }
+  window._placesCallback = wireAutocomplete;
+  const s = document.createElement('script');
+  s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(apiKey) + '&libraries=places&callback=_placesCallback&loading=async';
+  s.async = true; s.defer = true;
+  document.head.appendChild(s);
+ })();
+
+ function wireAutocomplete() {
+  if (!window.google || !window.google.maps || !window.google.maps.places) return;
+  // Austin metro bounds: SW (29.8, -98.3) to NE (30.8, -97.3). Covers
+  // Travis, Williamson, Hays, parts of Bastrop/Caldwell.
+  const austinBounds = new google.maps.LatLngBounds(
+   new google.maps.LatLng(29.8, -98.3),
+   new google.maps.LatLng(30.8, -97.3)
+  );
+  const opts = {
+   bounds: austinBounds,
+   strictBounds: false,          // soft bias - still allow outside-Austin searches
+   componentRestrictions: { country: 'us' },
+   types: ['address'],
+   fields: ['formatted_address', 'address_components', 'name']
+  };
+
+  const heroInput = document.getElementById('addr-input');
+  const cmaInput = document.getElementById('cma-address');
+
+  if (heroInput) {
+   const a1 = new google.maps.places.Autocomplete(heroInput, opts);
+   a1.addListener('place_changed', function () {
+    const p = a1.getPlace();
+    if (p && p.formatted_address) {
+     heroInput.value = p.formatted_address;
+     // Auto-submit so the user gets the snapshot the moment they pick.
+     setTimeout(function () {
+      const ev = new Event('submit', { cancelable: true });
+      document.getElementById('addr-form').dispatchEvent(ev);
+     }, 80);
+    }
+   });
+   // Prevent form submission when the user presses Enter on a visible
+   // suggestion - let Autocomplete handle the selection first.
+   heroInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && document.querySelector('.pac-container:not([style*="display: none"]) .pac-item-selected')) {
+     e.preventDefault();
+    }
+   });
+  }
+
+  if (cmaInput) {
+   const a2 = new google.maps.places.Autocomplete(cmaInput, opts);
+   a2.addListener('place_changed', function () {
+    const p = a2.getPlace();
+    if (p && p.formatted_address) cmaInput.value = p.formatted_address;
+   });
+  }
+ }
+
  cmaForm.addEventListener('submit', async function (e) {
   e.preventDefault();
   cmaMsg.className = 'form-msg';
