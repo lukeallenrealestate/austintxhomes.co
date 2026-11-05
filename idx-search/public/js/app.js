@@ -1684,17 +1684,18 @@ async function renderFilterOutlines() {
   clearFilterOutlines();
   if (!kind) return;
 
-  const url = kind === 'zip'
+  // Base URL for the boundary fetch. Server already sends no-store,
+  // but we force cache: 'no-store' on the fetch too so even a service
+  // worker or browser memory cache can't short-circuit the retry on a
+  // stale null that got picked up before the no-store deploy landed.
+  const baseUrl = kind === 'zip'
     ? '/api/properties/zip-boundary?zip=' + encodeURIComponent(zips.join(','))
     : '/api/properties/city-boundary?city=' + encodeURIComponent(cities.join(','));
 
-  // Fetch, retry once if the server returned any nulls - the upstream
-  // (OpenDataSoft ZCTA) rate-limits on parallel burst from a cold cache,
-  // so a one-shot miss that waits ~1.5s and retries usually succeeds.
   async function fetchBoundaries(delay) {
     if (delay) await new Promise(r => setTimeout(r, delay));
     try {
-      const r = await fetch(url);
+      const r = await fetch(baseUrl + '&_=' + Date.now(), { cache: 'no-store' });
       if (!r.ok) return [];
       return await r.json();
     } catch { return []; }
