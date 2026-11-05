@@ -19,11 +19,16 @@ services:
     region: oregon          # change to dallas or virginia if you prefer closer-to-Austin latency
 
     # Build: install deps in root, austintxhomes/, AND idx-search/
-    # (the app is a 3-package workspace)
+    # (the app is a 3-package workspace). idx-search needs devDeps too
+    # because build:js uses esbuild (a devDependency), and the deployed
+    # server calls `node austintxhomes/server.js` directly - bypassing
+    # idx-search's `prestart` hook that would otherwise rebuild the
+    # bundle. Explicit `npm run build:js` after install guarantees a
+    # fresh bundle.min.js on every deploy.
     buildCommand: |
       npm install --omit=dev &&
       cd austintxhomes && npm install --omit=dev && cd .. &&
-      cd idx-search && npm install --omit=dev && cd ..
+      cd idx-search && npm install && npm run build:js && cd ..
 
     # Start: run the pre-start hook (downloads idx.db from R2 if missing),
     # then start the actual server.
