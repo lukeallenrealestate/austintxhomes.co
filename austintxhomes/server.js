@@ -730,6 +730,15 @@ app.get('/admin', (_req, res) => {
   res.sendFile(path.join(IDX_PUBLIC, 'admin.html'));
 });
 
+// /activate — client account activation. Invite emails sent from
+// /admin.html's "Build search for client" flow link to /activate?token=...
+// The page (idx-search/public/activate.html) calls /api/auth/activate/:token
+// (defined in idx-search/routes/auth.js, mounted below) to look up the
+// invite and set the password.
+app.get('/activate', (_req, res) => {
+  res.sendFile(path.join(IDX_PUBLIC, 'activate.html'));
+});
+
 // Sienna at the Thompson floor plans — reads JSON file, cached 1 hour
 let siennaCache = null;
 let siennaCacheTime = 0;
