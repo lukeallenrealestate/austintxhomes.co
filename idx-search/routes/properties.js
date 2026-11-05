@@ -1123,6 +1123,105 @@ router.get('/zip-boundary', async (req, res) => {
   res.json(results);
 });
 
+// GET /api/properties/zip-market-stats?zip=78704
+// Returns the compliance-safe ACTIVE-listing snapshot for a ZIP so the
+// /what-is-my-home-worth page can show users what the market in
+// their ZIP looks like without disclosing any individual closed sale
+// price (the TX MLS rule that drove the sold-homes-* retirement).
+//
+// MUST be registered BEFORE the parametric '/:listingKey' route below,
+// otherwise Express routing treats "zip-market-stats" as a listing key
+// and the catch-all returns 404 before this handler ever runs. Caught
+// that in a live smoke test - the fix is placement order.
+//
+// Shape: { zip, activeCount, medianList, medianPpsf, medianDom, trend30d }
+// trend30d = percent change in median list price vs the 30-day lagging
+// median (recent listings only). Positive = market strengthening.
+router.get('/zip-market-stats', (req, res) => {
+  const zip = String(req.query.zip || '').trim().replace(/[^\d]/g, '').slice(0, 5);
+  if (!/^\d{5}$/.test(zip)) return res.status(400).json({ error: 'Valid 5-digit ZIP required' });
+
+  try {
+    // Active residential listings, exclude leases, exclude mlg_can_view=0.
+    const rows = db.prepare(`
+      SELECT list_price, living_area, days_on_market, listing_contract_date, bedrooms_total, bathrooms_total
+      FROM listings
+      WHERE mlg_can_view = 1
+        AND standard_status = 'Active'
+        AND postal_code = ?
+        AND property_type NOT LIKE '%Lease%'
+        AND list_price IS NOT NULL
+        AND list_price > 50000
+      ORDER BY list_price
+    `).all(zip);
+
+    if (!rows.length) {
+      return res.json({ zip, activeCount: 0, medianList: null, medianPpsf: null, medianDom: null, trend30d: null, sample: [] });
+    }
+
+    const prices = rows.map(r => r.list_price).sort((a, b) => a - b);
+    const medianList = prices[Math.floor(prices.length / 2)];
+
+    const ppsfs = rows
+      .filter(r => r.living_area && r.living_area > 100)
+      .map(r => r.list_price / r.living_area)
+      .sort((a, b) => a - b);
+    const medianPpsf = ppsfs.length ? Math.round(ppsfs[Math.floor(ppsfs.length / 2)]) : null;
+
+    const doms = rows.filter(r => r.days_on_market != null).map(r => r.days_on_market).sort((a, b) => a - b);
+    const medianDom = doms.length ? doms[Math.floor(doms.length / 2)] : null;
+
+    // Trend: compare median list of homes LISTED in the last 30 days vs
+    // the preceding 30 days. Positive = sellers getting bolder on price.
+    const now = Date.now();
+    const d30 = new Date(now - 30 * 86400000).toISOString().slice(0, 10);
+    const d60 = new Date(now - 60 * 86400000).toISOString().slice(0, 10);
+    const recent = rows.filter(r => r.listing_contract_date && r.listing_contract_date >= d30).map(r => r.list_price).sort((a, b) => a - b);
+    const prior = rows.filter(r => r.listing_contract_date && r.listing_contract_date >= d60 && r.listing_contract_date < d30).map(r => r.list_price).sort((a, b) => a - b);
+    let trend30d = null;
+    if (recent.length >= 3 && prior.length >= 3) {
+      const rMed = recent[Math.floor(recent.length / 2)];
+      const pMed = prior[Math.floor(prior.length / 2)];
+      if (pMed > 0) trend30d = Math.round((rMed - pMed) / pMed * 1000) / 10;
+    }
+
+    const sample = db.prepare(`
+      SELECT listing_key, unparsed_address, list_price, bedrooms_total, bathrooms_total, living_area, photos
+      FROM listings
+      WHERE mlg_can_view = 1
+        AND standard_status = 'Active'
+        AND postal_code = ?
+        AND property_type NOT LIKE '%Lease%'
+        AND list_price IS NOT NULL
+        AND list_price > 50000
+      ORDER BY ABS(list_price - ?) ASC
+      LIMIT 3
+    `).all(zip, medianList);
+
+    res.set('Cache-Control', 'public, max-age=1800');
+    res.json({
+      zip,
+      activeCount: rows.length,
+      medianList: Math.round(medianList),
+      medianPpsf,
+      medianDom,
+      trend30d,
+      sample: sample.map(l => ({
+        listing_key: l.listing_key,
+        address: l.unparsed_address,
+        list_price: l.list_price,
+        beds: l.bedrooms_total,
+        baths: l.bathrooms_total,
+        sqft: l.living_area,
+        photo: (() => { try { const p = JSON.parse(l.photos || '[]'); return p[0] || null; } catch { return null; } })()
+      }))
+    });
+  } catch (err) {
+    console.error('[zip-market-stats]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Pre-warm the zip-boundary cache for the Austin metro ZIPs so the
 // first client that filters by one doesn't eat the OpenDataSoft rate-
 // limit shuffle on a cold cache. Runs once, in the background, one ZIP
@@ -1628,102 +1727,6 @@ function tryParse(str, fallback) {
     return Array.isArray(fallback) ? (Array.isArray(v) ? v : fallback) : v;
   } catch { return fallback; }
 }
-
-// GET /api/properties/zip-market-stats?zip=78704
-// Returns the compliance-safe ACTIVE-listing snapshot for a ZIP so the
-// /what-is-my-austin-home-worth page can show users what the market in
-// their ZIP looks like without disclosing any individual closed sale
-// price (the TX MLS rule that drove the sold-homes-* retirement).
-//
-// Shape: { zip, activeCount, medianList, medianPpsf, medianDom, trend30d }
-// trend30d = percent change in median list price vs the 30-day lagging
-// median (recent listings only). Positive = market strengthening.
-router.get('/zip-market-stats', (req, res) => {
-  const zip = String(req.query.zip || '').trim().replace(/[^\d]/g, '').slice(0, 5);
-  if (!/^\d{5}$/.test(zip)) return res.status(400).json({ error: 'Valid 5-digit ZIP required' });
-
-  try {
-    // Active residential listings, exclude leases, exclude mlg_can_view=0.
-    const rows = db.prepare(`
-      SELECT list_price, living_area, days_on_market, listing_contract_date, bedrooms_total, bathrooms_total
-      FROM listings
-      WHERE mlg_can_view = 1
-        AND standard_status = 'Active'
-        AND postal_code = ?
-        AND property_type NOT LIKE '%Lease%'
-        AND list_price IS NOT NULL
-        AND list_price > 50000
-      ORDER BY list_price
-    `).all(zip);
-
-    if (!rows.length) {
-      return res.json({ zip, activeCount: 0, medianList: null, medianPpsf: null, medianDom: null, trend30d: null });
-    }
-
-    const prices = rows.map(r => r.list_price).sort((a, b) => a - b);
-    const medianList = prices[Math.floor(prices.length / 2)];
-
-    const ppsfs = rows
-      .filter(r => r.living_area && r.living_area > 100)
-      .map(r => r.list_price / r.living_area)
-      .sort((a, b) => a - b);
-    const medianPpsf = ppsfs.length ? Math.round(ppsfs[Math.floor(ppsfs.length / 2)]) : null;
-
-    const doms = rows.filter(r => r.days_on_market != null).map(r => r.days_on_market).sort((a, b) => a - b);
-    const medianDom = doms.length ? doms[Math.floor(doms.length / 2)] : null;
-
-    // Trend: compare median list of homes LISTED in the last 30 days vs
-    // the preceding 30 days. Positive = sellers getting bolder on price.
-    const now = Date.now();
-    const d30 = new Date(now - 30 * 86400000).toISOString().slice(0, 10);
-    const d60 = new Date(now - 60 * 86400000).toISOString().slice(0, 10);
-    const recent = rows.filter(r => r.listing_contract_date && r.listing_contract_date >= d30).map(r => r.list_price).sort((a, b) => a - b);
-    const prior = rows.filter(r => r.listing_contract_date && r.listing_contract_date >= d60 && r.listing_contract_date < d30).map(r => r.list_price).sort((a, b) => a - b);
-    let trend30d = null;
-    if (recent.length >= 3 && prior.length >= 3) {
-      const rMed = recent[Math.floor(recent.length / 2)];
-      const pMed = prior[Math.floor(prior.length / 2)];
-      if (pMed > 0) trend30d = Math.round((rMed - pMed) / pMed * 1000) / 10; // e.g. 2.5 = +2.5%
-    }
-
-    // A tiny sample of 3 active listings so the UI can show "homes on the market now"
-    // without disclosing any sold prices. ACTIVE listings are public info.
-    const sample = db.prepare(`
-      SELECT listing_key, unparsed_address, list_price, bedrooms_total, bathrooms_total, living_area, photos
-      FROM listings
-      WHERE mlg_can_view = 1
-        AND standard_status = 'Active'
-        AND postal_code = ?
-        AND property_type NOT LIKE '%Lease%'
-        AND list_price IS NOT NULL
-        AND list_price > 50000
-      ORDER BY ABS(list_price - ?) ASC
-      LIMIT 3
-    `).all(zip, medianList);
-
-    res.set('Cache-Control', 'public, max-age=1800'); // 30 min CDN cache ok - stats don't change by the second
-    res.json({
-      zip,
-      activeCount: rows.length,
-      medianList: Math.round(medianList),
-      medianPpsf,
-      medianDom,
-      trend30d,
-      sample: sample.map(l => ({
-        listing_key: l.listing_key,
-        address: l.unparsed_address,
-        list_price: l.list_price,
-        beds: l.bedrooms_total,
-        baths: l.bathrooms_total,
-        sqft: l.living_area,
-        photo: (() => { try { const p = JSON.parse(l.photos || '[]'); return p[0] || null; } catch { return null; } })()
-      }))
-    });
-  } catch (err) {
-    console.error('[zip-market-stats]', err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // Expose refreshListingPhotos to other modules (e.g. photoBackfill) without
 // breaking the express-router contract — extra properties on a router are ignored.
