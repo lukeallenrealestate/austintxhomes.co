@@ -1674,14 +1674,12 @@ function drawFilterOutlineFromGeometry(geometry) {
   return { shapes, bounds };
 }
 async function renderFilterOutlines() {
-  window._olStats = window._olStats || { calls: 0, earlyNoMap: 0, earlyNoChange: 0, drew: 0, hits: [] };
-  window._olStats.calls++;
-  if (currentView !== 'map' || !googleMap) { window._olStats.earlyNoMap++; return; }
+  if (currentView !== 'map' || !googleMap) return;
   const zips = (currentFilters.zip || '').split(',').map(s => s.trim()).filter(Boolean);
   const cities = (currentFilters.city || '').split(',').map(s => s.trim()).filter(Boolean);
   const kind = zips.length ? 'zip' : (cities.length ? 'city' : null);
   const key = kind + '|' + (zips.length ? zips.join(',') : cities.join(','));
-  if (key === _outlineKey) { window._olStats.earlyNoChange++; return; }
+  if (key === _outlineKey) return;
   _outlineKey = key;
   clearFilterOutlines();
   if (!kind) return;
@@ -1703,12 +1701,8 @@ async function renderFilterOutlines() {
   }
 
   let list = await fetchBoundaries(0);
-  window._olStats.hits.push({ t: 'first', hasGeoms: list.map(x => !!x.geometry) });
   const allNull = list.length && list.every(x => !x.geometry);
-  if (allNull) {
-    list = await fetchBoundaries(1500);
-    window._olStats.hits.push({ t: 'retry', hasGeoms: list.map(x => !!x.geometry) });
-  }
+  if (allNull) list = await fetchBoundaries(1500);
 
   if (!list.length) return;
   const allBounds = new google.maps.LatLngBounds();
@@ -1722,7 +1716,6 @@ async function renderFilterOutlines() {
       if (result.bounds && !result.bounds.isEmpty()) allBounds.union(result.bounds);
     } catch { /* individual draw failure doesn't block others */ }
   });
-  window._olStats.drew = filterOutlines.length;
   if (drewAny && !allBounds.isEmpty() && !mapPins.length) googleMap.fitBounds(allBounds, 40);
 }
 

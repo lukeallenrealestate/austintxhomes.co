@@ -1109,17 +1109,17 @@ router.get('/zip-boundary', async (req, res) => {
       } catch (_) {}
     }
 
-    // Only cache SUCCESSFUL lookups. Caching null poisons the cache
-    // whenever OpenDataSoft has a transient hiccup - every later request
-    // for that ZIP returns null until the process restarts. Live
-    // smoke-tested this failure: the first probe landed during a brief
-    // 5xx on OpenDataSoft, cached null, and every subsequent polygon
-    // request returned empty.
     if (geom) zipBoundaryCache.set(zip, geom);
     return { zip, geometry: geom };
   }));
 
-  res.set('Cache-Control', 'public, max-age=86400');
+  // private + no-store so Cloudflare never caches the response. Burned
+  // on this: a first request landed during an OpenDataSoft rate-limit,
+  // got null, and Cloudflare cached it under the public max-age=86400
+  // we previously set - every later browser hit for that ZIP returned
+  // the stale null for 24 hours. Our in-process zipBoundaryCache +
+  // the retry window above handle load without needing the CDN layer.
+  res.set('Cache-Control', 'private, no-store');
   res.json(results);
 });
 
@@ -1157,7 +1157,9 @@ router.get('/city-boundary', async (req, res) => {
     }
   }));
 
-  res.set('Cache-Control', 'public, max-age=86400');
+  // private + no-store so a transient null isn't cached at the CDN.
+  // See the matching comment on /zip-boundary above.
+  res.set('Cache-Control', 'private, no-store');
   res.json(results);
 });
 
