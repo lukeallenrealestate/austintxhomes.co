@@ -1085,7 +1085,13 @@ router.get('/zip-boundary', async (req, res) => {
       } catch (_) {}
     }
 
-    zipBoundaryCache.set(zip, geom);
+    // Only cache SUCCESSFUL lookups. Caching null poisons the cache
+    // whenever OpenDataSoft has a transient hiccup - every later request
+    // for that ZIP returns null until the process restarts. Live
+    // smoke-tested this failure: the first probe landed during a brief
+    // 5xx on OpenDataSoft, cached null, and every subsequent polygon
+    // request returned empty.
+    if (geom) zipBoundaryCache.set(zip, geom);
     return { zip, geometry: geom };
   }));
 
@@ -1119,10 +1125,10 @@ router.get('/city-boundary', async (req, res) => {
         f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon'
       );
       const geom = feature?.geometry || null;
-      cityBoundaryCache.set(key, geom);
+      // Same cache hygiene as /zip-boundary: only cache successful lookups.
+      if (geom) cityBoundaryCache.set(key, geom);
       return { city, geometry: geom };
     } catch (e) {
-      cityBoundaryCache.set(key, null);
       return { city, geometry: null };
     }
   }));
