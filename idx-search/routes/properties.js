@@ -1033,6 +1033,12 @@ router.get('/neighborhood-boundary', async (req, res) => {
 // Cached in process memory indefinitely since ZIP boundaries don't change.
 // Used by app.js to draw outlined zip overlays on the map search view
 // without touching the filter state (the filter stays postal_code IN()).
+//
+// Primary source: OpenDataSoft's ZCTA5 (Zip Code Tabulation Areas) public
+// dataset, which carries actual Polygon/MultiPolygon shapes from US Census
+// TIGER. Nominatim is checked as a fallback - it often returns only a
+// Point for US ZIPs (ZIPs are routing codes, not administrative areas),
+// which is why the first implementation of this endpoint drew nothing.
 const zipBoundaryCache = new Map();
 router.get('/zip-boundary', async (req, res) => {
   const raw = (req.query.zip || '').trim();
@@ -1042,27 +1048,45 @@ router.get('/zip-boundary', async (req, res) => {
 
   const results = await Promise.all(zips.map(async zip => {
     if (zipBoundaryCache.has(zip)) return { zip, geometry: zipBoundaryCache.get(zip) };
+    let geom = null;
+
+    // 1. OpenDataSoft — ZCTA polygons derived from US Census TIGER.
     try {
-      // Nominatim structured query — postalcode + country filter returns
-      // the ZIP boundary relation when one exists for that code.
-      const url = 'https://nominatim.openstreetmap.org/search?' +
-        'postalcode=' + encodeURIComponent(zip) +
-        '&country=us' +
-        '&format=geojson&polygon_geojson=1&limit=1';
+      const url = 'https://data.opendatasoft.com/api/records/1.0/search/?' +
+        'dataset=georef-united-states-of-america-zcta5%40public' +
+        '&refine.zcta5_code=' + encodeURIComponent(zip) +
+        '&rows=1';
       const r = await fetch(url, {
         headers: { 'User-Agent': 'austintxhomes.co/1.0 (Luke@austinmdg.com)' }
       });
       const data = await r.json();
-      const feature = data.features?.find(f =>
-        f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon'
-      );
-      const geom = feature?.geometry || null;
-      zipBoundaryCache.set(zip, geom);
-      return { zip, geometry: geom };
-    } catch (e) {
-      zipBoundaryCache.set(zip, null);
-      return { zip, geometry: null };
+      const shape = data.records?.[0]?.fields?.geo_shape;
+      if (shape && (shape.type === 'Polygon' || shape.type === 'MultiPolygon')) {
+        geom = shape;
+      }
+    } catch (_) {}
+
+    // 2. Nominatim fallback — rarely has polygons for US ZIPs but keep
+    //    it in case the TIGER dataset is briefly unavailable.
+    if (!geom) {
+      try {
+        const url = 'https://nominatim.openstreetmap.org/search?' +
+          'postalcode=' + encodeURIComponent(zip) +
+          '&country=us' +
+          '&format=geojson&polygon_geojson=1&limit=1';
+        const r = await fetch(url, {
+          headers: { 'User-Agent': 'austintxhomes.co/1.0 (Luke@austinmdg.com)' }
+        });
+        const data = await r.json();
+        const feature = data.features?.find(f =>
+          f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon'
+        );
+        geom = feature?.geometry || null;
+      } catch (_) {}
     }
+
+    zipBoundaryCache.set(zip, geom);
+    return { zip, geometry: geom };
   }));
 
   res.set('Cache-Control', 'public, max-age=86400');
