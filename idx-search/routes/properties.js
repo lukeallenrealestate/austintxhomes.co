@@ -1123,6 +1123,53 @@ router.get('/zip-boundary', async (req, res) => {
   res.json(results);
 });
 
+// Pre-warm the zip-boundary cache for the Austin metro ZIPs so the
+// first client that filters by one doesn't eat the OpenDataSoft rate-
+// limit shuffle on a cold cache. Runs once, in the background, one ZIP
+// at a time with a 400ms spacing so OpenDataSoft never sees a burst.
+// Covers the ~60 ZIPs across Travis / Williamson / Hays counties that
+// the saved-search flow actually uses.
+const AUSTIN_METRO_ZIPS = [
+  '78701','78702','78703','78704','78705','78712','78717','78719','78721','78722',
+  '78723','78724','78725','78726','78727','78728','78729','78730','78731','78732',
+  '78733','78734','78735','78736','78737','78738','78739','78741','78742','78744',
+  '78745','78746','78747','78748','78749','78750','78751','78752','78753','78754',
+  '78756','78757','78758','78759',
+  // Round Rock, Pflugerville, Cedar Park, Leander, Georgetown, Hutto
+  '78613','78626','78628','78633','78634','78641','78660','78664','78665','78681','78691',
+  // Buda, Kyle, Dripping Springs
+  '78610','78620','78640','78666'
+];
+let _zipBoundaryPrewarmed = false;
+async function prewarmZipBoundaries() {
+  if (_zipBoundaryPrewarmed) return;
+  _zipBoundaryPrewarmed = true;
+  for (const zip of AUSTIN_METRO_ZIPS) {
+    if (zipBoundaryCache.has(zip)) continue;
+    try {
+      const url = 'https://data.opendatasoft.com/api/records/1.0/search/?' +
+        'dataset=georef-united-states-of-america-zcta5%40public' +
+        '&refine.zcta5_code=' + encodeURIComponent(zip) +
+        '&rows=1';
+      const r = await fetch(url, {
+        headers: { 'User-Agent': 'austintxhomes.co/1.0 (Luke@austinmdg.com)' }
+      });
+      if (r.ok) {
+        const data = await r.json();
+        const shape = data.records?.[0]?.fields?.geo_shape;
+        if (shape && (shape.type === 'Polygon' || shape.type === 'MultiPolygon')) {
+          zipBoundaryCache.set(zip, shape);
+        }
+      }
+    } catch { /* retry on next request */ }
+    await new Promise(res => setTimeout(res, 400));
+  }
+  console.log(`[zip-boundary] pre-warmed ${zipBoundaryCache.size}/${AUSTIN_METRO_ZIPS.length} Austin metro ZIPs`);
+}
+// Kick off in background 10s after module load so it doesn't contend
+// with MLS sync or server startup.
+setTimeout(() => { prewarmZipBoundaries().catch(() => {}); }, 10000);
+
 // GET /api/properties/city-boundary?city=Austin,Pflugerville — array of
 // {city, geometry}. Same pattern as zip-boundary, using Nominatim's city
 // + state + country structured query.
