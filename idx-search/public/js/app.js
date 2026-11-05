@@ -1694,17 +1694,25 @@ async function renderFilterOutlines() {
     const allBounds = new google.maps.LatLngBounds();
     let drewAny = false;
     list.forEach(item => {
-      const result = drawFilterOutlineFromGeometry(item.geometry);
-      if (!result) return;
-      drewAny = true;
-      filterOutlines.push(...result.shapes);
-      result.bounds && result.bounds.toJSON && allBounds.union(result.bounds);
+      try {
+        const result = drawFilterOutlineFromGeometry(item.geometry);
+        if (!result) return;
+        drewAny = true;
+        filterOutlines.push(...result.shapes);
+        if (result.bounds && !result.bounds.isEmpty()) {
+          allBounds.union(result.bounds);
+        }
+      } catch (e) {
+        console.warn('[outlines] draw failed for', kind, item.zip || item.city, e.message);
+      }
     });
     // Only pan/zoom to fit if no listing-pin zoom has happened yet.
     if (drewAny && !allBounds.isEmpty() && !mapPins.length) {
       googleMap.fitBounds(allBounds, 40);
     }
-  } catch { /* soft fail - map still works without outline */ }
+  } catch (e) {
+    console.warn('[outlines] fetch failed:', e.message);
+  }
 }
 
 // Zoom map to fit all pins matching the current location filter (city/zip/neighborhood)
