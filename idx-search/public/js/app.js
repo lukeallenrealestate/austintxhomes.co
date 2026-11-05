@@ -1674,44 +1674,49 @@ function drawFilterOutlineFromGeometry(geometry) {
   return { shapes, bounds };
 }
 async function renderFilterOutlines() {
-  if (currentView !== 'map' || !googleMap) return;
+  window._outlineDebug = { stage: 'start', view: currentView, hasMap: !!googleMap };
+  if (currentView !== 'map' || !googleMap) { window._outlineDebug.stage = 'early-return'; return; }
   const zips = (currentFilters.zip || '').split(',').map(s => s.trim()).filter(Boolean);
   const cities = (currentFilters.city || '').split(',').map(s => s.trim()).filter(Boolean);
-  // Zip outlines take priority when both are set (zips are more precise).
   const kind = zips.length ? 'zip' : (cities.length ? 'city' : null);
   const key = kind + '|' + (zips.length ? zips.join(',') : cities.join(','));
-  if (key === _outlineKey) return; // nothing to redraw
+  window._outlineDebug = { ...window._outlineDebug, zips, cities, kind, key, prevKey: _outlineKey };
+  if (key === _outlineKey) { window._outlineDebug.stage = 'no-change'; return; }
   _outlineKey = key;
   clearFilterOutlines();
-  if (!kind) return;
+  if (!kind) { window._outlineDebug.stage = 'no-kind'; return; }
 
   try {
     const url = kind === 'zip'
       ? '/api/properties/zip-boundary?zip=' + encodeURIComponent(zips.join(','))
       : '/api/properties/city-boundary?city=' + encodeURIComponent(cities.join(','));
+    window._outlineDebug.stage = 'fetching';
+    window._outlineDebug.url = url;
     const r = await fetch(url);
     const list = await r.json();
+    window._outlineDebug.stage = 'fetched';
+    window._outlineDebug.listLen = list.length;
+    window._outlineDebug.hasGeoms = list.map(x => !!x.geometry);
     const allBounds = new google.maps.LatLngBounds();
     let drewAny = false;
     list.forEach(item => {
       try {
         const result = drawFilterOutlineFromGeometry(item.geometry);
-        if (!result) return;
+        if (!result) { (window._outlineDebug.skips = window._outlineDebug.skips || []).push(item.zip || item.city); return; }
         drewAny = true;
         filterOutlines.push(...result.shapes);
-        if (result.bounds && !result.bounds.isEmpty()) {
-          allBounds.union(result.bounds);
-        }
+        if (result.bounds && !result.bounds.isEmpty()) allBounds.union(result.bounds);
       } catch (e) {
-        console.warn('[outlines] draw failed for', kind, item.zip || item.city, e.message);
+        (window._outlineDebug.errors = window._outlineDebug.errors || []).push(e.message);
       }
     });
-    // Only pan/zoom to fit if no listing-pin zoom has happened yet.
-    if (drewAny && !allBounds.isEmpty() && !mapPins.length) {
-      googleMap.fitBounds(allBounds, 40);
-    }
+    window._outlineDebug.stage = 'done';
+    window._outlineDebug.drewAny = drewAny;
+    window._outlineDebug.filterOutlinesLen = filterOutlines.length;
+    if (drewAny && !allBounds.isEmpty() && !mapPins.length) googleMap.fitBounds(allBounds, 40);
   } catch (e) {
-    console.warn('[outlines] fetch failed:', e.message);
+    window._outlineDebug.stage = 'catch';
+    window._outlineDebug.err = e.message;
   }
 }
 
@@ -2313,6 +2318,8 @@ Object.defineProperty(window, 'googleMap',      { get: () => googleMap,      con
 Object.defineProperty(window, 'currentFilters', { get: () => currentFilters, configurable: true });
 Object.defineProperty(window, 'filterOutlines', { get: () => filterOutlines, configurable: true });
 Object.defineProperty(window, '_outlineKey',    { get: () => _outlineKey,    configurable: true });
+window.renderFilterOutlines = renderFilterOutlines;
+window._debugClearOutlineKey = () => { _outlineKey = ''; };
 Object.defineProperty(window, 'currentView',    { get: () => currentView,    configurable: true });
 Object.defineProperty(window, 'currentPage',    { get: () => currentPage,    configurable: true });
 Object.defineProperty(window, 'totalResults',   { get: () => totalResults,   configurable: true });
