@@ -1046,11 +1046,10 @@ router.get('/zip-boundary', async (req, res) => {
   const zips = raw.split(',').map(s => s.trim()).filter(z => /^\d{5}$/.test(z));
   if (!zips.length) return res.json([]);
 
-  const results = await Promise.all(zips.map(async zip => {
-    if (zipBoundaryCache.has(zip)) return { zip, geometry: zipBoundaryCache.get(zip) };
-    let geom = null;
-
-    // 1. OpenDataSoft — ZCTA polygons derived from US Census TIGER.
+  // Small helper: retry the ZCTA fetch up to 3 times on rate limit /
+  // transient failures. OpenDataSoft happily 429s on parallel bursts
+  // from a cold cache, so a single-shot fetch misses regularly.
+  async function fetchOpenDataSoft(zip, attempt = 1) {
     try {
       const url = 'https://data.opendatasoft.com/api/records/1.0/search/?' +
         'dataset=georef-united-states-of-america-zcta5%40public' +
@@ -1059,15 +1058,40 @@ router.get('/zip-boundary', async (req, res) => {
       const r = await fetch(url, {
         headers: { 'User-Agent': 'austintxhomes.co/1.0 (Luke@austinmdg.com)' }
       });
-      const data = await r.json();
-      const shape = data.records?.[0]?.fields?.geo_shape;
-      if (shape && (shape.type === 'Polygon' || shape.type === 'MultiPolygon')) {
-        geom = shape;
+      if (!r.ok) {
+        if ((r.status === 429 || r.status >= 500) && attempt < 3) {
+          await new Promise(res => setTimeout(res, 300 * attempt));
+          return fetchOpenDataSoft(zip, attempt + 1);
+        }
+        return null;
       }
-    } catch (_) {}
+      const text = await r.text();
+      if (!text) {
+        if (attempt < 3) {
+          await new Promise(res => setTimeout(res, 300 * attempt));
+          return fetchOpenDataSoft(zip, attempt + 1);
+        }
+        return null;
+      }
+      const data = JSON.parse(text);
+      const shape = data.records?.[0]?.fields?.geo_shape;
+      if (shape && (shape.type === 'Polygon' || shape.type === 'MultiPolygon')) return shape;
+      return null;
+    } catch (e) {
+      if (attempt < 3) {
+        await new Promise(res => setTimeout(res, 300 * attempt));
+        return fetchOpenDataSoft(zip, attempt + 1);
+      }
+      return null;
+    }
+  }
 
-    // 2. Nominatim fallback — rarely has polygons for US ZIPs but keep
-    //    it in case the TIGER dataset is briefly unavailable.
+  const results = await Promise.all(zips.map(async zip => {
+    if (zipBoundaryCache.has(zip)) return { zip, geometry: zipBoundaryCache.get(zip) };
+    let geom = await fetchOpenDataSoft(zip);
+
+    // Nominatim fallback — rarely has polygons for US ZIPs but keep
+    // it in case the TIGER dataset is briefly unavailable.
     if (!geom) {
       try {
         const url = 'https://nominatim.openstreetmap.org/search?' +
