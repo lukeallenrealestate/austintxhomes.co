@@ -1465,6 +1465,7 @@ app.get('/downsizing-realtor-austin', (_req, res) => res.sendFile(path.join(__di
 app.get('/55-plus-communities-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/55-plus-communities-austin.html')));
 app.get('/aging-in-place-renovation-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/aging-in-place-renovation-austin.html')));
 app.get('/austin-new-construction-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-new-construction-realtor.html')));
+app.get('/new-construction-realtor-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/new-construction-realtor-austin.html')));
 app.get('/david-weekley-homes-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/david-weekley-homes-austin.html')));
 app.get('/taylor-morrison-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/taylor-morrison-austin.html')));
 app.get('/pulte-homes-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/pulte-homes-austin.html')));
