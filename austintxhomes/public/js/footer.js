@@ -361,6 +361,16 @@
   <li><a href="/round-rock/sonoma">Sonoma</a></li>
   <li><a href="/round-rock/vista-oaks">Vista Oaks</a></li>
   </ul>
+
+  <div class="sf-col-subhead">Specialist Sites</div>
+  <ul class="sf-links">
+  <li><a href="https://newhomesaustin.co" rel="noopener">New Homes Austin &mdash; new construction</a></li>
+  <li><a href="https://roundrockhomes.co" rel="noopener">Round Rock Homes</a></li>
+  <li><a href="https://www.tarrytownatxhomes.com" rel="noopener">Tarrytown &amp; Lake Austin</a></li>
+  <li><a href="https://www.clarksvilleaustinhomes.com" rel="noopener">Clarksville 78703</a></li>
+  <li><a href="https://www.fifthandwestaustin.com" rel="noopener">Fifth &amp; West Residences</a></li>
+  <li><a href="https://lukeallenaustin.com" rel="noopener">Luke Allen, REALTOR</a></li>
+  </ul>
   </div>
 
   </div>
