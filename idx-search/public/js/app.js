@@ -2303,6 +2303,8 @@ async function confirmSaveSearch() {
 // ─────────────────────────────────────────────────────────────
 Object.defineProperty(window, 'googleMap',      { get: () => googleMap,      configurable: true });
 Object.defineProperty(window, 'currentFilters', { get: () => currentFilters, configurable: true });
+Object.defineProperty(window, 'filterOutlines', { get: () => filterOutlines, configurable: true });
+Object.defineProperty(window, '_outlineKey',    { get: () => _outlineKey,    configurable: true });
 Object.defineProperty(window, 'currentView',    { get: () => currentView,    configurable: true });
 Object.defineProperty(window, 'currentPage',    { get: () => currentPage,    configurable: true });
 Object.defineProperty(window, 'totalResults',   { get: () => totalResults,   configurable: true });
