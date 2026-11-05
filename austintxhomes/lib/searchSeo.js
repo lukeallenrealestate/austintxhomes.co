@@ -26,10 +26,37 @@ const fs = require('fs');
 const path = require('path');
 
 let baseHtml = null;
+// Deploy-scoped cache buster. Reads the bundle file's mtime once at
+// startup and appends ?v=<mtime> to the bundle URL in the served HTML.
+// Why this matters: Cloudflare caches /js/bundle.min.js (no query) for
+// up to 10 minutes via s-maxage=600, so a freshly-pushed bundle keeps
+// serving the stale copy to users for that whole window. With ?v=<mtime>
+// in the HTML every deploy changes the URL and the CDN fetches the new
+// bundle immediately. Falls back to Date.now() if the stat fails - still
+// invalidates per boot, which matches a Render redeploy.
+let bundleVersion = null;
+function getBundleVersion() {
+  if (bundleVersion) return bundleVersion;
+  try {
+    const bundlePath = path.join(__dirname, '..', '..', 'idx-search', 'public', 'js', 'bundle.min.js');
+    const stat = fs.statSync(bundlePath);
+    bundleVersion = String(stat.mtimeMs | 0);
+  } catch {
+    bundleVersion = String(Date.now());
+  }
+  return bundleVersion;
+}
 function loadBase() {
   if (baseHtml) return baseHtml;
   const filePath = path.join(__dirname, '..', '..', 'idx-search', 'public', 'index.html');
-  baseHtml = fs.readFileSync(filePath, 'utf8');
+  let html = fs.readFileSync(filePath, 'utf8');
+  // Replace the plain bundle URL with a versioned one so each deploy
+  // naturally cache-busts.
+  html = html.replace(
+    /<script src="\/js\/bundle\.min\.js"><\/script>/,
+    `<script src="/js/bundle.min.js?v=${getBundleVersion()}"></script>`
+  );
+  baseHtml = html;
   return baseHtml;
 }
 
