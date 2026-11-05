@@ -213,6 +213,48 @@
   .hero-cta.ghost { background: transparent; border: 1.5px solid rgba(255,255,255,.3); }
   .hero-cta.ghost:hover { border-color: #fff; background: rgba(255,255,255,.08); }
 
+  /* Intro split - photo + quick contact form */
+  .intro-split { background: var(--bg); padding: 56px 24px; border-bottom: 1px solid var(--border); }
+  .intro-split-inner { max-width: var(--w); margin: 0 auto; display: grid; grid-template-columns: 1fr 1.05fr; gap: 56px; align-items: center; }
+  @media (max-width: 920px) { .intro-split-inner { grid-template-columns: 1fr; gap: 40px; } }
+
+  .meet-luke { display: flex; gap: 24px; align-items: flex-start; }
+  .meet-luke-photo { flex: 0 0 180px; width: 180px; height: 180px; border-radius: 50%; overflow: hidden; border: 3px solid var(--gold); box-shadow: 0 8px 28px rgba(15,15,14,.12); background: var(--cream); }
+  .meet-luke-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .meet-luke-text { flex: 1; min-width: 0; }
+  .meet-luke .k { margin-bottom: 8px; }
+  .meet-luke h2 { font-size: clamp(28px, 3.8vw, 38px); margin: 0 0 8px; line-height: 1.12; }
+  .meet-luke-title { font-size: 14.5px; color: var(--mid); margin: 0 0 14px; letter-spacing: .02em; }
+  .meet-luke-title strong { color: var(--ink); font-weight: 600; }
+  .meet-luke-copy { font-size: 14.5px; color: var(--mid); line-height: 1.7; margin: 0 0 18px; }
+  .meet-luke-facts { display: flex; gap: 20px; margin: 16px 0 20px; flex-wrap: wrap; }
+  .meet-luke-facts div { display: flex; flex-direction: column; }
+  .meet-luke-facts strong { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--gold); line-height: 1; }
+  .meet-luke-facts span { font-size: 11.5px; color: var(--light); letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+  .meet-luke-contact a { display: inline-flex; align-items: center; gap: 6px; margin-right: 14px; font-size: 14px; font-weight: 600; color: var(--gold); }
+  .meet-luke-contact a:hover { color: var(--gold-lt); }
+
+  @media (max-width: 580px) { .meet-luke { flex-direction: column; align-items: center; text-align: center; } .meet-luke-photo { flex: 0 0 160px; width: 160px; height: 160px; } .meet-luke-facts { justify-content: center; } }
+
+  /* Quick contact form */
+  .quick-form { background: var(--warm); border: 1px solid var(--border); border-radius: 8px; padding: 32px; box-shadow: 0 6px 24px rgba(15,15,14,.04); }
+  .quick-form h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; margin: 0 0 4px; color: var(--ink); }
+  .quick-form .form-sub { font-size: 13.5px; color: var(--mid); margin: 0 0 20px; }
+  .quick-form .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  @media (max-width: 480px) { .quick-form .form-grid { grid-template-columns: 1fr; } }
+  .quick-form label { display: block; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--mid); font-weight: 600; margin-bottom: 5px; }
+  .quick-form input, .quick-form select, .quick-form textarea { width: 100%; padding: 12px 14px; font-size: 14.5px; font-family: inherit; color: var(--text); background: #fff; border: 1px solid var(--border); border-radius: var(--r); outline: none; transition: border .15s, box-shadow .15s; }
+  .quick-form input:focus, .quick-form select:focus, .quick-form textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,147,90,.15); }
+  .quick-form textarea { min-height: 76px; resize: vertical; }
+  .quick-form .form-field { margin-bottom: 12px; }
+  .quick-form button { width: 100%; padding: 15px 24px; margin-top: 6px; background: var(--gold); color: #fff; border: none; border-radius: var(--r); font-size: 13px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; cursor: pointer; font-family: inherit; }
+  .quick-form button:hover { background: #a37f49; }
+  .quick-form button:disabled { opacity: .6; cursor: not-allowed; }
+  .quick-form .form-note { font-size: 12px; color: var(--light); text-align: center; margin: 12px 0 0; }
+  .quick-form .form-msg { font-size: 13.5px; margin-top: 12px; padding: 10px 14px; border-radius: var(--r); display: none; }
+  .quick-form .form-msg.ok { background: #e6f4ea; color: #166534; display: block; }
+  .quick-form .form-msg.err { background: #fde7e7; color: #b91c1c; display: block; }
+
   /* Fact row below hero */
   .fact-row { background: var(--warm); border-bottom: 1px solid var(--border); padding: 32px 24px; }
   .fact-row-inner { max-width: var(--w); margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center; }
@@ -305,7 +347,71 @@
  <div class="hero-meta">TREC #788149 &nbsp; &middot; &nbsp; 30 five-star reviews &nbsp; &middot; &nbsp; 40+ builder relationships</div>
  <div class="hero-cta-row">
   <a href="tel:+12547182567" class="hero-cta">Call (254) 718-2567</a>
-  <a href="#contact" class="hero-cta ghost">Email Luke</a>
+  <a href="#quick-connect" class="hero-cta ghost">Message Luke</a>
+ </div>
+</section>
+
+<section class="intro-split" id="quick-connect">
+ <div class="intro-split-inner">
+  <div class="meet-luke">
+   <div class="meet-luke-photo">
+    <img src="/images/luke-allen.jpg" alt="Luke Allen, Austin new construction realtor, TREC #788149" loading="eager" />
+   </div>
+   <div class="meet-luke-text">
+    <div class="k">Meet your Realtor</div>
+    <h2>Luke Allen</h2>
+    <p class="meet-luke-title"><strong>New Construction Realtor</strong> &middot; Austin, TX &middot; TREC #788149</p>
+    <p class="meet-luke-copy">Independent buyer representation at every builder sales center across the Austin metro. Builder-paid, so you pay $0. Direct line, no team handoff.</p>
+    <div class="meet-luke-facts">
+     <div><strong>5.0</strong><span>30 Reviews</span></div>
+     <div><strong>40+</strong><span>Builder Network</span></div>
+     <div><strong>$0</strong><span>Buyer Cost</span></div>
+    </div>
+    <div class="meet-luke-contact">
+     <a href="tel:+12547182567">(254) 718-2567</a>
+     <a href="mailto:Luke@austinmdg.com">Luke@austinmdg.com</a>
+    </div>
+   </div>
+  </div>
+
+  <form class="quick-form" id="nc-quick-form" novalidate>
+   <h3>Talk to Luke</h3>
+   <p class="form-sub">Quick intake. Reply within 1 business hour.</p>
+   <div class="form-grid">
+    <div class="form-field">
+     <label for="nc-name">Name</label>
+     <input type="text" id="nc-name" name="name" placeholder="Your name" autocomplete="name" required />
+    </div>
+    <div class="form-field">
+     <label for="nc-phone">Phone</label>
+     <input type="tel" id="nc-phone" name="phone" placeholder="(512) 555-1234" autocomplete="tel" required />
+    </div>
+   </div>
+   <div class="form-field">
+    <label for="nc-email">Email</label>
+    <input type="email" id="nc-email" name="email" placeholder="you@example.com" autocomplete="email" required />
+   </div>
+   <div class="form-field">
+    <label for="nc-intent">What are you looking for?</label>
+    <select id="nc-intent" name="intent">
+     <option value="">Select one</option>
+     <option>Help choosing a builder + community</option>
+     <option>Already have a community in mind</option>
+     <option>Comparing new build vs resale</option>
+     <option>Luxury or semi-custom build</option>
+     <option>Investment or build-to-rent</option>
+     <option>Just exploring</option>
+    </select>
+   </div>
+   <div class="form-field">
+    <label for="nc-notes">Notes (optional)</label>
+    <textarea id="nc-notes" name="notes" placeholder="Target area, budget, timeline, builder preferences..."></textarea>
+   </div>
+   <input type="hidden" name="source" value="new-construction-realtor-austin" />
+   <button type="submit" id="nc-submit">Send to Luke</button>
+   <p class="form-note">No spam. Direct response from Luke, not a team.</p>
+   <div class="form-msg" id="nc-form-msg"></div>
+  </form>
  </div>
 </section>
 
@@ -510,6 +616,39 @@
 </div>
 
 <script src="/js/footer.js"></script>
+
+<script>
+ (function () {
+  const form = document.getElementById('nc-quick-form');
+  if (!form) return;
+  const msg = document.getElementById('nc-form-msg');
+  const btn = document.getElementById('nc-submit');
+  form.addEventListener('submit', async function (e) {
+   e.preventDefault();
+   msg.className = 'form-msg';
+   const data = Object.fromEntries(new FormData(form));
+   if (!data.name || !data.email || !data.phone) {
+    msg.className = 'form-msg err'; msg.textContent = 'Please fill in name, email, and phone.'; return;
+   }
+   btn.disabled = true; btn.textContent = 'Sending...';
+   try {
+    const r = await fetch('/api/contact', {
+     method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)
+    });
+    if (r.ok) {
+     msg.className = 'form-msg ok'; msg.textContent = 'Sent. Luke will reach out shortly.';
+     form.reset();
+    } else {
+     msg.className = 'form-msg err'; msg.textContent = 'Something went wrong. Email Luke@austinmdg.com or call (254) 718-2567.';
+    }
+   } catch (err) {
+    msg.className = 'form-msg err'; msg.textContent = 'Network error. Email Luke@austinmdg.com or call (254) 718-2567.';
+   } finally {
+    btn.disabled = false; btn.textContent = 'Send to Luke';
+   }
+  });
+ })();
+</script>
 
 </body>
 </html>
