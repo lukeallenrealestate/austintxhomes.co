@@ -2040,16 +2040,28 @@ function switchView(view) {
 // a top banner, change the Save Search modal copy, and route the save
 // to /api/admin/clients/:userId/searches (which flags the search as
 // admin-created so the alert job BCCs Luke).
+//
+// The context is READ from the URL once and cached in a module-level
+// variable, because syncUrlFromFilters() rebuilds the query string from
+// a filter-only allowlist on every filter change and would otherwise
+// strip building_for/client_name/client_email before the banner init
+// got to see them.
+let _buildingForContext = undefined; // undefined = not yet read; null = not in build mode
 function getBuildingForContext() {
+  if (_buildingForContext !== undefined) return _buildingForContext;
   const params = new URLSearchParams(window.location.search);
   const id = params.get('building_for');
-  if (!id) return null;
-  return {
+  if (!id) { _buildingForContext = null; return null; }
+  _buildingForContext = {
     userId: Number(id),
     clientName: params.get('client_name') || 'client',
     clientEmail: params.get('client_email') || ''
   };
+  return _buildingForContext;
 }
+// Eager capture — runs when the bundle loads, before any filter-sync code
+// has a chance to rewrite the URL and strip the admin-mode params.
+getBuildingForContext();
 
 function initBuildingForBanner() {
   const ctx = getBuildingForContext();
