@@ -57,7 +57,7 @@ const {
   syncListings, refreshPhotos, syncClosedLeases, syncClosedSales,
   syncInvisibleActive, syncClosedResidential,
 } = require('../idx-search/sync/mlsSync');
-const { runAlertJob } = require('../idx-search/services/alertJob');
+const { runAlertJob, runFavoritePriceDropJob } = require('../idx-search/services/alertJob');
 const r2Service = require('../idx-search/services/r2');
 // Ensure idx-search photo cache directory exists.
 // PHOTO_CACHE_DIR can be overridden by env so Render can point it at the
@@ -387,6 +387,13 @@ cron.schedule('5 * * * *', () => {
 // Email alerts for saved searches — every hour at :30
 cron.schedule('30 * * * *', () => {
   runAlertJob().catch(console.error);
+});
+
+// Price-drop alerts on FAVORITED listings — every hour at :45 so it
+// runs after the saved-search alert sweep (minimizes overlapping SMTP
+// bursts) but still catches drops the same hour they land.
+cron.schedule('45 * * * *', () => {
+  runFavoritePriceDropJob().catch(console.error);
 });
 
 // Photo backfill — runs every hour at :22, in the quiet window after the

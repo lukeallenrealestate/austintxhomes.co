@@ -589,6 +589,33 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
     .map-actions a:hover{border-color:var(--gold);color:var(--gold);}
     .hero-price{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;color:var(--gold);margin-bottom:.9rem;}
     .hero-pills{display:flex;flex-wrap:wrap;gap:.5rem;}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:1.1rem;align-items:center;}
+    .save-home-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:4px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;letter-spacing:.02em;cursor:pointer;transition:all .15s;}
+    .save-home-btn:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.5);}
+    .save-home-btn.saved{background:var(--gold);border-color:var(--gold);color:#fff;}
+    .save-home-btn.saved:hover{background:#a37f49;border-color:#a37f49;}
+    .save-home-btn svg{width:18px;height:18px;transition:all .15s;}
+    .save-home-btn.saved svg{fill:#fff;}
+    /* Modal overlay for signup/login */
+    .auth-modal-overlay{position:fixed;inset:0;background:rgba(15,15,14,.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px;}
+    .auth-modal-overlay.open{display:flex;}
+    .auth-modal{background:#fff;border-radius:8px;padding:32px;max-width:420px;width:100%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+    .auth-modal h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.8rem;margin:0 0 .3rem;color:var(--ink);}
+    .auth-modal .modal-sub{font-size:.9rem;color:var(--mid);margin:0 0 20px;}
+    .auth-modal .modal-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--mid);}
+    .auth-modal input{width:100%;padding:11px 14px;font-size:15px;border:1px solid var(--border);border-radius:4px;background:#fff;margin-bottom:12px;font-family:inherit;}
+    .auth-modal input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,147,90,.15);}
+    .auth-modal .modal-btn{width:100%;padding:13px;font-size:15px;font-weight:700;color:#fff;background:var(--gold);border:none;border-radius:4px;cursor:pointer;font-family:inherit;}
+    .auth-modal .modal-btn:hover{background:#a37f49;}
+    .auth-modal .modal-btn:disabled{opacity:.6;cursor:not-allowed;}
+    .auth-modal .modal-switch{text-align:center;margin-top:16px;font-size:.88rem;color:var(--mid);}
+    .auth-modal .modal-switch a{color:var(--gold);cursor:pointer;font-weight:600;text-decoration:none;}
+    .auth-modal .modal-err{color:#b91c1c;font-size:.85rem;margin:8px 0 0;min-height:1em;}
+    /* Toast */
+    .toast-msg{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:6px;font-size:.9rem;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:all .2s;z-index:10000;}
+    .toast-msg.visible{opacity:1;transform:translateX(-50%) translateY(0);}
+    .toast-msg.success{background:#166534;}
+    .toast-msg.error{background:#b91c1c;}
     .pill{background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);font-size:.73rem;letter-spacing:.05em;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.2);}
 
     /* gallery */
@@ -757,6 +784,14 @@ ${isSold ? `<div class="sold-banner">
       ${listing.new_construction_yn ? '<span class="pill">New Construction</span>' : ''}
       ${listing.subdivision_name ? `<span class="pill">${listing.subdivision_name}</span>` : ''}
     </div>
+    <div class="hero-actions">
+      <button class="save-home-btn" id="save-home-btn" onclick="handleSaveHome()" data-key="${listing.listing_key}" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        <span id="save-home-label">Save this home</span>
+      </button>
+    </div>
   </div>
 </section>
 
@@ -896,6 +931,35 @@ ${require('../lib/author-block').authorBlockHTML({ lastUpdated: listing.modifica
 
 <script src="/js/footer.js"></script>
 
+<!-- Auth modal (shown when logged-out user clicks Save this home) -->
+<div class="auth-modal-overlay" id="save-auth-modal">
+  <div class="auth-modal">
+    <button class="modal-close" onclick="closeSaveAuthModal()" type="button">&times;</button>
+    <div id="save-signup-form">
+      <h2>Save this home</h2>
+      <p class="modal-sub">Create a free account to save favorites and get new-listing alerts.</p>
+      <input type="text" id="sa-name" placeholder="Full name" autocomplete="name" />
+      <input type="email" id="sa-email" placeholder="Email" autocomplete="email" />
+      <input type="tel" id="sa-phone" placeholder="Phone (optional)" autocomplete="tel" />
+      <input type="password" id="sa-password" placeholder="Password (8+ characters)" autocomplete="new-password" />
+      <button class="modal-btn" id="sa-signup-btn" onclick="doSaveSignup()" type="button">Create account &amp; save</button>
+      <p class="modal-err" id="sa-signup-err"></p>
+      <p class="modal-switch">Already have an account? <a onclick="switchSaveAuth('login')">Log in instead</a></p>
+    </div>
+    <div id="save-login-form" style="display:none;">
+      <h2>Welcome back</h2>
+      <p class="modal-sub">Log in to save this home to your favorites.</p>
+      <input type="email" id="sa-li-email" placeholder="Email" autocomplete="email" />
+      <input type="password" id="sa-li-password" placeholder="Password" autocomplete="current-password" />
+      <button class="modal-btn" id="sa-login-btn" onclick="doSaveLogin()" type="button">Log in &amp; save</button>
+      <p class="modal-err" id="sa-login-err"></p>
+      <p class="modal-switch">New here? <a onclick="switchSaveAuth('signup')">Create a free account</a></p>
+    </div>
+  </div>
+</div>
+
+<div class="toast-msg" id="save-toast"></div>
+
 <div id="lightbox">
   <span id="lb-close" onclick="closeLB()">✕</span>
   <span id="lb-prev" onclick="shiftLB(-1)">‹</span>
@@ -923,6 +987,133 @@ async function submitContact(e) {
   } catch{msg.className='form-msg err';msg.textContent='Network error, email Luke@austinmdg.com.';}
   btn.disabled=false; btn.textContent='Send Message';
 }
+
+// ─── Save this home (favorites) ──────────────────────────────────
+// Mirrors idx-search/public/js/auth.js's Auth + FavoritesCache but
+// standalone so the branded listing page (which doesn't load the full
+// idx-search bundle) can still toggle favorites and bounce logged-out
+// users through a signup/login modal.
+const SAVE_TOKEN_KEY = 'idx_token';
+const SAVE_USER_KEY = 'idx_user';
+function getSaveToken(){return localStorage.getItem(SAVE_TOKEN_KEY);}
+function isSaveLoggedIn(){return !!getSaveToken();}
+function showSaveToast(msg,type){
+  const t=document.getElementById('save-toast'); if(!t) return;
+  t.textContent=msg; t.className='toast-msg '+(type||'')+' visible';
+  setTimeout(()=>t.classList.remove('visible'),2800);
+}
+async function saveApi(method,path){
+  const h={'Content-Type':'application/json'};
+  const tk=getSaveToken(); if(tk) h.Authorization='Bearer '+tk;
+  return fetch(path,{method,headers:h});
+}
+let _favKnown=null;
+async function refreshSavedState(){
+  const btn=document.getElementById('save-home-btn');
+  const label=document.getElementById('save-home-label');
+  if(!btn||!label) return;
+  if(!isSaveLoggedIn()){
+    btn.classList.remove('saved'); label.textContent='Save this home'; return;
+  }
+  try{
+    const r=await saveApi('GET','/api/favorites/keys');
+    if(r && r.ok){
+      const keys=await r.json();
+      _favKnown=new Set(keys);
+      const key=btn.dataset.key;
+      if(_favKnown.has(key)){ btn.classList.add('saved'); label.textContent='Saved'; }
+      else{ btn.classList.remove('saved'); label.textContent='Save this home'; }
+    }
+  }catch{}
+}
+async function handleSaveHome(){
+  const btn=document.getElementById('save-home-btn');
+  const label=document.getElementById('save-home-label');
+  const key=btn.dataset.key;
+  if(!isSaveLoggedIn()){ openSaveAuthModal('signup'); return;}
+  const wasOn=btn.classList.contains('saved');
+  // Optimistic UI
+  if(wasOn){ btn.classList.remove('saved'); label.textContent='Save this home'; }
+  else{ btn.classList.add('saved'); label.textContent='Saved'; }
+  try{
+    const r=await saveApi(wasOn?'DELETE':'POST','/api/favorites/'+encodeURIComponent(key));
+    if(!r || !r.ok){
+      // Revert optimistic change on failure
+      if(wasOn){ btn.classList.add('saved'); label.textContent='Saved'; }
+      else{ btn.classList.remove('saved'); label.textContent='Save this home'; }
+      if(r && r.status===401){ localStorage.removeItem(SAVE_TOKEN_KEY); localStorage.removeItem(SAVE_USER_KEY); openSaveAuthModal('login'); return;}
+      showSaveToast('Could not save. Try again.','error'); return;
+    }
+    showSaveToast(wasOn?'Removed from favorites':'Saved to favorites','success');
+  }catch{
+    if(wasOn){ btn.classList.add('saved'); label.textContent='Saved'; }
+    else{ btn.classList.remove('saved'); label.textContent='Save this home'; }
+    showSaveToast('Network error. Try again.','error');
+  }
+}
+function openSaveAuthModal(mode){
+  document.getElementById('save-auth-modal').classList.add('open');
+  switchSaveAuth(mode||'signup');
+  // Prefocus first input for keyboard users
+  setTimeout(()=>{
+    const el=document.getElementById(mode==='login'?'sa-li-email':'sa-name');
+    if(el) el.focus();
+  },60);
+}
+function closeSaveAuthModal(){document.getElementById('save-auth-modal').classList.remove('open');}
+function switchSaveAuth(mode){
+  document.getElementById('save-signup-form').style.display=mode==='signup'?'block':'none';
+  document.getElementById('save-login-form').style.display=mode==='login'?'block':'none';
+  document.getElementById('sa-signup-err').textContent='';
+  document.getElementById('sa-login-err').textContent='';
+}
+async function doSaveSignup(){
+  const name=document.getElementById('sa-name').value.trim();
+  const email=document.getElementById('sa-email').value.trim();
+  const phone=document.getElementById('sa-phone').value.trim();
+  const password=document.getElementById('sa-password').value;
+  const err=document.getElementById('sa-signup-err');
+  const btn=document.getElementById('sa-signup-btn');
+  err.textContent='';
+  if(!name||!email||!password){ err.textContent='Name, email, and password are required.'; return; }
+  if(password.length<8){ err.textContent='Password must be at least 8 characters.'; return; }
+  btn.disabled=true; btn.textContent='Creating account...';
+  try{
+    const r=await fetch('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,phone,password})});
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok){ err.textContent=data.error||'Signup failed.'; btn.disabled=false; btn.textContent='Create account & save'; return; }
+    localStorage.setItem(SAVE_TOKEN_KEY,data.token);
+    localStorage.setItem(SAVE_USER_KEY,JSON.stringify(data.user));
+    closeSaveAuthModal();
+    handleSaveHome();
+  }catch(e){ err.textContent='Network error: '+e.message; btn.disabled=false; btn.textContent='Create account & save'; }
+}
+async function doSaveLogin(){
+  const email=document.getElementById('sa-li-email').value.trim();
+  const password=document.getElementById('sa-li-password').value;
+  const err=document.getElementById('sa-login-err');
+  const btn=document.getElementById('sa-login-btn');
+  err.textContent='';
+  if(!email||!password){ err.textContent='Email and password are required.'; return; }
+  btn.disabled=true; btn.textContent='Logging in...';
+  try{
+    const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok){
+      if(data.needsActivation){ err.textContent='Your account is pending activation. Check your email for the activation link.'; }
+      else{ err.textContent=data.error||'Login failed.'; }
+      btn.disabled=false; btn.textContent='Log in & save'; return;
+    }
+    localStorage.setItem(SAVE_TOKEN_KEY,data.token);
+    localStorage.setItem(SAVE_USER_KEY,JSON.stringify(data.user));
+    closeSaveAuthModal();
+    handleSaveHome();
+  }catch(e){ err.textContent='Network error: '+e.message; btn.disabled=false; btn.textContent='Log in & save'; }
+}
+document.getElementById('save-auth-modal').addEventListener('click',e=>{
+  if(e.target.id==='save-auth-modal') closeSaveAuthModal();
+});
+refreshSavedState();
 
 (async()=>{
   try{

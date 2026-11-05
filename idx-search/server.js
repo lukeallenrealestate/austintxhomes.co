@@ -10,7 +10,7 @@ const {
   syncClosedLeases, syncClosedSales,
 } = require('./sync/mlsSync');
 const photoBackfill = require('./sync/photoBackfill');
-const { runAlertJob } = require('./services/alertJob');
+const { runAlertJob, runFavoritePriceDropJob } = require('./services/alertJob');
 
 // Track whether the server has fully started so we know when startup errors are fatal.
 let serverStarted = false;
@@ -312,6 +312,12 @@ cron.schedule('5 * * * *', () => {
 // Email alerts for saved searches — runs every hour at :30 to avoid collisions
 cron.schedule('30 * * * *', () => {
   runAlertJob().catch(console.error);
+});
+
+// Price-drop alerts on favorited listings — :45 so it runs after the
+// saved-search sweep and doesn't stack SMTP bursts.
+cron.schedule('45 * * * *', () => {
+  runFavoritePriceDropJob().catch(console.error);
 });
 
 // Market-coverage syncs — fill in MlgCanView=false listings + closed Residential

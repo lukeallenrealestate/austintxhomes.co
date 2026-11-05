@@ -1,5 +1,5 @@
 const db = require('../db/database');
-const { sendNewListingsAlert } = require('./mailer');
+const { sendNewListingsAlert, sendSavedSearchWelcome, sendFavoritePriceDropAlert } = require('./mailer');
 
 // Point-in-polygon (ray casting) — same algo as properties.js
 function pointInPolygon(lat, lng, polygon) {
@@ -202,4 +202,143 @@ async function runAlertJob() {
   }
 }
 
-module.exports = { runAlertJob };
+// ─── Bootstrap: mark current pool as "already seen" + send welcome ────
+// Call this when a new saved_search row is created so the first run of
+// runAlertJob doesn't blast an "N new listings" email for homes the
+// user could already see on the search results page. We write the
+// entire current matching pool into saved_search_sent with reason
+// 'bootstrap', so dedup takes over immediately and only truly-new MLS
+// arrivals or price drops will trigger emails afterward.
+//
+// Also sends ONE "your saved search is live" welcome email with the
+// match count as the headline, so users know the system is working.
+async function bootstrapSavedSearch({ savedSearchId, alertEnabled }) {
+  const row = db.prepare(`
+    SELECT ss.id, ss.name, ss.filters, ss.created_by_user_id,
+           u.id AS user_id, u.email, u.name AS full_name, u.status
+    FROM saved_searches ss
+    JOIN users u ON u.id = ss.user_id
+    WHERE ss.id = ?
+  `).get(savedSearchId);
+  if (!row) return;
+  let filters;
+  try { filters = JSON.parse(row.filters); } catch { filters = {}; }
+
+  const { conditions, values } = buildFilterConditions(filters);
+  const where = conditions.join(' AND ');
+  let candidates = db.prepare(`
+    SELECT listing_key, list_price, latitude, longitude
+    FROM listings WHERE ${where} LIMIT 2000
+  `).all(values);
+
+  if (filters.polygon) {
+    try {
+      const poly = typeof filters.polygon === 'string' ? JSON.parse(filters.polygon) : filters.polygon;
+      if (Array.isArray(poly) && poly.length > 2) {
+        candidates = candidates.filter(l => l.latitude && l.longitude && pointInPolygon(l.latitude, l.longitude, poly));
+      }
+    } catch {}
+  }
+
+  // Record every current match so the hourly job treats them as
+  // "already notified" - no retro spam.
+  const now = new Date().toISOString();
+  const tx = db.transaction((items) => {
+    for (const l of items) recordSent.run(savedSearchId, l.listing_key, l.list_price, 'bootstrap', now);
+  });
+  tx(candidates);
+
+  // Send the welcome email so the user knows the search is live and
+  // what the current pool size is. Only for active (non-pending)
+  // accounts with email configured and alerts enabled.
+  if (!process.env.EMAIL_HOST) return;
+  if (row.status !== 'active') return;
+  if (!alertEnabled) return;
+
+  try {
+    await sendSavedSearchWelcome({
+      to: row.email,
+      clientName: row.full_name,
+      searchName: row.name,
+      filters,
+      savedSearchId: row.id,
+      matchCount: candidates.length,
+      inviterName: null
+    });
+    db.prepare(`UPDATE saved_searches SET last_alerted_at = ? WHERE id = ?`).run(now, row.id);
+    console.log(`[SAVED-SEARCH] welcome sent to ${row.email} for "${row.name}" (${candidates.length} initial matches marked as seen)`);
+  } catch (err) {
+    console.warn(`[SAVED-SEARCH] welcome email failed for ${row.email}:`, err.message);
+  }
+}
+
+// ─── Favorite price-drop job ──────────────────────────────────────
+// Scans every user's favorites, compares current list_price against
+// what we last alerted them about (favorite_price_sent.last_price_alerted
+// seeded when they hearted the home), emails one summary per user
+// covering all drops. Only runs for active accounts with a configured
+// mailer. Idempotent: after emailing we update last_price_alerted so
+// repeat scans against the same price are no-ops, and small tick-ups
+// aren't re-emailed.
+async function runFavoritePriceDropJob() {
+  if (!process.env.EMAIL_HOST) return;
+
+  // One row per (user, favorited listing) where the live price is
+  // strictly lower than the last price we told them about.
+  const drops = db.prepare(`
+    SELECT f.user_id, u.email, u.name AS full_name,
+           l.listing_key, l.list_price, l.unparsed_address, l.city,
+           l.photos, l.standard_status,
+           fps.last_price_alerted AS prior_price
+    FROM favorites f
+    JOIN users u ON u.id = f.user_id AND u.status = 'active'
+    JOIN listings l ON l.listing_key = f.listing_key
+      AND l.mlg_can_view = 1
+      AND l.standard_status = 'Active'
+    JOIN favorite_price_sent fps
+      ON fps.user_id = f.user_id AND fps.listing_key = f.listing_key
+    WHERE l.list_price IS NOT NULL
+      AND fps.last_price_alerted IS NOT NULL
+      AND l.list_price < fps.last_price_alerted
+  `).all();
+
+  if (!drops.length) return;
+
+  const byUser = new Map();
+  for (const d of drops) {
+    if (!byUser.has(d.user_id)) byUser.set(d.user_id, { email: d.email, name: d.full_name, items: [] });
+    byUser.get(d.user_id).items.push(d);
+  }
+
+  const now = new Date().toISOString();
+  const updateSent = db.prepare(`
+    UPDATE favorite_price_sent SET last_price_alerted = ?, sent_at = ?
+    WHERE user_id = ? AND listing_key = ?
+  `);
+
+  for (const [userId, payload] of byUser.entries()) {
+    try {
+      await sendFavoritePriceDropAlert({
+        to: payload.email,
+        clientName: payload.name,
+        listings: payload.items.map(i => ({
+          listing_key: i.listing_key,
+          list_price: i.list_price,
+          prior_price: i.prior_price,
+          unparsed_address: i.unparsed_address,
+          city: i.city,
+          photos: i.photos
+        }))
+      });
+      const tx = db.transaction((items) => {
+        for (const it of items) updateSent.run(it.list_price, now, userId, it.listing_key);
+      });
+      tx(payload.items);
+      console.log(`[FAV-PRICE] Sent ${payload.items.length} price drop alert${payload.items.length === 1 ? '' : 's'} to ${payload.email}`);
+    } catch (err) {
+      console.warn(`[FAV-PRICE] failed for ${payload.email}:`, err.message);
+    }
+  }
+}
+
+module.exports = { runAlertJob, runFavoritePriceDropJob, bootstrapSavedSearch, buildFilterConditions, pointInPolygon };

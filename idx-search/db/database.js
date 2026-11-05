@@ -281,7 +281,23 @@ const migrations = [
   // created via /admin.html "Build search for client" — the alert job
   // uses this to BCC the admin on every notification so Luke sees
   // exactly what each client gets emailed.
-  `ALTER TABLE saved_searches ADD COLUMN created_by_user_id INTEGER`
+  `ALTER TABLE saved_searches ADD COLUMN created_by_user_id INTEGER`,
+
+  // Per-(user, favorite-listing) tracking of the last price we emailed
+  // about. When a user favorites a home, we record today's list_price;
+  // the favoritePriceDropJob scans this table against live listings and
+  // emails the user when current list_price < last_price_alerted. Keeps
+  // us from re-alerting on the same drop and makes "first favorite
+  // today" a no-op (user already saw the price when they clicked).
+  `CREATE TABLE IF NOT EXISTS favorite_price_sent (
+    user_id            INTEGER NOT NULL,
+    listing_key        TEXT    NOT NULL,
+    last_price_alerted REAL,
+    created_at         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    sent_at            DATETIME,
+    PRIMARY KEY (user_id, listing_key)
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_fps_user ON favorite_price_sent(user_id)`
 ];
 migrations.forEach(sql => { try { db.exec(sql); } catch {} });
 

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
 const { requireAuth } = require('../middleware/authMiddleware');
+const { bootstrapSavedSearch } = require('../services/alertJob');
 
 // GET /api/searches
 router.get('/', requireAuth, (req, res) => {
@@ -17,6 +18,14 @@ router.post('/', requireAuth, (req, res) => {
 
   const result = db.prepare('INSERT INTO saved_searches (user_id, name, filters, alert_enabled) VALUES (?, ?, ?, ?)')
     .run(req.user.id, name, JSON.stringify(filters), alert_enabled ? 1 : 0);
+
+  // Bootstrap: mark current pool as seen + send welcome email (async,
+  // fire-and-forget so the response isn't blocked). This is what makes
+  // the hourly alertJob ONLY email about brand-new listings or price
+  // drops going forward - no retroactive spam about homes that were
+  // already visible when the user created the search.
+  bootstrapSavedSearch({ savedSearchId: result.lastInsertRowid, alertEnabled: !!alert_enabled })
+    .catch(e => console.warn('[SAVED-SEARCH] bootstrap failed:', e.message));
 
   res.json({ id: result.lastInsertRowid, name, filters, alert_enabled: alert_enabled ? 1 : 0, created_at: new Date().toISOString() });
 });

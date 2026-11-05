@@ -6,6 +6,7 @@ const { requireAdmin } = require('../middleware/authMiddleware');
 const { syncListings, refreshPhotos } = require('../sync/mlsSync');
 const crm = require('../services/crm');
 const { sendActivationInvite } = require('../services/mailer');
+const { bootstrapSavedSearch } = require('../services/alertJob');
 
 // All admin routes require admin role
 router.use(requireAdmin);
@@ -261,17 +262,25 @@ router.post('/clients/:userId/searches', (req, res) => {
   const client = db.prepare('SELECT id FROM users WHERE id = ? AND role = ?').get(userId, 'user');
   if (!client) return res.status(404).json({ error: 'Client not found' });
 
+  const enabled = alert_enabled === false ? 0 : 1;
   const result = db.prepare(`
     INSERT INTO saved_searches (user_id, name, filters, alert_enabled, created_by_user_id)
     VALUES (?, ?, ?, ?, ?)
-  `).run(userId, name, JSON.stringify(filters), alert_enabled === false ? 0 : 1, req.user.id);
+  `).run(userId, name, JSON.stringify(filters), enabled, req.user.id);
+
+  // Same as /api/searches: mark the current pool as already-seen and
+  // send the one welcome email. After that, only new MLS arrivals + price
+  // drops will trigger alerts. The welcome goes to the client (BCC'd to
+  // Luke by the admin's own BCC when it fires - see alertJob flow).
+  bootstrapSavedSearch({ savedSearchId: result.lastInsertRowid, alertEnabled: !!enabled })
+    .catch(e => console.warn('[SAVED-SEARCH] bootstrap failed:', e.message));
 
   res.json({
     id: result.lastInsertRowid,
     user_id: userId,
     name,
     filters,
-    alert_enabled: alert_enabled === false ? 0 : 1,
+    alert_enabled: enabled,
     created_at: new Date().toISOString()
   });
 });
