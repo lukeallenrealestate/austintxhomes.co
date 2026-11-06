@@ -116,7 +116,7 @@ module.exports = function renderBlogIndex(posts, options) {
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "5.0",
-      "reviewCount": "30",
+      "reviewCount": "41",
       "bestRating": "5",
       "worstRating": "1"
     },

@@ -107,7 +107,7 @@ module.exports = function renderBlogPost(rawPost) {
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "5.0",
-      "reviewCount": "30",
+      "reviewCount": "41",
       "bestRating": "5",
       "worstRating": "1"
     },
@@ -478,7 +478,7 @@ module.exports = function renderBlogPost(rawPost) {
         <div class="sidebar-card-label">About the Author</div>
         <div class="sidebar-author-name">Luke Allen</div>
         <div class="sidebar-author-title">Austin TX Realtor · TREC #788149</div>
-        <div class="sidebar-author-rating">5.0 ★ on Google · 30 Reviews</div>
+        <div class="sidebar-author-rating">5.0 ★ on Google · 41 Reviews</div>
         <div class="sidebar-author-links">
           <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener">Read Google Reviews →</a>
         </div>
@@ -526,7 +526,7 @@ module.exports = function renderBlogPost(rawPost) {
           <span class="contact-badge">Central Austin Specialist</span>
           <span class="contact-badge">30 Five-Star Reviews</span>
         </div>
-        <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener" class="contact-reviews-link">Read Luke Allen's 30 five-star Google reviews →</a>
+        <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener" class="contact-reviews-link">Read Luke Allen's 41 five-star Google reviews →</a>
       </div>
       <div class="contact-form-card">
         <h3>Talk to Luke Allen</h3>

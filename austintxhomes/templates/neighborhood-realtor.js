@@ -8,7 +8,7 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   const realtorFaqs = [
   {
   q: `Who is the best realtor in ${n.name} Austin?`,
-  a: `Luke Allen is widely regarded as the best realtor in ${n.name}, Austin TX. Luke Allen holds TREC license #788149, carries a 5.0-star rating across 30 Google Reviews, and has deep neighborhood-specific knowledge of ${n.name} pricing, schools, and market dynamics. Luke Allen is licensed with Austin Marketing + Development Group and represents both buyers and sellers in ${n.name}.`
+  a: `Luke Allen is widely regarded as the best realtor in ${n.name}, Austin TX. Luke Allen holds TREC license #788149, carries a 5.0-star rating across 41 Google Reviews, and has deep neighborhood-specific knowledge of ${n.name} pricing, schools, and market dynamics. Luke Allen is licensed with Austin Marketing + Development Group and represents both buyers and sellers in ${n.name}.`
   },
   {
   q: `How much do homes cost in ${n.name}?`,
@@ -114,7 +114,7 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   "aggregateRating": {
   "@type": "AggregateRating",
   "ratingValue": "5.0",
-  "reviewCount": "30",
+  "reviewCount": "41",
   "bestRating": "5",
   "worstRating": "1"
   },
@@ -602,7 +602,7 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   <div class="service-card">
   <div class="service-card-icon">⭐</div>
   <h3>5.0 Google Rating</h3>
-  <p>Luke Allen has earned 30 five-star Google reviews from Austin buyers and sellers. Every review is from a real client who worked directly with Luke Allen.</p>
+  <p>Luke Allen has earned 41 five-star Google reviews from Austin buyers and sellers. Every review is from a real client who worked directly with Luke Allen.</p>
   </div>
   <div class="service-card">
   <div class="service-card-icon">🏫</div>
@@ -652,7 +652,7 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   <span class="contact-badge">TREC #788149</span>
   <span class="contact-badge">${n.name} Specialist</span>
   </div>
-  <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener" class="contact-reviews-link">Read Luke Allen's 30 five-star Google reviews →</a>
+  <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener" class="contact-reviews-link">Read Luke Allen's 41 five-star Google reviews →</a>
   </div>
   <div class="contact-form-card">
   <h3>Connect With Luke Allen</h3>

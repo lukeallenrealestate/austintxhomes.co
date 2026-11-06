@@ -393,7 +393,7 @@ function renderBuilderInventoryPage(slug) {
   <div class="meet-text">
    <div class="k">Who represents you</div>
    <h2>Luke Allen</h2>
-   <p class="title-line"><strong>${escHtml(b.name)} Buyer Representation</strong> &middot; TREC #788149 &middot; 5.0 across 30 Google reviews</p>
+   <p class="title-line"><strong>${escHtml(b.name)} Buyer Representation</strong> &middot; TREC #788149 &middot; 5.0 across 41 Google reviews</p>
    <p>${escHtml(b.meetParagraph || '')}</p>
    <div class="meet-contact">
     <a href="tel:+12547182567">(254) 718-2567</a>
