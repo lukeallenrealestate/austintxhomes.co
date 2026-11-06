@@ -1795,7 +1795,11 @@ const BUILDER_MAP = {
     shortName: 'Pulte',
     slug: 'pulte',
     tagline: 'Pulte, Centex, and Del Webb under one umbrella. One buyer rep covers all three.',
-    patterns: ['%Pulte%', '%Centex%', '%Del Webb%'],
+    // PulteGroup lists exclusively through ERA Experts in Austin. All three
+    // brands (Pulte / Centex / Del Webb at Sun City Georgetown) use the
+    // same broker. Keep the builder-name patterns in case any direct Pulte
+    // office listings appear, then add the broker as the main matcher.
+    patterns: ['%Pulte%', '%Centex%', '%Del Webb%', '%ERA Experts%'],
     priceBand: '$325K to $800K',
     overview: 'PulteGroup runs three distinct brands in Austin with different target buyers. Pulte is the mid-production brand. Centex is the entry-tier production brand, usually $325K to $450K. Del Webb is the 55+ active-adult brand, concentrated at Sun City Georgetown. Luke Allen represents buyers at any of the three without changing the engagement structure.',
     areas: 'Sun City Georgetown (Del Webb), Rancho Sienna (Pulte + Centex), Avery Ranch, Trace, Blackhawk, Highpointe, La Cima, Sunfield.',
