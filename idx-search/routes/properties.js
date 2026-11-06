@@ -1771,7 +1771,10 @@ const BUILDER_MAP = {
     shortName: 'Taylor Morrison',
     slug: 'taylor-morrison',
     tagline: 'Four price tiers under one brand: production entry through Esplanade semi-custom.',
-    patterns: ['%Taylor Morrison%'],
+    // Taylor Morrison lists almost exclusively through Alexander Properties
+    // in Austin (their long-time third-party broker). Direct office match is
+    // rare, so we match the broker name AND Taylor Morrison mentioned.
+    patterns: ['%Taylor Morrison%', '%Alexander Properties%'],
     priceBand: '$400K to $1.2M',
     overview: 'Taylor Morrison operates four distinct product tiers across the Austin metro, from entry-production homes near $400,000 through Esplanade 55+ communities and semi-custom builds past $1 million. Representation differs per tier because the negotiation levers differ: production homes trade on incentive stack size, Esplanade trades on structural options and lot premium.',
     areas: 'Headwaters (Dripping Springs), Esplanade at Rancho Sienna, Caliterra, Reserve at Tuscan Village, Travisso, Santa Rita Ranch, Sweetwater.',
@@ -1834,7 +1837,9 @@ const BUILDER_MAP = {
     shortName: 'Lennar',
     slug: 'lennar',
     tagline: 'Everything-included packages with a consistent production playbook across Austin.',
-    patterns: ['%Lennar%'],
+    // Lennar lists primarily through Keller Williams City-View in Austin.
+    // Match the broker office directly to capture their inventory.
+    patterns: ['%Lennar%', '%Keller Williams City-View%'],
     priceBand: '$325K to $650K',
     overview: 'Lennar\'s Austin playbook centers on their Everything\'s Included brand, where a defined finish package is standard rather than upsold at the design studio. That makes the contract simpler and the negotiation shorter: you are trading on incentive stack rather than upgrade line-items. Communities span from Buda / Kyle entry-production through mid-tier Leander and Georgetown.',
     areas: 'Headwaters (Buda), Siena (Round Rock), Sorento (Pflugerville), Sunfield, Preserve at Mayfield Ranch, Easton Park.',
@@ -1925,14 +1930,10 @@ router.get('/builder-inventory/:slug', (req, res) => {
   const offset = (page - 1) * limit;
 
   try {
-    // Many Austin builders (Taylor Morrison, Lennar) list via third-party
-    // brokerages. Match across list_office_name + public_remarks +
-    // subdivision_name scoped to new_construction_yn=1 so we catch them.
-    const cols = ['list_office_name', 'public_remarks', 'subdivision_name'];
-    const perPatternOr = cols.map(c => `${c} LIKE ?`).join(' OR ');
-    const officeClause = '(' + b.patterns.map(() => '(' + perPatternOr + ')').join(' OR ') + ')';
-    const whereParams = [];
-    for (const p of b.patterns) for (const _ of cols) whereParams.push(p);
+    // list_office_name only (see SSR template comment). TM and Lennar's
+    // patterns already include their third-party broker names.
+    const officeClause = '(' + b.patterns.map(() => 'list_office_name LIKE ?').join(' OR ') + ')';
+    const whereParams = [...b.patterns];
 
     const where = `mlg_can_view = 1
       AND standard_status = 'Active'

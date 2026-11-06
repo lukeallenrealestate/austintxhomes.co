@@ -35,18 +35,15 @@ function homesUrl(listing_key, unparsed_address) {
 function fetchBuilderData(slug) {
   const b = BUILDER_MAP[slug];
   if (!b) return null;
-  // Many Austin builders (Taylor Morrison, Lennar) list their homes
-  // through third-party brokerages instead of their own licensed
-  // office. For those, list_office_name alone misses everything. We
-  // widen the net to include public_remarks (builder is almost always
-  // named there) and subdivision_name. Scoping by new_construction_yn
-  // plus the $100K floor keeps the false-positive rate down.
-  const cols = ['list_office_name', 'public_remarks', 'subdivision_name'];
-  const perPatternOr = cols.map(c => `${c} LIKE ?`).join(' OR ');
-  const officeClause = '(' + b.patterns.map(() => '(' + perPatternOr + ')').join(' OR ') + ')';
-  // Each pattern gets expanded to one placeholder per column
-  const params = [];
-  for (const p of b.patterns) for (const _ of cols) params.push(p);
+  // Match ONLY on list_office_name to prevent cross-contamination. Loose
+  // matching via public_remarks + subdivision_name was pulling the same
+  // listing onto multiple builder pages (homes that mention competitors
+  // in their description, or sit in multi-builder communities). Taylor
+  // Morrison and Lennar's patterns include their third-party broker
+  // office names (Alexander Properties, Keller Williams City-View)
+  // since they rarely list under their own builder name in Austin.
+  const officeClause = '(' + b.patterns.map(() => 'list_office_name LIKE ?').join(' OR ') + ')';
+  const params = [...b.patterns];
 
   const where = `mlg_can_view = 1
     AND standard_status = 'Active'
