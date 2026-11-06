@@ -384,7 +384,7 @@ function renderBuilderInventoryPage(slug) {
  <div class="inner">
   <div class="k">Live inventory</div>
   <h2>${activeCount} ${escHtml(b.shortName)} homes <em>for sale</em>.</h2>
-  <p style="max-width:720px;">Pulled live from the ACTRIS MLS. Each listing has Luke on the buyer side the moment you click "Tour with Luke."</p>
+  <p style="max-width:720px;">${escHtml(b.inventoryIntro || '')}</p>
   <div class="inv-grid">${cardsHtml}</div>
   ${activeCount > 24 ? `<p style="text-align:center;margin-top:24px;color:var(--mid);">+ ${activeCount - 24} more ${escHtml(b.shortName)} active listings. <a href="#contact">Ask Luke for the full list.</a></p>` : ''}
  </div>
@@ -397,7 +397,7 @@ function renderBuilderInventoryPage(slug) {
    <div class="k">Who represents you</div>
    <h2>Luke Allen</h2>
    <p class="title-line"><strong>${escHtml(b.name)} Buyer Representation</strong> &middot; TREC #788149 &middot; 5.0 across 30 Google reviews</p>
-   <p>Luke represents buyers at every active ${escHtml(b.name)} Austin community. First-visit registration, incentive stack negotiation, contract review, design studio walk-through, pre-drywall and final walk-throughs. All builder-paid, which means $0 buyer cost.</p>
+   <p>${escHtml(b.meetParagraph || '')}</p>
    <div class="meet-contact">
     <a href="tel:+12547182567">(254) 718-2567</a>
     <a href="mailto:Luke@austinmdg.com">Luke@austinmdg.com</a>
@@ -419,8 +419,7 @@ function renderBuilderInventoryPage(slug) {
   <div class="qc-pitch">
    <div class="k" style="color:var(--gold-lt);">Tour with Luke</div>
    <h2>Ready to tour a <em>${escHtml(b.shortName)}</em> home?</h2>
-   <p>Luke registers you at your first ${escHtml(b.shortName)} visit. Lock in representation. No cost to you.</p>
-   <p>Reply within 1 business hour. Direct from Luke, not a team.</p>
+   <p>${escHtml(b.ctaBlurb || '')}</p>
   </div>
   <form class="qc-form" id="qc-form" novalidate>
    <h3>Request a tour</h3>
@@ -438,15 +437,11 @@ function renderBuilderInventoryPage(slug) {
 
 <section class="related">
  <div class="inner">
-  <div class="k">Other builders Luke works with</div>
-  <div class="related-grid">
-   ${Object.values(BUILDER_MAP).filter(x => x.slug !== slug).slice(0, 8).map(x => `
-    <a class="related-card" href="/${x.slug}-homes-austin-for-sale">
-     <strong>${escHtml(x.shortName)} Austin</strong>
-     <span>Active inventory + buyer rep</span>
-    </a>`).join('')}
-  </div>
-  <p style="margin-top:22px;font-size:13.5px;color:var(--mid);">See also: <a href="/new-construction-realtor-austin">new construction realtor Austin</a> (reference page), <a href="/new-build-negotiation-austin">new build negotiation playbook</a>.</p>
+  <div class="k">Other Austin builders</div>
+  <p style="margin:0 0 18px;font-size:14.5px;color:var(--mid);">Comparing builders? Luke represents buyers across every major production + semi-custom brand in the Austin metro:
+   ${Object.values(BUILDER_MAP).filter(x => x.slug !== slug).map(x => `<a href="/${x.slug}-homes-austin-for-sale">${escHtml(x.shortName)}</a>`).join(', ')}.
+  </p>
+  <p style="margin:0;font-size:13.5px;color:var(--mid);">Reference: <a href="/new-construction-realtor-austin">new construction realtor Austin</a>. Negotiation playbook: <a href="/new-build-negotiation-austin">builder incentive levers</a>.</p>
  </div>
 </section>
 
