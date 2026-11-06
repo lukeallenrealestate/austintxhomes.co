@@ -35,12 +35,25 @@ function homesUrl(listing_key, unparsed_address) {
 function fetchBuilderData(slug) {
   const b = BUILDER_MAP[slug];
   if (!b) return null;
-  const officeClause = '(' + b.patterns.map(() => 'list_office_name LIKE ?').join(' OR ') + ')';
+  // Many Austin builders (Taylor Morrison, Lennar) list their homes
+  // through third-party brokerages instead of their own licensed
+  // office. For those, list_office_name alone misses everything. We
+  // widen the net to include public_remarks (builder is almost always
+  // named there) and subdivision_name. Scoping by new_construction_yn
+  // plus the $100K floor keeps the false-positive rate down.
+  const cols = ['list_office_name', 'public_remarks', 'subdivision_name'];
+  const perPatternOr = cols.map(c => `${c} LIKE ?`).join(' OR ');
+  const officeClause = '(' + b.patterns.map(() => '(' + perPatternOr + ')').join(' OR ') + ')';
+  // Each pattern gets expanded to one placeholder per column
+  const params = [];
+  for (const p of b.patterns) for (const _ of cols) params.push(p);
+
   const where = `mlg_can_view = 1
     AND standard_status = 'Active'
     AND property_type NOT LIKE '%Lease%'
     AND list_price IS NOT NULL
     AND list_price > 100000
+    AND new_construction_yn = 1
     AND ${officeClause}`;
 
   const rows = db.prepare(`
@@ -51,11 +64,11 @@ function fetchBuilderData(slug) {
     WHERE ${where}
     ORDER BY list_price
     LIMIT 24
-  `).all(...b.patterns);
+  `).all(...params);
 
   const all = db.prepare(`
     SELECT list_price, living_area, postal_code, city FROM listings WHERE ${where}
-  `).all(...b.patterns);
+  `).all(...params);
 
   const prices = all.map(r => r.list_price).sort((a, b) => a - b);
   const medianPrice = prices.length ? prices[Math.floor(prices.length / 2)] : null;

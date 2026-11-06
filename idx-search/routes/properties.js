@@ -1901,15 +1901,24 @@ router.get('/builder-inventory/:slug', (req, res) => {
   const offset = (page - 1) * limit;
 
   try {
-    const officeClause = '(' + b.patterns.map(() => 'list_office_name LIKE ?').join(' OR ') + ')';
+    // Many Austin builders (Taylor Morrison, Lennar) list via third-party
+    // brokerages. Match across list_office_name + public_remarks +
+    // subdivision_name scoped to new_construction_yn=1 so we catch them.
+    const cols = ['list_office_name', 'public_remarks', 'subdivision_name'];
+    const perPatternOr = cols.map(c => `${c} LIKE ?`).join(' OR ');
+    const officeClause = '(' + b.patterns.map(() => '(' + perPatternOr + ')').join(' OR ') + ')';
+    const whereParams = [];
+    for (const p of b.patterns) for (const _ of cols) whereParams.push(p);
+
     const where = `mlg_can_view = 1
       AND standard_status = 'Active'
       AND property_type NOT LIKE '%Lease%'
       AND list_price IS NOT NULL
       AND list_price > 100000
+      AND new_construction_yn = 1
       AND ${officeClause}`;
 
-    const total = db.prepare(`SELECT COUNT(*) AS n FROM listings WHERE ${where}`).get(...b.patterns).n;
+    const total = db.prepare(`SELECT COUNT(*) AS n FROM listings WHERE ${where}`).get(...whereParams).n;
 
     const rows = db.prepare(`
       SELECT listing_key, unparsed_address, city, postal_code, list_price,
@@ -1920,12 +1929,11 @@ router.get('/builder-inventory/:slug', (req, res) => {
       WHERE ${where}
       ORDER BY list_price
       LIMIT ? OFFSET ?
-    `).all(...b.patterns, limit, offset);
+    `).all(...whereParams, limit, offset);
 
-    // Aggregate stats for the page's content block
     const allPrices = db.prepare(`
       SELECT list_price, living_area, postal_code FROM listings WHERE ${where}
-    `).all(...b.patterns);
+    `).all(...whereParams);
     const prices = allPrices.map(r => r.list_price).sort((a, b) => a - b);
     const medianPrice = prices.length ? prices[Math.floor(prices.length / 2)] : null;
     const minPrice = prices.length ? prices[0] : null;
