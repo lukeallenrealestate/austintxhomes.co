@@ -1,0 +1,418 @@
+<!-- atx-author-block v1 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Listing Presentation: 1201 Silver Hill Dr | Luke Allen</title>
+ <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+ <meta name="googlebot" content="noindex, nofollow" />
+ <link rel="icon" href="/favicon.ico" sizes="any" />
+ <link rel="preconnect" href="https://fonts.googleapis.com" />
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+ <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+ <style>
+  :root {
+   --gold: #b8935a;
+   --gold-lt: #cda96f;
+   --gold-dk: #8f7042;
+   --gold-pale: #f5ede0;
+   --ink: #0f0f0e;
+   --text: #1a1918;
+   --mid: #5c5b57;
+   --light: #999690;
+   --bg: #fff;
+   --warm: #faf8f4;
+   --cream: #f1ece3;
+   --border: #e5dfd4;
+   --emerald: #2d6a4f;
+   --crimson: #a84a2f;
+   --r: 4px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--text); background: var(--warm); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1040px; margin: 0 auto; background: #fff; box-shadow: 0 10px 50px rgba(15,15,14,.08); }
+
+  /* Cover */
+  .cover { position: relative; min-height: 640px; background: var(--ink); color: #fff; display: flex; align-items: flex-end; overflow: hidden; }
+  .cover-img { position: absolute; inset: 0; background: url('/api/properties/photos/ACT237612142/0') center/cover no-repeat; filter: brightness(.55); }
+  .cover-veil { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,15,14,.5) 0%, rgba(15,15,14,.1) 40%, rgba(15,15,14,.8) 100%); }
+  .cover-content { position: relative; z-index: 2; padding: 56px 56px 52px; width: 100%; }
+  .cover-k { font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--gold-lt); font-weight: 600; margin-bottom: 20px; }
+  .cover h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: clamp(42px, 5.5vw, 68px); line-height: 1.04; margin: 0 0 14px; max-width: 760px; letter-spacing: -.01em; }
+  .cover h1 em { font-style: italic; color: var(--gold-lt); }
+  .cover-sub { font-size: 17px; color: rgba(255,255,255,.88); max-width: 600px; margin-bottom: 26px; }
+  .cover-meta { display: flex; gap: 32px; flex-wrap: wrap; font-size: 13px; color: rgba(255,255,255,.72); border-top: 1px solid rgba(255,255,255,.2); padding-top: 22px; }
+  .cover-meta strong { color: #fff; font-weight: 600; display: block; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 4px; }
+
+  /* Sections */
+  section { padding: 56px 56px; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  .k { font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 12px; }
+  h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: clamp(30px, 3.6vw, 42px); line-height: 1.15; margin: 0 0 22px; color: var(--ink); letter-spacing: -.005em; }
+  h2 em { font-style: italic; color: var(--gold); }
+  h3 { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 22px; margin: 32px 0 12px; color: var(--ink); }
+  p { margin: 0 0 14px; font-size: 15.5px; color: var(--text); line-height: 1.75; }
+
+  .dek { background: var(--warm); border-left: 3px solid var(--gold); padding: 24px 28px; margin: 0 0 24px; font-size: 16px; line-height: 1.7; }
+  .dek strong { color: var(--ink); }
+
+  /* Presented to */
+  .presented { background: var(--cream); padding: 32px 56px; display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .presented-left { font-size: 13px; color: var(--mid); }
+  .presented-left strong { display: block; font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--ink); font-weight: 600; margin-top: 2px; }
+  .presented-right { text-align: right; font-size: 12px; color: var(--mid); }
+  .presented-right strong { display: block; color: var(--ink); font-size: 13px; }
+
+  /* Fact grid */
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 24px 0 0; }
+  .fact { background: var(--warm); border: 1px solid var(--border); border-radius: var(--r); padding: 20px 18px; text-align: center; }
+  .fact strong { display: block; font-family: 'Cormorant Garamond', serif; font-size: clamp(22px, 2.6vw, 30px); font-weight: 600; color: var(--ink); line-height: 1.1; margin-bottom: 4px; }
+  .fact .s { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--mid); font-weight: 600; }
+  @media (max-width: 760px) { .facts { grid-template-columns: repeat(2, 1fr); } }
+
+  /* Subject details table */
+  .subj-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+  .subj-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 14.5px; vertical-align: top; }
+  .subj-table td:first-child { color: var(--mid); width: 36%; font-weight: 500; }
+  .subj-table td:last-child { color: var(--ink); font-weight: 500; }
+
+  /* Price history timeline */
+  .timeline { margin: 20px 0 0; border-left: 2px solid var(--gold); padding-left: 22px; }
+  .tl-item { position: relative; margin-bottom: 18px; }
+  .tl-item:before { content: ''; position: absolute; left: -29px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--gold); border: 3px solid #fff; box-shadow: 0 0 0 1px var(--gold); }
+  .tl-date { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--mid); font-weight: 600; }
+  .tl-event { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--ink); margin: 2px 0; }
+  .tl-price { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--gold); font-weight: 600; }
+  .tl-note { font-size: 13px; color: var(--mid); margin-top: 2px; }
+
+  /* Comps table */
+  .comps { width: 100%; border-collapse: collapse; margin: 24px 0 0; font-size: 13.5px; background: #fff; }
+  .comps th { background: var(--ink); color: var(--gold-lt); padding: 14px 10px; text-align: left; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
+  .comps td { padding: 12px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .comps td.r { text-align: right; font-variant-numeric: tabular-nums; }
+  .comps tr.highlight td { background: var(--gold-pale); font-weight: 600; }
+  .comps tr:hover td:not(.r) { color: var(--ink); }
+  .comps .sub-cell { font-size: 11px; color: var(--mid); display: block; margin-top: 2px; }
+
+  /* Price recommendation */
+  .pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 28px 0 0; }
+  .price-card { padding: 28px 24px; border: 1px solid var(--border); border-radius: var(--r); background: #fff; position: relative; }
+  .price-card.recommended { background: var(--ink); color: #fff; border-color: var(--ink); transform: scale(1.03); box-shadow: 0 16px 48px rgba(15,15,14,.18); }
+  .price-card .label { font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; font-weight: 700; color: var(--mid); margin-bottom: 8px; }
+  .price-card.recommended .label { color: var(--gold-lt); }
+  .price-card .badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #fff; padding: 4px 14px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; font-weight: 700; border-radius: 3px; }
+  .price-card .price { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 600; line-height: 1; color: var(--ink); margin-bottom: 2px; }
+  .price-card.recommended .price { color: var(--gold-lt); font-size: 42px; }
+  .price-card .ppsf { font-size: 12px; color: var(--mid); margin-bottom: 14px; }
+  .price-card.recommended .ppsf { color: rgba(255,255,255,.65); }
+  .price-card .rationale { font-size: 13.5px; line-height: 1.6; color: var(--text); }
+  .price-card.recommended .rationale { color: rgba(255,255,255,.88); }
+  @media (max-width: 860px) { .pricing { grid-template-columns: 1fr; } .price-card.recommended { transform: none; } }
+
+  /* Strategy */
+  .strategy { counter-reset: step; margin-top: 24px; }
+  .strat { counter-increment: step; position: relative; padding: 18px 0 18px 68px; border-bottom: 1px solid var(--border); }
+  .strat:before { content: counter(step); position: absolute; left: 0; top: 18px; width: 48px; height: 48px; background: var(--gold); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; }
+  .strat h3 { margin: 0 0 6px; font-size: 18px; font-family: 'Inter', sans-serif; font-weight: 600; }
+  .strat p { margin: 0; font-size: 14.5px; color: var(--mid); }
+
+  /* Bottom line */
+  .bottom-line { background: var(--ink); color: #fff; padding: 56px; }
+  .bottom-line .k { color: var(--gold); }
+  .bottom-line h2 { color: #fff; }
+  .bottom-line h2 em { color: var(--gold-lt); }
+  .bottom-line p { color: rgba(255,255,255,.88); font-size: 17px; line-height: 1.7; }
+  .bottom-line .big-number { font-family: 'Cormorant Garamond', serif; font-size: clamp(48px, 7vw, 76px); font-weight: 500; line-height: 1; color: var(--gold-lt); letter-spacing: -.02em; display: block; margin: 20px 0 10px; }
+
+  /* Luke bio */
+  .bio { background: var(--cream); padding: 48px 56px; display: flex; gap: 36px; align-items: center; }
+  .bio-photo { flex: 0 0 160px; width: 160px; height: 160px; border-radius: 50%; overflow: hidden; border: 3px solid var(--gold); box-shadow: 0 10px 28px rgba(15,15,14,.12); }
+  .bio-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .bio-text h3 { margin: 0 0 4px; font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--ink); font-weight: 600; }
+  .bio-text .title { font-size: 13px; color: var(--mid); margin-bottom: 14px; }
+  .bio-text p { font-size: 14.5px; color: var(--mid); margin-bottom: 14px; }
+  .bio-text .contact a { display: inline-block; margin-right: 18px; font-size: 14px; color: var(--gold); font-weight: 600; text-decoration: none; }
+  .bio-text .contact a:hover { color: var(--gold-dk); text-decoration: underline; }
+  @media (max-width: 720px) { .bio { flex-direction: column; text-align: center; padding: 40px 32px; } }
+
+  /* Gallery strip */
+  .gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; background: var(--border); }
+  .gallery img { width: 100%; height: 180px; object-fit: cover; display: block; background: var(--cream); }
+  @media (max-width: 760px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+
+  /* Footer */
+  .foot { background: var(--ink); color: rgba(255,255,255,.55); padding: 28px 56px; text-align: center; font-size: 12px; }
+  .foot a { color: var(--gold-lt); text-decoration: none; }
+  .foot a:hover { color: #fff; }
+
+  /* Print styles */
+  @media print {
+   body { background: #fff; }
+   .wrap { box-shadow: none; max-width: 100%; }
+   section { page-break-inside: avoid; padding: 32px 36px; }
+   .cover { min-height: 400px; }
+   .price-card.recommended { transform: none; box-shadow: none; }
+   .bottom-line, .bio { padding: 32px 36px; }
+   .foot { background: #fff; color: var(--mid); }
+  }
+  @media (max-width: 720px) {
+   section, .presented, .bio, .bottom-line, .foot { padding-left: 24px; padding-right: 24px; }
+   .cover-content { padding: 40px 24px; }
+  }
+ </style>
+</head>
+<body>
+
+<div class="wrap">
+
+<!-- COVER -->
+<header class="cover">
+ <div class="cover-img"></div>
+ <div class="cover-veil"></div>
+ <div class="cover-content">
+  <div class="cover-k">Listing Presentation &middot; Confidential</div>
+  <h1>1201 Silver Hill Dr<br/><em>Rolling Hills West</em></h1>
+  <p class="cover-sub">A strategy to recover <strong style="color:var(--gold-lt);">$555,000 to $705,000</strong> on the relist vs. the current contract.</p>
+  <div class="cover-meta">
+   <div><strong>Prepared By</strong>Luke Allen &middot; TREC #788149</div>
+   <div><strong>Prepared On</strong>November 6, 2026</div>
+   <div><strong>Property</strong>5 BR / 5 BA / 4,265 sqft on 0.42 acres</div>
+  </div>
+ </div>
+</header>
+
+<!-- PRESENTED TO -->
+<div class="presented">
+ <div class="presented-left">
+  Prepared for<br/>
+  <strong>[Seller Name]</strong>
+ </div>
+ <div class="presented-right">
+  <strong>Luke Allen, Realtor</strong>
+  Austin Marketing + Development Group<br/>
+  (254) 718-2567 &middot; Luke@austinmdg.com
+ </div>
+</div>
+
+<!-- EXECUTIVE SUMMARY -->
+<section>
+ <div class="k">Executive summary</div>
+ <h2>You priced <em>too low</em>, not too high.</h2>
+ <div class="dek">
+  The $500,000 price drop from $2,495,000 to <strong>$1,995,000</strong> generated multiple competitive offers because the home was <strong>severely underpriced</strong> for its size, condition, and location. Rolling Hills West 4,265 sqft walk-zoned-to-Westlake-HS properties support a sale price in the <strong>$2,550,000 to $2,700,000</strong> range based on current active-market comps. Terminating the contract and relisting at <strong>$2,695,000</strong> is the right move.
+ </div>
+ <p>This presentation walks through the market data supporting that recommendation: the subject property profile, the price-history context, the 78746 and Rolling Hills West market conditions, eight direct comparable active listings, and a three-tier pricing strategy with expected sale ranges.</p>
+</section>
+
+<!-- SUBJECT PROPERTY -->
+<section>
+ <div class="k">Subject property</div>
+ <h2>1201 Silver Hill Dr, <em>Austin TX 78746</em></h2>
+
+ <table class="subj-table">
+  <tr><td>Subdivision</td><td>Rolling Hills West (walk-zoned to all three Eanes ISD schools)</td></tr>
+  <tr><td>School district</td><td>Eanes ISD  &middot; Cedar Creek Elementary / Hill Country Middle / Westlake High</td></tr>
+  <tr><td>Beds / Baths</td><td>5 bedrooms / 5 full bathrooms</td></tr>
+  <tr><td>Living area</td><td>4,265 sqft</td></tr>
+  <tr><td>Lot</td><td>18,500 sqft / 0.42 acres</td></tr>
+  <tr><td>Year built</td><td>1991</td></tr>
+  <tr><td>Garage</td><td>2-car</td></tr>
+  <tr><td>Pool</td><td>No</td></tr>
+  <tr><td>HOA</td><td>$250 / year</td></tr>
+  <tr><td>Property tax</td><td>$23,455 / year</td></tr>
+  <tr><td>Standout features</td><td>Plantation-style architecture, 19th-century French doors, hardwood floors, dedicated office, professional-grade dance / game room with Marley floors, private serene views</td></tr>
+ </table>
+
+ <div class="gallery">
+  <img src="/api/properties/photos/ACT237612142/1" alt="1201 Silver Hill Dr" loading="lazy" />
+  <img src="/api/properties/photos/ACT237612142/4" alt="1201 Silver Hill Dr" loading="lazy" />
+  <img src="/api/properties/photos/ACT237612142/8" alt="1201 Silver Hill Dr" loading="lazy" />
+  <img src="/api/properties/photos/ACT237612142/15" alt="1201 Silver Hill Dr" loading="lazy" />
+ </div>
+</section>
+
+<!-- PRICE HISTORY -->
+<section style="background:var(--warm);">
+ <div class="k">Price history</div>
+ <h2>What <em>happened</em>.</h2>
+
+ <div class="timeline">
+  <div class="tl-item">
+   <div class="tl-date">June 26, 2026</div>
+   <div class="tl-event">Listed</div>
+   <div class="tl-price">$2,495,000 &middot; $585/sqft</div>
+   <div class="tl-note">At-market for 78746 but below Rolling Hills West neighborhood average. Listing coincided with summer slowdown.</div>
+  </div>
+  <div class="tl-item">
+   <div class="tl-date">~ October 2026</div>
+   <div class="tl-event">Price Drop</div>
+   <div class="tl-price" style="color:var(--crimson);">$1,995,000 &middot; $468/sqft</div>
+   <div class="tl-note">A $500,000 reduction (20%). Below Westlake market floor for a home of this size and location.</div>
+  </div>
+  <div class="tl-item">
+   <div class="tl-date">Current</div>
+   <div class="tl-event">Active Under Contract</div>
+   <div class="tl-price">$1,995,000</div>
+   <div class="tl-note">Multiple offers generated almost immediately after the price drop. Market signal: the price dropped <em>past</em> the clearing level.</div>
+  </div>
+ </div>
+
+ <p style="margin-top:28px;"><strong>Reading the signal:</strong> if a price drop produces multiple competitive offers within days, the new price was <strong>under</strong> the clearing level, not at it. The right move after seeing that signal is to find where the clearing level actually sits and re-price there. That's what the comp analysis below does.</p>
+</section>
+
+<!-- MARKET CONTEXT -->
+<section>
+ <div class="k">Market context</div>
+ <h2>78746 Westlake <em>right now</em>.</h2>
+
+ <div class="facts">
+  <div class="fact"><strong>149</strong><span class="s">Active listings in 78746</span></div>
+  <div class="fact"><strong>$2.395M</strong><span class="s">Median active list price</span></div>
+  <div class="fact"><strong>$689/sf</strong><span class="s">Median $/sqft</span></div>
+  <div class="fact"><strong>$2.80M</strong><span class="s">Median 4-6 BR active</span></div>
+ </div>
+
+ <h3>What this means for 1201 Silver Hill</h3>
+ <p>78746 is a premium submarket. Median $/sqft for active 4-6 BR homes runs <strong>$694/sqft</strong>. Applying that to the subject's 4,265 sqft implies <strong>$2.96M at market median</strong>. The current contract at $468/sqft is 32% below market median for comparable actives.</p>
+
+ <h3>Rolling Hills West specifically</h3>
+ <p>The direct neighborhood is thinly inventoried but priced higher than broader 78746:</p>
+ <ul style="font-size:14.5px;color:var(--text);line-height:1.8;">
+  <li><strong>3607 Ripple Creek Dr</strong>  &middot; 4 BR / 4 BA / 4,621 sqft (1978)  &middot; <strong>$3,100,000</strong> at $671/sqft</li>
+  <li><strong>3613 Pinnacle Rd</strong>  &middot; 4 BR / 3 BA / 2,790 sqft (1970)  &middot; <strong>$2,150,000</strong> at $771/sqft</li>
+ </ul>
+ <p>Rolling Hills West active $/sqft average: <strong>~$720/sqft</strong>. That's the direct neighborhood benchmark the subject should be priced against.</p>
+</section>
+
+<!-- COMP ANALYSIS -->
+<section style="background:var(--warm);">
+ <div class="k">Comparable analysis</div>
+ <h2>Direct <em>active comps</em>.</h2>
+ <p>Filter: 78746 ZIP, 4-6 BR, 3,500 to 5,500 sqft, built 1980-2010. Ranked by $/sqft ascending. The subject slots into the strong-$/sqft group (Bull Mountain, Beecave Woods, Rob Roy) based on Rolling Hills West location and Westlake HS walkability.</p>
+
+ <table class="comps">
+  <thead>
+   <tr><th>Address</th><th>Subdivision / Area</th><th class="r">Yr</th><th class="r">BR/BA</th><th class="r">SqFt</th><th class="r">List</th><th class="r">$/sqft</th></tr>
+  </thead>
+  <tbody>
+   <tr><td>816 Stonewall Ridge Ln</td><td>Sky Forest</td><td class="r">2006</td><td class="r">4/3</td><td class="r">4,053</td><td class="r">$1,995,000</td><td class="r">$492</td></tr>
+   <tr><td>3901 Prentice Ln</td><td>West Rim</td><td class="r">1982</td><td class="r">4/4</td><td class="r">3,820</td><td class="r">$2,195,000</td><td class="r">$575</td></tr>
+   <tr><td>2900 Meandering River Ct</td><td>Westview on Lake Austin</td><td class="r">1999</td><td class="r">5/6</td><td class="r">4,888</td><td class="r">$2,799,000</td><td class="r">$573</td></tr>
+   <tr><td>2501 Stratford Dr</td><td>Bluffington</td><td class="r">2001</td><td class="r">4/4</td><td class="r">4,521</td><td class="r">$2,750,000</td><td class="r">$608</td></tr>
+   <tr class="highlight"><td>1504 Twilight Ridge Dr</td><td>Wild Basin Ledge</td><td class="r">1988</td><td class="r">4/4</td><td class="r">3,740</td><td class="r">$2,395,000</td><td class="r">$640</td></tr>
+   <tr class="highlight"><td>1908 Winter Park Rd</td><td>Beecave Woods</td><td class="r">1983</td><td class="r">4/4</td><td class="r">3,625</td><td class="r">$2,498,000</td><td class="r">$689</td></tr>
+   <tr class="highlight"><td>4800 Mantle Dr</td><td>Bull Mountain</td><td class="r">1993</td><td class="r">4/4</td><td class="r">3,569</td><td class="r">$2,549,000</td><td class="r">$714</td></tr>
+   <tr class="highlight"><td>701 Furlong Dr</td><td>Rob Roy on the Creek</td><td class="r">1994</td><td class="r">5/4</td><td class="r">3,992</td><td class="r">$3,000,000</td><td class="r">$752</td></tr>
+  </tbody>
+ </table>
+
+ <p style="margin-top:16px;font-size:13px;color:var(--mid);">Highlighted rows: best direct comparables by age, sqft, and Westlake-tier location.</p>
+
+ <h3>Comp-implied value for 1201 Silver Hill</h3>
+ <p>Applying each of the four highlighted comp $/sqft values to the subject's 4,265 sqft:</p>
+ <ul style="font-size:14.5px;line-height:1.9;">
+  <li>At Wild Basin Ledge rate ($640/sf): <strong>$2,729,600</strong></li>
+  <li>At Beecave Woods rate ($689/sf): <strong>$2,938,585</strong></li>
+  <li>At Bull Mountain rate ($714/sf): <strong>$3,045,210</strong></li>
+  <li>At Rob Roy on the Creek rate ($752/sf): <strong>$3,207,280</strong></li>
+ </ul>
+ <p><strong>Comp-implied value range: $2.73M to $3.21M</strong>, median around $2.99M. The recommended list below is deliberately below that median to generate multiple offers quickly without leaving money on the table.</p>
+</section>
+
+<!-- PRICING RECOMMENDATION -->
+<section>
+ <div class="k">Pricing recommendation</div>
+ <h2>Three list <em>strategies</em>.</h2>
+
+ <div class="pricing">
+  <div class="price-card">
+   <div class="label">Conservative</div>
+   <div class="price">$2,595,000</div>
+   <div class="ppsf">$608/sqft &middot; priced below median</div>
+   <div class="rationale">Likely to go under contract in 2-3 weeks. Choose this if timeline is the priority and we want to replicate the "multiple offers" dynamic that proved out at $1.995M.</div>
+  </div>
+  <div class="price-card recommended">
+   <div class="badge">Recommended</div>
+   <div class="label">Target</div>
+   <div class="price">$2,695,000</div>
+   <div class="ppsf">$632/sqft &middot; just under market median</div>
+   <div class="rationale">Priced competitively against direct comps without leaving money on the table. Expected sale between $2,550,000 and $2,700,000.</div>
+  </div>
+  <div class="price-card">
+   <div class="label">Aspirational</div>
+   <div class="price">$2,795,000</div>
+   <div class="ppsf">$655/sqft &middot; still under neighborhood avg</div>
+   <div class="rationale">Still below Rolling Hills West neighborhood $/sqft average. Appropriate if seller can accept a 60-90 day marketing window.</div>
+  </div>
+ </div>
+
+ <h3>Expected sale range at the recommended list</h3>
+ <p><strong>$2,550,000 to $2,700,000.</strong> Walk-away floor: <strong>$2,450,000</strong>. Below that, the seller is giving away equity based on the comp evidence.</p>
+</section>
+
+<!-- STRATEGY -->
+<section style="background:var(--warm);">
+ <div class="k">Execution strategy</div>
+ <h2>Terminate, refresh, <em>relist</em>.</h2>
+
+ <div class="strategy">
+  <div class="strat">
+   <h3>Terminate the current contract</h3>
+   <p>Quick call with the title company to confirm position. If still in option period, termination is clean. If past option, buyer release may require nominal consideration (typical range $500 to $5,000).</p>
+  </div>
+  <div class="strat">
+   <h3>Refresh the marketing package</h3>
+   <p>New MLS entry resets the public days-on-market clock. Zillow and Redfin will show the historical price. Mitigate with fresh photography, drone shots, twilight exteriors, and staging. Budget $1,500 to $2,500.</p>
+  </div>
+  <div class="strat">
+   <h3>Pre-market exclusive preview</h3>
+   <p>7 to 14 day "coming soon" window before activating the MLS. Exclusive showings to pre-qualified Westlake luxury buyer agents. Builds urgency and generates pre-launch interest.</p>
+  </div>
+  <div class="strat">
+   <h3>Launch at $2,695,000</h3>
+   <p>Target marketing window: 30 to 60 days at the recommended list price. First 7-10 days drive the strongest interest; use that window for showings and set an offer-review deadline if demand warrants.</p>
+  </div>
+  <div class="strat">
+   <h3>Negotiate to $2,625,000 to $2,650,000</h3>
+   <p>Buyers in this price band expect some negotiation room. The list price is calibrated to land the sale in that window. Net result: $630,000 to $655,000 more than the current contract.</p>
+  </div>
+ </div>
+</section>
+
+<!-- BOTTOM LINE -->
+<section class="bottom-line">
+ <div class="k">Bottom line</div>
+ <h2>The current contract leaves <em>serious money</em> on the table.</h2>
+ <span class="big-number">$555K to $705K</span>
+ <p>Additional net to seller on the recommended list strategy vs. the current $1,995,000 contract. That's a 28% to 35% recovery with a 30 to 60 day marketing window and the right pricing on day one.</p>
+</section>
+
+<!-- LUKE BIO -->
+<div class="bio">
+ <div class="bio-photo">
+  <img src="/images/luke-allen.jpg" alt="Luke Allen, Austin Realtor" />
+ </div>
+ <div class="bio-text">
+  <h3>Luke Allen</h3>
+  <div class="title">Austin Realtor &middot; TREC #788149 &middot; Austin Marketing + Development Group</div>
+  <p>Full-time Austin Realtor representing buyers and sellers across every Austin ISD and surrounding neighborhoods. 5.0 star Google rating across 30 reviews. Direct line, no team handoff.</p>
+  <div class="contact">
+   <a href="tel:+12547182567">(254) 718-2567</a>
+   <a href="mailto:Luke@austinmdg.com">Luke@austinmdg.com</a>
+   <a href="https://austintxhomes.co">austintxhomes.co</a>
+  </div>
+ </div>
+</div>
+
+<!-- FOOTER -->
+<div class="foot">
+ Prepared November 6, 2026 &middot; Confidential listing presentation &middot; Data sourced from the ACTRIS MLS<br/>
+ Comparable analysis uses active MLS listings as of presentation date. Closed-sale data (available through MLS internal feeds) can tighten the recommended range by an additional 5-10% and will be reviewed at the signed-listing stage.
+</div>
+
+</div>
+
+</body>
+</html>

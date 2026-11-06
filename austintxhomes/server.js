@@ -1140,6 +1140,13 @@ app.get('/100-bonus-depreciation-real-estate', (_req, res) => res.sendFile(path.
 app.get('/privacy',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/privacy.html')));
 app.get('/sell',                    (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell.html')));
 
+// Confidential listing presentation for 1201 Silver Hill Dr. Noindex,
+// not in sitemap, direct-link only. Rendered as a one-off page Luke can
+// share with the seller or print to PDF.
+app.get('/listing-presentation-1201-silver-hill', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public/site/listing-presentation-1201-silver-hill.html'));
+});
+
 // Builder-filtered new construction inventory pages. SSR template reads
 // BUILDER_MAP from idx-search/routes/properties.js, queries live listings
 // from the IDX DB, and renders the full page HTML per request. Each
