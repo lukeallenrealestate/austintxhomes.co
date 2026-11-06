@@ -147,6 +147,9 @@
   <li><a href="/austin-homes-big-yard">Austin Homes with Big Yards</a></li>
   <li><a href="/new-construction">New Construction Austin</a></li>
   <li><a href="/new-construction-realtor-austin">New Construction Realtor Austin</a></li>
+  <li><a href="/david-weekley-homes-austin-for-sale">David Weekley Homes For Sale</a></li>
+  <li><a href="/taylor-morrison-homes-austin-for-sale">Taylor Morrison Homes For Sale</a></li>
+  <li><a href="/pulte-homes-austin-for-sale">Pulte Homes For Sale</a></li>
   <li><a href="/eanes-isd-homes-for-sale">Eanes ISD Homes for Sale</a></li>
   <li><a href="/luxury-homes">Luxury Homes Austin TX</a></li>
   <li><a href="/investment-properties">Investment Properties</a></li>

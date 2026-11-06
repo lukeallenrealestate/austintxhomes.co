@@ -1139,6 +1139,29 @@ app.get('/sell-house-78723-austin', (_req, res) => res.sendFile(path.join(__dirn
 app.get('/100-bonus-depreciation-real-estate', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/100-bonus-depreciation-real-estate.html')));
 app.get('/privacy',       (_req, res) => res.sendFile(path.join(__dirname, 'public/site/privacy.html')));
 app.get('/sell',                    (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell.html')));
+
+// Builder-filtered new construction inventory pages. SSR template reads
+// BUILDER_MAP from idx-search/routes/properties.js, queries live listings
+// from the IDX DB, and renders the full page HTML per request. Each
+// builder = one page = one URL. The slug validates against the map so
+// typos return 404 instead of empty pages.
+const { renderBuilderInventoryPage, listBuilderSlugs } = require('./lib/builderInventoryPage');
+const BUILDER_SLUGS = listBuilderSlugs();
+BUILDER_SLUGS.forEach(slug => {
+  app.get(`/${slug}-homes-austin-for-sale`, (_req, res) => {
+    try {
+      const html = renderBuilderInventoryPage(slug);
+      if (!html) return res.status(404).send('Builder not found');
+      res.set('Content-Type', 'text/html; charset=utf-8');
+      // Short CDN cache - inventory changes hourly, render is cheap
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=900');
+      res.send(html);
+    } catch (err) {
+      console.error(`[builder-inventory:${slug}]`, err.message);
+      res.status(500).send('Server error');
+    }
+  });
+});
 app.get('/what-is-my-home-worth',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/what-is-my-home-worth.html')));
 app.get('/sell-midcentury-modern-home-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-midcentury-modern-home-austin.html')));
 app.get('/sell-ranch-home-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-ranch-home-austin.html')));

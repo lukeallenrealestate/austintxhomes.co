@@ -1733,3 +1733,242 @@ function tryParse(str, fallback) {
 router.refreshListingPhotos = refreshListingPhotos;
 module.exports = router;
 
+// ─── Builder inventory ────────────────────────────────────────────
+// Dedicated endpoint for the builder-filtered new construction pages
+// (David Weekley, Taylor Morrison, Pulte, DR Horton, Lennar, Highland,
+// Perry, Meritage). Filters on list_office_name LIKE patterns since
+// the MLS tags builders by their internal sales office, not a
+// standardized builder field. The patterns map intentionally includes
+// umbrella brands (PulteGroup = Pulte + Centex + Del Webb) so the
+// Pulte page shows the full catalog a buyer would compare at.
+//
+// Registered via BUILDER_SLUG_MAP exported below so the route handler
+// stays declarative. One slug = one builder page = one filter set.
+const BUILDER_MAP = {
+  'david-weekley': {
+    name: 'David Weekley Homes',
+    shortName: 'David Weekley',
+    slug: 'david-weekley',
+    tagline: 'Mid-tier, design-forward builder from Houston with a strong Austin presence.',
+    patterns: ['%Weekley%'],
+    priceBand: '$450K to $900K',
+    overview: 'David Weekley Homes is a privately held Houston-based builder whose Austin playbook centers on LifeDesign floor plans and higher standard finish levels than production competitors. Austin inventory sits across north (Leander, Cedar Park, Georgetown) and east (Mueller, Easton Park) corridors, usually with real design-studio allowances built into the base contract rather than upsold on top.',
+    areas: 'Mueller, Easton Park, Northwood, Villages of Hidden Lake, Bryson, Palmera Ridge, Leander master-planned communities.',
+    negotiationNote: 'Weekley negotiates on closing cost credits + design studio dollars rather than cutting base price. Rate buydown through their preferred lender is usually the largest incentive component.',
+    faqs: [
+      { q: 'How many David Weekley homes are for sale in Austin right now?', a: 'Live count: {{ACTIVE_COUNT}} active David Weekley homes currently listed across the Austin metro. Luke Allen pulls fresh inventory every hour from the ACTRIS MLS feed.' },
+      { q: 'What Austin communities does David Weekley build in?', a: 'David Weekley Austin inventory is concentrated in Mueller, Easton Park, Northwood, Villages of Hidden Lake, Bryson, Palmera Ridge, and several Leander master-planned communities. Luke Allen represents buyers at every active Weekley community.' },
+      { q: 'Does David Weekley pay the buyer\'s agent commission in Austin?', a: 'Yes. David Weekley, like every production builder in Austin, allocates a 2.5 to 3 percent buyer-agent commission from their marketing budget. Independent buyer representation costs the buyer nothing.' },
+      { q: 'What is the price range for David Weekley homes in Austin?', a: 'Current Weekley Austin inventory spans roughly $450,000 to $900,000 with the median typically landing in the mid-$600,000s. Specific pricing varies by community and floor plan.' },
+      { q: 'How is the David Weekley buyer-rep process different?', a: 'Luke registers you at your first Weekley visit, walks the models with you, flags the specific LifeDesign options worth paying for, reviews the Weekley contract clauses before signing, and coordinates pre-drywall + final walk-throughs with the Weekley superintendent.' }
+    ]
+  },
+  'taylor-morrison': {
+    name: 'Taylor Morrison',
+    shortName: 'Taylor Morrison',
+    slug: 'taylor-morrison',
+    tagline: 'Four price tiers under one brand: production entry through Esplanade semi-custom.',
+    patterns: ['%Taylor Morrison%'],
+    priceBand: '$400K to $1.2M',
+    overview: 'Taylor Morrison operates four distinct product tiers across the Austin metro, from entry-production homes near $400,000 through Esplanade 55+ communities and semi-custom builds past $1 million. Representation differs per tier because the negotiation levers differ: production homes trade on incentive stack size, Esplanade trades on structural options and lot premium.',
+    areas: 'Headwaters (Dripping Springs), Esplanade at Rancho Sienna, Caliterra, Reserve at Tuscan Village, Travisso, Santa Rita Ranch, Sweetwater.',
+    negotiationNote: 'Taylor Morrison production tier moves heavily on incentive stack: closing costs, rate buydown, design studio allowance. Esplanade tier moves on structural option credits + lot premium waivers.',
+    faqs: [
+      { q: 'How many Taylor Morrison homes are for sale in Austin?', a: 'Current count: {{ACTIVE_COUNT}} Taylor Morrison homes listed across all four tiers in the Austin metro, pulled fresh from the ACTRIS MLS. Luke Allen represents buyers at every active Taylor Morrison community.' },
+      { q: 'What Taylor Morrison communities are in Austin?', a: 'Austin Taylor Morrison inventory sits across Headwaters (Dripping Springs), Esplanade at Rancho Sienna, Caliterra, Reserve at Tuscan Village, Travisso, Santa Rita Ranch, and Sweetwater. Each community has distinct floor plan sets.' },
+      { q: 'What is the difference between Taylor Morrison production and Esplanade?', a: 'Taylor Morrison runs multiple brands under one umbrella. Production tiers hit the $400K to $700K band. Esplanade is their 55+ active-adult brand, typically $500K to $900K. Semi-custom spans past $1M. Negotiation strategy differs by tier.' },
+      { q: 'Does Taylor Morrison pay the buyer\'s agent commission?', a: 'Yes. Across every Taylor Morrison tier in Austin, buyer representation is builder-paid from their marketing budget. The buyer pays nothing for independent representation.' },
+      { q: 'What is the price range for Taylor Morrison homes in Austin?', a: 'Current Austin inventory spans roughly $400,000 to $1,200,000 depending on tier and community.' }
+    ]
+  },
+  'pulte': {
+    name: 'PulteGroup',
+    shortName: 'Pulte',
+    slug: 'pulte',
+    tagline: 'Pulte, Centex, and Del Webb under one umbrella. One buyer rep covers all three.',
+    patterns: ['%Pulte%', '%Centex%', '%Del Webb%'],
+    priceBand: '$325K to $800K',
+    overview: 'PulteGroup runs three distinct brands in Austin with different target buyers. Pulte is the mid-production brand. Centex is the entry-tier production brand, usually $325K to $450K. Del Webb is the 55+ active-adult brand, concentrated at Sun City Georgetown. Luke Allen represents buyers at any of the three without changing the engagement structure.',
+    areas: 'Sun City Georgetown (Del Webb), Rancho Sienna (Pulte + Centex), Avery Ranch, Trace, Blackhawk, Highpointe, La Cima, Sunfield.',
+    negotiationNote: 'Pulte frequently runs standing-inventory incentive stacks that out-pace new to-be-built pricing. Standing-inventory homes (move-in ready but unsold for 60+ days) are the single biggest lever on a PulteGroup negotiation.',
+    faqs: [
+      { q: 'How many Pulte homes are for sale in Austin?', a: 'Current count across Pulte, Centex, and Del Webb brands: {{ACTIVE_COUNT}} active homes in the Austin metro. Luke Allen represents buyers at any of the three PulteGroup brands.' },
+      { q: 'What is the difference between Pulte, Centex, and Del Webb?', a: 'All three are PulteGroup brands. Pulte is mid-production ($425K to $675K typical). Centex is entry-tier production ($325K to $450K). Del Webb is 55+ active-adult ($400K to $700K), concentrated at Sun City Georgetown.' },
+      { q: 'Where is Sun City Georgetown and what makes it different?', a: 'Sun City Georgetown is the Del Webb (PulteGroup) 55+ active-adult community in Georgetown, Texas. Residents must be age 55 or over. The community has three golf courses, extensive amenities, and distinct resale restrictions worth reviewing before the contract.' },
+      { q: 'Does Pulte pay the buyer\'s agent commission?', a: 'Yes, across all three PulteGroup brands in Austin. Buyer representation is builder-paid, so working with Luke Allen costs the buyer nothing.' },
+      { q: 'What is the standing-inventory play at Pulte?', a: 'PulteGroup frequently runs aggressive incentive stacks on homes that are move-in ready but unsold for 60-plus days. These standing-inventory incentives often beat new-build pricing. Luke tracks standing-inventory homes across every Pulte / Centex / Del Webb community in Austin.' }
+    ]
+  },
+  'dr-horton': {
+    name: 'D.R. Horton',
+    shortName: 'D.R. Horton',
+    slug: 'dr-horton',
+    tagline: 'America\'s largest production builder by volume. Highest Austin-metro inventory count.',
+    patterns: ['%Horton%'],
+    priceBand: '$275K to $525K',
+    overview: 'D.R. Horton is the volume leader in Austin production housing. Their Express Homes brand covers the entry tier, Freedom Homes covers 55+, and the main D.R. Horton line covers mid-production. The scale of their Austin pipeline means more standing inventory, more aggressive incentive stacks, and more negotiation room than mid-tier builders at comparable price points.',
+    areas: 'Bear Creek Ranch, Southeast Austin production communities, Hutto, Manor, Kyle, Buda, Leander entry-production.',
+    negotiationNote: 'Horton runs the most aggressive incentive stacks in the Austin metro, especially on standing inventory. Closing cost credits + rate buydown routinely exceed $20,000 of total value at the entry tier.',
+    faqs: [
+      { q: 'How many D.R. Horton homes are for sale in Austin?', a: 'Current count: {{ACTIVE_COUNT}} D.R. Horton active homes across the Austin metro. Luke Allen represents buyers at every active Horton community including Express Homes (entry) and Freedom Homes (55+).' },
+      { q: 'Where does D.R. Horton build in Austin?', a: 'D.R. Horton Austin concentrations: Bear Creek Ranch, southeast Austin production corridor, Hutto, Manor, Kyle, Buda, and Leander entry-production zones. They also operate across the 290 corridor.' },
+      { q: 'What is the difference between D.R. Horton, Express Homes, and Freedom Homes?', a: 'All three are D.R. Horton brands. Express Homes is the entry-tier brand ($275K to $400K). The main D.R. Horton line is mid-production ($350K to $525K). Freedom Homes is the 55-plus active-adult brand.' },
+      { q: 'Does D.R. Horton pay the buyer\'s agent commission in Austin?', a: 'Yes. Horton allocates buyer-agent commission from their marketing budget, like every Austin production builder. Working with Luke Allen as the independent buyer rep costs the buyer nothing.' },
+      { q: 'What is the entry-tier Austin price for D.R. Horton?', a: 'D.R. Horton Express Homes entry-tier Austin pricing starts in the mid-$270Ks. Standing inventory at this price point typically carries the largest incentive stacks.' }
+    ]
+  },
+  'lennar': {
+    name: 'Lennar',
+    shortName: 'Lennar',
+    slug: 'lennar',
+    tagline: 'Everything-included packages with a consistent production playbook across Austin.',
+    patterns: ['%Lennar%'],
+    priceBand: '$325K to $650K',
+    overview: 'Lennar\'s Austin playbook centers on their Everything\'s Included brand, where a defined finish package is standard rather than upsold at the design studio. That makes the contract simpler and the negotiation shorter: you are trading on incentive stack rather than upgrade line-items. Communities span from Buda / Kyle entry-production through mid-tier Leander and Georgetown.',
+    areas: 'Headwaters (Buda), Siena (Round Rock), Sorento (Pflugerville), Sunfield, Preserve at Mayfield Ranch, Easton Park.',
+    negotiationNote: 'Lennar\'s Everything\'s Included brand means less to negotiate on upgrades. The negotiation moves to closing cost credits, preferred lender rate buydown, and lot premium waivers on standing inventory.',
+    faqs: [
+      { q: 'How many Lennar homes are for sale in Austin?', a: 'Current count: {{ACTIVE_COUNT}} active Lennar homes across the Austin metro. Luke Allen represents buyers at every active Lennar community.' },
+      { q: 'What is Lennar\'s Everything\'s Included package?', a: 'Lennar\'s Everything\'s Included brand bundles a defined finish package (appliances, flooring, countertops, select upgrades) into the base price rather than selling them individually at the design studio. Simplifies the contract and tightens the upgrade negotiation window.' },
+      { q: 'Where does Lennar build in Austin?', a: 'Active Lennar Austin communities: Headwaters (Buda), Siena (Round Rock), Sorento (Pflugerville), Sunfield (Buda / Kyle), Preserve at Mayfield Ranch (Round Rock), and Easton Park (East Austin).' },
+      { q: 'Does Lennar pay the buyer\'s agent commission in Austin?', a: 'Yes. Lennar allocates buyer-agent commission from their marketing budget. Independent buyer representation through Luke Allen costs the buyer nothing.' },
+      { q: 'What is the Austin price range for Lennar?', a: 'Lennar Austin inventory spans roughly $325,000 to $650,000 depending on community, floor plan, and whether the home is standing inventory or to-be-built.' }
+    ]
+  },
+  'highland': {
+    name: 'Highland Homes',
+    shortName: 'Highland Homes',
+    slug: 'highland',
+    tagline: 'Dallas-based builder, mid-tier Austin communities with floor-plan flexibility.',
+    patterns: ['%Highland Homes%'],
+    priceBand: '$425K to $900K',
+    overview: 'Highland Homes is a privately held Dallas-based builder with mid-tier Austin inventory emphasizing floor-plan customization within production constraints. Highland typically offers more structural options (room reconfigurations, media rooms, extended garages) than a comparable-price production competitor. Austin presence is concentrated in Leander, Georgetown, and Dripping Springs mid-tier communities.',
+    areas: 'Headwaters (Dripping Springs), Crescent Bluff (Leander), Rim Rock, Highland Horizon, Wolf Ranch (Georgetown).',
+    negotiationNote: 'Highland\'s structural option flexibility is their main differentiator. The negotiation lever is extending the structural option credit, not cutting base price. Preferred lender buydown is typically the second-largest incentive component.',
+    faqs: [
+      { q: 'How many Highland Homes are for sale in Austin?', a: 'Current count: {{ACTIVE_COUNT}} active Highland Homes in the Austin metro, pulled from the ACTRIS MLS feed. Luke Allen represents buyers at every active Highland community.' },
+      { q: 'What makes Highland Homes different from other Austin builders?', a: 'Highland Homes offers more structural option flexibility (room reconfigurations, media rooms, extended garages) than most comparable-price production builders. The trade-off is slightly longer build timelines on to-be-built homes.' },
+      { q: 'Where does Highland Homes build in Austin?', a: 'Highland Austin communities: Headwaters (Dripping Springs), Crescent Bluff (Leander), Rim Rock, Highland Horizon, and Wolf Ranch (Georgetown). Mid-tier mid-$400Ks through upper-$800Ks.' },
+      { q: 'Does Highland Homes pay the buyer\'s agent commission?', a: 'Yes. Highland Homes, like every production builder in Austin, allocates buyer-agent commission from their marketing budget. Working with Luke Allen costs the buyer nothing.' },
+      { q: 'What is the Highland Homes Austin price range?', a: 'Highland Austin inventory spans roughly $425,000 to $900,000. Structural upgrade decisions have the biggest impact on final delivered price.' }
+    ]
+  },
+  'perry': {
+    name: 'Perry Homes',
+    shortName: 'Perry Homes',
+    slug: 'perry',
+    tagline: 'Texas-rooted builder with mid-production Austin inventory.',
+    patterns: ['%Perry Homes%'],
+    priceBand: '$400K to $800K',
+    overview: 'Perry Homes is a privately held, Texas-based builder founded in Houston in 1967. Austin inventory is mid-production with a traditional design sensibility and standard finish levels that lean slightly above the production entry tier. Perry\'s calling card is their consistency: standardized floor plans delivered across multiple metros with minimal variance.',
+    areas: 'Reserve at Westcreek (Leander), Westside at Buttercup Creek (Cedar Park), Eastwood at Riverside (Round Rock), Caliterra (Dripping Springs).',
+    negotiationNote: 'Perry Homes tends to hold list price firm but moves on incentive stack: design studio dollars, closing costs, preferred lender rate buydown. Standing inventory carries larger incentive packages than to-be-built.',
+    faqs: [
+      { q: 'How many Perry Homes are for sale in Austin?', a: 'Current count: {{ACTIVE_COUNT}} active Perry Homes listings across the Austin metro. Luke Allen pulls fresh inventory from the ACTRIS MLS feed and represents buyers at every active Perry community.' },
+      { q: 'What makes Perry Homes different in Austin?', a: 'Perry Homes is Texas-based and delivers standardized floor plans with consistent build quality across communities. Finish levels sit slightly above production entry tier. Design flexibility is lower than semi-custom builders but higher than pure production.' },
+      { q: 'Where does Perry Homes build in Austin?', a: 'Perry Homes Austin communities: Reserve at Westcreek (Leander), Westside at Buttercup Creek (Cedar Park), Eastwood at Riverside (Round Rock), and Caliterra (Dripping Springs).' },
+      { q: 'Does Perry Homes pay the buyer\'s agent commission?', a: 'Yes. Perry Homes allocates buyer-agent commission from their marketing budget, like every Austin production builder. Independent representation through Luke Allen costs the buyer nothing.' },
+      { q: 'What is the Perry Homes Austin price range?', a: 'Perry Homes Austin inventory spans roughly $400,000 to $800,000 depending on community and floor plan.' }
+    ]
+  },
+  'meritage': {
+    name: 'Meritage Homes',
+    shortName: 'Meritage',
+    slug: 'meritage',
+    tagline: 'Energy-efficiency focused production builder, Austin production tier.',
+    patterns: ['%Meritage%'],
+    priceBand: '$350K to $650K',
+    overview: 'Meritage Homes is publicly traded (NYSE: MTH) with a long-standing energy-efficiency positioning. Austin inventory is production tier with spray-foam insulation, high-performance HVAC, and rooftop solar options as standard or near-standard in most communities. That translates to lower monthly utility costs than a comparable-price production competitor, worth a few thousand dollars per year.',
+    areas: 'Hutto, Pflugerville, Leander entry-production communities, Kyle production corridor.',
+    negotiationNote: 'Meritage negotiates on incentive stack size (closing costs, rate buydown, design studio) rather than base price. Energy-efficient home features are standardized rather than upsold, which simplifies the contract.',
+    faqs: [
+      { q: 'How many Meritage Homes are for sale in Austin?', a: 'Current count: {{ACTIVE_COUNT}} active Meritage Homes across the Austin metro. Luke Allen represents buyers at every active Meritage community.' },
+      { q: 'What is special about Meritage Homes?', a: 'Meritage is one of the few production builders with energy-efficiency as a core positioning. Spray-foam insulation, high-performance HVAC, and solar options are standard or near-standard on most Austin Meritage homes. Lower monthly utility cost than comparable production.' },
+      { q: 'Where does Meritage build in Austin?', a: 'Meritage Austin presence is concentrated in Hutto, Pflugerville, Leander entry-production, and the Kyle production corridor.' },
+      { q: 'Does Meritage pay the buyer\'s agent commission?', a: 'Yes. Meritage allocates buyer-agent commission from their marketing budget, like every Austin production builder. Luke Allen represents buyers at no cost.' },
+      { q: 'What is the Meritage Austin price range?', a: 'Meritage Austin inventory typically spans $350,000 to $650,000 depending on community and floor plan size.' }
+    ]
+  }
+};
+
+// GET /api/properties/builder-inventory/:slug?page=1&limit=24
+router.get('/builder-inventory/:slug', (req, res) => {
+  const slug = req.params.slug;
+  const b = BUILDER_MAP[slug];
+  if (!b) return res.status(404).json({ error: 'Unknown builder slug' });
+  const page = Math.max(1, Number(req.query.page) || 1);
+  const limit = Math.min(60, Math.max(1, Number(req.query.limit) || 24));
+  const offset = (page - 1) * limit;
+
+  try {
+    const officeClause = '(' + b.patterns.map(() => 'list_office_name LIKE ?').join(' OR ') + ')';
+    const where = `mlg_can_view = 1
+      AND standard_status = 'Active'
+      AND property_type NOT LIKE '%Lease%'
+      AND list_price IS NOT NULL
+      AND list_price > 100000
+      AND ${officeClause}`;
+
+    const total = db.prepare(`SELECT COUNT(*) AS n FROM listings WHERE ${where}`).get(...b.patterns).n;
+
+    const rows = db.prepare(`
+      SELECT listing_key, unparsed_address, city, postal_code, list_price,
+             bedrooms_total, bathrooms_total, living_area, year_built,
+             property_sub_type, subdivision_name, new_construction_yn,
+             photos, list_office_name, days_on_market, pool_features
+      FROM listings
+      WHERE ${where}
+      ORDER BY list_price
+      LIMIT ? OFFSET ?
+    `).all(...b.patterns, limit, offset);
+
+    // Aggregate stats for the page's content block
+    const allPrices = db.prepare(`
+      SELECT list_price, living_area, postal_code FROM listings WHERE ${where}
+    `).all(...b.patterns);
+    const prices = allPrices.map(r => r.list_price).sort((a, b) => a - b);
+    const medianPrice = prices.length ? prices[Math.floor(prices.length / 2)] : null;
+    const minPrice = prices.length ? prices[0] : null;
+    const maxPrice = prices.length ? prices[prices.length - 1] : null;
+    const ppsfs = allPrices.filter(r => r.living_area > 100).map(r => r.list_price / r.living_area).sort((a, b) => a - b);
+    const medianPpsf = ppsfs.length ? Math.round(ppsfs[Math.floor(ppsfs.length / 2)]) : null;
+    const uniqueZips = Array.from(new Set(allPrices.map(r => r.postal_code).filter(Boolean))).sort();
+
+    res.set('Cache-Control', 'public, max-age=900'); // 15 min CDN cache
+    res.json({
+      slug,
+      builder: b.name,
+      tagline: b.tagline,
+      priceBand: b.priceBand,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      stats: { medianPrice, minPrice, maxPrice, medianPpsf, zipCount: uniqueZips.length, zips: uniqueZips.slice(0, 15) },
+      listings: rows.map(l => ({
+        listing_key: l.listing_key,
+        address: l.unparsed_address,
+        city: l.city,
+        zip: l.postal_code,
+        list_price: l.list_price,
+        beds: l.bedrooms_total,
+        baths: l.bathrooms_total,
+        sqft: l.living_area,
+        year: l.year_built,
+        subdivision: l.subdivision_name,
+        office: l.list_office_name,
+        new_construction: l.new_construction_yn === 1,
+        has_pool: !!(l.pool_features && l.pool_features !== '[]' && l.pool_features !== 'null'),
+        dom: l.days_on_market,
+        photo: (() => { try { const p = JSON.parse(l.photos || '[]'); return p[0] || null; } catch { return null; } })()
+      }))
+    });
+  } catch (err) {
+    console.error('[builder-inventory]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Expose the builder map so the austintxhomes server can build sitemap
+// entries + validate slugs without duplicating the list.
+router.BUILDER_MAP = BUILDER_MAP;
+
