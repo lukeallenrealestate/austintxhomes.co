@@ -1321,43 +1321,10 @@ function makePropertyUrl(l) {
 <script src="/js/footer.js" defer></script>
 
 <script>
-// Listings
-(async () => {
- const grid = document.getElementById('listings-grid');
- const empty = document.getElementById('listings-empty');
- const fmt = n => '$' + Number(n).toLocaleString();
- const sqft = n => n ? Number(n).toLocaleString() + ' sqft' : '';
-
- let listings = [];
- try {
- // Fetch investment-grade properties - multifamily + SFR over $400K
- const r = await fetch('/api/properties/search?subType=Single Family Residence,Condominium,Townhouse&minPrice=400000&sortBy=price_desc&limit=6&page=1');
- const d = await r.json();
- listings = (d.listings || d.properties || d.results || []).slice(0, 6);
- } catch(e) {}
-
- if (!listings.length) {
- empty.style.display = 'block';
- return;
- }
-
- grid.innerHTML = listings.map(l => {
- const photo = (l.photos && l.photos[0]) ? `<img src="${l.photos[0]}" alt="${l.unparsed_address || 'Austin investment property'}" loading="lazy" />` : `<div class="listing-img-placeholder"><span>Austin TX Homes</span></div>`;
- const beds = l.bedrooms_total ? `${l.bedrooms_total} bd` : '';
- const baths = l.bathrooms_total ? `${l.bathrooms_total} ba` : '';
- const area = sqft(l.living_area);
- const meta = [beds, baths, area].filter(Boolean).join(' · ');
- return `<a class="listing-card" href="${makePropertyUrl(l)}" target="_blank" rel="noopener">
- <div class="listing-img">${photo}</div>
- <div class="listing-body">
- <div class="listing-price">${fmt(l.list_price)}</div>
- <div class="listing-address">${l.unparsed_address || 'Austin, TX'}</div>
- <div class="listing-meta">${meta}</div>
- </div>
- </a>`;
- }).join('');
-})();
-
+// Investor inventory is server-rendered into .listings-grid; see
+// austintxhomes/lib/pillar1031Inject.js. The previous client-side fetch
+// targeted the wrong property subTypes (SFR/Condo) for 1031 buyers.
+//
 // Contact form
 document.getElementById('exchange-form').addEventListener('submit', async e => {
  e.preventDefault();

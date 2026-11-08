@@ -1209,7 +1209,23 @@ app.get('/rob-roy-austin', (_req, res) => res.sendFile(path.join(__dirname, 'pub
 app.get('/steiner-ranch-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/steiner-ranch-austin.html')));
 app.get('/lakeway-tx', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/lakeway-tx.html')));
 app.get('/bee-cave-tx', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/bee-cave-tx.html')));
-app.get('/1031-exchange-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/1031-exchange-austin.html')));
+// Pillar 1031 page: static HTML with SSR-injected investor-grade
+// inventory. The static file carries an empty <div class="listings-grid">
+// placeholder; the injector fills it with duplex/multifamily/commercial
+// cards pulled from the IDX DB, so inventory is crawlable rather than
+// client-side-fetched (which was targeting the wrong subTypes).
+const pillar1031Inject = require('./lib/pillar1031Inject');
+app.get('/1031-exchange-austin', (_req, res) => {
+  try {
+    const raw = require('fs').readFileSync(path.join(__dirname, 'public/site/1031-exchange-austin.html'), 'utf8');
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=900');
+    res.send(pillar1031Inject.inject(raw));
+  } catch (err) {
+    console.error('[1031-pillar]', err.message);
+    res.sendFile(path.join(__dirname, 'public/site/1031-exchange-austin.html'));
+  }
+});
 app.get('/1031-exchange-rules-and-deadlines',         (_req, res) => res.sendFile(path.join(__dirname, 'public/site/1031-exchange-rules-and-deadlines.html')));
 app.get('/reverse-1031-exchange-austin',              (_req, res) => res.sendFile(path.join(__dirname, 'public/site/reverse-1031-exchange-austin.html')));
 app.get('/1031-exchange-qualified-intermediary-austin',(_req, res) => res.sendFile(path.join(__dirname, 'public/site/1031-exchange-qualified-intermediary-austin.html')));
@@ -1238,7 +1254,11 @@ app.get('/rentals',       (_req, res) => res.sendFile(path.join(__dirname, 'publ
 app.get('/find-my-apartment', (_req, res) => res.redirect(301, '/rentals'));
 app.get('/apollo-austin-relocation',     (_req, res) => res.sendFile(path.join(__dirname, 'public/site/apollo-austin-relocation.html')));
 app.get('/crowdstrike-austin-relocation', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/crowdstrike-austin-relocation.html')));
-app.get('/1031-exchange-austin-texas', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/1031-exchange-austin-texas.html')));
+// 301 permanent redirect: this page is a near-duplicate of /1031-exchange-austin
+// (3,356w vs 3,598w, ~75-79 shingle overlap with other cluster pages).
+// Two pages fighting the same SERP is a classifier penalty; consolidate
+// signal onto the main pillar. Sitemap entry removed concurrently.
+app.get('/1031-exchange-austin-texas', (_req, res) => res.redirect(301, '/1031-exchange-austin'));
 app.get('/sell-house-fast-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/sell-house-fast-austin.html')));
 app.get('/short-term-rental-investment-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/short-term-rental-investment-austin.html')));
 app.get('/mid-term-rental-investment-austin', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/mid-term-rental-investment-austin.html')));
