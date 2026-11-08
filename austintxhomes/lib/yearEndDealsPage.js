@@ -15,6 +15,21 @@
 const db = require('../../idx-search/db/database');
 const { BUILDER_MAP } = require('../../idx-search/routes/properties');
 
+// Constrain to the Austin metro production-builder footprint. Custom spec
+// homes in Johnson City, Horseshoe Bay, Dale, etc. are not the story this
+// page tells (Q4 builder clearance), even when they appear in the MLS.
+const METRO_CITIES = [
+  'Austin', 'Round Rock', 'Georgetown', 'Cedar Park', 'Leander', 'Pflugerville',
+  'Kyle', 'Buda', 'San Marcos', 'Bastrop', 'Manor', 'Hutto', 'Taylor', 'Del Valle',
+  'Lakeway', 'Bee Cave', 'Dripping Springs', 'Liberty Hill', 'Jarrell', 'Spicewood',
+  'Lago Vista', 'Jonestown'
+];
+
+// Production builder base-plus-options rarely exceed $1.5M in Austin metro.
+// Above that is custom luxury spec, which carries different Q4 dynamics
+// (seller recalibration, not builder incentive stack).
+const PRICE_CAP = 1500000;
+
 function fmtPrice(p) { return p ? '$' + Number(p).toLocaleString('en-US') : ''; }
 function fmtPriceShort(n) {
   if (!n) return '';
@@ -65,6 +80,7 @@ function fetchData() {
   // Q4 incentive story, they're a "something's wrong" story and
   // kill credibility. Sort price-drops first (active builder motion),
   // then by largest drop, then by age.
+  const cityPH = METRO_CITIES.map(() => '?').join(',');
   const rows = db.prepare(`
     SELECT listing_key, unparsed_address, city, postal_code, list_price,
            bedrooms_total, bathrooms_total, living_area, year_built,
@@ -77,6 +93,8 @@ function fetchData() {
       AND property_type NOT LIKE '%Lease%'
       AND list_price IS NOT NULL
       AND list_price > 150000
+      AND list_price <= ${PRICE_CAP}
+      AND city IN (${cityPH})
       AND listing_contract_date IS NOT NULL
       AND listing_contract_date <= ?
       AND listing_contract_date >= ?
@@ -85,7 +103,7 @@ function fetchData() {
       (COALESCE(original_list_price, list_price) - list_price) DESC,
       listing_contract_date ASC
     LIMIT 24
-  `).all(cutoff45, floor365);
+  `).all(...METRO_CITIES, cutoff45, floor365);
 
   const totalActive = db.prepare(`
     SELECT COUNT(*) AS n FROM listings
