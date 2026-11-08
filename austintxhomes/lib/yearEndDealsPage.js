@@ -49,14 +49,21 @@ function inferBuilder(office) {
 }
 
 function fetchData() {
-  // Standing inventory = active new-construction homes with the highest
-  // DOM (builders have been sitting on them longest, so the incentive
-  // stacks are most aggressive). Also require >$100K to filter data
-  // quality issues and the $/sqft spread of plausible builds.
+  // Standing inventory = active new-construction homes that have been
+  // on the market longest (builders have been sitting on them most,
+  // so Q4 incentive stacks are most aggressive). days_on_market is
+  // NULL for new construction in the ACTRIS feed (builders don't
+  // populate it), so we compute DOM from listing_contract_date instead
+  // and sort by that ASC (oldest listing = longest sitting = most
+  // negotiable right now).
+  const today = new Date().toISOString().slice(0, 10);
+  const cutoff45 = new Date(Date.now() - 45 * 86400000).toISOString().slice(0, 10);
+  const cutoff60 = new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10);
+
   const rows = db.prepare(`
     SELECT listing_key, unparsed_address, city, postal_code, list_price,
            bedrooms_total, bathrooms_total, living_area, year_built,
-           subdivision_name, photos, days_on_market, pool_features,
+           subdivision_name, photos, listing_contract_date, pool_features,
            list_office_name, original_list_price, previous_list_price
     FROM listings
     WHERE mlg_can_view = 1
@@ -65,38 +72,50 @@ function fetchData() {
       AND property_type NOT LIKE '%Lease%'
       AND list_price IS NOT NULL
       AND list_price > 150000
-      AND days_on_market >= 45
-    ORDER BY days_on_market DESC
+      AND listing_contract_date IS NOT NULL
+      AND listing_contract_date <= ?
+    ORDER BY listing_contract_date ASC
     LIMIT 24
-  `).all();
+  `).all(cutoff45);
 
-  // Aggregate stats for the hero/trust block
-  const agg = db.prepare(`
-    SELECT COUNT(*) AS total, AVG(days_on_market) AS avgDom
-    FROM listings
-    WHERE mlg_can_view = 1
-      AND standard_status = 'Active'
+  const totalActive = db.prepare(`
+    SELECT COUNT(*) AS n FROM listings
+    WHERE mlg_can_view = 1 AND standard_status = 'Active'
       AND new_construction_yn = 1
       AND property_type NOT LIKE '%Lease%'
-      AND list_price IS NOT NULL
-      AND list_price > 150000
-  `).get();
-
-  const standingCount = db.prepare(`
-    SELECT COUNT(*) AS n
-    FROM listings
-    WHERE mlg_can_view = 1
-      AND standard_status = 'Active'
-      AND new_construction_yn = 1
-      AND property_type NOT LIKE '%Lease%'
-      AND list_price IS NOT NULL
-      AND list_price > 150000
-      AND days_on_market >= 60
+      AND list_price IS NOT NULL AND list_price > 150000
   `).get().n;
 
+  const standingCount = db.prepare(`
+    SELECT COUNT(*) AS n FROM listings
+    WHERE mlg_can_view = 1 AND standard_status = 'Active'
+      AND new_construction_yn = 1
+      AND property_type NOT LIKE '%Lease%'
+      AND list_price IS NOT NULL AND list_price > 150000
+      AND listing_contract_date IS NOT NULL
+      AND listing_contract_date <= ?
+  `).get(cutoff60).n;
+
+  // Average DOM across all active new construction (computed from listing_contract_date).
+  const avgDomRow = db.prepare(`
+    SELECT AVG(julianday(?) - julianday(listing_contract_date)) AS avg_dom
+    FROM listings
+    WHERE mlg_can_view = 1 AND standard_status = 'Active'
+      AND new_construction_yn = 1
+      AND property_type NOT LIKE '%Lease%'
+      AND list_price IS NOT NULL AND list_price > 150000
+      AND listing_contract_date IS NOT NULL
+  `).get(today);
+  const avgDom = Math.round(avgDomRow.avg_dom || 0);
+
+  function daysSince(d) {
+    if (!d) return null;
+    return Math.floor((Date.now() - new Date(d + 'T00:00:00Z').getTime()) / 86400000);
+  }
+
   return {
-    totalActive: agg.total,
-    avgDom: Math.round(agg.avgDom || 0),
+    totalActive,
+    avgDom,
     standingCount,
     listings: rows.map(l => {
       let photo = null;
@@ -117,7 +136,7 @@ function fetchData() {
         sqft: l.living_area,
         year: l.year_built,
         subdivision: l.subdivision_name,
-        dom: l.days_on_market,
+        dom: daysSince(l.listing_contract_date),
         builder,
         photo,
         href: homesUrl(l.listing_key, l.unparsed_address)
