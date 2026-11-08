@@ -59,7 +59,12 @@ function fetchData() {
   const today = new Date().toISOString().slice(0, 10);
   const cutoff45 = new Date(Date.now() - 45 * 86400000).toISOString().slice(0, 10);
   const cutoff60 = new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10);
+  const floor365 = new Date(Date.now() - 365 * 86400000).toISOString().slice(0, 10);
 
+  // Cap listing age at 365 days — homes sitting 2+ years aren't a
+  // Q4 incentive story, they're a "something's wrong" story and
+  // kill credibility. Sort price-drops first (active builder motion),
+  // then by largest drop, then by age.
   const rows = db.prepare(`
     SELECT listing_key, unparsed_address, city, postal_code, list_price,
            bedrooms_total, bathrooms_total, living_area, year_built,
@@ -74,9 +79,13 @@ function fetchData() {
       AND list_price > 150000
       AND listing_contract_date IS NOT NULL
       AND listing_contract_date <= ?
-    ORDER BY listing_contract_date ASC
+      AND listing_contract_date >= ?
+    ORDER BY
+      CASE WHEN original_list_price > list_price THEN 0 ELSE 1 END,
+      (COALESCE(original_list_price, list_price) - list_price) DESC,
+      listing_contract_date ASC
     LIMIT 24
-  `).all(cutoff45);
+  `).all(cutoff45, floor365);
 
   const totalActive = db.prepare(`
     SELECT COUNT(*) AS n FROM listings
@@ -161,8 +170,12 @@ function renderCard(l) {
   const dropBadge = l.price_drop > 0
     ? `<div class="drop-badge">Already dropped ${fmtPriceShort(l.price_drop)}</div>`
     : '';
+  // Builder chip must be a span, not an anchor. A nested <a> inside the
+  // card's <a> wrapper is invalid HTML5 and the browser auto-closes the
+  // outer anchor, splitting the card into two broken DOM fragments and
+  // destroying the grid layout. Buyers reach builder pages via footer.
   const builderLine = l.builder
-    ? `<a href="/${l.builder.slug}-homes-austin-for-sale" class="builder-chip">${escHtml(l.builder.name)}</a>`
+    ? `<span class="builder-chip">${escHtml(l.builder.name)}</span>`
     : '';
 
   return `
@@ -496,7 +509,7 @@ function renderPage() {
  <div class="inner">
   <div class="k">Standing inventory now</div>
   <h2>${data.listings.length} Austin new builds sitting <em>45 plus days</em>.</h2>
-  <p style="max-width:720px;">Sorted by days-on-market descending so the homes with the most built-up carrying cost (and the biggest incentive room) surface first. Pulled live from the ACTRIS MLS. Click any home to see details, then call Luke to run the year-end negotiation.</p>
+  <p style="max-width:720px;">Homes where the builder has already cut price surface first (that is a builder actively moving), then the longest-sitting homes under one year. Pulled live from the ACTRIS MLS. Click any home to see details, then call Luke to run the year-end negotiation.</p>
   <div class="inv-grid">${cardsHtml}</div>
  </div>
 </section>
