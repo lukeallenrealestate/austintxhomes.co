@@ -1,5 +1,5 @@
 /**
- * AustinTXHomes — shared site navigation
+ * AustinTXHomes shared site navigation
  * Included by every page. Edit this ONE file to update the nav everywhere.
  */
 
@@ -135,7 +135,7 @@ fbq('track', 'PageView');
   const nav = document.createElement('nav');
   nav.id = 'site-nav';
   nav.innerHTML = `
-    <a href="/" class="sn-logo"><img src="/images/logo.png" alt="Luke Allen — Austin Marketing + Development Group" width="675" height="145" /></a>
+    <a href="/" class="sn-logo"><img src="/images/logo.png" alt="Luke Allen, Austin Marketing + Development Group" width="675" height="145" /></a>
     <ul class="sn-links">
       ${links.map(l => `<li><a href="${l.href}"${isActive(l.href) ? ' class="active"' : ''}>${l.label}</a></li>`).join('')}
     </ul>
