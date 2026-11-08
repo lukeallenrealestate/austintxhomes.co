@@ -147,6 +147,7 @@
   <li><a href="/austin-homes-big-yard">Austin Homes with Big Yards</a></li>
   <li><a href="/new-construction">New Construction Austin</a></li>
   <li><a href="/new-construction-realtor-austin">New Construction Realtor Austin</a></li>
+  <li><a href="/year-end-new-construction-austin">Year-End New Construction Deals</a></li>
   <li><a href="/david-weekley-homes-austin-for-sale">David Weekley Homes For Sale</a></li>
   <li><a href="/taylor-morrison-homes-austin-for-sale">Taylor Morrison Homes For Sale</a></li>
   <li><a href="/pulte-homes-austin-for-sale">Pulte Homes For Sale</a></li>

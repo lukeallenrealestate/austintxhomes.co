@@ -1147,6 +1147,22 @@ app.get('/listing-presentation-1201-silver-hill', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public/site/listing-presentation-1201-silver-hill.html'));
 });
 
+// Year-end new construction deals page. SSR template pulls live standing-
+// inventory (new construction, DOM 45+) sorted by DOM descending so the
+// homes with the most built-up carrying cost (and the biggest incentive
+// stacks) surface first. Rebuilds every request, 5-min CDN cache.
+const yearEndDeals = require('./lib/yearEndDealsPage');
+app.get('/year-end-new-construction-austin', (_req, res) => {
+  try {
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=900');
+    res.send(yearEndDeals.renderPage());
+  } catch (err) {
+    console.error('[year-end-deals]', err.message);
+    res.status(500).send('Server error');
+  }
+});
+
 // Builder-filtered new construction inventory pages. SSR template reads
 // BUILDER_MAP from idx-search/routes/properties.js, queries live listings
 // from the IDX DB, and renders the full page HTML per request. Each
