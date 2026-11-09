@@ -419,6 +419,7 @@
  <p class="hero-eyebrow">Austin, TX Home Seller</p>
  <h1>Sell Smart. <em>Walk Away</em> Winning.</h1>
  <p>Austin's real estate market rewards sellers who are prepared. I handle everything, pricing strategy, professional photography, targeted marketing, and tough negotiations, so you net the most from your sale. Selling a specific property type? See the guides for <a href="/sell-luxury-home-austin">luxury homes</a>, <a href="/sell-condo-austin">condos</a>, and <a href="/sell-midcentury-modern-home-austin">mid-century modern</a>.</p>
+ <p style="margin:0 0 20px;font-size:14px;font-weight:600;letter-spacing:.04em;color:#cda96f"><span style="color:#cda96f;letter-spacing:.08em">★★★★★</span> &nbsp;5.0 across 41 Google reviews</p>
  <div class="hero-actions">
  <a href="#valuation" class="btn-primary">Get My Home's Value</a>
  <a href="#process" class="btn-outline">See the Process</a>
@@ -731,6 +732,9 @@
  // Form submission
  document.getElementById('sell-form').addEventListener('submit', async function(e) {
  e.preventDefault();
+ const btn = this.querySelector('button[type="submit"]');
+ const origText = btn.textContent;
+ btn.disabled = true; btn.textContent = 'Sending…';
  const data = Object.fromEntries(new FormData(this));
  data.source = 'sell-page';
  try {
@@ -740,9 +744,13 @@
  if (res.ok) {
  if (window.fbq) fbq('track', 'Lead');
  this.innerHTML = '<p style="text-align:center;padding:40px 0;font-family:\'Cormorant Garamond\',serif;font-size:22px;color:var(--gold)">Got it, I\'ll be in touch within 24 hours.</p>';
+ } else {
+ btn.disabled = false; btn.textContent = origText;
+ alert('Something went wrong on our end. Please call (254) 718-2567 or email Luke@austinmdg.com.');
  }
  } catch {
- alert('Something went wrong. Please call or email directly.');
+ btn.disabled = false; btn.textContent = origText;
+ alert('Network error. Please call (254) 718-2567 or email Luke@austinmdg.com.');
  }
  });
 
