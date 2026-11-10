@@ -1505,6 +1505,7 @@ app.get('/commercial-real-estate-austin', (_req, res) => res.sendFile(path.join(
 app.get('/austin-homes-big-yard', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-homes-big-yard.html')));
 app.get('/eanes-isd-homes-for-sale', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/eanes-isd-homes-for-sale.html')));
 app.get('/austin-tx-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-tx-realtor.html')));
+app.get('/best-austin-realtors-2026', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/best-austin-realtors-2026.html')));
 app.get('/austin-luxury-estate-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-luxury-estate-realtor.html')));
 app.get('/austin-waterfront-realtor', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/austin-waterfront-realtor.html')));
 app.get('/lake-travis-waterfront-homes', (_req, res) => res.sendFile(path.join(__dirname, 'public/site/lake-travis-waterfront-homes.html')));
