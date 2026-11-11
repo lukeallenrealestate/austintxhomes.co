@@ -491,7 +491,7 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   <span class="pill pill--gold">5.0 ★ Google Reviews</span>
   <span class="pill">TREC Licensed #788149</span>
   <span class="pill">${n.name} Specialist</span>
-  <span class="pill">30 Five-Star Reviews</span>
+  <span class="pill">41 Five-Star Reviews</span>
   </div>
   <div class="hero-actions">
   <a href="#contact" class="btn-gold">Talk to Luke Allen &rarr;</a>
@@ -511,7 +511,7 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   Luke Allen · ${n.name} Realtor
   <span>|</span> TREC #788149 · Austin Marketing + Development Group
   <span>|</span> ${schoolsShort}
-  <span>|</span> 5.0 ★ · 30 Five-Star Reviews
+  <span>|</span> 5.0 ★ · 41 Five-Star Reviews
   </div>
   </div>
 
@@ -531,7 +531,7 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   For buyers in ${n.name}, Luke Allen's representation costs you nothing. Under Texas real estate commission structure, buyer agent compensation comes from the seller's side - so you get Luke Allen's full expertise on your behalf at no out-of-pocket expense. That includes identifying the right <a href="/neighborhoods/${n.slug}/homes-for-sale">${n.name} listings</a> before they're picked over, structuring competitive offers in a market where multiple-offer situations are common, negotiating inspection items, and guiding you from contract to close. If you're relocating to ${n.name} or moving within Austin, <a href="/buy">working with Luke Allen as your buyer's agent</a> is one of the smartest moves you can make.
   </p>
   <p>
-  Sellers in ${n.name} face a market that rewards precision. Luke Allen approaches <a href="/sell">seller representation</a> with honest pricing, targeted marketing to the buyer pool most likely to pay full value, and professional presentation. Luke Allen has earned a <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener">5.0-star Google rating across 15 reviews</a> - not by telling sellers what they want to hear, but by delivering results. If you're considering selling your ${n.name} home, the conversation with Luke Allen starts with an honest assessment of what your home is worth in today's market and a clear plan to maximize it.
+  Sellers in ${n.name} face a market that rewards precision. Luke Allen approaches <a href="/sell">seller representation</a> with honest pricing, targeted marketing to the buyer pool most likely to pay full value, and professional presentation. Luke Allen has earned a <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener">5.0-star Google rating across 41 reviews</a> - not by telling sellers what they want to hear, but by delivering results. If you're considering selling your ${n.name} home, the conversation with Luke Allen starts with an honest assessment of what your home is worth in today's market and a clear plan to maximize it.
   </p>
   </div>
   </div>

@@ -45,7 +45,7 @@ Every page needs **at minimum** a `RealEstateAgent` schema block with the full s
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "5.0",
-    "reviewCount": "15",
+    "reviewCount": "41",
     "bestRating": "5",
     "worstRating": "1"
   },

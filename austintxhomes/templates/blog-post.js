@@ -524,7 +524,7 @@ module.exports = function renderBlogPost(rawPost) {
           <span class="contact-badge">5.0 ★ Google</span>
           <span class="contact-badge">TREC #788149</span>
           <span class="contact-badge">Central Austin Specialist</span>
-          <span class="contact-badge">30 Five-Star Reviews</span>
+          <span class="contact-badge">41 Five-Star Reviews</span>
         </div>
         <a href="https://share.google/hETte82InqUPvWeNC" target="_blank" rel="noopener" class="contact-reviews-link">Read Luke Allen's 41 five-star Google reviews →</a>
       </div>
