@@ -86,7 +86,7 @@
  {
  "@type": "Question",
  "name": "What is ARV and how do I estimate it in Austin?",
- "acceptedAnswer": { "@type": "Answer", "text": "ARV (After Repair Value) is what the property will sell for once fully renovated, based on comparable sales within the last 6 months within 0.5 miles in similar condition. In Austin, ARV ranges from roughly $175/sqft in Del Valle (78617) to $550 to 750/sqft in Tarrytown (78703). Your ARV estimate is only as good as your comps - always pull actuals from MLS, not Zillow estimates." }
+ "acceptedAnswer": { "@type": "Answer", "text": "ARV (After Repair Value) is what the property will sell for once fully renovated, based on comparable sales within the last 6 months within 0.5 miles in similar condition. In Austin, the median asking price per square foot for active listings currently runs from about {{live:zip=78617:medianPpsf}} in Del Valle (78617) to {{live:zip=78703:medianPpsf}} in Tarrytown (78703), and renovated homes typically list above their zip's median. Your ARV estimate is only as good as your comps - always pull actuals from MLS, not Zillow estimates." }
  },
  {
  "@type": "Question",
@@ -96,12 +96,12 @@
  {
  "@type": "Question",
  "name": "What hard money loan terms should I expect in Austin?",
- "acceptedAnswer": { "@type": "Answer", "text": "Austin hard money lenders typically charge 10 to 14% interest, 2 to 4 origination points, on 6 to 12 month terms. LTV is usually 65 to 75% of ARV (not purchase price). Budget your financing cost as: (loan amount × monthly rate) × hold months + (points × loan amount). For a $300K loan at 12%/2 pts over 6 months, that's roughly $18,000 interest + $6,000 points = $24,000 in financing costs." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Hard money pricing moves with the rate environment, so get current quotes. As an example, a lender might charge 10 to 14% interest and 2 to 4 origination points on 6 to 12 month terms. LTV is usually 65 to 75% of ARV (not purchase price). Budget your financing cost as: (loan amount × monthly rate) × hold months + (points × loan amount). For a $300K loan at 12%/2 pts over 6 months, that's roughly $18,000 interest + $6,000 points = $24,000 in financing costs." }
  },
  {
  "@type": "Question",
- "name": "Is fix and flip still profitable in Austin in 2026?",
- "acceptedAnswer": { "@type": "Answer", "text": "Yes, but margins are thinner than 2020 to 2022. The Austin market has corrected from peak prices, creating more distressed deal flow. Profitable flips in 2026 require disciplined buying (at or below MAO), accurate rehab scoping, and targeting zip codes with strong buyer demand and sub-60-day sale times. Central Austin flips with $50,000 to $120,000 profit are achievable; suburban flips typically target $30,000 to $70,000." }
+ "name": "Is fix and flip still profitable in Austin?",
+ "acceptedAnswer": { "@type": "Answer", "text": "Yes, but margins are thinner than 2020 to 2022. The Austin market has corrected from peak prices, creating more distressed deal flow. Profitable flips today require disciplined buying (at or below MAO), accurate rehab scoping, and targeting zip codes with strong buyer demand and sub-60-day sale times. Central Austin flips with $50,000 to $120,000 profit are achievable; suburban flips typically target $30,000 to $70,000." }
  },
  {
  "@type": "Question",
@@ -805,7 +805,7 @@
  <div class="container">
  <span class="section-label">ARV Reference Data</span>
  <h2>Austin ARV by Zip Code</h2>
- <p class="section-sub">Estimated price per square foot ranges for renovated homes by zip code, based on 2026 Austin MLS comparable sales. Use the mid-range as your base ARV estimate, then verify with actual comps.</p>
+ <p class="section-sub">Live median asking price per square foot for active listings in each zip code, from Luke's ACTRIS MLS feed (updated {{asof}}). Renovated, move-in-ready homes typically list above their zip's median, so treat this as a starting reference, then verify your ARV with actual comps.</p>
 
  <div class="arv-table-wrap">
  <table class="arv-table">
@@ -813,19 +813,171 @@
  <tr>
  <th>Zip Code</th>
  <th>Neighborhood/Area</th>
- <th>Low $/sqft</th>
- <th>Mid $/sqft</th>
- <th>High $/sqft</th>
- <th>Range Visual</th>
+ <th>Median Asking $/sqft</th>
+ <th>Median Asking Price</th>
+ <th>Active Listings</th>
  <th>Zone</th>
  </tr>
  </thead>
- <tbody id="arv-table-body"></tbody>
+ <tbody id="arv-table-body">
+ <tr>
+ <td>78703</td>
+ <td>Tarrytown</td>
+ <td><strong>{{live:zip=78703:medianPpsf}}</strong></td>
+ <td>{{live:zip=78703:medianPrice}}</td>
+ <td>{{live:zip=78703:count}}</td>
+ <td><span class="zone-badge zone-central">Central</span></td>
+ </tr>
+ <tr>
+ <td>78704</td>
+ <td>South Austin / Zilker</td>
+ <td><strong>{{live:zip=78704:medianPpsf}}</strong></td>
+ <td>{{live:zip=78704:medianPrice}}</td>
+ <td>{{live:zip=78704:count}}</td>
+ <td><span class="zone-badge zone-central">Central</span></td>
+ </tr>
+ <tr>
+ <td>78702</td>
+ <td>East Austin</td>
+ <td><strong>{{live:zip=78702:medianPpsf}}</strong></td>
+ <td>{{live:zip=78702:medianPrice}}</td>
+ <td>{{live:zip=78702:count}}</td>
+ <td><span class="zone-badge zone-central">Central</span></td>
+ </tr>
+ <tr>
+ <td>78701</td>
+ <td>Downtown / 2nd St</td>
+ <td><strong>{{live:zip=78701:medianPpsf}}</strong></td>
+ <td>{{live:zip=78701:medianPrice}}</td>
+ <td>{{live:zip=78701:count}}</td>
+ <td><span class="zone-badge zone-central">Central</span></td>
+ </tr>
+ <tr>
+ <td>78751</td>
+ <td>Hyde Park</td>
+ <td><strong>{{live:zip=78751:medianPpsf}}</strong></td>
+ <td>{{live:zip=78751:medianPrice}}</td>
+ <td>{{live:zip=78751:count}}</td>
+ <td><span class="zone-badge zone-inner">Inner East/North</span></td>
+ </tr>
+ <tr>
+ <td>78757</td>
+ <td>Brentwood / Crestview</td>
+ <td><strong>{{live:zip=78757:medianPpsf}}</strong></td>
+ <td>{{live:zip=78757:medianPrice}}</td>
+ <td>{{live:zip=78757:count}}</td>
+ <td><span class="zone-badge zone-inner">Inner East/North</span></td>
+ </tr>
+ <tr>
+ <td>78731</td>
+ <td>NW Hills / Allandale</td>
+ <td><strong>{{live:zip=78731:medianPpsf}}</strong></td>
+ <td>{{live:zip=78731:medianPrice}}</td>
+ <td>{{live:zip=78731:count}}</td>
+ <td><span class="zone-badge zone-inner">Inner East/North</span></td>
+ </tr>
+ <tr>
+ <td>78722</td>
+ <td>Cherrywood</td>
+ <td><strong>{{live:zip=78722:medianPpsf}}</strong></td>
+ <td>{{live:zip=78722:medianPrice}}</td>
+ <td>{{live:zip=78722:count}}</td>
+ <td><span class="zone-badge zone-inner">Inner East/North</span></td>
+ </tr>
+ <tr>
+ <td>78723</td>
+ <td>Mueller / Windsor Park</td>
+ <td><strong>{{live:zip=78723:medianPpsf}}</strong></td>
+ <td>{{live:zip=78723:medianPrice}}</td>
+ <td>{{live:zip=78723:count}}</td>
+ <td><span class="zone-badge zone-inner">Inner East/North</span></td>
+ </tr>
+ <tr>
+ <td>78721</td>
+ <td>Govalle / Springdale</td>
+ <td><strong>{{live:zip=78721:medianPpsf}}</strong></td>
+ <td>{{live:zip=78721:medianPrice}}</td>
+ <td>{{live:zip=78721:count}}</td>
+ <td><span class="zone-badge zone-inner">Inner East/North</span></td>
+ </tr>
+ <tr>
+ <td>78745</td>
+ <td>South Lamar / Garrison</td>
+ <td><strong>{{live:zip=78745:medianPpsf}}</strong></td>
+ <td>{{live:zip=78745:medianPrice}}</td>
+ <td>{{live:zip=78745:count}}</td>
+ <td><span class="zone-badge zone-near">Near Suburbs</span></td>
+ </tr>
+ <tr>
+ <td>78748</td>
+ <td>South Austin (Slaughter)</td>
+ <td><strong>{{live:zip=78748:medianPpsf}}</strong></td>
+ <td>{{live:zip=78748:medianPrice}}</td>
+ <td>{{live:zip=78748:count}}</td>
+ <td><span class="zone-badge zone-near">Near Suburbs</span></td>
+ </tr>
+ <tr>
+ <td>78749</td>
+ <td>Oak Hill / Circle C</td>
+ <td><strong>{{live:zip=78749:medianPpsf}}</strong></td>
+ <td>{{live:zip=78749:medianPrice}}</td>
+ <td>{{live:zip=78749:count}}</td>
+ <td><span class="zone-badge zone-near">Near Suburbs</span></td>
+ </tr>
+ <tr>
+ <td>78744</td>
+ <td>SE Austin (Riverside)</td>
+ <td><strong>{{live:zip=78744:medianPpsf}}</strong></td>
+ <td>{{live:zip=78744:medianPrice}}</td>
+ <td>{{live:zip=78744:count}}</td>
+ <td><span class="zone-badge zone-near">Near Suburbs</span></td>
+ </tr>
+ <tr>
+ <td>78617</td>
+ <td>Del Valle</td>
+ <td><strong>{{live:zip=78617:medianPpsf}}</strong></td>
+ <td>{{live:zip=78617:medianPrice}}</td>
+ <td>{{live:zip=78617:count}}</td>
+ <td><span class="zone-badge zone-suburban">Outer Suburban</span></td>
+ </tr>
+ <tr>
+ <td>78653</td>
+ <td>Manor</td>
+ <td><strong>{{live:zip=78653:medianPpsf}}</strong></td>
+ <td>{{live:zip=78653:medianPrice}}</td>
+ <td>{{live:zip=78653:count}}</td>
+ <td><span class="zone-badge zone-suburban">Outer Suburban</span></td>
+ </tr>
+ <tr>
+ <td>78660</td>
+ <td>Pflugerville</td>
+ <td><strong>{{live:zip=78660:medianPpsf}}</strong></td>
+ <td>{{live:zip=78660:medianPrice}}</td>
+ <td>{{live:zip=78660:count}}</td>
+ <td><span class="zone-badge zone-suburban">Outer Suburban</span></td>
+ </tr>
+ <tr>
+ <td>78613</td>
+ <td>Cedar Park</td>
+ <td><strong>{{live:zip=78613:medianPpsf}}</strong></td>
+ <td>{{live:zip=78613:medianPrice}}</td>
+ <td>{{live:zip=78613:count}}</td>
+ <td><span class="zone-badge zone-suburban">Outer Suburban</span></td>
+ </tr>
+ <tr>
+ <td>78641</td>
+ <td>Leander</td>
+ <td><strong>{{live:zip=78641:medianPpsf}}</strong></td>
+ <td>{{live:zip=78641:medianPrice}}</td>
+ <td>{{live:zip=78641:count}}</td>
+ <td><span class="zone-badge zone-suburban">Outer Suburban</span></td>
+ </tr>
+ </tbody>
  </table>
  </div>
 
  <div class="tip-box" style="margin-top:1.5rem">
- <strong>Important:</strong> These are estimates for fully renovated, move-in-ready properties with quality finishes appropriate for the neighborhood. ARV is based on actual closed comps, not list prices. Always pull your own comps from MLS - Zillow and Redfin estimates can be off by 5 to 15% in rapidly-shifting Austin submarkets.
+ <strong>Important:</strong> These live figures cover every active listing in each zip, not just fully renovated, move-in-ready properties. ARV is based on actual closed comps for homes in similar condition, not list prices. Always pull your own comps from MLS, because automated online estimates can miss badly in rapidly shifting Austin submarkets.
  </div>
 
  <div class="internal-link-strip">
@@ -912,7 +1064,7 @@
  </div>
 
  <div class="tip-box" style="margin-top:1.5rem;background:rgba(184,147,90,0.08);border-color:rgba(184,147,90,0.2);">
- <strong style="color:var(--gold)">Austin lender range:</strong> Most Austin hard money lenders charge 10 to 14% interest + 2 to 4 points, with 65 to 75% ARV LTV. Some offer 80% of cost (purchase + rehab) for experienced flippers.
+ <strong style="color:var(--gold)">Austin lender range:</strong> Hard money pricing moves with the rate environment, so always get current quotes. As an example, a lender might charge 10 to 14% interest + 2 to 4 points, with 65 to 75% ARV LTV. Some offer 80% of cost (purchase + rehab) for experienced flippers.
  </div>
  </div>
  </div>
@@ -944,7 +1096,7 @@
  </div>
  <div class="faq-item">
  <div class="faq-q" onclick="toggleFaq(this)">What is ARV and how do I estimate it in Austin?</div>
- <div class="faq-a">ARV (After Repair Value) is what the property will sell for once fully renovated, based on comparable sales within the last 6 months within 0.5 miles in similar condition. In Austin, ARV ranges from roughly $175/sqft in Del Valle (78617) to $550 to 750/sqft in Tarrytown (78703). Your ARV estimate is only as good as your comps - always pull actuals from MLS, not Zillow estimates. A local Austin realtor with investor experience can pull accurate comps for you.</div>
+ <div class="faq-a">ARV (After Repair Value) is what the property will sell for once fully renovated, based on comparable sales within the last 6 months within 0.5 miles in similar condition. In Austin, the median asking price per square foot for active listings currently runs from about {{live:zip=78617:medianPpsf}} in Del Valle (78617) to {{live:zip=78703:medianPpsf}} in Tarrytown (78703), and renovated homes typically list above their zip's median. Your ARV estimate is only as good as your comps - always pull actuals from MLS, not Zillow estimates. A local Austin realtor with investor experience can pull accurate comps for you.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" onclick="toggleFaq(this)">What does a typical fix and flip rehab cost in Austin?</div>
@@ -952,11 +1104,11 @@
  </div>
  <div class="faq-item">
  <div class="faq-q" onclick="toggleFaq(this)">What hard money loan terms should I expect in Austin?</div>
- <div class="faq-a">Austin hard money lenders typically charge 10 to 14% interest, 2 to 4 origination points, on 6 to 12 month terms. LTV is usually 65 to 75% of ARV (not purchase price). Budget your financing cost as: <code>(loan amount × monthly rate) × hold months + (points × loan amount)</code>. For a $300K loan at 12%/2 pts over 6 months, that's roughly $18,000 interest + $6,000 points = $24,000 in financing costs.</div>
+ <div class="faq-a">Hard money pricing moves with the rate environment, so get current quotes. As an example, a lender might charge 10 to 14% interest and 2 to 4 origination points on 6 to 12 month terms. LTV is usually 65 to 75% of ARV (not purchase price). Budget your financing cost as: <code>(loan amount × monthly rate) × hold months + (points × loan amount)</code>. For a $300K loan at 12%/2 pts over 6 months, that's roughly $18,000 interest + $6,000 points = $24,000 in financing costs.</div>
  </div>
  <div class="faq-item">
- <div class="faq-q" onclick="toggleFaq(this)">Is fix and flip still profitable in Austin in 2026?</div>
- <div class="faq-a">Yes, but margins are thinner than 2020 to 2022. The Austin market has corrected from peak prices, creating more distressed deal flow. Profitable flips in 2026 require disciplined buying (at or below MAO), accurate rehab scoping, and targeting zip codes with strong buyer demand and sub-60-day sale times. Central Austin flips with $50,000 to $120,000 profit are achievable; suburban flips typically target $30,000 to $70,000. Work with a realtor who has investor experience to find off-market and pre-MLS opportunities.</div>
+ <div class="faq-q" onclick="toggleFaq(this)">Is fix and flip still profitable in Austin?</div>
+ <div class="faq-a">Yes, but margins are thinner than 2020 to 2022. The Austin market has corrected from peak prices, creating more distressed deal flow. Profitable flips today require disciplined buying (at or below MAO), accurate rehab scoping, and targeting zip codes with strong buyer demand and sub-60-day sale times. Central Austin flips with $50,000 to $120,000 profit are achievable; suburban flips typically target $30,000 to $70,000. Work with a realtor who has investor experience to find off-market and pre-MLS opportunities.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" onclick="toggleFaq(this)">What closing costs should I budget for a fix and flip?</div>
@@ -1179,47 +1331,6 @@
  }
  updateRehabTotal();
 
- // ── ARV TABLE ─────────────────────────────────────────────
- const ARV_DATA = [
- { zip:'78703', area:'Tarrytown', low:550, mid:650, high:750, zone:'central' },
- { zip:'78704', area:'South Austin / Zilker', low:480, mid:550, high:620, zone:'central' },
- { zip:'78702', area:'East Austin', low:420, mid:490, high:560, zone:'central' },
- { zip:'78701', area:'Downtown / 2nd St', low:560, mid:650, high:780, zone:'central' },
- { zip:'78751', area:'Hyde Park', low:380, mid:430, high:480, zone:'inner' },
- { zip:'78757', area:'Brentwood / Crestview', low:375, mid:430, high:485, zone:'inner' },
- { zip:'78731', area:'NW Hills / Allandale', low:380, mid:450, high:520, zone:'inner' },
- { zip:'78722', area:'Cherrywood', low:390, mid:440, high:490, zone:'inner' },
- { zip:'78723', area:'Mueller / Windsor Park', low:310, mid:365, high:420, zone:'inner' },
- { zip:'78721', area:'Govalle / Springdale', low:330, mid:380, high:430, zone:'inner' },
- { zip:'78745', area:'South Lamar / Garrison', low:300, mid:350, high:400, zone:'near' },
- { zip:'78748', area:'South Austin (Slaughter)', low:265, mid:310, high:360, zone:'near' },
- { zip:'78749', area:'Oak Hill / Circle C', low:260, mid:300, high:340, zone:'near' },
- { zip:'78744', area:'SE Austin (Riverside)', low:230, mid:270, high:310, zone:'near' },
- { zip:'78617', area:'Del Valle', low:175, mid:205, high:235, zone:'suburban' },
- { zip:'78653', area:'Manor', low:170, mid:197, high:225, zone:'suburban' },
- { zip:'78660', area:'Pflugerville', low:190, mid:225, high:260, zone:'suburban' },
- { zip:'78613', area:'Cedar Park', low:205, mid:240, high:275, zone:'suburban' },
- { zip:'78641', area:'Leander', low:200, mid:232, high:265, zone:'suburban' },
- ];
-
- const zoneLabel = { central:'Central', inner:'Inner East/North', near:'Near Suburbs', suburban:'Outer Suburban' };
- const maxHigh = 780;
- const tbody = $('arv-table-body');
- ARV_DATA.forEach(d => {
- const barWidth = Math.round(d.mid / maxHigh * 100);
- tbody.innerHTML += `
- <tr>
- <td>${d.zip}</td>
- <td>${d.area}</td>
- <td>$${d.low}</td>
- <td><strong>$${d.mid}</strong></td>
- <td>$${d.high}</td>
- <td>
- <div class="arv-bar"><div class="arv-bar-fill" style="width:${barWidth}%"></div></div>
- </td>
- <td><span class="zone-badge zone-${d.zone}">${zoneLabel[d.zone]}</span></td>
- </tr>`;
- });
 
  // ── HARD MONEY CALC ────────────────────────────────────────
  function calcHardMoney() {

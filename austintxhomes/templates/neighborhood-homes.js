@@ -582,11 +582,11 @@ module.exports = function renderNeighborhoodHomesPage(n) {
       <div class="stats-card">
         <h3>${n.name} at a Glance</h3>
         <div class="stat-row">
-          <span class="stat-label">Median Price</span>
+          <span class="stat-label">Median Asking Price</span>
           <span class="stat-val gold">${n.medianPrice}</span>
         </div>
         <div class="stat-row">
-          <span class="stat-label">Price Range</span>
+          <span class="stat-label">Typical Asking Range</span>
           <span class="stat-val">${n.priceRange}</span>
         </div>
         <div class="stat-row">

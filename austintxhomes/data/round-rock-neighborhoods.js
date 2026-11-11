@@ -7,9 +7,8 @@ module.exports = {
   name: 'Teravista',
   zips: ['78665'],
   subdivisionName: 'Teravista',
-  priceRange: '$380K – $750K',
-  medianPrice: '$525K',
-  rentRange: '$2,100 – $3,500/mo',
+  priceRange: '{{live:sub=Teravista:p10Price|the entry level}} to {{live:sub=Teravista:p90Price|the top of the market}}',
+  medianPrice: '{{live:sub=Teravista:medianPrice|above the Round Rock median}}',
   homeTypes: 'Single-family on golf course, greenbelt lots, 3–5 bedrooms',
   schools: 'Round Rock ISD - Teravista Elementary (on-site), Hopewell Middle, Stony Point High',
   commute: '20 min to Domain, 28 min to downtown Austin, 10 min to Dell HQ',
@@ -18,7 +17,7 @@ module.exports = {
   intro: [
   'Teravista is one of Round Rock\'s flagship master-planned communities - a 1,700-home golf course neighborhood straddling the Round Rock / Georgetown line. Built on a 300-acre Championship golf course by Whitney Golf, the community wraps its homes around fairways, greenbelts, and mature oak trees.',
   'What sets Teravista apart is the combination of on-site amenities and school location. Teravista Elementary is inside the neighborhood - kids walk or bike to school. The community owns three amenity centers with resort-style pools, fitness facilities, a clubhouse, tennis courts, and miles of trails connecting to Brushy Creek.',
-  'Homes typically list between $380K and $750K with the newer sections (Teravista North) skewing higher. Most buyers here are families with school-age kids, Dell/Apple employees looking for a short commute, and move-up buyers from central Austin who want more square footage and better schools without going too far out.'
+  'Most active listings are currently asking {{live:sub=Teravista:p10Price|the entry level}} to {{live:sub=Teravista:p90Price|the top of the market}}, with the newer sections (Teravista North) skewing higher. Most buyers here are families with school-age kids, Dell/Apple employees looking for a short commute, and move-up buyers from central Austin who want more square footage and better schools without going too far out.'
   ],
   highlights: [
   { icon: '⛳', label: 'Teravista Golf Course', text: '18-hole championship course open to the public - residents get discounted rates' },
@@ -35,7 +34,7 @@ module.exports = {
   buyReasons: [
   { icon: '🏡', heading: 'Real Amenities', body: 'Three full amenity centers with pools, fitness, tennis, and clubhouse - most master-planned communities have one. Teravista has three.' },
   { icon: '📚', heading: 'Walk-to-School', body: 'Teravista Elementary is inside the neighborhood. Rare in Round Rock - most kids bus to school.' },
-  { icon: '💰', heading: 'Better Value Than Austin', body: 'A 4BR / 2,800 sqft home in Teravista lists for $500–$600K. The same home in Mueller or Hyde Park would be $900K+.' }
+  { icon: '💰', heading: 'Better Value Than Austin', body: 'A 4BR / 2,800 sqft home in Teravista costs far less than the same home in Mueller or Hyde Park. Right now the median asking price per square foot is {{live:sub=Teravista:medianPpsf|lower}} in Teravista versus {{live:nbhd=mueller:medianPpsf|higher}} in Mueller.' }
   ],
   nearby: ['forest-creek', 'paloma-lake', 'mayfield-ranch']
   },
@@ -45,9 +44,8 @@ module.exports = {
   name: 'Forest Creek',
   zips: ['78664'],
   subdivisionName: 'Forest Creek',
-  priceRange: '$350K – $650K',
-  medianPrice: '$475K',
-  rentRange: '$2,000 – $3,200/mo',
+  priceRange: '{{live:sub=Forest Creek:p10Price|the entry level}} to {{live:sub=Forest Creek:p90Price|the top of the market}}',
+  medianPrice: '{{live:sub=Forest Creek:medianPrice|near the Round Rock median}}',
   homeTypes: 'Established single-family, many with mature trees, 3–4 bedrooms',
   schools: 'Round Rock ISD - Forest Creek Elementary, Ridgeview Middle, Cedar Ridge High',
   commute: '18 min to Domain, 25 min to downtown Austin, 8 min to Dell HQ',
@@ -56,7 +54,7 @@ module.exports = {
   intro: [
   'Forest Creek is Round Rock\'s oldest golf course community - built out over the 1990s and early 2000s around the Forest Creek Golf Club. What you get here that newer neighborhoods can\'t replicate: 25-year-old oaks, established landscaping, settled HOA dues, and a mix of original owners and second-generation buyers.',
   'The neighborhood sits just east of I-35 off Gattis School Road, making it one of the shortest commutes to Dell HQ and The Domain. Cedar Ridge High School - one of Round Rock ISD\'s higher-rated high schools - is a short drive away.',
-  'Forest Creek homes list between $350K and $650K depending on the section and level of updates. The oldest sections near the golf course clubhouse have bigger lots but need updating. The newer sections toward the back of the neighborhood have tighter lots but more modern finishes.'
+  'Most active Forest Creek listings are currently asking {{live:sub=Forest Creek:p10Price|the entry level}} to {{live:sub=Forest Creek:p90Price|the top of the market}}, depending on the section and level of updates. The oldest sections near the golf course clubhouse have bigger lots but need updating. The newer sections toward the back of the neighborhood have tighter lots but more modern finishes.'
   ],
   highlights: [
   { icon: '⛳', label: 'Forest Creek Golf Club', text: '18-hole course and driving range - public access, resident discounts' },
@@ -83,9 +81,8 @@ module.exports = {
   name: 'Paloma Lake',
   zips: ['78665'],
   subdivisionName: 'Paloma Lake',
-  priceRange: '$400K – $725K',
-  medianPrice: '$525K',
-  rentRange: '$2,200 – $3,400/mo',
+  priceRange: '{{live:nbhd=paloma-lake:p10Price|the entry level}} to {{live:nbhd=paloma-lake:p90Price|the top of the market}}',
+  medianPrice: '{{live:nbhd=paloma-lake:medianPrice|above the Round Rock median}}',
   homeTypes: 'Newer construction, 3–5 bedrooms, larger square footage, some waterfront',
   schools: 'Round Rock ISD - Herrington Elementary, Hopewell Middle, Stony Point High',
   commute: '22 min to Domain, 30 min to downtown Austin, 15 min to Dell HQ',
@@ -94,7 +91,7 @@ module.exports = {
   intro: [
   'Paloma Lake is a master-planned community built around a 22-acre private lake in northeast Round Rock. The neighborhood features a resident-only amenity center with two pools, a splash pad, playground, and fitness area - plus direct lake access with fishing docks and walking trails.',
   'Homes in Paloma Lake are newer construction (most built between 2015 and 2024) by builders like Pulte, David Weekley, and Highland. Floor plans typically range from 2,500–4,000 sqft with modern finishes, smart home wiring, and energy-efficient construction - appealing to buyers who want move-in-ready without the small-lot tradeoffs of Cedar Park or Leander.',
-  'Paloma Lake is a particularly strong fit for families relocating from out of state (many from California and the Pacific Northwest) who want the Austin metro lifestyle without Austin proper pricing. Expect to pay $400–725K depending on lot position, lake views, and square footage.'
+  'Paloma Lake is a particularly strong fit for families relocating from out of state (many from California and the Pacific Northwest) who want the Austin metro lifestyle without Austin proper pricing. Most active listings currently ask {{live:nbhd=paloma-lake:p10Price|the entry level}} to {{live:nbhd=paloma-lake:p90Price|the top of the market}}, depending on lot position, lake views, and square footage.'
   ],
   highlights: [
   { icon: '🏞️', label: '22-Acre Private Lake', text: 'Fishing docks, walking trails, and lake views - rare in a suburban community' },
@@ -121,9 +118,8 @@ module.exports = {
   name: 'Behrens Ranch',
   zips: ['78681'],
   subdivisionName: 'Behrens Ranch',
-  priceRange: '$450K – $800K',
-  medianPrice: '$575K',
-  rentRange: '$2,300 – $3,700/mo',
+  priceRange: '{{live:sub=Behrens Ranch:p10Price|the entry level}} to {{live:sub=Behrens Ranch:p90Price|the top of the market}}',
+  medianPrice: '{{live:sub=Behrens Ranch:medianPrice|well above the Round Rock median}}',
   homeTypes: 'Established single-family, larger lots, mature trees, 3–5 bedrooms',
   schools: 'Round Rock ISD - Brushy Creek Elementary, Cedar Valley Middle, Round Rock High',
   commute: '22 min to Domain, 28 min to downtown, 18 min to Dell HQ',
@@ -132,7 +128,7 @@ module.exports = {
   intro: [
   'Behrens Ranch is one of Round Rock\'s most desirable established neighborhoods. Built in the late 1990s and early 2000s, it sits in the 78681 zip code on Round Rock\'s southwest side - the side of the city closest to Austin proper and feeding into Round Rock High School.',
   'What distinguishes Behrens Ranch is the combination of larger lots (most homes sit on 1/4 acre or more), mature oak trees, and a school assignment to Round Rock High - one of the two most academically ranked high schools in the district. Buyers consistently pay a premium here specifically for that school assignment.',
-  'Homes range from $450K to $800K. Expect 2,500–4,500 sqft on established lots. Resale velocity is fast - well-priced homes in Behrens Ranch typically go under contract within 1–2 weeks during a normal market.'
+  'Most active listings are currently asking {{live:sub=Behrens Ranch:p10Price|the entry level}} to {{live:sub=Behrens Ranch:p90Price|the top of the market}}. Expect 2,500 to 4,500 sqft on established lots. Resale velocity is fast - well-priced homes in Behrens Ranch typically go under contract quickly.'
   ],
   highlights: [
   { icon: '🏆', label: 'Round Rock High Assignment', text: 'One of the highest-ranked high schools in Round Rock ISD' },
@@ -144,7 +140,7 @@ module.exports = {
   { q: 'What makes Behrens Ranch expensive?', a: 'Three things: the Round Rock High School assignment (families pay a premium to zone into it), larger lot sizes than most newer Round Rock communities, and mature tree canopy. Together they create a neighborhood that feels more like West Austin than suburban Round Rock.' },
   { q: 'Is Behrens Ranch in Round Rock ISD?', a: 'Yes. The neighborhood feeds into Brushy Creek Elementary, Cedar Valley Middle, and Round Rock High - considered one of the top 2 high schools in the district by TEA ratings and college placement.' },
   { q: 'How big are the lots?', a: 'Most Behrens Ranch lots are 1/4 acre (around 10,000 sqft) or larger. Some sections have 1/3 to 1/2 acre lots with pools. This is noticeably bigger than Teravista or Paloma Lake where typical lots are 5,000–7,000 sqft.' },
-  { q: 'How fast do homes sell in Behrens Ranch?', a: 'In a normal market, well-priced Behrens Ranch homes typically go under contract within 7–14 days. The combination of school zoning and low inventory creates consistent demand.' }
+  { q: 'How fast do homes sell in Behrens Ranch?', a: 'Well-priced Behrens Ranch homes typically go under contract quickly. Active listings currently show a median of {{live:sub=Behrens Ranch:medianDom|relatively few}} days on market, and the best-priced homes go well under that. The combination of school zoning and low inventory creates consistent demand.' }
   ],
   buyReasons: [
   { icon: '🏆', heading: 'Round Rock High', body: 'Buying into a Round Rock High-zoned neighborhood is one of the clearest school-premium plays in the Austin metro.' },
@@ -159,9 +155,8 @@ module.exports = {
   name: 'Brushy Creek',
   zips: ['78681'],
   subdivisionName: 'Brushy Creek',
-  priceRange: '$420K – $700K',
-  medianPrice: '$510K',
-  rentRange: '$2,100 – $3,300/mo',
+  priceRange: '{{live:nbhd=brushy-creek:p10Price|the entry level}} to {{live:nbhd=brushy-creek:p90Price|the top of the market}}',
+  medianPrice: '{{live:nbhd=brushy-creek:medianPrice|near the Round Rock median}}',
   homeTypes: 'Established single-family, 3–4 bedrooms, mix of original and updated',
   schools: 'Round Rock ISD - Brushy Creek Elementary, Cedar Valley Middle, Round Rock High',
   commute: '20 min to Domain, 27 min to downtown, 17 min to Dell HQ',
@@ -170,7 +165,7 @@ module.exports = {
   intro: [
   'Brushy Creek is an established residential area in southwest Round Rock, built out primarily in the 1980s and 1990s. It sits in the 78681 zip code and feeds into Round Rock High School - the same school zone as Behrens Ranch - but with generally older homes and lower entry prices.',
   'The neighborhood is best known for two things: the Brushy Creek Regional Trail system (a 6.75-mile hike-and-bike corridor along Brushy Creek that connects to Cedar Park) and the stable, long-tenured community of residents. Many original owners are still here, giving the streets a settled, lived-in feel you can\'t fake.',
-  'Homes range from $420K to $700K depending on age, updates, and lot size. Expect 1,800–3,200 sqft homes on 1/4 acre lots. This is a common first-time-homebuyer choice for families who want the Round Rock High zone but don\'t need a brand-new build.'
+  'Most active listings are currently asking {{live:nbhd=brushy-creek:p10Price|the entry level}} to {{live:nbhd=brushy-creek:p90Price|the top of the market}}, depending on age, updates, and lot size. Expect 1,800–3,200 sqft homes on 1/4 acre lots. This is a common first-time-homebuyer choice for families who want the Round Rock High zone but don\'t need a brand-new build.'
   ],
   highlights: [
   { icon: '🥾', label: 'Brushy Creek Regional Trail', text: '6.75 miles of hike-and-bike trail along Brushy Creek, connecting to Cedar Park' },
@@ -180,12 +175,12 @@ module.exports = {
   ],
   faqs: [
   { q: 'How old is Brushy Creek?', a: 'Most homes were built in the 1980s and 1990s, with some newer infill construction. You\'ll find a mix of original owners and updated remodels - condition varies widely.' },
-  { q: 'Is Brushy Creek a good first-home option?', a: 'Yes. It\'s one of the most affordable ways into the Round Rock High zone, which is the main draw for many buyers. Homes in the $420–520K range are typical starter homes for families.' },
+  { q: 'Is Brushy Creek a good first-home option?', a: 'Yes. It\'s one of the most affordable ways into the Round Rock High zone, which is the main draw for many buyers. Homes in the lower half of the neighborhood price range are typical starter homes for families.' },
   { q: 'What\'s the Brushy Creek Regional Trail?', a: 'A 6.75-mile paved hike-and-bike trail running along Brushy Creek from Champions Park in Round Rock to Cedar Park. Residents access it from multiple neighborhood connection points.' },
   { q: 'Are there HOAs in Brushy Creek?', a: 'Some sections have HOAs, some don\'t - depends on the specific subdivision. Older sections often don\'t have HOAs, which is a draw for buyers who don\'t want monthly dues. Newer sections may have modest $25–50/month dues.' }
   ],
   buyReasons: [
-  { icon: '💰', heading: 'Entry Price to Top Schools', body: 'Lowest-cost way into Round Rock High zone. Compare $450K Brushy Creek vs $600K Behrens Ranch for the same school assignment.' },
+  { icon: '💰', heading: 'Entry Price to Top Schools', body: 'Lowest-cost way into Round Rock High zone. Right now the median asking price is {{live:nbhd=brushy-creek:medianPrice|near the Round Rock median}} in Brushy Creek versus {{live:sub=Behrens Ranch:medianPrice|well above the Round Rock median}} in Behrens Ranch, for the same school assignment.' },
   { icon: '🥾', heading: 'Trail System', body: 'The Brushy Creek Regional Trail is one of the best hike-and-bike trails in the Austin metro. Most homes are within a 5-minute walk.' },
   { icon: '🏡', heading: 'Mature Community', body: 'Long-tenured residents and established landscaping - the opposite of a brand-new builder community.' }
   ],
@@ -197,9 +192,8 @@ module.exports = {
   name: 'Mayfield Ranch',
   zips: ['78681'],
   subdivisionName: 'Mayfield Ranch',
-  priceRange: '$420K – $700K',
-  medianPrice: '$500K',
-  rentRange: '$2,100 – $3,200/mo',
+  priceRange: '{{live:sub=Mayfield Ranch:p10Price|the entry level}} to {{live:sub=Mayfield Ranch:p90Price|the top of the market}}',
+  medianPrice: '{{live:sub=Mayfield Ranch:medianPrice|above the Round Rock median}}',
   homeTypes: 'Master-planned, newer construction, 3–4 bedrooms, 2,000–3,500 sqft',
   schools: 'Leander ISD - Parkside Elementary, Stiles Middle, Rouse High',
   commute: '25 min to Domain, 32 min to downtown, 20 min to Dell HQ',
@@ -208,7 +202,7 @@ module.exports = {
   intro: [
   'Mayfield Ranch is one of only a handful of Round Rock neighborhoods in Leander ISD instead of Round Rock ISD. This matters - Leander ISD has some of the highest TEA ratings in the Austin metro, and families specifically target Leander-zoned neighborhoods in Round Rock for the school quality.',
   'The community was built out from the mid-2000s through the late 2010s with 1,200+ homes across multiple phases. Amenities include a large community pool, splash pad, playground, and trail system connecting to Brushy Creek. The HOA is active and well-run - common areas are consistently maintained.',
-  'Mayfield Ranch sits on the northwest side of Round Rock near the 183A toll road, giving residents fast access to Cedar Park, Leander, and the Domain. Expect $420–700K for 2,000–3,500 sqft homes - slightly cheaper than comparable Leander-zoned Cedar Park neighborhoods.'
+  'Mayfield Ranch sits on the northwest side of Round Rock near the 183A toll road, giving residents fast access to Cedar Park, Leander, and the Domain. Most active listings for its 2,000 to 3,500 sqft homes currently ask {{live:sub=Mayfield Ranch:p10Price|the entry level}} to {{live:sub=Mayfield Ranch:p90Price|the top of the market}} - typically slightly cheaper than comparable Leander-zoned Cedar Park neighborhoods.'
   ],
   highlights: [
   { icon: '🏆', label: 'Leander ISD Schools', text: 'Parkside Elementary, Stiles Middle, Rouse High - all highly rated' },
@@ -235,9 +229,8 @@ module.exports = {
   name: 'Cat Hollow',
   zips: ['78681'],
   subdivisionName: 'Cat Hollow',
-  priceRange: '$400K – $625K',
-  medianPrice: '$475K',
-  rentRange: '$2,000 – $3,000/mo',
+  priceRange: '{{live:nbhd=cat-hollow:p10Price|the entry level}} to {{live:nbhd=cat-hollow:p90Price|the top of the market}}',
+  medianPrice: '{{live:nbhd=cat-hollow:medianPrice|near the Round Rock median}}',
   homeTypes: 'Established single-family, 3–4 bedrooms, mature trees',
   schools: 'Round Rock ISD - Great Oaks Elementary, Cedar Valley Middle, Round Rock High',
   commute: '22 min to Domain, 28 min to downtown, 17 min to Dell HQ',
@@ -246,7 +239,7 @@ module.exports = {
   intro: [
   'Cat Hollow is an established family neighborhood in southwest Round Rock, built out primarily in the 1990s. Like Behrens Ranch and Brushy Creek, it feeds into Round Rock High - one of the top-rated high schools in the district - which drives consistent buyer demand and stable home values.',
   'The neighborhood is characterized by mature tree canopy, good-sized lots (around 1/4 acre on average), and a settled community with many long-tenured owners. Homes are typically 1,800–3,200 sqft ranch-style or two-story builds from the 1990s to early 2000s.',
-  'Cat Hollow is a popular pick for families who want the Round Rock High zone without the premium of Behrens Ranch. Expect to find homes between $400K and $625K depending on age, condition, and updates.'
+  'Cat Hollow is a popular pick for families who want the Round Rock High zone without the premium of Behrens Ranch. Most active listings are currently asking {{live:nbhd=cat-hollow:p10Price|the entry level}} to {{live:nbhd=cat-hollow:p90Price|the top of the market}}, depending on age, condition, and updates.'
   ],
   highlights: [
   { icon: '🏆', label: 'Round Rock High Zoning', text: 'Feeds into Round Rock High - same top-rated high school as Behrens Ranch' },
@@ -273,9 +266,8 @@ module.exports = {
   name: 'Stone Canyon',
   zips: ['78681'],
   subdivisionName: 'Stone Canyon',
-  priceRange: '$475K – $800K',
-  medianPrice: '$595K',
-  rentRange: '$2,400 – $3,700/mo',
+  priceRange: '{{live:nbhd=stone-canyon:p10Price|the entry level}} to {{live:nbhd=stone-canyon:p90Price|the top of the market}}',
+  medianPrice: '{{live:nbhd=stone-canyon:medianPrice|above the Round Rock median}}',
   homeTypes: 'Master-planned, larger homes, 3–5 bedrooms, many with greenbelt views',
   schools: 'Round Rock ISD - Fern Bluff Elementary, Cedar Valley Middle, Round Rock High',
   commute: '25 min to Domain, 30 min to downtown, 20 min to Dell HQ',
@@ -284,7 +276,7 @@ module.exports = {
   intro: [
   'Stone Canyon is one of Round Rock\'s most established master-planned communities - built out between the late 1990s and mid-2000s with approximately 1,800 homes. Located in the 78681 zip on the west side of Round Rock, it feeds into Fern Bluff Elementary, Cedar Valley Middle, and Round Rock High.',
   'The community is organized around a large community center with pools, tennis courts, trails, and a lake. Many homes sit on greenbelt lots with direct trail access - rare in a neighborhood this size. Stone Canyon\'s reputation is built on consistent quality: the HOA is active, common areas are well-maintained, and resale values have held steady through market cycles.',
-  'Expect $475K to $800K for 2,500–4,500 sqft homes. This is a clear step up from Cat Hollow or Brushy Creek in terms of lot size and home size, but similar schools and commute profiles.'
+  'Most active listings for its 2,500 to 4,500 sqft homes are currently asking {{live:nbhd=stone-canyon:p10Price|the entry level}} to {{live:nbhd=stone-canyon:p90Price|the top of the market}}. This is a clear step up from Cat Hollow or Brushy Creek in terms of lot size and home size, but similar schools and commute profiles.'
   ],
   highlights: [
   { icon: '🏆', label: 'Round Rock High', text: 'Feeds into Round Rock High - top academic ranking in the district' },
@@ -311,9 +303,8 @@ module.exports = {
   name: 'Sonoma',
   zips: ['78665'],
   subdivisionName: 'Sonoma',
-  priceRange: '$380K – $600K',
-  medianPrice: '$460K',
-  rentRange: '$2,000 – $3,100/mo',
+  priceRange: '{{live:city=Round Rock;sub=Sonoma:p10Price|the entry level}} to {{live:city=Round Rock;sub=Sonoma:p90Price|the top of the market}}',
+  medianPrice: '{{live:city=Round Rock;sub=Sonoma:medianPrice|near the Round Rock median}}',
   homeTypes: 'Master-planned, 3–4 bedrooms, 2,000–3,200 sqft, some with greenbelts',
   schools: 'Round Rock ISD - Herrington Elementary, Hopewell Middle, Stony Point High',
   commute: '23 min to Domain, 30 min to downtown, 14 min to Dell HQ',
@@ -322,7 +313,7 @@ module.exports = {
   intro: [
   'Sonoma is a master-planned community in northeast Round Rock (78665 zip) built out primarily between 2000 and 2015. The neighborhood has over 2,000 homes across multiple phases, making it one of the larger communities in Round Rock.',
   'Amenities are a strong draw - two community pools, a large amenity center, playgrounds, sports courts, and an extensive trail system connecting different phases. Sonoma is also known for its active community events and volunteer-driven HOA culture.',
-  'Home prices here are among Round Rock\'s best values for a newer master-planned community - expect $380K to $600K for 2,000–3,200 sqft homes. This is a common choice for first-time move-up buyers who want modern amenities without paying Behrens Ranch or Teravista premiums.'
+  'Home prices here are among Round Rock\'s best values for a newer master-planned community - most active listings for its 2,000 to 3,200 sqft homes are currently asking {{live:city=Round Rock;sub=Sonoma:p10Price|the entry level}} to {{live:city=Round Rock;sub=Sonoma:p90Price|the top of the market}}. This is a common choice for first-time move-up buyers who want modern amenities without paying Behrens Ranch or Teravista premiums.'
   ],
   highlights: [
   { icon: '🏊', label: 'Two Community Pools', text: 'Plus splash pad and family pool area' },
@@ -333,7 +324,7 @@ module.exports = {
   faqs: [
   { q: 'How does Sonoma compare to Teravista?', a: 'Sonoma is smaller, more affordable, and has different amenities (no golf course). Both are in the 78665 zip and feed into similar schools (Hopewell Middle, Stony Point High). Sonoma typically offers more sqft per dollar.' },
   { q: 'What\'s the HOA fee in Sonoma?', a: 'About $60–90/month. Covers pool access, amenity center, playground maintenance, and common areas. Sonoma\'s HOA is considered active and well-managed.' },
-  { q: 'Is Sonoma a good first-home community?', a: 'Yes - it\'s one of the most popular first-home communities in Round Rock for young families. Entry prices around $380–450K get you into a 2,000+ sqft modern home in good schools.' },
+  { q: 'Is Sonoma a good first-home community?', a: 'Yes - it\'s one of the most popular first-home communities in Round Rock for young families. Entry-level prices get you into a 2,000+ sqft modern home in good schools.' },
   { q: 'What high school does Sonoma feed into?', a: 'Stony Point High School via Hopewell Middle School. Stony Point is a large comprehensive high school with strong programs in STEM and athletics.' }
   ],
   buyReasons: [
@@ -349,9 +340,8 @@ module.exports = {
   name: 'Vista Oaks',
   zips: ['78681'],
   subdivisionName: 'Vista Oaks',
-  priceRange: '$380K – $575K',
-  medianPrice: '$450K',
-  rentRange: '$1,900 – $2,900/mo',
+  priceRange: '{{live:nbhd=vista-oaks:p10Price|the entry level}} to {{live:nbhd=vista-oaks:p90Price|the top of the market}}',
+  medianPrice: '{{live:nbhd=vista-oaks:medianPrice|near the Round Rock median}}',
   homeTypes: 'Established single-family, 3–4 bedrooms, mature trees, mid-priced',
   schools: 'Round Rock ISD - Purple Sage Elementary, Cedar Valley Middle, Round Rock High',
   commute: '23 min to Domain, 29 min to downtown, 18 min to Dell HQ',
@@ -360,7 +350,7 @@ module.exports = {
   intro: [
   'Vista Oaks is an established residential neighborhood on the southwest side of Round Rock (78681), built primarily in the 1990s. It\'s part of the Round Rock High attendance zone - the same school zone as Behrens Ranch, Brushy Creek, Cat Hollow, and Stone Canyon - which keeps demand steady.',
   'What makes Vista Oaks different from its neighbors: lower entry prices and smaller typical home sizes. This is an entry-level neighborhood in the Round Rock High zone, with homes typically 1,800–2,800 sqft. For buyers who care most about school assignment and less about home size, Vista Oaks is one of the best values in Round Rock.',
-  'Expect homes between $380K and $575K. The streets are lined with mature oak trees, lots are typical 6,000–9,000 sqft, and the neighborhood has a quiet, settled feel you don\'t get in newer master-planned communities.'
+  'Most active listings are currently asking {{live:nbhd=vista-oaks:p10Price|the entry level}} to {{live:nbhd=vista-oaks:p90Price|the top of the market}}. The streets are lined with mature oak trees, lots are typical 6,000–9,000 sqft, and the neighborhood has a quiet, settled feel you don\'t get in newer master-planned communities.'
   ],
   highlights: [
   { icon: '🏆', label: 'Round Rock High', text: 'Same top high school as Behrens Ranch and Stone Canyon - at a lower entry price' },

@@ -274,6 +274,37 @@ PY
 
 Run the shingle check as the last step before commit. If overlap is above the threshold, rewrite and rerun before shipping.
 
+### 13. No stale numbers (REQUIRED, Luke's rule, 2026-11-11)
+
+**No page may show a market number that can go out of date, unless the page visibly says when it was written.**
+
+- **Evergreen pages** (anything without a specific visible date): every market figure is a live token, resolved at request time from the ACTRIS snapshot by `lib/liveStats.js`. Never type a median, price range, $/sqft, inventory count, days on market, price-cut share, YoY change, rent, or rate into an evergreen page.
+- **Dated pages** (blog posts, a "Q3 2026" report, a page that shows "Published June 19, 2026" or "Data as of June 2026" near its figures) may keep frozen numbers, because the date tells the reader when they were true. A year alone in the title ("2026") does not make a page dated.
+- Worked examples and calculator inputs are fine when labeled as examples ("on a $500,000 home, for example..."). Tax rates must name their tax year.
+- Luke's own facts (review count, rating, TREC #) live in `data/site-facts.js`; static pages that repeat them must be swept when they change.
+
+Token syntax (works in copy, meta tags, and JSON-LD; full reference at the top of `lib/liveStats.js`):
+
+```
+{{live:nbhd=tarrytown:medianPrice}}               -> $1.38M
+{{live:zip=78704:count}}                          -> 312
+{{live:isd=Eanes ISD:medianDom}}                  -> 41
+{{live:city=Austin;type=condo:medianPrice:k}}     -> $375K
+{{live:nbhd=clarksville:p10Price|under $1M}}      -> fallback text if the sample is thin
+{{asof}}  {{asof:month}}  {{year}}
+```
+
+- Only ACTIVE/PENDING listing data is exposed. There is deliberately no closed-sale stat (TX MLS compliance, commit 048d389). Say "asking price" / "list price", never "sale price", next to a token.
+- Fragile scopes (nbhd, sub, isd, elem, high, type, min/max, newcon) need a `|fallback` that reads naturally and is itself timeless.
+- FAQ JSON-LD answers must carry the same tokens as the visible answers.
+- The author block automatically adds "Market figures on this page update automatically... last refreshed {{asof}}" when a page contains tokens, and dates the written copy from `data/page-dates.json` (git), never file mtime.
+
+Before committing page changes:
+```bash
+node scripts/check-live-tokens.js public/site/{page}.html   # 0 token errors; remaining candidates must be dated or non-market
+node scripts/build-page-dates.js                            # refresh honest "last updated" dates
+```
+
 ---
 
 ## Site Structure Reference

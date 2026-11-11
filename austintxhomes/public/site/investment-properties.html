@@ -46,12 +46,12 @@
  {
  "@type": "Question",
  "name": "Is Austin TX a good place to invest in real estate in 2026?",
- "acceptedAnswer": { "@type": "Answer", "text": "Austin remains a strong long-term investment market. The metro adds 50,000+ residents per year, unemployment runs below national averages, and major employers like Tesla, Apple, and Samsung anchor demand. Cap rates of 4-6% are achievable in suburban growth corridors with strong rent growth." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Austin remains a strong long-term investment market. The metro keeps adding tens of thousands of residents a year, unemployment runs below national averages, and employers like Tesla, Apple, and Samsung anchor demand. The best cap rates are typically in the suburban growth corridors, where entry prices are lower: active Kyle and Buda listings currently carry a median asking price of {{live:city=Kyle,Buda:medianPrice}}, versus {{live:city=Austin:medianPrice}} in the City of Austin. The investment thesis combines appreciation, equity build, and tax benefits - not purely cash flow at current prices." }
  },
  {
  "@type": "Question",
  "name": "What are typical cap rates in Austin TX?",
- "acceptedAnswer": { "@type": "Answer", "text": "In 2026, Austin cap rates range from 3.5-4.5% in central neighborhoods to 5-7% in suburban growth corridors like Kyle, Buda, Cedar Park, and Georgetown. New construction often offers builder incentives that improve initial returns." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Austin cap rates run lowest in central neighborhoods, where prices are highest, and highest in suburban growth corridors like Kyle, Buda, Cedar Park, and Georgetown, where entry prices are lower. Cap rates move with prices and interest rates, so underwrite every deal on its own rent comps rather than a published average. New construction with builder incentives (rate buydowns, closing cost contributions) can improve initial yields. Cap rates are compressed vs other Texas metros because of Austin's stronger appreciation expectations. For BTR portfolio buyers and developers selling to institutional capital, see build-to-rent broker services and the Q1 2026 new construction market report." }
  },
  {
  "@type": "Question",
@@ -450,10 +450,10 @@
 
  <div class="stats-bar">
  <div class="stats-bar-inner">
- <div class="stat-item"><div class="stat-val">4 to 6%</div><div class="stat-lbl">Typical Cap Rate</div></div>
- <div class="stat-item"><div class="stat-val">50K+</div><div class="stat-lbl">New Residents/Year</div></div>
- <div class="stat-item"><div class="stat-val">$1,850</div><div class="stat-lbl">Avg 1BR Rent (Central)</div></div>
- <div class="stat-item"><div class="stat-val">3.2%</div><div class="stat-lbl">Vacancy Rate</div></div>
+ <div class="stat-item"><div class="stat-val">{{live:city=Austin:medianPrice}}</div><div class="stat-lbl">Median Asking Price (Austin)</div></div>
+ <div class="stat-item"><div class="stat-val">{{live:city=Austin:count}}</div><div class="stat-lbl">Active Austin Listings</div></div>
+ <div class="stat-item"><div class="stat-val">{{live:city=Austin:medianPpsf}}</div><div class="stat-lbl">Median Asking $/Sq Ft</div></div>
+ <div class="stat-item"><div class="stat-val">{{live:city=Austin:reducedPct}}</div><div class="stat-lbl">Listings With a Price Cut</div></div>
  <div class="stat-item"><div class="stat-val">0%</div><div class="stat-lbl">State Income Tax</div></div>
  </div>
  </div>
@@ -479,14 +479,14 @@
  <h2>Why Investors Keep Buying in Austin</h2>
  <p>Austin's 2022 to 2023 correction shook out casual speculators - which is exactly why experienced investors paid attention. Prices came off 15 to 20% from peak, cap rates expanded, and the fundamentals got stronger, not weaker.</p>
  <p>Tesla's gigafactory, Samsung's $17 billion chip plant in Taylor, Apple's campus, and a relentless stream of corporate relocations continue to bring high-income residents. Austin's unemployment rate consistently runs below the national average. The University of Texas anchors a built-in renter base of 50,000+ students annually.</p>
- <p>Texas has no state income tax, no rent control laws, and landlord-friendly statutes. The eviction process, while still a last resort, takes weeks not months. Property taxes are high (~2% effective rate) but fully deductible, and the 2026 rental market has stabilized after 2023 to 2024 supply absorption. Rents are growing again at 2 to 4%/year and vacancy in quality properties sits below 4%.</p>
+ <p>Texas has no state income tax, no rent control laws, and landlord-friendly statutes. The eviction process, while still a last resort, takes weeks not months. Property taxes are high but fully deductible, and the rental market has worked through the heavy 2023 to 2024 apartment supply wave. Rent growth and vacancy vary by submarket, so underwrite with current rental comps for the specific area, not a metro average.</p>
  </section>
 
  <!-- NEIGHBORHOODS -->
  <section class="section" id="neighborhoods">
  <p class="section-label">Where to Buy</p>
  <h2>Best Austin Neighborhoods for Investment Property</h2>
- <p>Different strategies perform best in different locations. Here's the 2026 breakdown:</p>
+ <p>Different strategies perform best in different locations. Here's the breakdown, with live asking-price figures from the MLS:</p>
  <div class="nbhd-grid">
 
  <div class="nbhd-card">
@@ -496,8 +496,8 @@
  </div>
  <div class="nbhd-card-body">
  <div class="nbhd-metrics">
- <div class="nbhd-metric"><div class="m-val">4.2%</div><div class="m-lbl">Cap Rate</div></div>
- <div class="nbhd-metric"><div class="m-val">$2,400</div><div class="m-lbl">Avg 2BR Rent</div></div>
+ <div class="nbhd-metric"><div class="m-val">{{live:zip=78702:medianPrice}}</div><div class="m-lbl">Median Asking Price</div></div>
+ <div class="nbhd-metric"><div class="m-val">{{live:zip=78702:medianPpsf}}</div><div class="m-lbl">Median Asking $/Sq Ft</div></div>
  </div>
  <p>High demand from young professionals. Strong long-term appreciation. STR also viable where zoning allows. Competition for deals is stiff - look for value-add opportunities or off-market.</p>
  </div>
@@ -510,8 +510,8 @@
  </div>
  <div class="nbhd-card-body">
  <div class="nbhd-metrics">
- <div class="nbhd-metric"><div class="m-val">8 to 12%</div><div class="m-lbl">STR Cash-on-Cash</div></div>
- <div class="nbhd-metric"><div class="m-val">$250+</div><div class="m-lbl">Avg Nightly Rate</div></div>
+ <div class="nbhd-metric"><div class="m-val">{{live:zip=78704:medianPrice}}</div><div class="m-lbl">Median Asking Price</div></div>
+ <div class="nbhd-metric"><div class="m-val">{{live:zip=78704:medianPpsf}}</div><div class="m-lbl">Median Asking $/Sq Ft</div></div>
  </div>
  <p>Austin's most tourism-driven rental area. F1, SXSW, ACL, and year-round traffic drive strong occupancy. Entry prices are higher but so are gross revenues.</p>
  </div>
@@ -524,8 +524,8 @@
  </div>
  <div class="nbhd-card-body">
  <div class="nbhd-metrics">
- <div class="nbhd-metric"><div class="m-val">5.1%</div><div class="m-lbl">Cap Rate</div></div>
- <div class="nbhd-metric"><div class="m-val">$1,800</div><div class="m-lbl">Avg 2BR Rent</div></div>
+ <div class="nbhd-metric"><div class="m-val">{{live:zip=78751:medianPrice}}</div><div class="m-lbl">Median Asking Price</div></div>
+ <div class="nbhd-metric"><div class="m-val">{{live:zip=78751:medianPpsf}}</div><div class="m-lbl">Median Asking $/Sq Ft</div></div>
  </div>
  <p>Reliable student demand creates low vacancy. Multi-family and house-hacking work well here. Leasing cycles follow the academic calendar - plan for August move-ins.</p>
  </div>
@@ -538,8 +538,8 @@
  </div>
  <div class="nbhd-card-body">
  <div class="nbhd-metrics">
- <div class="nbhd-metric"><div class="m-val">5.3%</div><div class="m-lbl">Cap Rate</div></div>
- <div class="nbhd-metric"><div class="m-val">$2,100</div><div class="m-lbl">Avg 2BR Rent</div></div>
+ <div class="nbhd-metric"><div class="m-val">{{live:zip=78758:medianPrice}}</div><div class="m-lbl">Median Asking Price</div></div>
+ <div class="nbhd-metric"><div class="m-val">{{live:zip=78758:medianPpsf}}</div><div class="m-lbl">Median Asking $/Sq Ft</div></div>
  </div>
  <p>Apple, Amazon, Google, and IBM employees need quality rentals near the Domain. High-income tenants, lower turnover than student housing. Less appreciation upside than central Austin.</p>
  </div>
@@ -552,8 +552,8 @@
  </div>
  <div class="nbhd-card-body">
  <div class="nbhd-metrics">
- <div class="nbhd-metric"><div class="m-val">5.8%</div><div class="m-lbl">Cap Rate</div></div>
- <div class="nbhd-metric"><div class="m-val">$1,900</div><div class="m-lbl">Avg 3BR Rent</div></div>
+ <div class="nbhd-metric"><div class="m-val">{{live:city=Kyle,Buda:medianPrice}}</div><div class="m-lbl">Median Asking Price</div></div>
+ <div class="nbhd-metric"><div class="m-val">{{live:city=Kyle,Buda:medianPpsf}}</div><div class="m-lbl">Median Asking $/Sq Ft</div></div>
  </div>
  <p>Lower entry prices, stronger cash flow, growing family demographics. Tesla Gigafactory and expanding employer base anchor demand. Improving fundamentals with less appreciation history.</p>
  </div>
@@ -566,8 +566,8 @@
  </div>
  <div class="nbhd-card-body">
  <div class="nbhd-metrics">
- <div class="nbhd-metric"><div class="m-val">5.5%</div><div class="m-lbl">Cap Rate</div></div>
- <div class="nbhd-metric"><div class="m-val">$2,000</div><div class="m-lbl">Avg 3BR Rent</div></div>
+ <div class="nbhd-metric"><div class="m-val">{{live:city=Georgetown,Taylor:medianPrice}}</div><div class="m-lbl">Median Asking Price</div></div>
+ <div class="nbhd-metric"><div class="m-val">{{live:city=Georgetown,Taylor:medianPpsf}}</div><div class="m-lbl">Median Asking $/Sq Ft</div></div>
  </div>
  <p>Builder incentives make new construction competitive. No deferred maintenance, full warranties. Samsung's Taylor plant drives corporate housing demand from high-income employees.</p>
  </div>
@@ -580,7 +580,7 @@
  <section class="section" id="cashflow">
  <p class="section-label">By the Numbers</p>
  <h2>Real Cash Flow Analysis - What to Actually Expect</h2>
- <p>Honest numbers for a 3-bedroom, 2-bath home in Cedar Park purchased at $385,000 with 20% down in 2026:</p>
+ <p>An illustrative example for a 3-bedroom, 2-bath home in Cedar Park purchased at $385,000 with 20% down. The rent, rate, tax, and appreciation figures below are example assumptions; run your own numbers on a specific property:</p>
 
  <div class="cashflow-box">
  <h3>Cedar Park 3/2 - Monthly P&amp;L</h3>
@@ -593,7 +593,7 @@
  <div class="cashflow-row"><span>Property Management (10%)</span><span class="cf-val">−$200</span></div>
  <div class="cashflow-row"><span>CapEx + Maintenance Reserves</span><span class="cf-val">−$200</span></div>
  <div class="cashflow-row total"><span>Monthly Cash Flow</span><span class="cf-val" style="color:#c0392b">−$1,226</span></div>
- <p class="cashflow-note">⚠ This shows negative cash flow at 20% down - honest reality at current Austin prices and rates. The investment thesis is appreciation + equity build + tax benefits (depreciation). To reach cash-flow positive: buy below market, put 30%+ down, or use a higher-rent STR strategy.</p>
+ <p class="cashflow-note">⚠ This shows negative cash flow at 20% down - honest reality at these example price and rate assumptions. The investment thesis is appreciation + equity build + tax benefits (depreciation). To reach cash-flow positive: buy below market, put 30%+ down, or use a higher-rent STR strategy.</p>
  </div>
 
  <div class="cashflow-box" style="margin-top:1.5rem;">
@@ -606,7 +606,7 @@
  <div class="cashflow-row"><span>Tax Benefits (depreciation + deductions)*</span><span class="cf-val">~$8,000 to $15,000</span></div>
  <div class="cashflow-row" style="font-size:11px;color:#5c5b57;padding-left:16px"><span>*Straight-line only. With <a href="/100-bonus-depreciation-real-estate" style="color:#b8935a">100% bonus depreciation + cost segregation</a>, first-year deduction can hit $150K+</span><span></span></div>
  <div class="cashflow-row total"><span>Estimated 5-Year Annualized Return</span><span class="cf-val">12 to 15%</span></div>
- <p class="cashflow-note">Conservative 3% appreciation. Austin's 10-year average is 6 to 7%. Tax benefits vary - consult a CPA. Negative monthly cash flow reduces total return; budget for it explicitly.</p>
+ <p class="cashflow-note">Conservative 3% appreciation assumption, below Austin's long-run historical pace. Tax benefits vary - consult a CPA. Negative monthly cash flow reduces total return; budget for it explicitly.</p>
  </div>
  </section>
 
@@ -693,11 +693,11 @@
  <div class="faq-list">
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">Is Austin TX a good place to invest in real estate in 2026?</div>
- <div class="faq-a">Austin remains a strong long-term investment market. The metro adds 50,000+ residents per year, unemployment runs below national averages, and employers like Tesla, Apple, and Samsung anchor demand. Cap rates of 4 to 6% are achievable in suburban growth corridors. The investment thesis combines appreciation, equity build, and tax benefits - not purely cash flow at current prices.</div>
+ <div class="faq-a">Austin remains a strong long-term investment market. The metro keeps adding tens of thousands of residents a year, unemployment runs below national averages, and employers like Tesla, Apple, and Samsung anchor demand. The best cap rates are typically in the suburban growth corridors, where entry prices are lower: active Kyle and Buda listings currently carry a median asking price of {{live:city=Kyle,Buda:medianPrice}}, versus {{live:city=Austin:medianPrice}} in the City of Austin. The investment thesis combines appreciation, equity build, and tax benefits - not purely cash flow at current prices.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">What are typical cap rates in Austin TX?</div>
- <div class="faq-a">In 2026, Austin cap rates range from 3.5-4.5% in central neighborhoods to 5-7% in suburban growth corridors like Kyle, Buda, Cedar Park, and Georgetown. New construction with builder incentives (rate buydowns, closing cost contributions) can improve initial yields. Cap rates are compressed vs other Texas metros because of Austin's stronger appreciation expectations. For BTR portfolio buyers and developers selling to institutional capital, see <a href="/build-to-rent-austin-broker">build-to-rent broker services</a> and the <a href="/austin-new-construction-market-report">Q1 2026 new construction market report</a>.</div>
+ <div class="faq-a">Austin cap rates run lowest in central neighborhoods, where prices are highest, and highest in suburban growth corridors like Kyle, Buda, Cedar Park, and Georgetown, where entry prices are lower. Cap rates move with prices and interest rates, so underwrite every deal on its own rent comps rather than a published average. New construction with builder incentives (rate buydowns, closing cost contributions) can improve initial yields. Cap rates are compressed vs other Texas metros because of Austin's stronger appreciation expectations. For BTR portfolio buyers and developers selling to institutional capital, see <a href="/build-to-rent-austin-broker">build-to-rent broker services</a> and the <a href="/austin-new-construction-market-report">Q1 2026 new construction market report</a>.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">Can you Airbnb a home in Austin TX?</div>
@@ -732,15 +732,15 @@
  </div>
  <div class="tip-card">
  <h3>Texas Is a Non-Disclosure State</h3>
- <p>Sales prices are not public record in Texas. Zillow comps can be off by 10 to 15%. Work with an agent who has direct MLS access to pull real comparable sales and actual rental comps.</p>
+ <p>Sales prices are not public record in Texas. Zillow comps can be off by a wide margin. Work with an agent who has direct MLS access to pull real comparable sales and actual rental comps.</p>
  </div>
  <div class="tip-card">
  <h3>Watch for MUD Districts in Suburbs</h3>
- <p>Municipal Utility Districts add $0.50 to $1.25/$100 assessed value in extra taxes. A deal in a MUD can cost $4,000 to $6,000 more per year than the same home outside one. Always calculate the full tax burden.</p>
+ <p>Municipal Utility Districts add a separate tax rate on top of the county, city, and school district rates. A deal in a MUD can cost thousands of dollars more per year than the same home outside one. Always calculate the full tax burden using the current year's rates for that address.</p>
  </div>
  <div class="tip-card">
  <h3>F1 and SXSW Move the STR Market</h3>
- <p>Formula 1 (October) and SXSW (March) drive $400 to $800/night for properties within 20 minutes of downtown. These annual events add significant STR revenue spikes that improve annual yield dramatically.</p>
+ <p>Formula 1 (October) and SXSW (March) drive nightly rates several times the normal baseline for properties within 20 minutes of downtown. These annual events add significant STR revenue spikes that improve annual yield dramatically.</p>
  </div>
  <div class="tip-card">
  <h3>New Construction Has Builder Leverage</h3>

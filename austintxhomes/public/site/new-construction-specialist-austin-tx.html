@@ -53,9 +53,9 @@
  "mainEntity": [
  { "@type": "Question", "name": "Do I need a realtor for new construction in Austin?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, absolutely. The onsite sales agent at a builder's model home represents the builder, not you. Having an independent buyer's agent costs you nothing (builders pay the commission) and gets you honest advice on pricing, upgrades, builder reputation, lot selection, and contract negotiation. Walking in without representation is one of the biggest mistakes buyers make." }},
  { "@type": "Question", "name": "Which are the best new construction builders in Austin?", "acceptedAnswer": { "@type": "Answer", "text": "Austin's top production builders include KB Home, Meritage Homes, Taylor Morrison, Toll Brothers, Drees Custom Homes, Highland Homes, Lennar, David Weekley, Pulte, Coventry, and Milestone Community Builders. Each has different strengths, build quality, design flexibility, warranty programs, customer service. Luke Allen has worked with all of them and can tell you exactly which builders perform well in the specific neighborhood you're considering." }},
- { "@type": "Question", "name": "Can I negotiate with a new construction builder in Austin?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, but differently than on a resale. Builders rarely reduce the base price (it would hurt comps for future sales in the community), but they will negotiate on: closing cost credits ($5K-$20K), design center upgrades ($10K-$50K), appliance packages, fence and landscaping, rate buy-downs through their preferred lender. Knowing which levers to pull and when, end of month, end of quarter, standing inventory vs build-to-order, is where an experienced specialist earns their keep." }},
+ { "@type": "Question", "name": "Can I negotiate with a new construction builder in Austin?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, but differently than on a resale. Builders rarely reduce the base price (it would hurt comps for future sales in the community), but they will negotiate on: closing cost credits, design center upgrades, appliance packages, fence and landscaping, rate buy-downs through their preferred lender. Knowing which levers to pull and when, end of month, end of quarter, standing inventory vs build-to-order, is where an experienced specialist earns their keep." }},
  { "@type": "Question", "name": "How much is the builder rebate for buying new construction in Austin?", "acceptedAnswer": { "@type": "Answer", "text": "Builder commission rebates typically range from 2.5-3% of the purchase price, the same commission the builder would pay any buyer's agent. Some agents share a portion of this back to the buyer as a 'rebate' at closing. Luke Allen doesn't discount commission because experience pays for itself many times over through better negotiation, upgrade guidance, and lot selection. Saving $5K on commission to lose $25K on poor upgrade choices is a bad trade." }},
- { "@type": "Question", "name": "What are the best new construction communities in Austin in 2026?", "acceptedAnswer": { "@type": "Answer", "text": "Hot 2026 new construction communities include Easton Park (SE Austin), Santa Rita Ranch (Liberty Hill/Leander), Sweetwater (west Austin), Rancho Sienna (Georgetown), Goodnight Ranch (SE Austin), Mueller (central infill), Whisper Valley (east Austin net-zero homes), and Headwaters (Dripping Springs). Each has different price points ($400K to $2M+), lot sizes, HOA amenities, and target buyer profiles." }},
+ { "@type": "Question", "name": "What are the best new construction communities in Austin in 2026?", "acceptedAnswer": { "@type": "Answer", "text": "Hot 2026 new construction communities include Easton Park (SE Austin), Santa Rita Ranch (Liberty Hill/Leander), Sweetwater (west Austin), Rancho Sienna (Georgetown), Goodnight Ranch (SE Austin), Mueller (central infill), Whisper Valley (east Austin net-zero homes), and Headwaters (Dripping Springs). Each has different price points, lot sizes, HOA amenities, and target buyer profiles." }},
  { "@type": "Question", "name": "How long does new construction take in Austin?", "acceptedAnswer": { "@type": "Answer", "text": "Typical new construction build times in Austin range from 5-10 months from contract to closing. Production builders (KB, Lennar, Meritage) are faster, often 4-6 months on standing inventory homes, 6-8 months on build-to-order. Custom and semi-custom builders (Drees, Toll Brothers) run 8-12 months. Weather, labor availability, and design center changes can extend timelines by 30-60 days." }}
  ]
  }
@@ -240,7 +240,7 @@
 <div class="stats-bar">
  <div class="stats-inner">
  <div><div class="stat-num">300+</div><div class="stat-label">New Builds Closed</div></div>
- <div><div class="stat-num">320</div><div class="stat-label">Austin 2026-Built Homes Now</div></div>
+ <div><div class="stat-num">{{live:city=Austin;newcon=1:count}}</div><div class="stat-label">Austin New Builds on the Market Now</div></div>
  <div><div class="stat-num">$0</div><div class="stat-label">Cost to Buyers</div></div>
  <div><div class="stat-num">15+</div><div class="stat-label">Builders Worked With</div></div>
  </div>
@@ -321,25 +321,25 @@
  <div class="container">
  <div class="sh">
  <span class="eyebrow">Austin new construction market</span>
- <h2>The 2026 <em>Market Reality.</em></h2>
+ <h2>The {{year}} <em>Market Reality.</em></h2>
  <p>Austin's new construction market has shifted. After the 2021-2022 frenzy, builders are sitting on more inventory, offering real incentives, and becoming flexible again. Here's what's happening right now.</p>
  </div>
 
  <div class="market-stats">
  <div class="market-card">
- <div class="label">Active 2026-Built</div>
- <div class="num" id="stat-total">320</div>
- <p>New construction homes in Austin built in 2026 currently on the market. Big jump from 2023, builder inventory has recovered.</p>
+ <div class="label">Active New Construction</div>
+ <div class="num" id="stat-total">{{live:city=Austin;newcon=1:count}}</div>
+ <p>New construction homes in the City of Austin currently on the market, refreshed from the MLS.</p>
  </div>
  <div class="market-card">
  <div class="label">Median Price</div>
- <div class="num" id="stat-median">$525K</div>
- <p>Median list price for 2026 Austin new construction. Lower than resale median because most new construction is in outer suburbs.</p>
+ <div class="num" id="stat-median">{{live:city=Austin;newcon=1:medianPrice|Live}}</div>
+ <p>Median asking price for active new construction in the City of Austin. Suburban new construction across the wider metro typically asks less.</p>
  </div>
  <div class="market-card">
- <div class="label">Avg Concessions</div>
- <div class="num">$15K</div>
- <p>Average builder concessions (closing costs, upgrades, rate buy-downs) being offered in Q4 2025, Q1 2026 across Austin builders.</p>
+ <div class="label">Price Cuts</div>
+ <div class="num">{{live:metro;newcon=1:reducedPct|Common}}</div>
+ <p>Share of active new construction across the Austin area that has cut its original asking price, on top of the closing cost credits and rate buy-downs builders negotiate.</p>
  </div>
  <div class="market-card">
  <div class="label">Build Time</div>
@@ -375,12 +375,12 @@
  </div>
 
  <div class="expertise-grid">
- <div class="expertise-card"><h3>Easton Park (SE Austin)</h3><p>Master-planned community off 183A. Multiple builders, amenity center, pool, trails. $450K to $800K. Appeals to families wanting new + amenities at reasonable prices.</p></div>
- <div class="expertise-card"><h3>Santa Rita Ranch (Liberty Hill)</h3><p>Sprawling master-planned community 30 min NW of Austin. Water parks, schools, massive amenity package. $380K to $900K. Best value per square foot in the region.</p></div>
- <div class="expertise-card"><h3>Sweetwater (West Austin)</h3><p>Hill country setting with views. Semi-custom builders. $800K to $2M+. Appeals to move-up buyers who want newer construction with West Austin prestige.</p></div>
- <div class="expertise-card"><h3>Mueller (Central Austin)</h3><p>Infill master-planned community on former airport site. Walk-score 85+, retail, parks. $600K to $1.5M. The rare new construction in urban-feel Austin.</p></div>
- <div class="expertise-card"><h3>Whisper Valley (East Austin)</h3><p>Net-zero energy homes from Taurus Investment Holdings. Solar + geothermal standard. $450K to $700K. Tech-forward buyers and environmentally minded families.</p></div>
- <div class="expertise-card"><h3>Headwaters (Dripping Springs)</h3><p>Hill country master-planned with estate lots. Multiple semi-custom builders. $800K to $2.5M. For families wanting Dripping Springs schools + new construction quality.</p></div>
+ <div class="expertise-card"><h3>Easton Park (SE Austin)</h3><p>Master-planned community off 183A. Multiple builders, amenity center, pool, trails. Median asking price right now: {{live:sub=Easton Park:medianPrice|varies by builder and phase}}. Appeals to families wanting new + amenities at reasonable prices.</p></div>
+ <div class="expertise-card"><h3>Santa Rita Ranch (Liberty Hill)</h3><p>Sprawling master-planned community 30 min NW of Austin. Water parks, schools, massive amenity package. Median asking price right now: {{live:sub=Santa Rita Ranch:medianPrice|varies by builder and phase}}. Best value per square foot in the region.</p></div>
+ <div class="expertise-card"><h3>Sweetwater (West Austin)</h3><p>Hill country setting with views. Semi-custom builders. Median asking price right now: {{live:sub=Sweetwater:medianPrice|varies by builder and phase}}. Appeals to move-up buyers who want newer construction with West Austin prestige.</p></div>
+ <div class="expertise-card"><h3>Mueller (Central Austin)</h3><p>Infill master-planned community on former airport site. Walk-score 85+, retail, parks. Median asking price right now: {{live:sub=Mueller:medianPrice|varies by builder and phase}}. The rare new construction in urban-feel Austin.</p></div>
+ <div class="expertise-card"><h3>Whisper Valley (East Austin)</h3><p>Net-zero energy homes from Taurus Investment Holdings. Solar + geothermal standard. Median asking price right now: {{live:sub=Whisper Valley:medianPrice|varies by builder and phase}}. Tech-forward buyers and environmentally minded families.</p></div>
+ <div class="expertise-card"><h3>Headwaters (Dripping Springs)</h3><p>Hill country master-planned with estate lots. Multiple semi-custom builders. Median asking price right now: {{live:sub=Headwaters:medianPrice|varies by builder and phase}}. For families wanting Dripping Springs schools + new construction quality.</p></div>
  </div>
  </div>
 </section>
@@ -395,7 +395,7 @@
  <div class="faq-list">
  <div class="faq-item"><div class="faq-q"><span class="faq-q-text">Do I need a realtor for new construction in Austin?</span><span class="faq-icon">+</span></div><div class="faq-a">Yes, absolutely. The onsite sales agent at a builder's model home represents the builder, not you. Buyer representation is free (builders pay the commission) and gets you honest advice on pricing, upgrades, builder reputation, and contract negotiation. Walking in without representation is one of the biggest mistakes buyers make.</div></div>
  <div class="faq-item"><div class="faq-q"><span class="faq-q-text">Which are the best new construction builders in Austin?</span><span class="faq-icon">+</span></div><div class="faq-a">Top builders: KB Home, Meritage, Taylor Morrison, Toll Brothers, Drees, Highland, Lennar, David Weekley, Pulte, Coventry, Milestone. Each has different strengths, build quality, design flexibility, warranty programs. I've worked with all of them and can tell you exactly which ones perform well in your target neighborhood.</div></div>
- <div class="faq-item"><div class="faq-q"><span class="faq-q-text">Can I negotiate with a new construction builder?</span><span class="faq-icon">+</span></div><div class="faq-a">Yes, but differently. Builders rarely lower base price (hurts comps), but they will negotiate on: closing cost credits ($5K-$20K), design center upgrades, appliance packages, fence and landscaping, rate buy-downs. Knowing which levers to pull and when is where an experienced specialist earns their keep.</div></div>
+ <div class="faq-item"><div class="faq-q"><span class="faq-q-text">Can I negotiate with a new construction builder?</span><span class="faq-icon">+</span></div><div class="faq-a">Yes, but differently. Builders rarely lower base price (hurts comps), but they will negotiate on: closing cost credits, design center upgrades, appliance packages, fence and landscaping, rate buy-downs. Knowing which levers to pull and when is where an experienced specialist earns their keep.</div></div>
  <div class="faq-item"><div class="faq-q"><span class="faq-q-text">How much is the builder rebate for buying new construction?</span><span class="faq-icon">+</span></div><div class="faq-a">Builder commissions typically run 2.5-3% to the buyer's agent. Some agents share a "rebate" with the buyer, but saving $5K on commission to lose $25K on poor upgrade choices is a bad trade. I don't discount commission because experience pays for itself many times over.</div></div>
  <div class="faq-item"><div class="faq-q"><span class="faq-q-text">What are the best new construction communities in 2026?</span><span class="faq-icon">+</span></div><div class="faq-a">Hot communities: Easton Park, Santa Rita Ranch, Sweetwater, Rancho Sienna, Goodnight Ranch, Mueller, Whisper Valley, Headwaters. Each has different price points, lot sizes, and target buyer profiles. Contact me for a specific recommendation based on your needs.</div></div>
  <div class="faq-item"><div class="faq-q"><span class="faq-q-text">How long does new construction take in Austin?</span><span class="faq-icon">+</span></div><div class="faq-a">5-10 months from contract to closing. Production builders: 4-6 months on standing inventory, 6-8 months build-to-order. Custom/semi-custom: 8-12 months. Weather, labor, and design changes can extend by 30-60 days.</div></div>
@@ -445,16 +445,6 @@ document.querySelectorAll('.faq-q').forEach(q => {
  try {
  const res = await fetch('/api/properties/search?limit=9&sortBy=newest&city=Austin&minYear=2026&newConstruction=true&minPrice=200000');
  const data = await res.json();
-
- // Update stats
- if (data.total) document.getElementById('stat-total').textContent = data.total;
- if (data.listings && data.listings.length) {
- const prices = data.listings.map(l => l.list_price).filter(Boolean).sort((a,b) => a-b);
- if (prices.length) {
- const median = prices[Math.floor(prices.length/2)];
- document.getElementById('stat-median').textContent = '$' + Math.round(median/1000) + 'K';
- }
- }
 
  if (!data.listings || !data.listings.length) {
  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--light);">No new construction listings currently available.</div>';

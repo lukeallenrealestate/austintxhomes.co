@@ -80,7 +80,7 @@
  {
  "@type": "Question",
  "name": "How much is my Mueller Austin home worth in 2026?",
- "acceptedAnswer": { "@type": "Answer", "text": "Mueller home values in 2026 depend on your product type (condo, townhome, or single-family), Austin Energy Green Building rating, distance to Mueller Lake Park, construction phase, and current condition. The neighborhood median is approximately $650K, but a park-facing 4-bedroom single-family home with a 5-star AEGB rating and solar panels can exceed $1.0M, while an entry-level condo may price at $425K. Luke Allen provides a free product-type-specific comparative market analysis using recent Mueller closed sales, accounting for park proximity premium, green building documentation value, HOA cost stack, and Dell Medical buyer demand. Contact Luke Allen for a precise valuation for your specific Mueller address." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Mueller home values in 2026 depend on your product type (condo, townhome, or single-family), Austin Energy Green Building rating, distance to Mueller Lake Park, construction phase, and current condition. The median asking price for active Mueller listings is {{live:nbhd=mueller:medianPrice|well above the Austin median}} right now, but a park-facing 4-bedroom single-family home with a 5-star AEGB rating and solar panels sits at the top of the range, while entry-level condos sit at the bottom. Luke Allen provides a free product-type-specific comparative market analysis using recent Mueller closed sales, accounting for park proximity premium, green building documentation value, HOA cost stack, and Dell Medical buyer demand. Contact Luke Allen for a precise valuation for your specific Mueller address." }
  },
  {
  "@type": "Question",
@@ -90,7 +90,7 @@
  {
  "@type": "Question",
  "name": "What is the park proximity premium for my Mueller home?",
- "acceptedAnswer": { "@type": "Answer", "text": "If your Mueller home is within 2 blocks of Mueller Lake Park, it qualifies for an estimated 8 to 12% park proximity premium over equivalent homes 4+ blocks away. This premium applies across condos, townhomes, and single-family homes. The premium is not automatic, it must be explicitly captured in the listing price and communicated in the listing copy. Luke Allen prices Mueller homes by park proximity zone as a primary variable, ensuring park-proximate sellers capture the premium rather than having it implicitly absorbed by a buyer." }
+ "acceptedAnswer": { "@type": "Answer", "text": "If your Mueller home is within 2 blocks of Mueller Lake Park, it qualifies for a meaningful park proximity premium over equivalent homes 4+ blocks away. This premium applies across condos, townhomes, and single-family homes. The premium is not automatic, it must be explicitly captured in the listing price and communicated in the listing copy. Luke Allen prices Mueller homes by park proximity zone as a primary variable, ensuring park-proximate sellers capture the premium rather than having it implicitly absorbed by a buyer." }
  },
  {
  "@type": "Question",
@@ -335,19 +335,19 @@
 <div class="stats-bar">
  <div class="stats-bar-inner">
  <div>
- <div class="stat-num">$650K</div>
- <div class="stat-lbl">Median Mueller Price</div>
+ <div class="stat-num">{{live:nbhd=mueller:medianPrice|Ask Luke}}</div>
+ <div class="stat-lbl">Median Mueller Asking Price</div>
  </div>
  <div>
- <div class="stat-num">8 to 12%</div>
- <div class="stat-lbl">Park Proximity Premium</div>
+ <div class="stat-num">{{live:nbhd=mueller:count}}</div>
+ <div class="stat-lbl">Active Mueller Listings</div>
  </div>
  <div>
- <div class="stat-num">3 to 6%</div>
- <div class="stat-lbl">Green Building Premium</div>
+ <div class="stat-num">{{live:nbhd=mueller:medianPpsf|Ask Luke}}</div>
+ <div class="stat-lbl">Median Ask per Sq Ft</div>
  </div>
  <div>
- <div class="stat-num">15</div>
+ <div class="stat-num">41</div>
  <div class="stat-lbl">5-Star Google Reviews</div>
  </div>
  </div>
@@ -363,7 +363,7 @@
 
  <p class="body-copy">Selling a home in Mueller requires a listing agent who understands what actually drives Mueller's market, and can communicate those drivers to the specific buyer pool that will pay the most for your home. Mueller is not just a neighborhood near downtown Austin with a park. It is Austin's most ambitious master-planned community, built on a 700-acre former airport site with intentional sustainability requirements, a 30-acre park as the neighborhood's organizing principle, year-round Sunday Farmers Market, green-built housing stock that saves buyers $600 to $1,200/year in utility costs, and a 5-minute commute to Dell Medical School that no other comparable Austin neighborhood offers. Most listing agents miss all of this because they are using generic Austin comps and automated valuation models. Luke Allen is not that agent.</p>
 
- <p class="body-copy">Luke Allen understands Mueller's buyer pool in specific terms. Dell Medical School physicians, researchers, and residents who work 5 minutes away and have been filtering specifically for Mueller or adjacent Cherrywood. Sustainability-focused buyers who have been searching for an Austin Energy Green Building rated home and understand the utility savings documentation they expect to see. Families who have toured Mueller on a Sunday morning when the Farmers Market is running and the splash pad is open and have decided they want to raise their children in this neighborhood. Buyers priced into Mueller from Travis Heights or Bouldin who want inner-loop lifestyle at a $650K entry point rather than $850K+. Investors who see the Dell Medical rental demand floor and want a hard asset with structural income potential. Luke Allen knows these buyers, their budgets, their priorities, and how to reach them.</p>
+ <p class="body-copy">Luke Allen understands Mueller's buyer pool in specific terms. Dell Medical School physicians, researchers, and residents who work 5 minutes away and have been filtering specifically for Mueller or adjacent Cherrywood. Sustainability-focused buyers who have been searching for an Austin Energy Green Building rated home and understand the utility savings documentation they expect to see. Families who have toured Mueller on a Sunday morning when the Farmers Market is running and the splash pad is open and have decided they want to raise their children in this neighborhood. Buyers priced into Mueller from Travis Heights or Bouldin who want inner-loop lifestyle at a lower entry point. Investors who see the Dell Medical rental demand floor and want a hard asset with structural income potential. Luke Allen knows these buyers, their budgets, their priorities, and how to reach them.</p>
 
  <p class="body-copy">Beyond strategy, Luke Allen's Mueller listings are full-service. Professional photography that showcases Mueller Lake Park proximity, Aldrich Street walkability, and the green building features that differentiate Mueller from the rest of Austin's housing stock. Listing copy that leads with the Dell Medical commute advantage, quantifies the utility savings from green building certification, and positions the park lifestyle with specificity that buyers recognize. Showing coordination timed when possible to Sunday mornings when the Farmers Market is running. Offer negotiation that accounts for Mueller's specific variables, product type differences, HOA cost stack, solar documentation, park proximity premium. Read what past clients say at his <a href="https://share.google/hETte82InqUPvWeNC">Google reviews page</a>.</p>
  </div>
@@ -383,7 +383,7 @@
  <div class="product-label">Product Type 1</div>
  <h3>Mueller Condos</h3>
  <p><strong>Buyer profile:</strong> Single professionals, young couples without children, investors targeting Dell Medical and UT renters, buyers who want Mueller's amenities without single-family maintenance.</p>
- <p><strong>Price range:</strong> $400K to $550K. Building HOA plus community HOA, total HOA cost is the primary buyer concern after price.</p>
+ <p><strong>Price range:</strong> the median active condo listing asks {{live:nbhd=mueller;type=condo:medianPrice|well below Mueller single-family homes}} right now. Building HOA plus community HOA, total HOA cost is the primary buyer concern after price.</p>
  <p><strong>Staging priority:</strong> Space efficiency, professional imagery of walkability and park access, clean modern finishes that photograph well. The story is the location and the lifestyle, Aldrich Street walkable, Farmers Market Sundays, Dell Medical commute.</p>
  <p><strong>Marketing priority:</strong> Digital targeting to Dell Medical / UT healthcare workers and sustainability-focused single buyers. HOA financials ready for buyer review upfront, condo buyers will ask.</p>
  </div>
@@ -391,7 +391,7 @@
  <div class="product-label">Product Type 2</div>
  <h3>Mueller Townhomes</h3>
  <p><strong>Buyer profile:</strong> Couples and small families wanting more space than a condo with private outdoor space and a garage. Often first-time home buyers stepping up from rental. Dell Medical buyers who want the garage for the commute.</p>
- <p><strong>Price range:</strong> $500K to $700K. Community HOA only (no building HOA in most Mueller townhome configurations), carrying cost advantage over condos.</p>
+ <p><strong>Price range:</strong> the median active townhome listing asks {{live:nbhd=mueller;type=townhome:medianPrice|between Mueller condos and single-family homes}} right now. Community HOA only (no building HOA in most Mueller townhome configurations), carrying cost advantage over condos.</p>
  <p><strong>Staging priority:</strong> Livability of the main living floor, private outdoor space (patio, small yard), garage storage. Emphasize the park walk time and the Farmers Market as a Saturday/Sunday ritual buyers will adopt.</p>
  <p><strong>Marketing priority:</strong> Family and couple buyers who want the Mueller lifestyle without the full single-family price tag. Emphasize the community HOA value, parks, trails, Farmers Market, vs. the no-HOA alternatives at lower price points.</p>
  </div>
@@ -399,7 +399,7 @@
  <div class="product-label">Product Type 3</div>
  <h3>Mueller Single-Family Homes</h3>
  <p><strong>Buyer profile:</strong> Families with children (Blanton Elementary, Farmers Market Sundays, splash pad summers), Dell Medical / UT healthcare workers wanting a full home, sustainability buyers who specifically researched green-built single-family, buyers priced into Mueller from Travis Heights.</p>
- <p><strong>Price range:</strong> $600K to $1.3M+. Park proximity and green building rating are the primary intra-product price drivers.</p>
+ <p><strong>Price range:</strong> the median active single-family listing asks {{live:nbhd=mueller;type=sfr:medianPrice|at the top of the Mueller range}} right now. Park proximity and green building rating are the primary intra-product price drivers.</p>
  <p><strong>Staging priority:</strong> Park lifestyle, green building documentation (utility bills, AEGB certificate, solar production records), school proximity, Aldrich Street walkability. Outdoor space that connects to the Mueller lifestyle.</p>
  <p><strong>Marketing priority:</strong> Fully targeted to Dell Medical buyer pool, sustainability buyers, and families. Sunday morning showing timing when the Farmers Market is running. Green documentation assembled and visible in the listing.</p>
  </div>
@@ -441,9 +441,9 @@
  <div class="section-inner">
  <p class="eyebrow">Park Proximity Pricing</p>
  <h2>Is Your Home Within 2 Blocks of<br><em>Mueller Lake Park?</em></h2>
- <p class="section-lead">If your Mueller home is within 2 blocks of Mueller Lake Park, you are in a pricing tier, not just a neighborhood. The 8 to 12% park proximity premium is real, documented, and capturable. But only if your listing agent knows to price and market for it. Luke Allen does.</p>
+ <p class="section-lead">If your Mueller home is within 2 blocks of Mueller Lake Park, you are in a pricing tier, not just a neighborhood. The park proximity premium is real, documented, and capturable. But only if your listing agent knows to price and market for it. Luke Allen does.</p>
 
- <p class="body-copy">Mueller Lake Park's 30 acres are Mueller's most distinctive asset, and homes closest to the park are priced to reflect it. The premium works across all three product types: a park-proximate condo at $475K sits above an equivalent 4+ block condo at $440K. A park-facing single-family home at $875K sits above an equivalent home without park proximity at $790K. The premium is consistent, measurable, and frequently left on the table by listing agents who use generic price-per-square-foot comps rather than park proximity-specific comparables.</p>
+ <p class="body-copy">Mueller Lake Park's 30 acres are Mueller's most distinctive asset, and homes closest to the park are priced to reflect it. The premium works across all three product types. For example, a park-proximate condo at $475K might sit above an equivalent 4+ block condo at $440K, and a park-facing single-family home at $875K above an equivalent home without park proximity at $790K. The premium is consistent, measurable, and frequently left on the table by listing agents who use generic price-per-square-foot comps rather than park proximity-specific comparables.</p>
 
  <p class="body-copy">Luke Allen's park proximity pricing strategy has three components. First, he identifies the correct comparable sales, only Mueller homes within the same park proximity zone as yours, not all Mueller homes averaged together. A 4-block-away comp is not a valid reference point for a park-proximate home. Second, he writes listing copy that specifically describes the park proximity in tangible terms: "Sunday morning walk to the Farmers Market is 4 minutes from your front door," "splash pad is 2 blocks away," "the off-leash dog area is visible from the back fence." Third, he targets buyer segments who will pay the park premium, families with young children and dog owners, who have been specifically searching for park-proximate Mueller homes. See the park proximity analysis at the <a href="/mueller-market-report">Mueller market report</a>.</p>
 
@@ -461,7 +461,7 @@
  <p class="eyebrow">HOA as a Feature</p>
  <h2>The Mueller HOA Is a Selling Point<br><em>Not a Liability Disclosure</em></h2>
 
- <p class="body-copy">Some buyers approach HOA fees as a negative, a recurring cost without visible benefit. In Mueller, the opposite is true: the Mueller Community Association HOA is the financial mechanism that produces the parks, trails, Farmers Market infrastructure, and common area maintenance that buyers are willing to pay $650K+ to access. Luke Allen's approach to the Mueller HOA in listing presentations is direct: the MCA at $100 to $150/month is the cost of the park, the splash pad, the dog area, the trail system, and the Farmers Market every Sunday. Show buyers what they are paying for, and the HOA becomes an asset rather than a monthly friction.</p>
+ <p class="body-copy">Some buyers approach HOA fees as a negative, a recurring cost without visible benefit. In Mueller, the opposite is true: the Mueller Community Association HOA is the financial mechanism that produces the parks, trails, Farmers Market infrastructure, and common area maintenance that buyers are willing to pay a premium to access. Luke Allen's approach to the Mueller HOA in listing presentations is direct: the MCA at $100 to $150/month is the cost of the park, the splash pad, the dog area, the trail system, and the Farmers Market every Sunday. Show buyers what they are paying for, and the HOA becomes an asset rather than a monthly friction.</p>
 
  <p class="body-copy">The strategy is different for condo sellers, whose buyers face a two-tier HOA (MCA plus building HOA). For condo buyers, the combined HOA can feel like a larger monthly burden, particularly when stacked against a mortgage payment. Luke Allen's approach with condo listings is transparent: present the total monthly cost of ownership (mortgage plus MCA plus building HOA) alongside the comparable total cost for non-HOA alternatives in East Austin or Cherrywood. Often the comparison shows that Mueller's total cost is competitive when adjusted for the utility savings from green building and the park and market access the HOA maintains. Buyers who see the full cost comparison rather than just the HOA number are better positioned to make a rational decision, and to pay a fair price for what they are getting.</p>
 
@@ -499,12 +499,12 @@
  <div class="buyer-card">
  <div class="buyer-tag">Segment 4</div>
  <h3>Buyers Priced Into Mueller from Travis Heights / Bouldin</h3>
- <p>A specific and growing buyer segment: buyers who started their search in Travis Heights ($850K+ median) or Bouldin Creek ($900K+) and reached a budget ceiling that brings them to Mueller at $650K. These buyers want inner-loop lifestyle, walkability, and community amenities, and they discover Mueller has a genuinely compelling answer in the form of the park, the Farmers Market, and Aldrich Street at a 25 to 30% price discount. For this buyer, Mueller is not a compromise but a strategic choice. Luke Allen frames Mueller listings to articulate specifically how Mueller compares to Travis Heights and Bouldin on the dimensions these buyers care about, park access, walkability, food scene, community, with the price advantage made explicit.</p>
+ <p>A specific and growing buyer segment: buyers who started their search in Travis Heights (median ask {{live:nbhd=travis-heights:medianPrice|well above Mueller}}) or Bouldin Creek (median ask {{live:nbhd=bouldin-creek:medianPrice|well above Mueller}}) and reached a budget ceiling that brings them to Mueller (median ask {{live:nbhd=mueller:medianPrice|meaningfully lower}}). These buyers want inner-loop lifestyle, walkability, and community amenities, and they discover Mueller has a genuinely compelling answer in the form of the park, the Farmers Market, and Aldrich Street at a meaningful price discount. For this buyer, Mueller is not a compromise but a strategic choice. Luke Allen frames Mueller listings to articulate specifically how Mueller compares to Travis Heights and Bouldin on the dimensions these buyers care about, park access, walkability, food scene, community, with the price advantage made explicit.</p>
  </div>
  <div class="buyer-card">
  <div class="buyer-tag">Segment 5</div>
  <h3>Investors for Rental Income</h3>
- <p>Investors who see the Mueller rental demand floor, Dell Medical workers, UT-affiliated residents, healthcare professionals, and want a hard asset in an inner-loop location with HOA-maintained infrastructure. Mueller's rental market benefits from the same Dell Medical proximity that drives the owner-occupant market: a 3-bedroom Mueller home rents for $2,800 to $3,800/month to healthcare workers and young professionals who cannot yet afford to purchase. For condo investors, the combined HOA cost must be factored into yield calculations, Luke Allen models this honestly for any Mueller investor buyer. For single-family investors with no building HOA, the yield math is cleaner. Luke Allen communicates Mueller's investment case explicitly to this segment, including the green building utility savings that improve net yield vs. non-rated comparable rentals. See the full Mueller investment picture at <a href="/mueller-market-report">the Mueller market report</a>.</p>
+ <p>Investors who see the Mueller rental demand floor, Dell Medical workers, UT-affiliated residents, healthcare professionals, and want a hard asset in an inner-loop location with HOA-maintained infrastructure. Mueller's rental market benefits from the same Dell Medical proximity that drives the owner-occupant market: a 3-bedroom Mueller home rents readily to healthcare workers and young professionals who cannot yet afford to purchase. For condo investors, the combined HOA cost must be factored into yield calculations, Luke Allen models this honestly for any Mueller investor buyer. For single-family investors with no building HOA, the yield math is cleaner. Luke Allen communicates Mueller's investment case explicitly to this segment, including the green building utility savings that improve net yield vs. non-rated comparable rentals. See the full Mueller investment picture at <a href="/mueller-market-report">the Mueller market report</a>.</p>
  </div>
  </div>
  </div>
@@ -602,7 +602,7 @@
  <span class="faq-q-text">How much is my Mueller home worth in 2026?</span>
  <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="5 8 10 13 15 8"/></svg>
  </button>
- <div class="faq-answer">Mueller home values in 2026 depend on product type, Austin Energy Green Building rating, park proximity, construction phase, and condition. The neighborhood median is $650K, but a park-facing 4-bedroom single-family with a 5-star AEGB rating and solar documentation can approach or exceed $1.0M. Luke Allen provides a free product-type-specific market analysis accounting for all Mueller-specific pricing variables. <a href="#contact">Contact Luke Allen</a> for a precise valuation for your specific address.</div>
+ <div class="faq-answer">Mueller home values in 2026 depend on product type, Austin Energy Green Building rating, park proximity, construction phase, and condition. The median asking price for active Mueller listings is {{live:nbhd=mueller:medianPrice|well above the Austin median}} right now, but a park-facing 4-bedroom single-family with a 5-star AEGB rating and solar documentation sits at the top of the range. Luke Allen provides a free product-type-specific market analysis accounting for all Mueller-specific pricing variables. <a href="#contact">Contact Luke Allen</a> for a precise valuation for your specific address.</div>
  </div>
 
  <div class="faq-item">
@@ -618,7 +618,7 @@
  <span class="faq-q-text">What is the park proximity premium for my Mueller home?</span>
  <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="5 8 10 13 15 8"/></svg>
  </button>
- <div class="faq-answer">Homes within 0 to 2 blocks of Mueller Lake Park command an estimated 8 to 12% premium over equivalent homes 4+ blocks away. This applies across condos, townhomes, and single-family homes. The premium is only captured when the listing agent prices using park-zone comparables and writes listing copy that makes the park proximity tangible. Luke Allen prices and markets every park-proximate Mueller home to capture the full premium. See the <a href="/mueller-market-report">Mueller market report</a> for the full park proximity analysis.</div>
+ <div class="faq-answer">Homes within 0 to 2 blocks of Mueller Lake Park command a meaningful premium over equivalent homes 4+ blocks away. This applies across condos, townhomes, and single-family homes. The premium is only captured when the listing agent prices using park-zone comparables and writes listing copy that makes the park proximity tangible. Luke Allen prices and markets every park-proximate Mueller home to capture the full premium. See the <a href="/mueller-market-report">Mueller market report</a> for the full park proximity analysis.</div>
  </div>
 
  <div class="faq-item">

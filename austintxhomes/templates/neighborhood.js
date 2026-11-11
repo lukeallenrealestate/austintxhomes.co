@@ -369,9 +369,9 @@ module.exports = function renderNeighborhoodPage(n) {
   </div>
   </div>
   <div class="hero-price-card">
-  <div class="hpc-label">${n.name} Median</div>
+  <div class="hpc-label">${n.name} Median Asking Price</div>
   <div class="hpc-amount">${n.medianPrice}</div>
-  <div class="hpc-sub">${n.priceRange}</div>
+  <div class="hpc-sub">Most listings: ${n.priceRange}</div>
   <div class="hpc-stats">
   <div class="hpc-stat"><span class="hpc-stat-label">Home Types</span><span class="hpc-stat-val">${n.homeTypes}</span></div>
   <div class="hpc-stat"><span class="hpc-stat-label">Schools</span><span class="hpc-stat-val">${n.schools}</span></div>
@@ -388,7 +388,7 @@ module.exports = function renderNeighborhoodPage(n) {
   <div style="max-width:var(--w);margin:0 auto;">
   <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:10px;">Key Takeaways &middot; ${n.name}</div>
   <ul style="list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px 28px;font-size:14px;line-height:1.55;color:var(--text);">
-  <li>&middot; Median price: <strong>${n.medianPrice}</strong>; range ${n.priceRange}.</li>
+  <li>&middot; Median asking price: <strong>${n.medianPrice}</strong>; most active listings run from ${n.priceRange}.</li>
   <li>&middot; Home types: ${n.homeTypes}.</li>
   <li>&middot; Schools: ${n.schools}.</li>
   <li>&middot; Commute: ${n.commute}.</li>

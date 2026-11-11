@@ -1011,7 +1011,7 @@
  <div class="dr-stat-lbl">Scoring Signals</div>
  </div>
  <div class="dr-stat">
- <div class="dr-stat-num" id="dr-count">33k+</div>
+ <div class="dr-stat-num" id="dr-count">{{live:metro:count}}+</div>
  <div class="dr-stat-lbl">Live MLS Listings</div>
  </div>
  <div class="dr-stat">
@@ -1131,16 +1131,16 @@
   <div style="text-align:center;margin-bottom:52px;">
    <div style="font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:16px;">Live from ACTRIS MLS · Refreshed Every 30 Minutes</div>
    <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(32px,4.4vw,52px);font-weight:400;color:var(--text);line-height:1.1;margin:0 0 18px;letter-spacing:-.01em;">The Austin Market <em style="color:var(--gold);font-style:italic;">Right Now</em></h2>
-   <p style="font-size:16px;color:var(--mid);max-width:640px;margin:0 auto;line-height:1.7;font-weight:300;">Every number on these pages pulls straight from live ACTRIS MLS. Sold comps and active inventory for every major Austin ZIP and neighborhood, with Luke's take on each submarket.</p>
+   <p style="font-size:16px;color:var(--mid);max-width:640px;margin:0 auto;line-height:1.7;font-weight:300;">Every number on these pages pulls straight from live ACTRIS MLS. Active inventory, asking prices, and price cuts for every major Austin ZIP and neighborhood, with Luke's take on each submarket.</p>
   </div>
 
   <!-- Two primary hub cards -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:56px;">
-   <a href="/homes-for-sale-austin" style="display:block;background:#fff;border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:6px;padding:32px 34px;text-decoration:none;transition:all .18s;box-shadow:0 2px 10px rgba(0,0,0,.03);">
-    <div style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:12px;">Sold Comps · Last 90 Days</div>
-    <h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;font-weight:500;color:var(--text);margin:0 0 12px;letter-spacing:-.005em;">Homes <em style="font-style:italic;color:var(--gold);">for Sale</em></h3>
-    <p style="font-size:14.5px;color:var(--mid);line-height:1.65;margin:0 0 14px;">Closed home sales by ZIP and neighborhood. Median close price, days on market, sale-to-list ratio, and the last 12 sales at each address.</p>
-    <span style="font-size:12px;color:var(--gold);font-weight:600;letter-spacing:.06em;text-transform:uppercase;">Browse all Austin ZIPs and neighborhoods →</span>
+   <a href="/neighborhoods" style="display:block;background:#fff;border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:6px;padding:32px 34px;text-decoration:none;transition:all .18s;box-shadow:0 2px 10px rgba(0,0,0,.03);">
+    <div style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:12px;">Neighborhood Snapshots · Live</div>
+    <h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;font-weight:500;color:var(--text);margin:0 0 12px;letter-spacing:-.005em;">Neighborhood <em style="font-style:italic;color:var(--gold);">Markets</em></h3>
+    <p style="font-size:14.5px;color:var(--mid);line-height:1.65;margin:0 0 14px;">Every Austin neighborhood guide carries a live market snapshot: active listings, median asking price, price per square foot, days listed, and how many sellers have cut their price.</p>
+    <span style="font-size:12px;color:var(--gold);font-weight:600;letter-spacing:.06em;text-transform:uppercase;">Browse Austin neighborhoods →</span>
    </a>
    <a href="/homes-for-sale-austin" style="display:block;background:#fff;border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:6px;padding:32px 34px;text-decoration:none;transition:all .18s;box-shadow:0 2px 10px rgba(0,0,0,.03);">
     <div style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:12px;">Active Inventory · Live</div>
@@ -1240,7 +1240,7 @@
    <div>
     <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:22px;border-bottom:1px solid rgba(184,147,90,0.28);padding-bottom:14px;">Sell Central Austin</div>
     <ul style="list-style:none;padding:0;margin:0;">
-     <li style="margin-bottom:16px;"><a href="/sell-house-78704-austin" style="color:#fff;font-size:15px;text-decoration:none;font-weight:500;">Sell Your 78704 House</a><div style="font-size:12.5px;color:rgba(255,255,255,.55);margin-top:3px;line-height:1.5;">Zilker, Bouldin, Travis Heights, Barton Hills. 377 active listings.</div></li>
+     <li style="margin-bottom:16px;"><a href="/sell-house-78704-austin" style="color:#fff;font-size:15px;text-decoration:none;font-weight:500;">Sell Your 78704 House</a><div style="font-size:12.5px;color:rgba(255,255,255,.55);margin-top:3px;line-height:1.5;">Zilker, Bouldin, Travis Heights, Barton Hills. {{live:zip=78704:count}} active listings.</div></li>
      <li style="margin-bottom:16px;"><a href="/sell-house-78701-austin" style="color:#fff;font-size:15px;text-decoration:none;font-weight:500;">Sell Your 78701 Condo</a><div style="font-size:12.5px;color:rgba(255,255,255,.55);margin-top:3px;line-height:1.5;">Downtown Austin. Building-specific comps for Austonian, W, Independent.</div></li>
      <li style="margin-bottom:16px;"><a href="/sell-house-78702-austin" style="color:#fff;font-size:15px;text-decoration:none;font-weight:500;">Sell Your 78702 Home</a><div style="font-size:12.5px;color:rgba(255,255,255,.55);margin-top:3px;line-height:1.5;">East Austin. Cherrywood, Chestnut, Holly, Govalle. STR-eligible focus.</div></li>
      <li style="margin-bottom:16px;"><a href="/sell-house-78703-austin" style="color:#fff;font-size:15px;text-decoration:none;font-weight:500;">Sell Your Tarrytown Home</a><div style="font-size:12.5px;color:rgba(255,255,255,.55);margin-top:3px;line-height:1.5;">78703. Casis Elementary, Old West Austin, Pemberton Heights.</div></li>

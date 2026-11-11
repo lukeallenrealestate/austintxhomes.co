@@ -77,7 +77,7 @@
  {
  "@type": "Question",
  "name": "Is $400K a good budget for Austin real estate in 2026?",
- "acceptedAnswer": { "@type": "Answer", "text": "$400K is a workable entry point in Austin but limits your options in the most sought-after central neighborhoods. At this price point, you'll compete with other buyers but face less pressure than the $600K to $900K range. First-time buyer programs (TSAHC, Austin HFC) can stretch your purchasing power. With 20% down (~$80K), your monthly payment at current rates runs roughly $2,200 to $2,500/mo including taxes and insurance." }
+ "acceptedAnswer": { "@type": "Answer", "text": "$400K is a workable entry point in Austin but limits your options in the most sought-after central neighborhoods. At this price point, you'll compete with other buyers but face less pressure than the $600K to $900K range. First-time buyer programs (TSAHC, Austin HFC) can stretch your purchasing power. With 20% down (~$80K), at a 7% rate, for example, principal and interest run about $2,130/mo before taxes and insurance." }
  },
  {
  "@type": "Question",
@@ -92,7 +92,7 @@
  {
  "@type": "Question",
  "name": "How fast do homes under $400K sell in Austin?",
- "acceptedAnswer": { "@type": "Answer", "text": "Well-priced homes under $400K in desirable Austin locations can still move in 1 to 2 weeks with multiple offers. The sub-$400K segment attracts first-time buyers, investors, and downsizers simultaneously. Getting pre-approved and working with a local buyer's agent (free to you) significantly improves your position in competitive situations." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Well-priced homes under $400K in desirable Austin locations still tend to go under contract faster than the wider market, sometimes with multiple offers. The sub-$400K segment attracts first-time buyers, investors, and downsizers simultaneously. Getting pre-approved and working with a local buyer's agent (free to you) significantly improves your position in competitive situations." }
  },
  {
  "@type": "Question",
@@ -407,7 +407,7 @@
  <div class="hero-price-card">
  <div class="hpc-label">At $400,000</div>
  <div class="hpc-amount">$400K</div>
- <div class="hpc-sub">What your budget looks like in Austin's current market</div>
+ <div class="hpc-sub">Example budget math at this price point (assumes a 7% rate)</div>
  <div class="hpc-stats">
  <div class="hpc-stat"><span class="hpc-stat-label">Down payment (10%)</span><span class="hpc-stat-val">~$40,000</span></div>
  <div class="hpc-stat"><span class="hpc-stat-label">Down payment (20%)</span><span class="hpc-stat-val">~$80,000</span></div>
@@ -528,7 +528,7 @@
  <div class="type-grid">
  <div class="type-card">
  <h3>Condos &amp; Lofts</h3>
- <div class="type-range">$250K to $400K</div>
+ <div class="type-range">{{live:city=Austin;type=condo;min=250000;max=400000:count}} active now</div>
  <p>The most common under-$400K property type in central Austin. Mueller, East Riverside, 78704 pockets, and South Lamar corridor. Typically 700 to 1,100 sqft, 1 to 2 bed. HOA fees ($200 to $500/mo) add to monthly cost, factor this into your budget.</p>
  <div class="pros-cons">
  <div class="pro-con-box"><h4 class="pro">Pros</h4><ul><li>Best locations</li><li>Low maintenance</li><li>Lock-and-leave</li></ul></div>
@@ -537,7 +537,7 @@
  </div>
  <div class="type-card">
  <h3>Townhomes</h3>
- <div class="type-range">$300K to $400K</div>
+ <div class="type-range">{{live:city=Austin;type=townhome;min=250000;max=400000:count}} active now</div>
  <p>Two-story attached homes with small yards or patios. Common in East Austin, Mueller, and the 183 corridor. Typically 1,200 to 1,600 sqft, 2 to 3 bed. Usually a good middle ground between condo and SFH for buyers who want a bit of outdoor space.</p>
  <div class="pros-cons">
  <div class="pro-con-box"><h4 class="pro">Pros</h4><ul><li>More space than condo</li><li>Small patio/yard</li><li>Good value</li></ul></div>
@@ -546,7 +546,7 @@
  </div>
  <div class="type-card">
  <h3>Single-Family Homes</h3>
- <div class="type-range">$330K to $400K</div>
+ <div class="type-range">{{live:city=Austin;type=sfr;min=250000;max=400000:count}} active now</div>
  <p>Rare but present in the city limits under $400K. Look in NE Austin (Windsor Park, Georgian Acres, St. John's), East Austin transitional blocks, and occasionally older bungalows in less gentrified areas. Expect 900 to 1,400 sqft, 2 to 3 bed. These move fast.</p>
  <div class="pros-cons">
  <div class="pro-con-box"><h4 class="pro">Pros</h4><ul><li>No shared walls</li><li>Yard &amp; garage</li><li>Best appreciation</li></ul></div>
@@ -562,36 +562,36 @@
  <div class="content-inner">
  <p class="section-eyebrow">Where to Look</p>
  <h2>Austin Neighborhoods with<br><em>Inventory Under $400K</em></h2>
- <p style="color:var(--mid);font-size:.95rem;line-height:1.8;max-width:680px;margin-bottom:0">These are the City of Austin neighborhoods where $250K to $400K inventory actually exists in 2026. Inventory is limited, when something good hits this price range, it moves quickly.</p>
+ <p style="color:var(--mid);font-size:.95rem;line-height:1.8;max-width:680px;margin-bottom:0">These are the City of Austin neighborhoods where $250K to $400K inventory actually exists. Inventory is limited, when something good hits this price range, it moves quickly.</p>
  <div class="neighborhood-grid">
  <div class="nbhd-card">
  <h3>East Austin</h3>
- <div class="nbhd-price">Condos $280K to $380K · SFH $360K to $420K</div>
+ <div class="nbhd-price">Active under $400K right now: {{live:nbhd=east-austin;min=250000;max=400000:count}}</div>
  <p>Austin's most dynamic neighborhood. Mostly condos and townhomes under $400K; occasional SFH on transitional blocks. Food trucks, bars, and walkability. Best value within the inner ring.</p>
  </div>
  <div class="nbhd-card">
  <h3>Mueller</h3>
- <div class="nbhd-price">Condos &amp; Townhomes $290K to $390K</div>
+ <div class="nbhd-price">Active under $400K right now: {{live:nbhd=mueller;min=250000;max=400000:count}}</div>
  <p>Master-planned urban neighborhood with strong walkability. Condos and townhomes dominate under $400K. Central Austin access, Aldrich Street district, parks, and farmers market.</p>
  </div>
  <div class="nbhd-card">
  <h3>Windsor Park / St. John's</h3>
- <div class="nbhd-price">SFH $330K to $400K</div>
+ <div class="nbhd-price">SFH active under $400K right now: {{live:zip=78723,78752;type=sfr;min=250000;max=400000:count}}</div>
  <p>NE Austin neighborhoods with SFH inventory under $400K. Mid-century ranch homes, 1,100 to 1,500 sqft, on real lots. These neighborhoods are appreciating as East Austin prices push buyers north.</p>
  </div>
  <div class="nbhd-card">
  <h3>Georgian Acres / Rundberg</h3>
- <div class="nbhd-price">SFH $280K to $380K</div>
+ <div class="nbhd-price">Active under $400K right now: {{live:nbhd=georgian-acres;min=250000;max=400000:count}}</div>
  <p>North-central Austin with some of the most affordable SFH inside city limits. Transitional area with long-term appreciation potential. Good access to Domain employers via MoPac.</p>
  </div>
  <div class="nbhd-card">
  <h3>East Riverside</h3>
- <div class="nbhd-price">Condos $250K to $360K</div>
+ <div class="nbhd-price">Condos active under $400K right now: {{live:nbhd=riverside;type=condo;min=250000;max=400000:count}}</div>
  <p>South Austin condos with great highway access. Popular with UT Austin students and young professionals. Improving rapidly along the Riverside corridor with new development.</p>
  </div>
  <div class="nbhd-card">
  <h3>South Lamar / 78704</h3>
- <div class="nbhd-price">Condos $300K to $400K</div>
+ <div class="nbhd-price">Active under $400K in 78704 right now: {{live:zip=78704;min=250000;max=400000:count}}</div>
  <p>Small condos and occasional townhomes in Austin's most coveted zip code. Under $400K here is rare and competitive, but it comes up. Barton Springs, SoCo, and South Lamar walkability.</p>
  </div>
  </div>
@@ -616,7 +616,7 @@
  Is $400K a good budget for Austin real estate in 2026?
  <span class="faq-icon">+</span>
  </button>
- <div class="faq-a">$400K is a workable entry point in Austin but limits your options in the most sought-after central neighborhoods. At this price point you'll face competition, but less than the $600K to $900K range. First-time buyer programs (TSAHC, Austin Housing Finance Corp) can stretch your purchasing power with down payment assistance. With 20% down (~$80K), your principal + interest payment at 7% runs ~$2,130/mo, before taxes (~$600 to $800/mo) and insurance.</div>
+ <div class="faq-a">$400K is a workable entry point in Austin but limits your options in the most sought-after central neighborhoods. At this price point you'll face competition, but less than the $600K to $900K range. First-time buyer programs (TSAHC, Austin Housing Finance Corp) can stretch your purchasing power with down payment assistance. For example, with 20% down (~$80K) and a 7% rate, principal + interest runs ~$2,130/mo, before taxes (~$600 to $800/mo) and insurance.</div>
  </div>
 
  <div class="faq-item">
@@ -640,7 +640,7 @@
  How fast do homes under $400K sell in Austin?
  <span class="faq-icon">+</span>
  </button>
- <div class="faq-a">Well-priced homes under $400K in desirable locations can still move in 1 to 2 weeks, sometimes with multiple offers. The sub-$400K segment attracts first-time buyers, investors, and downsizers simultaneously. Getting pre-approved before you search, and working with a buyer's agent who knows what's coming before it hits Zillow, makes a real difference at this price point.</div>
+ <div class="faq-a">Well-priced homes under $400K in desirable locations still tend to go under contract faster than the wider market, sometimes with multiple offers. The sub-$400K segment attracts first-time buyers, investors, and downsizers simultaneously. Getting pre-approved before you search, and working with a buyer's agent who knows what's coming before it hits Zillow, makes a real difference at this price point.</div>
  </div>
 
  <div class="faq-item">

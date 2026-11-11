@@ -359,7 +359,7 @@ loadListings(1);
 // ============================================================
 function renderHub(n) {
   const title = `${n.name} Round Rock, TX - Homes, Schools, Commute | Luke Allen`;
-  const description = `${n.name} in Round Rock, TX - median ${n.medianPrice}, ${n.schools.split(' - ')[0]}, ${n.commute.split(',')[0]}. Complete neighborhood guide from local realtor Luke Allen.`;
+  const description = `${n.name} in Round Rock, TX - median asking price ${n.medianPrice}, ${n.schools.split(' - ')[0]}, ${n.commute.split(',')[0]}. Complete neighborhood guide from local realtor Luke Allen.`;
   const canonical = `https://austintxhomes.co/round-rock/${n.slug}`;
 
   const schemaBlocks = [
@@ -429,8 +429,8 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
 
 <div class="stats-bar">
   <div class="stats-inner">
-    <div class="stat"><div class="stat-num">${escHtml(n.medianPrice)}</div><div class="stat-label">Median Price</div></div>
-    <div class="stat"><div class="stat-num">${escHtml((n.priceRange || '').split(' to ')[0] || ' - ')} to ${escHtml((n.priceRange || '').split(' to ')[1] || ' - ')}</div><div class="stat-label">Price Range</div></div>
+    <div class="stat"><div class="stat-num">${escHtml(n.medianPrice)}</div><div class="stat-label">Median Asking Price</div></div>
+    <div class="stat"><div class="stat-num">${escHtml((n.priceRange || '').split(' to ')[0] || ' - ')} to ${escHtml((n.priceRange || '').split(' to ')[1] || ' - ')}</div><div class="stat-label">Typical Asking Range</div></div>
     <div class="stat"><div class="stat-num">${escHtml(n.zips.join(', '))}</div><div class="stat-label">Zip Code${n.zips.length > 1 ? 's' : ''}</div></div>
     <div class="stat"><div class="stat-num">${escHtml(n.schools.split(' - ')[0])}</div><div class="stat-label">School District</div></div>
   </div>
@@ -521,8 +521,8 @@ ${sharedScripts()}
 // PAGE 2: Homes for Sale - /round-rock/:slug/homes-for-sale
 // ============================================================
 function renderHomesForSale(n) {
-  const title = `Homes for Sale in ${n.name} Round Rock TX | ${n.medianPrice} Median | Luke Allen`;
-  const description = `Browse homes for sale in ${n.name}, Round Rock TX. Median ${n.medianPrice}, ${n.schools.split(' - ')[0]}. Updated daily from MLS. Licensed Round Rock realtor.`;
+  const title = `Homes for Sale in ${n.name} Round Rock TX | Live MLS | Luke Allen`;
+  const description = `Browse homes for sale in ${n.name}, Round Rock TX. Median asking price ${n.medianPrice}, ${n.schools.split(' - ')[0]}. Updated daily from MLS. Licensed Round Rock realtor.`;
   const canonical = `https://austintxhomes.co/round-rock/${n.slug}/homes-for-sale`;
 
   const schemaBlocks = [
@@ -551,7 +551,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
       <div class="hero-breadcrumb"><a href="/round-rock">Round Rock</a> &nbsp;›&nbsp; <a href="/round-rock/${n.slug}">${escHtml(n.name)}</a> &nbsp;›&nbsp; Homes for Sale</div>
       <p class="hero-eye">Homes for Sale</p>
       <h1>${escHtml(n.name)} Homes <em>For Sale</em></h1>
-      <p class="lead">Active listings in ${escHtml(n.name)}, Round Rock - updated daily from Austin MLS. Median price ${escHtml(n.medianPrice)}, range ${escHtml(n.priceRange)}.</p>
+      <p class="lead">Active listings in ${escHtml(n.name)}, Round Rock - updated daily from Austin MLS. Median asking price ${escHtml(n.medianPrice)}; most listings run from ${escHtml(n.priceRange)}.</p>
     </div>
     <div class="hero-form">
       <h3>${escHtml(n.name)} Buyer Help</h3>
@@ -576,7 +576,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
 
 <div class="stats-bar">
   <div class="stats-inner">
-    <div class="stat"><div class="stat-num">${escHtml(n.medianPrice)}</div><div class="stat-label">Median Price</div></div>
+    <div class="stat"><div class="stat-num">${escHtml(n.medianPrice)}</div><div class="stat-label">Median Asking Price</div></div>
     <div class="stat"><div class="stat-num">${escHtml(n.zips.join(', '))}</div><div class="stat-label">Zip Code${n.zips.length > 1 ? 's' : ''}</div></div>
     <div class="stat"><div class="stat-num">Daily</div><div class="stat-label">MLS Updates</div></div>
     <div class="stat"><div class="stat-num">$0</div><div class="stat-label">Cost to Search</div></div>
@@ -636,8 +636,8 @@ ${listingsGridScript({ forRent: false, citySlug: n.slug, subdivisionName: n.subd
 // PAGE 3: Homes for Rent - /round-rock/:slug/homes-for-rent
 // ============================================================
 function renderHomesForRent(n) {
-  const title = `Homes for Rent in ${n.name} Round Rock TX | ${n.rentRange} | Luke Allen`;
-  const description = `Browse homes for rent in ${n.name}, Round Rock TX. Rent range ${n.rentRange}, ${n.schools.split(' - ')[0]}. Updated daily from MLS. Free renter representation.`;
+  const title = `Homes for Rent in ${n.name} Round Rock TX | Live MLS | Luke Allen`;
+  const description = `Browse homes for rent in ${n.name}, Round Rock TX. ${n.schools.split(' - ')[0]}. Updated daily from MLS. Free renter representation.`;
   const canonical = `https://austintxhomes.co/round-rock/${n.slug}/homes-for-rent`;
 
   const schemaBlocks = [
@@ -665,7 +665,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
       <div class="hero-breadcrumb"><a href="/round-rock">Round Rock</a> &nbsp;›&nbsp; <a href="/round-rock/${n.slug}">${escHtml(n.name)}</a> &nbsp;›&nbsp; Homes for Rent</div>
       <p class="hero-eye">Homes for Rent</p>
       <h1>${escHtml(n.name)} Homes <em>For Rent</em></h1>
-      <p class="lead">Current rentals in ${escHtml(n.name)}, Round Rock - updated daily from MLS. Typical rent range: ${escHtml(n.rentRange)}.</p>
+      <p class="lead">Current rentals in ${escHtml(n.name)}, Round Rock - updated daily from MLS.</p>
     </div>
     <div class="hero-form">
       <h3>${escHtml(n.name)} Rental Help</h3>
@@ -689,7 +689,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
 
 <div class="stats-bar">
   <div class="stats-inner">
-    <div class="stat"><div class="stat-num">${escHtml(n.rentRange.split(' to ')[0] || ' - ')}</div><div class="stat-label">Rent From</div></div>
+    <div class="stat"><div class="stat-num">${escHtml(n.schools.split(' - ')[0])}</div><div class="stat-label">School District</div></div>
     <div class="stat"><div class="stat-num">${escHtml(n.zips.join(', '))}</div><div class="stat-label">Zip Code${n.zips.length > 1 ? 's' : ''}</div></div>
     <div class="stat"><div class="stat-num">Free</div><div class="stat-label">Representation</div></div>
     <div class="stat"><div class="stat-num">Daily</div><div class="stat-label">MLS Updates</div></div>
@@ -808,7 +808,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
 <div class="credential-bar">
   <div class="credential-inner">
     <div class="credential-item">⭐ <strong>5.0</strong> Google Rating</div>
-    <div class="credential-item">📝 <strong>15</strong> Reviews</div>
+    <div class="credential-item">📝 <strong>41</strong> Reviews</div>
     <div class="credential-item">🏠 <strong>TREC</strong> #788149</div>
     <div class="credential-item">📍 <strong>${escHtml(n.name)}</strong> Specialist</div>
     <div class="credential-item">📞 <strong>(254) 718-2567</strong></div>

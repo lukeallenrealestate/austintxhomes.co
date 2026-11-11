@@ -55,23 +55,23 @@
  },
  {
  "@type": "Question",
- "name": "What is the median home price in Austin TX in 2026?",
- "acceptedAnswer": { "@type": "Answer", "text": "The median list price for residential homes in the greater Austin metro in 2026 is approximately $449,000. Central Austin neighborhoods command higher medians, Tarrytown, Clarksville, and Barton Hills typically range from $800K to $1.5M+. Suburbs like Round Rock and Pflugerville bring the metro median down with homes in the $350K to $480K range." }
+ "name": "What is the median home price in Austin TX in {{year}}?",
+ "acceptedAnswer": { "@type": "Answer", "text": "The median list price for active residential listings in the greater Austin metro is {{live:metro:medianPrice}} right now, based on live MLS data. Central Austin neighborhoods command higher medians: Tarrytown's median asking price is currently {{live:nbhd=tarrytown:medianPrice|well above the metro median}}, Clarksville's is {{live:nbhd=clarksville:medianPrice|well above the metro median}}, and Barton Hills' is {{live:nbhd=barton-hills:medianPrice|well above the metro median}}. Suburbs like Round Rock (currently {{live:city=Round Rock:medianPrice}}) and Pflugerville (currently {{live:city=Pflugerville:medianPrice}}) bring the metro median down." }
  },
  {
  "@type": "Question",
  "name": "Are Austin home prices going up or down in 2026?",
- "acceptedAnswer": { "@type": "Answer", "text": "Austin home prices have stabilized after declining 15 to 20% from their 2022 peak. In 2026, prices in most neighborhoods are flat to slightly positive year-over-year, with the inner-loop (within about 5 miles of downtown) showing modest appreciation of 2 to 4% annually. Outer suburbs remain softer as elevated mortgage rates weigh on buyer purchasing power." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Austin home prices have stabilized after declining 15 to 20% from their 2022 peak. Since then, prices in most neighborhoods have been roughly flat, with the inner loop (within about 5 miles of downtown) holding up better than the outer suburbs, which remain softer as elevated mortgage rates weigh on buyer purchasing power. Right now, {{live:metro:reducedPct}} of active listings in the metro have taken at least one price cut." }
  },
  {
  "@type": "Question",
- "name": "How long are homes sitting on the market in Austin in 2026?",
- "acceptedAnswer": { "@type": "Answer", "text": "The average days on market for Austin residential homes in 2026 is approximately 35 to 45 days, compared to under 10 days at the height of the 2022 market. Well-priced homes in desirable neighborhoods still move in under two weeks. Overpriced listings and homes in outer suburbs tend to sit 60 to 90+ days." }
+ "name": "How long are homes sitting on the market in Austin in {{year}}?",
+ "acceptedAnswer": { "@type": "Answer", "text": "The median active residential listing in the Austin metro has been on the market {{live:metro:medianDom}} days right now, compared to under 10 days at the height of the 2022 market. Well-priced homes in desirable neighborhoods still move in under two weeks. Overpriced listings and homes in outer suburbs tend to sit much longer before selling or reducing price." }
  },
  {
  "@type": "Question",
  "name": "Is now a good time to buy a home in Austin?",
- "acceptedAnswer": { "@type": "Answer", "text": "For buyers with a 5+ year time horizon, 2026 presents a significantly better entry point than 2021 or 2022. Prices are 15 to 20% below peak in many areas, sellers are negotiating, and inspection contingencies are back on the table. The main headwind is mortgage rates, but rates can be refinanced, while a great price on the right home is permanent." }
+ "acceptedAnswer": { "@type": "Answer", "text": "For buyers with a 5+ year time horizon, 2026 presents a significantly better entry point than 2021 or 2022. Prices remain below their 2022 peak in many areas, sellers are negotiating, and inspection contingencies are back on the table. The main headwind is mortgage rates, but rates can be refinanced, while a great price on the right home is permanent." }
  },
  {
  "@type": "Question",
@@ -332,23 +332,23 @@
  <div class="stats-bar-inner">
  <div class="stat-block">
  <div class="stat-block-label">Active Listings</div>
- <div class="stat-block-val gold" id="stat-total"></div>
+ <div class="stat-block-val gold" id="stat-total">{{live:metro:count}}</div>
  <div class="stat-block-note">Austin metro, residential</div>
  </div>
  <div class="stat-block">
  <div class="stat-block-label">Median List Price</div>
- <div class="stat-block-val" id="stat-median"></div>
+ <div class="stat-block-val" id="stat-median">{{live:metro:medianPrice}}</div>
  <div class="stat-block-note">All residential, Austin MSA</div>
  </div>
  <div class="stat-block">
  <div class="stat-block-label">Average List Price</div>
- <div class="stat-block-val" id="stat-avg"></div>
+ <div class="stat-block-val" id="stat-avg">{{live:metro:avgPrice}}</div>
  <div class="stat-block-note">Pulled from live listings</div>
  </div>
  <div class="stat-block">
- <div class="stat-block-label">Avg Days on Market</div>
- <div class="stat-block-val" id="stat-dom"></div>
- <div class="stat-block-note">Industry-reported average</div>
+ <div class="stat-block-label">Days on Market</div>
+ <div class="stat-block-val" id="stat-dom">{{live:metro:medianDom}} days</div>
+ <div class="stat-block-note">Typical active listing</div>
  </div>
  <div class="stat-block">
  <div class="stat-block-label">Under $500K</div>
@@ -431,12 +431,12 @@
  <span class="cond-tag balanced">Balanced Market</span>
  <h3>$500K to $900K, Negotiable</h3>
  <p>The middle market has the most balance. <strong>Days on market are higher than in 2022, and sellers are increasingly open to price reductions and closing cost contributions.</strong> Buyers have real negotiating power without being able to lowball.</p>
- <p>Strategy: Offer slightly under asking on homes that have been sitting 30+ days. Request an inspection and use the option period. A skilled buyer's agent can negotiate $15K to $40K in concessions in this range.</p>
+ <p>Strategy: Offer slightly under asking on homes that have been sitting 30+ days. Request an inspection and use the option period. A skilled buyer's agent can often negotiate meaningful concessions in this range.</p>
  </div>
  <div class="cond-card">
  <span class="cond-tag buyers">Buyer-Favorable</span>
  <h3>$900K to $1.5M, Buyer Has Leverage</h3>
- <p>The upper-middle segment has softened considerably. <strong>Inventory is elevated, buyer pool is smaller, and motivated sellers are negotiating.</strong> Homes in this range that aren't priced aggressively are sitting 60 to 90+ days.</p>
+ <p>The upper-middle segment has softened considerably. <strong>Inventory is elevated, buyer pool is smaller, and motivated sellers are negotiating.</strong> Homes in this range that aren't priced aggressively tend to sit, and {{live:metro;min=900000;max=1500000:reducedPct|a large share}} of active listings between $900K and $1.5M have already cut their price.</p>
  <p>Strategy: This is the range where patience pays. Wait for price reductions on overpriced listings. Negotiate hard on inspection items. Ask for rate buydowns as seller concessions.</p>
  </div>
  <div class="cond-card">
@@ -466,8 +466,8 @@
  </div>
 
  <h3>The New Construction Factor</h3>
- <p>Over <strong id="nc-count">200+</strong> new construction homes are currently active in the Austin MLS, a supply factor that didn't exist at this scale in 2021. Builder incentives (rate buydowns to 4.99%, free upgrades, closing cost contributions) are effectively competing against resale homes in the $400K to $700K range.</p>
- <p>This is good for buyers in that price range and challenging for resale sellers. If you're selling in the $450K to $650K range in a suburb with active new construction nearby, you're competing against builders with deep pockets. Pricing and presentation are critical.</p>
+ <p><strong id="nc-count">{{live:metro:newConCount}}</strong> new construction homes are currently active in the Austin MLS, a supply factor that didn't exist at this scale in 2021. Builder incentives (rate buydowns, free upgrades, closing cost contributions) are effectively competing against resale homes in the entry and middle price tiers.</p>
+ <p>This is good for buyers in that price range and challenging for resale sellers. If you're selling a resale home in a suburb with active new construction nearby, you're competing against builders with deep pockets. Pricing and presentation are critical.</p>
 
  <h3>What's Holding Prices Stable</h3>
  <p>Despite elevated inventory, Austin's market hasn't cratered for a simple reason: <strong>Austin's job market remains among the strongest in the country.</strong> Tesla's Gigafactory, Apple's $1B campus, Dell's headquarters, and University of Texas create consistent demand for housing at all price points.</p>
@@ -477,7 +477,7 @@
  <div>
  <div class="analysis-body">
  <h3>Interest Rate Reality</h3>
- <p>Mortgage rates remain the biggest variable in the market. At current rates, a $500,000 home with 20% down carries a monthly payment (PITI) of approximately $3,400 to $3,600, meaningfully higher than the $2,200 to $2,400 payment the same home carried in 2020 to 2021.</p>
+ <p>Mortgage rates remain the biggest variable in the market. For example, at a 6.5% rate (an assumption, not a current quote), a $500,000 home with 20% down carries a monthly payment (PITI) of approximately $3,400 to $3,600, meaningfully higher than the $2,200 to $2,400 payment the same home carried in 2020 to 2021.</p>
  <p><strong>This payment shock is real and is suppressing demand.</strong> But it also means the buyers who are active today are more qualified, more motivated, and less speculative than buyers at the 2022 peak. Multiple offers are happening again on well-priced homes, just not the 30-offer frenzies of 2021. See the deep-dive on <a href="/is-austin-housing-market-crashing-or-normalizing">whether Austin is crashing or normalizing in 2026</a>.</p>
  <div class="insight-card">
  <p><strong>Rate Strategy</strong>"Date the rate, marry the house." If rates drop meaningfully, which most economists project at some point in 2026 to 2027, refinancing is straightforward. A great price on the right home is permanent. Overpaying for a home because you want to wait for lower rates carries its own risk.</p>
@@ -504,9 +504,9 @@
  <div class="advice-card-head">If You're Buying</div>
  <h3>This is the best buyer's market in Austin since 2018</h3>
  <ul class="advice-list">
- <li>You have time, most homes are sitting 30 to 45 days, so you don't need to decide in 24 hours</li>
+ <li>You have time, the typical active listing has been on the market {{live:metro:medianDom}} days, so you don't need to decide in 24 hours</li>
  <li>Negotiate inspection items. Sellers are far more willing to make repairs or offer credits than at the 2022 peak</li>
- <li>Request closing cost contributions (2 to 3% is common in today's market)</li>
+ <li>Request closing cost contributions, especially on homes that have been sitting</li>
  <li>Get pre-approved before you start seriously looking, active listings you want could move in days</li>
  <li>Consider rate buydowns as a negotiating ask, many sellers and builders are offering them</li>
  <li>Focus on inner-loop neighborhoods for long-term appreciation; value-shop in suburbs for more square footage</li>
@@ -523,7 +523,7 @@
  <li>Price it right from day one, overpriced homes sit, and sitting homes get stigmatized</li>
  <li>Professional photography and staging are not optional in 2026; buyers have more choices and higher standards</li>
  <li>Pre-listing inspections are increasingly valuable, knowing what buyers will find lets you control the narrative</li>
- <li>Be prepared for a longer process than 2021 to 2022, 30 to 60 days on market is normal and not a failure</li>
+ <li>Be prepared for a longer process than 2021 to 2022, the typical active listing has been on the market {{live:metro:medianDom}} days, and that is normal, not a failure</li>
  <li>Closing cost contributions and rate buydowns are effective tools to attract buyers without reducing price</li>
  <li>Inner-loop sellers are in better shape, if you're in Tarrytown, Hyde Park, or East Austin, demand is real</li>
  <li>Outer suburb sellers competing with new construction need to differentiate aggressively</li>
@@ -552,31 +552,31 @@
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">
- <span class="faq-q-text">What is the median home price in Austin TX in 2026?</span>
+ <span class="faq-q-text">What is the median home price in Austin TX in {{year}}?</span>
  <span class="faq-icon">+</span>
  </div>
- <div class="faq-a">The median list price for residential homes in the greater Austin metro in 2026 is approximately $449,000 based on live MLS data. Central Austin neighborhoods command higher medians, Tarrytown, Clarksville, and Barton Hills typically range from $800K to $1.5M+. Suburbs like Round Rock and Pflugerville bring the metro median down with homes in the $350K to $480K range.</div>
+ <div class="faq-a">The median list price for active residential listings in the greater Austin metro is {{live:metro:medianPrice}} right now, based on live MLS data. Central Austin neighborhoods command higher medians: Tarrytown's median asking price is currently {{live:nbhd=tarrytown:medianPrice|well above the metro median}}, Clarksville's is {{live:nbhd=clarksville:medianPrice|well above the metro median}}, and Barton Hills' is {{live:nbhd=barton-hills:medianPrice|well above the metro median}}. Suburbs like Round Rock (currently {{live:city=Round Rock:medianPrice}}) and Pflugerville (currently {{live:city=Pflugerville:medianPrice}}) bring the metro median down.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">
  <span class="faq-q-text">Are Austin home prices going up or down in 2026?</span>
  <span class="faq-icon">+</span>
  </div>
- <div class="faq-a">Austin home prices have stabilized after declining 15 to 20% from their 2022 peak. In 2026, prices in most neighborhoods are flat to slightly positive year-over-year. The inner loop (within about 5 miles of downtown) is showing modest appreciation of 2 to 4% annually. Outer suburbs remain softer as elevated mortgage rates continue to weigh on buyer purchasing power.</div>
+ <div class="faq-a">Austin home prices have stabilized after declining 15 to 20% from their 2022 peak. Since then, prices in most neighborhoods have been roughly flat, with the inner loop (within about 5 miles of downtown) holding up better than the outer suburbs, which remain softer as elevated mortgage rates weigh on buyer purchasing power. Right now, {{live:metro:reducedPct}} of active listings in the metro have taken at least one price cut.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">
- <span class="faq-q-text">How long are homes sitting on the market in Austin in 2026?</span>
+ <span class="faq-q-text">How long are homes sitting on the market in Austin in {{year}}?</span>
  <span class="faq-icon">+</span>
  </div>
- <div class="faq-a">The average days on market for Austin residential homes in 2026 is approximately 35 to 45 days, compared to under 10 days at the height of the 2022 market. Well-priced homes in desirable neighborhoods still move in under two weeks. Overpriced listings and homes in outer suburbs tend to sit 60 to 90+ days before selling or reducing price.</div>
+ <div class="faq-a">The median active residential listing in the Austin metro has been on the market {{live:metro:medianDom}} days right now, compared to under 10 days at the height of the 2022 market. Well-priced homes in desirable neighborhoods still move in under two weeks. Overpriced listings and homes in outer suburbs tend to sit much longer before selling or reducing price.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">
  <span class="faq-q-text">Is now a good time to buy a home in Austin?</span>
  <span class="faq-icon">+</span>
  </div>
- <div class="faq-a">For buyers with a 5+ year time horizon, 2026 presents a significantly better entry point than 2021 or 2022. Prices are 15 to 20% below peak in many areas, sellers are negotiating, and inspection contingencies are back on the table. The main headwind is mortgage rates, but rates can be refinanced, while a great price on the right home is permanent.</div>
+ <div class="faq-a">For buyers with a 5+ year time horizon, 2026 presents a significantly better entry point than 2021 or 2022. Prices remain below their 2022 peak in many areas, sellers are negotiating, and inspection contingencies are back on the table. The main headwind is mortgage rates, but rates can be refinanced, while a great price on the right home is permanent.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">
@@ -737,11 +737,7 @@ async function loadStats() {
 
  } catch(e) {
  document.getElementById('update-label').textContent = 'Live data temporarily unavailable';
- document.getElementById('stat-total').textContent = '26,000+';
- document.getElementById('stat-median').textContent = '$449K';
- document.getElementById('stat-avg').textContent = '$771K';
- document.getElementById('stat-dom').textContent = '38 days';
- document.getElementById('stat-under500').textContent = '57%';
+ // keep the server-rendered live values already in the stats bar
  }
 }
 

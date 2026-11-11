@@ -79,7 +79,7 @@
  {
  "@type": "Question",
  "name": "How is selling a $2M+ home in Austin different from a standard home sale?",
- "acceptedAnswer": { "@type": "Answer", "text": "The $2M+ market has a structurally smaller buyer pool, longer average marketing times (60 to 90 days is normal), and buyers who are almost always conducting multi-market comparisons. Financing becomes jumbo territory - no Fannie/Freddie conforming limits - which means qualified buyers are more cash-heavy and less rate-sensitive. The strategy has to be national, not just local." }
+ "acceptedAnswer": { "@type": "Answer", "text": "The $2M+ market has a structurally smaller buyer pool, longer marketing times (median days on market for active $2M+ listings right now: {{live:metro;min=2000000:medianDom|well above the mass market}}), and buyers who are almost always conducting multi-market comparisons. Financing becomes jumbo territory - no Fannie/Freddie conforming limits - which means qualified buyers are more cash-heavy and less rate-sensitive. The strategy has to be national, not just local." }
  },
  {
  "@type": "Question",
@@ -235,10 +235,10 @@
 
 <div class="stats-bar">
  <div class="stats-bar-inner">
- <div><div class="stat-num">~850</div><div class="stat-lbl">$2M+ Sales in Austin Per Year</div></div>
- <div><div class="stat-num">60 to 90</div><div class="stat-lbl">Avg Days to Close at $2M+</div></div>
- <div><div class="stat-num">40%</div><div class="stat-lbl">Cash Purchases at $3M+</div></div>
- <div><div class="stat-num">$15M+</div><div class="stat-lbl">Top Austin Sale in Last 2 Years</div></div>
+ <div><div class="stat-num">{{live:metro;min=2000000:count}}</div><div class="stat-lbl">Active $2M+ Listings Right Now</div></div>
+ <div><div class="stat-num">{{live:metro;min=2000000:medianDom|Longer}}</div><div class="stat-lbl">Median Days on Market, Active $2M+</div></div>
+ <div><div class="stat-num">{{live:metro;min=2000000:reducedPct|Many}}</div><div class="stat-lbl">Of Active $2M+ Listings Have Cut Price</div></div>
+ <div><div class="stat-num">{{live:metro;min=5000000:count}}</div><div class="stat-lbl">Active Listings Asking $5M+</div></div>
  </div>
 </div>
 
@@ -304,7 +304,7 @@
  <div class="tier-card">
  <div class="tier-price">$3M, $5M</div>
  <h3>The High-Luxury Tier</h3>
- <p>The buyer pool narrows significantly. Multi-market comparison shopping is standard - your home is competing with comparable properties in other top-tier cities. Cash and portfolio financing dominate. Days on market average 60 to 80. Presentation standards are highest.</p>
+ <p>The buyer pool narrows significantly. Multi-market comparison shopping is standard - your home is competing with comparable properties in other top-tier cities. Cash and portfolio financing dominate. Days on market run long (median days on market for active $3M+ listings right now: {{live:metro;min=3000000:medianDom|well above the lower tiers}}). Presentation standards are highest.</p>
  </div>
  <div class="tier-card">
  <div class="tier-price">$5M, $10M</div>
@@ -336,15 +336,15 @@
  <h4>Sell in Westlake Hills</h4>
  </a>
  <a href="/sell-luxury-home-tarrytown" class="spoke-card">
- <div class="sc-label">Inner Loop · $2M to $8M</div>
+ <div class="sc-label">Inner Loop Estates</div>
  <h4>Sell in Tarrytown</h4>
  </a>
  <a href="/sell-luxury-home-barton-creek" class="spoke-card">
- <div class="sc-label">Gated Estates · $2M to $12M</div>
+ <div class="sc-label">Gated Estates</div>
  <h4>Sell in Barton Creek</h4>
  </a>
  <a href="/sell-waterfront-home-austin" class="spoke-card">
- <div class="sc-label">Top of Market · $5M to $30M</div>
+ <div class="sc-label">Top of Market</div>
  <h4>Sell a Waterfront Home</h4>
  </a>
  </div>
@@ -405,7 +405,7 @@
  <div class="faq-list">
  <div class="faq-item">
  <h3>How is selling a $2M+ home in Austin different from a standard home sale?</h3>
- <p>The $2M+ market has a structurally smaller buyer pool, longer average marketing times (60 to 90 days is normal), and buyers who are almost always conducting multi-market comparisons. Financing becomes jumbo territory - no Fannie/Freddie conforming limits - which means qualified buyers are more cash-heavy and less rate-sensitive. The strategy has to be national, not just local.</p>
+ <p>The $2M+ market has a structurally smaller buyer pool, longer marketing times (median days on market for active $2M+ listings right now: {{live:metro;min=2000000:medianDom|well above the mass market}}), and buyers who are almost always conducting multi-market comparisons. Financing becomes jumbo territory - no Fannie/Freddie conforming limits - which means qualified buyers are more cash-heavy and less rate-sensitive. The strategy has to be national, not just local.</p>
  </div>
  <div class="faq-item">
  <h3>What neighborhoods in Austin have the most $2M+ home sales?</h3>

@@ -467,12 +467,12 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
       </div>
     </div>
     <div class="invest-breakdown">
-      <p style="font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:0 0 1rem;font-weight:600;">Monthly Cash Flow Breakdown (20% down · 7.25% rate)</p>
+      <p style="font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:0 0 1rem;font-weight:600;">Monthly Cash Flow Breakdown (assumes 20% down · 7.25% rate)</p>
       <div class="cf-rows">
         <div class="cf-row cf-income"><span>Estimated Gross Rent</span><span>+${fmtPrice(investment.estMonthlyRent)}</span></div>
         <div class="cf-row"><span>Principal + Interest</span><span>−${fmtPrice(investment.monthlyMortgage)}</span></div>
-        <div class="cf-row"><span>Property Tax (~2.1% TX avg)</span><span>−${fmtPrice(investment.propTax)}</span></div>
-        <div class="cf-row"><span>Insurance (~0.5%)</span><span>−${fmtPrice(investment.insurance)}</span></div>
+        <div class="cf-row"><span>Property Tax (assumed ~2.1%)</span><span>−${fmtPrice(investment.propTax)}</span></div>
+        <div class="cf-row"><span>Insurance (assumed ~0.5%)</span><span>−${fmtPrice(investment.insurance)}</span></div>
         <div class="cf-row cf-total ${investment.monthlyCashFlow >= 0 ? 'cf-pos' : 'cf-neg'}">
           <span>Est. Monthly Cash Flow</span>
           <span>${investment.monthlyCashFlow >= 0 ? '+' : ''}${fmtPrice(investment.monthlyCashFlow)}</span>

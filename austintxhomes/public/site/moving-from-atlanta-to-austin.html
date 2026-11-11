@@ -89,7 +89,7 @@
  {
  "@type": "Question",
  "name": "Is Austin housing cheaper than Atlanta?",
- "acceptedAnswer": { "@type": "Answer", "text": "At the median, they're broadly comparable. Virginia-Highland and Inman Park in Atlanta run $600K to $1.1M for a 3BR, comparable to Hyde Park and East Austin. Austin's property tax rate (1.8 to 2.4%) is higher than Fulton County's (~1.0 to 1.3%), partially offsetting income tax savings at lower price points." }
+ "acceptedAnswer": { "@type": "Answer", "text": "At the median, they're broadly comparable, this is not a dramatic housing savings move. Virginia-Highland and Inman Park in Atlanta sit in a similar price tier to Hyde Park and East Austin; right now the median asking price for active East Austin single-family listings is {{live:nbhd=east-austin;type=sfr:medianPrice|in that same tier}}. Austin's property tax rate (1.8 to 2.4%) is higher than Fulton County's (~1.0 to 1.3%), partially offsetting income tax savings at lower price points. The financial case is income tax plus appreciation trajectory, not housing cost." }
  },
  {
  "@type": "Question",
@@ -995,11 +995,11 @@
  <div class="housing-col left">
  <p class="col-title">Atlanta</p>
  <ul class="housing-list">
- <li>🏠 Midtown Atlanta 2BR condo: $400K to $750K</li>
- <li>🏠 Virginia-Highland / Inman Park 3BR SFH: $600K to $1.1M</li>
- <li>🏠 Buckhead 3BR SFH: $700K to $1.5M</li>
- <li>🏠 Decatur 3BR SFH: $450K to $800K</li>
- <li>🏠 Alpharetta / Johns Creek 3BR: $500K to $900K</li>
+ <li>🏠 Midtown Atlanta 2BR condo: mid-market condo tier</li>
+ <li>🏠 Virginia-Highland / Inman Park 3BR SFH: intown premium tier</li>
+ <li>🏠 Buckhead 3BR SFH: upper tier</li>
+ <li>🏠 Decatur 3BR SFH: mid-market tier</li>
+ <li>🏠 Alpharetta / Johns Creek 3BR: suburban school-district tier</li>
  <li>💰 Fulton County property tax: ~1.0 to 1.3%</li>
  <li>🌧️ 49 inches annual rain; ~217 sunny days</li>
  <li>🚗 I-285 / I-75 / I-85: top 5 worst US metro traffic</li>
@@ -1009,11 +1009,11 @@
  <div class="housing-col right">
  <p class="col-title">Austin</p>
  <ul class="housing-list">
- <li>🏠 East Austin 3BR: $550K to $900K</li>
- <li>🏠 Hyde Park / Rosedale 3BR: $520K to $900K</li>
- <li>🏠 Westlake Hills 3BR (Eanes ISD): $900K to $2M</li>
- <li>🏠 Domain / NW Austin 3BR: $400K to $700K</li>
- <li>🏠 Cedar Park / Round Rock 3BR: $380K to $620K</li>
+ <li>🏠 East Austin single-family: median ask {{live:nbhd=east-austin;type=sfr:medianPrice|on request}}</li>
+ <li>🏠 Hyde Park / Rosedale single-family: median ask {{live:zip=78751,78756;type=sfr:medianPrice|on request}}</li>
+ <li>🏠 Westlake Hills single-family (Eanes ISD): median ask {{live:city=West Lake Hills;type=sfr:medianPrice|on request}}</li>
+ <li>🏠 Domain / NW Austin single-family: median ask {{live:zip=78758,78759,78727;type=sfr:medianPrice|on request}}</li>
+ <li>🏠 Cedar Park / Round Rock single-family: median ask {{live:city=Cedar Park,Round Rock;type=sfr:medianPrice|on request}}</li>
  <li>💰 Austin property tax: 1.8 to 2.4%</li>
  <li>☀️ 300 sunny days; 34 inches rain; lower humidity</li>
  <li>🚗 Austin traffic: bad and growing, but smaller metro</li>
@@ -1036,7 +1036,7 @@
  <div class="neigh-card">
  <p class="neigh-equiv">≈ Virginia-Highland / Inman Park</p>
  <h3 class="neigh-name">East Austin</h3>
- <p class="neigh-price">$500K to $950K buy · $1,700 to $2,800/mo rent</p>
+ <p class="neigh-price">Median single-family ask {{live:nbhd=east-austin;type=sfr:medianPrice|on request}}</p>
  <ul>
  <li>Inman Park energy: bungalow belt, walkable restaurant row, creative class</li>
  <li>Austin's most culturally vibrant neighborhood, the BeltLine corridor equivalent</li>
@@ -1049,7 +1049,7 @@
  <div class="neigh-card">
  <p class="neigh-equiv">≈ Decatur / Little Five Points</p>
  <h3 class="neigh-name">Bouldin Creek / South Congress</h3>
- <p class="neigh-price">$620K to $1.1M buy · $2,000 to $3,200/mo rent</p>
+ <p class="neigh-price">Median single-family ask {{live:zip=78704;type=sfr:medianPrice|on request}}</p>
  <ul>
  <li>Decatur's independent-city feel: walkable, local-owned, strong neighborhood identity</li>
  <li>South Congress walkable; Barton Springs minutes away; Austin's most beloved street</li>
@@ -1062,7 +1062,7 @@
  <div class="neigh-card">
  <p class="neigh-equiv">≈ Buckhead / Ansley Park</p>
  <h3 class="neigh-name">Clarksville / Tarrytown</h3>
- <p class="neigh-price">$750K to $1.8M buy · $2,500 to $4,500/mo rent</p>
+ <p class="neigh-price">Median single-family ask {{live:zip=78703;type=sfr:medianPrice|on request}}</p>
  <ul>
  <li>Buckhead's upscale urban refinement: close to downtown, established homes</li>
  <li>West 6th walkable; Pease Park nearby; historic architecture throughout</li>
@@ -1075,7 +1075,7 @@
  <div class="neigh-card">
  <p class="neigh-equiv">≈ Midtown / Morningside</p>
  <h3 class="neigh-name">Hyde Park / Rosedale</h3>
- <p class="neigh-price">$520K to $900K buy · $1,800 to $2,800/mo rent</p>
+ <p class="neigh-price">Median single-family ask {{live:zip=78751,78756;type=sfr:medianPrice|on request}}</p>
  <ul>
  <li>Midtown Atlanta DNA: park-adjacent, walkable, established neighborhood feel</li>
  <li>Piedmont Park → Pease Park / Shoal Creek; UT Austin as anchor institution</li>
@@ -1088,7 +1088,7 @@
  <div class="neigh-card">
  <p class="neigh-equiv">≈ Sandy Springs / Alpharetta Premium</p>
  <h3 class="neigh-name">Westlake Hills / Eanes ISD</h3>
- <p class="neigh-price">$900K to $2M+ buy · $3,500 to $6,000/mo rent</p>
+ <p class="neigh-price">Median single-family ask {{live:city=West Lake Hills;type=sfr:medianPrice|on request}}</p>
  <ul>
  <li>North Atlanta suburb energy: top schools, space, suburban character</li>
  <li>Eanes ISD is Austin's top school district; Westlake HS top 5 in Texas</li>
@@ -1100,7 +1100,7 @@
  <div class="neigh-card">
  <p class="neigh-equiv">≈ Alpharetta / Johns Creek Tech Suburbs</p>
  <h3 class="neigh-name">Cedar Park / Round Rock</h3>
- <p class="neigh-price">$380K to $620K buy · $1,400 to $2,200/mo rent</p>
+ <p class="neigh-price">Median single-family ask {{live:city=Cedar Park,Round Rock;type=sfr:medianPrice|on request}}</p>
  <ul>
  <li>Alpharetta energy: corporate tech park suburbs, excellent schools, space per dollar</li>
  <li>Round Rock ISD and Leander ISD are consistently strong</li>
@@ -1195,7 +1195,7 @@
  </div>
  <div class="school-card">
  <h3>Eanes ISD<br>Westlake Hills</h3>
- <p>The Forsyth County / North Fulton equivalent in Austin. Westlake HS ranks top 5 in Texas. The right call for Atlanta families who bought in Sandy Springs, Alpharetta, or Johns Creek for schools. Homes $900K to $2M+. 15 to 20 min from downtown.</p>
+ <p>The Forsyth County / North Fulton equivalent in Austin. Westlake HS ranks top 5 in Texas. The right call for Atlanta families who bought in Sandy Springs, Alpharetta, or Johns Creek for schools. Active single-family listings currently carry a median asking price of {{live:city=West Lake Hills;type=sfr:medianPrice|well into seven figures}}. 15 to 20 min from downtown.</p>
  </div>
  <div class="school-card">
  <h3>Austin ISD<br>Central Austin</h3>
@@ -1232,7 +1232,7 @@
  <li><span class="check-box"></span>Austin traffic avoidance: learn MoPac and I-35 peak hours early (7 to 9am, 4:30 to 6:30pm)</li>
  <li><span class="check-box"></span>Get pre-approved before starting your Austin search, Hyde Park and East Austin move fast</li>
  <li><span class="check-box"></span>Download Lady Bird Lake trail app, your replacement for the BeltLine</li>
- <li><span class="check-box"></span>Contact Luke Allen 60 to 90 days before your move date, intown Austin at $600K to $900K moves quickly</li>
+ <li><span class="check-box"></span>Contact Luke Allen 60 to 90 days before your move date, well-priced intown Austin homes move quickly</li>
  </ul>
  </div>
  </div>
@@ -1251,7 +1251,7 @@
  </div>
  <div class="faq-item">
  <p class="faq-q">Is Austin housing cheaper than Atlanta?</p>
- <p class="faq-a">At the median, they're broadly comparable, this is not a dramatic housing savings move. Virginia-Highland and Inman Park in Atlanta run $600K to $1.1M for a 3BR, comparable to Hyde Park and East Austin in the same range. Austin's property tax rate (1.8 to 2.4%) is higher than Fulton County's (~1.0 to 1.3%), partially offsetting income tax savings at lower price points. The financial case is income tax plus appreciation trajectory, not housing cost.</p>
+ <p class="faq-a">At the median, they're broadly comparable, this is not a dramatic housing savings move. Virginia-Highland and Inman Park in Atlanta sit in a similar price tier to Hyde Park and East Austin; right now the median asking price for active East Austin single-family listings is {{live:nbhd=east-austin;type=sfr:medianPrice|in that same tier}}. Austin's property tax rate (1.8 to 2.4%) is higher than Fulton County's (~1.0 to 1.3%), partially offsetting income tax savings at lower price points. The financial case is income tax plus appreciation trajectory, not housing cost.</p>
  </div>
  <div class="faq-item">
  <p class="faq-q">How does Austin traffic compare to Atlanta?</p>
@@ -1280,7 +1280,7 @@
  <p class="section-eyebrow" style="color: var(--gold);">Work With Luke</p>
  <h2>Let's Find Your<br><em>Austin Home</em></h2>
  <p>I help Atlanta transplants find their Austin neighborhood, whether that's the Inman Park energy of East Austin, the Decatur feel of Bouldin Creek, or the Alpharetta schools of Cedar Park. The GA-to-TX income tax math adds up faster than most people realize, and Austin's outdoor access is genuinely different from anything Atlanta offers. My buyer representation is free.</p>
- <p>East Austin and Hyde Park at $600K to $900K move faster than comparable Atlanta intown neighborhoods. If you're within 60 to 90 days of your Austin start date, or just running the Georgia comparison numbers, reach out.</p>
+ <p>Well-priced East Austin and Hyde Park homes move faster than comparable Atlanta intown neighborhoods. If you're within 60 to 90 days of your Austin start date, or just running the Georgia comparison numbers, reach out.</p>
  </div>
  <div>
  <div class="contact-form-wrap">

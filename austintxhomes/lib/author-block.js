@@ -52,6 +52,13 @@ function fmtDate(d) {
 function authorBlockHTML(opts = {}) {
   const dateStr = opts.lastUpdated ? fmtDate(opts.lastUpdated) : null;
   const label = opts.pageLabel || 'About the Author';
+  const facts = require('../data/site-facts');
+  // opts.liveData: the page carries {{live:...}} market figures. Say so, with a
+  // live refresh stamp, so readers can tell the numbers are current even when
+  // the written copy is older.
+  const liveNote = opts.liveData
+    ? ' Market figures on this page update automatically from ACTRIS MLS data and were last refreshed on {{asof}}.'
+    : '';
 
   return `<!-- atx-author-block v1 -->
 <section class="atx-author-block" itemscope itemtype="https://schema.org/RealEstateAgent" aria-labelledby="atx-ab-heading" style="background:#faf8f4;border-top:1px solid #e5dfd4;border-bottom:1px solid #e5dfd4;padding:40px 24px;font-family:'Inter',system-ui,sans-serif;">
@@ -69,10 +76,10 @@ function authorBlockHTML(opts = {}) {
         <div style="font-size:13px;color:#b8935a;font-weight:600;margin-bottom:12px;" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
           <span style="letter-spacing:.5px;">&starf;&starf;&starf;&starf;&starf;</span>
           <span itemprop="ratingValue">5.0</span> on Google &middot;
-          <a href="${REVIEWS_URL}" target="_blank" rel="noopener" style="color:#b8935a;text-decoration:underline;text-decoration-color:rgba(184,147,90,.4);"><span itemprop="reviewCount">30</span> Reviews</a>
+          <a href="${REVIEWS_URL}" target="_blank" rel="noopener" style="color:#b8935a;text-decoration:underline;text-decoration-color:rgba(184,147,90,.4);"><span itemprop="reviewCount">${facts.reviewCount}</span> Reviews</a>
         </div>
         <p style="font-size:14px;color:#1a1918;line-height:1.7;margin:0 0 14px;" itemprop="description">
-          Luke Allen is a full-time Austin TX Realtor with the Austin Marketing + Development Group brokerage. He works with buyers, sellers, and investors across every Austin ISD and the surrounding neighborhoods, from Downtown and East Austin to Round Rock, Cedar Park, and the Hill Country. Every page on this site is written and maintained by Luke.${dateStr ? ` <em style="color:#5c5b57;font-style:normal;">This page was last updated on ${dateStr}.</em>` : ''}
+          Luke Allen is a full-time Austin TX Realtor with the Austin Marketing + Development Group brokerage. He works with buyers, sellers, and investors across every Austin ISD and the surrounding neighborhoods, from Downtown and East Austin to Round Rock, Cedar Park, and the Hill Country. Every page on this site is written and maintained by Luke.${dateStr ? ` <em style="color:#5c5b57;font-style:normal;">The written content was last updated on ${dateStr}.${liveNote}</em>` : (liveNote ? ` <em style="color:#5c5b57;font-style:normal;">${liveNote.trim()}</em>` : '')}
         </p>
         <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;">
           <a href="${PHONE_HREF}" itemprop="telephone" style="color:#b8935a;text-decoration:none;font-weight:600;border-bottom:1px solid rgba(184,147,90,.4);padding-bottom:1px;">&#128222; ${PHONE}</a>

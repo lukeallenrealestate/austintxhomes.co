@@ -57,10 +57,10 @@
  "@context": "https://schema.org",
  "@type": "FAQPage",
  "mainEntity": [
- { "@type": "Question", "name": "Is Round Rock a good place to live?", "acceptedAnswer": { "@type": "Answer", "text": "Round Rock consistently ranks as one of the best Austin suburbs to live in, strong Round Rock ISD schools, Dell HQ economic base, newer housing stock than central Austin, and 20 to 30 minute commutes to downtown Austin and the Domain. Median home price is roughly half of central Austin neighborhoods." }},
+ { "@type": "Question", "name": "Is Round Rock a good place to live?", "acceptedAnswer": { "@type": "Answer", "text": "Round Rock consistently ranks as one of the best Austin suburbs to live in, strong Round Rock ISD schools, Dell HQ economic base, newer housing stock than central Austin, and 20 to 30 minute commutes to downtown Austin and the Domain. Right now the median asking price in Round Rock is {{live:city=Round Rock:medianPrice}}, compared with {{live:city=Austin:medianPrice}} across the City of Austin." }},
  { "@type": "Question", "name": "What school district is Round Rock in?", "acceptedAnswer": { "@type": "Answer", "text": "Most of Round Rock is in Round Rock ISD, one of the largest and highest-rated districts in the Austin metro. A few western neighborhoods (like Mayfield Ranch) fall into Leander ISD instead. Always verify the specific attendance zone before buying." }},
  { "@type": "Question", "name": "What are the best Round Rock neighborhoods?", "acceptedAnswer": { "@type": "Answer", "text": "Top picks depend on what you value. For top schools: Behrens Ranch, Brushy Creek, Cat Hollow, Stone Canyon (all feed Round Rock High). For newer master-planned communities: Teravista, Paloma Lake, Sonoma. For established with mature trees: Forest Creek. For Leander ISD: Mayfield Ranch." }},
- { "@type": "Question", "name": "How much are homes in Round Rock?", "acceptedAnswer": { "@type": "Answer", "text": "Round Rock home prices range from roughly $350K for smaller established homes to $800K+ for larger Behrens Ranch or Stone Canyon homes. Median is approximately $475 to $525K, depending on neighborhood. That's about 50% of what comparable homes cost in central Austin." }},
+ { "@type": "Question", "name": "How much are homes in Round Rock?", "acceptedAnswer": { "@type": "Answer", "text": "Most active Round Rock listings are currently asking between {{live:city=Round Rock:p10Price}} and {{live:city=Round Rock:p90Price}}, with smaller established homes at the low end and larger Behrens Ranch or Stone Canyon homes at the top. The median asking price right now is {{live:city=Round Rock:medianPrice}}, and it varies by neighborhood. Comparable homes cost considerably more in central Austin." }},
  { "@type": "Question", "name": "How long is the commute from Round Rock to Austin?", "acceptedAnswer": { "@type": "Answer", "text": "Depends on destination. Downtown Austin: 25 to 35 minutes via I-35 or 130 toll. The Domain / Apple campus: 18 to 25 minutes. Dell HQ: 5 to 15 minutes (most Round Rock neighborhoods are within 15 minutes). Traffic on I-35 is the main variable, the 130 toll road is much more reliable." }}
  ]
  }]
@@ -209,7 +209,7 @@
 
 <div class="stats-bar">
  <div class="stats-inner">
- <div class="stat"><div class="stat-num">~$485K</div><div class="stat-label">Median Home Price</div></div>
+ <div class="stat"><div class="stat-num">{{live:city=Round Rock:medianPrice}}</div><div class="stat-label">Median Asking Price</div></div>
  <div class="stat"><div class="stat-num">130K+</div><div class="stat-label">Population</div></div>
  <div class="stat"><div class="stat-num">A-Rated</div><div class="stat-label">Round Rock ISD</div></div>
  <div class="stat"><div class="stat-num">25 min</div><div class="stat-label">To Downtown Austin</div></div>
@@ -224,7 +224,7 @@
  <div class="intro-grid">
  <div class="intro-body">
  <p>Round Rock is the largest suburb of Austin, a city of 130,000+ sitting 20 miles north of downtown along the I-35 corridor. It's home to Dell Technologies' global headquarters, the Round Rock Express (AAA baseball), and one of the highest-rated public school districts in the Austin metro area.</p>
- <p>For homebuyers, Round Rock offers something Austin proper can't: <strong>newer homes, bigger lots, better schools per dollar, and real master-planned communities with actual amenities.</strong> A $500K home in Round Rock is a 2,800 to 3,200 sqft 4-bedroom with a yard. The same budget in central Austin gets you a 1,400 sqft bungalow from 1955.</p>
+ <p>For homebuyers, Round Rock offers something Austin proper can't: <strong>newer homes, bigger lots, better schools per dollar, and real master-planned communities with actual amenities.</strong> The budget that buys a small 1950s bungalow in central Austin typically buys a newer, much larger 4-bedroom with a yard in Round Rock.</p>
  <p>The tradeoff is distance. Downtown Austin is 25 to 35 minutes depending on traffic. The Domain and Apple campus are 15 to 20 minutes. Dell HQ is 5 to 15 minutes from most Round Rock neighborhoods, making Round Rock the natural choice for Dell employees and, increasingly, remote workers who want more house for less money.</p>
  <p>This guide covers <strong>every major Round Rock neighborhood</strong>, the schools that serve them, and the honest tradeoffs between each. Use it to narrow down where you want to focus your search.</p>
  </div>
@@ -280,7 +280,7 @@
  <div class="nbhd-grid">
  <a class="nbhd-card" href="/round-rock/teravista">
  <h3>Teravista</h3>
- <div class="price">$525K median · $380K to $750K</div>
+ <div class="price">Median ask {{live:sub=Teravista:medianPrice|varies, see current listings}}</div>
  <p class="desc">1,700-home golf course community with walk-to-school elementary, 3 amenity centers, and 15 miles of trails. Round Rock ISD.</p>
  <div class="tags"><span class="tag">Golf Course</span><span class="tag">Master-Planned</span><span class="tag">Walk-to-School</span></div>
  <span class="view-all">Explore Teravista →</span>
@@ -288,7 +288,7 @@
 
  <a class="nbhd-card" href="/round-rock/forest-creek">
  <h3>Forest Creek</h3>
- <div class="price">$475K median · $350K to $650K</div>
+ <div class="price">Median ask {{live:sub=Forest Creek;city=Round Rock:medianPrice|varies, see current listings}}</div>
  <p class="desc">Round Rock's oldest golf course community. Mature trees, established HOA, shortest commute to Dell HQ. Cedar Ridge High School.</p>
  <div class="tags"><span class="tag">Golf Course</span><span class="tag">Mature Trees</span><span class="tag">Dell Adjacent</span></div>
  <span class="view-all">Explore Forest Creek →</span>
@@ -296,7 +296,7 @@
 
  <a class="nbhd-card" href="/round-rock/paloma-lake">
  <h3>Paloma Lake</h3>
- <div class="price">$525K median · $400K to $725K</div>
+ <div class="price">Median ask {{live:sub=Paloma Lake;city=Round Rock:medianPrice|varies, see current listings}}</div>
  <p class="desc">22-acre private lake community with resort amenities, newer construction, and strong Round Rock ISD schools.</p>
  <div class="tags"><span class="tag">Lake Community</span><span class="tag">New Construction</span><span class="tag">Amenities</span></div>
  <span class="view-all">Explore Paloma Lake →</span>
@@ -304,7 +304,7 @@
 
  <a class="nbhd-card" href="/round-rock/behrens-ranch">
  <h3>Behrens Ranch</h3>
- <div class="price">$575K median · $450K to $800K</div>
+ <div class="price">Median ask {{live:sub=Behrens Ranch;city=Round Rock:medianPrice|varies, see current listings}}</div>
  <p class="desc">One of the most desirable established neighborhoods in Round Rock. Larger lots, mature oaks, Round Rock High School zoned.</p>
  <div class="tags"><span class="tag">Round Rock High</span><span class="tag">Larger Lots</span><span class="tag">Established</span></div>
  <span class="view-all">Explore Behrens Ranch →</span>
@@ -312,7 +312,7 @@
 
  <a class="nbhd-card" href="/round-rock/brushy-creek">
  <h3>Brushy Creek</h3>
- <div class="price">$510K median · $420K to $700K</div>
+ <div class="price">Median ask {{live:sub=Brushy Creek;city=Round Rock:medianPrice|varies, see current listings}}</div>
  <p class="desc">Established family neighborhood with the Brushy Creek Regional Trail. Same top schools as Behrens Ranch at lower prices.</p>
  <div class="tags"><span class="tag">Round Rock High</span><span class="tag">Trails</span><span class="tag">Value</span></div>
  <span class="view-all">Explore Brushy Creek →</span>
@@ -320,7 +320,7 @@
 
  <a class="nbhd-card" href="/round-rock/mayfield-ranch">
  <h3>Mayfield Ranch</h3>
- <div class="price">$500K median · $420K to $700K</div>
+ <div class="price">Median ask {{live:sub=Mayfield Ranch;city=Round Rock:medianPrice|varies, see current listings}}</div>
  <p class="desc">One of the few Round Rock neighborhoods in Leander ISD, Rouse High School is nationally ranked. Modern construction, great amenities.</p>
  <div class="tags"><span class="tag">Leander ISD</span><span class="tag">Master-Planned</span><span class="tag">Modern Builds</span></div>
  <span class="view-all">Explore Mayfield Ranch →</span>
@@ -328,7 +328,7 @@
 
  <a class="nbhd-card" href="/round-rock/cat-hollow">
  <h3>Cat Hollow</h3>
- <div class="price">$475K median · $400K to $625K</div>
+ <div class="price">Median ask {{live:sub=Cat Hollow;city=Round Rock:medianPrice|varies, see current listings}}</div>
  <p class="desc">Established family community with mature trees and Round Rock High zoning. Quieter streets and settled residents.</p>
  <div class="tags"><span class="tag">Round Rock High</span><span class="tag">Family</span><span class="tag">Established</span></div>
  <span class="view-all">Explore Cat Hollow →</span>
@@ -336,7 +336,7 @@
 
  <a class="nbhd-card" href="/round-rock/stone-canyon">
  <h3>Stone Canyon</h3>
- <div class="price">$595K median · $475K to $800K</div>
+ <div class="price">Median ask {{live:sub=Stone Canyon;city=Round Rock:medianPrice|varies, see current listings}}</div>
  <p class="desc">Established master-planned community with greenbelt lots, community center, and Round Rock High School zoning.</p>
  <div class="tags"><span class="tag">Round Rock High</span><span class="tag">Master-Planned</span><span class="tag">Greenbelts</span></div>
  <span class="view-all">Explore Stone Canyon →</span>
@@ -344,7 +344,7 @@
 
  <a class="nbhd-card" href="/round-rock/sonoma">
  <h3>Sonoma</h3>
- <div class="price">$460K median · $380K to $600K</div>
+ <div class="price">Median ask {{live:sub=Sonoma;city=Round Rock:medianPrice|varies, see current listings}}</div>
  <p class="desc">Value-focused master-planned community with two community pools, modern construction, and solid Round Rock ISD schools.</p>
  <div class="tags"><span class="tag">Master-Planned</span><span class="tag">Value</span><span class="tag">Pools</span></div>
  <span class="view-all">Explore Sonoma →</span>
@@ -352,7 +352,7 @@
 
  <a class="nbhd-card" href="/round-rock/vista-oaks">
  <h3>Vista Oaks</h3>
- <div class="price">$450K median · $380K to $575K</div>
+ <div class="price">Median ask {{live:sub=Vista Oaks;city=Round Rock:medianPrice|varies, see current listings}}</div>
  <p class="desc">Lowest-cost entry into the Round Rock High school zone. Established 1990s homes with mature trees and remodel potential.</p>
  <div class="tags"><span class="tag">Round Rock High</span><span class="tag">Value</span><span class="tag">Remodel Potential</span></div>
  <span class="view-all">Explore Vista Oaks →</span>
@@ -372,23 +372,23 @@
  <thead>
  <tr>
  <th>Neighborhood</th>
- <th>Median</th>
+ <th>Median Ask</th>
  <th>School District</th>
  <th>High School</th>
  <th>Best For</th>
  </tr>
  </thead>
  <tbody>
- <tr><td><a href="/round-rock/teravista">Teravista</a></td><td>$525K</td><td>Round Rock ISD</td><td>Stony Point</td><td>Golf course + amenities</td></tr>
- <tr><td><a href="/round-rock/forest-creek">Forest Creek</a></td><td>$475K</td><td>Round Rock ISD</td><td>Cedar Ridge</td><td>Mature trees + Dell access</td></tr>
- <tr><td><a href="/round-rock/paloma-lake">Paloma Lake</a></td><td>$525K</td><td>Round Rock ISD</td><td>Stony Point</td><td>Lake + newer construction</td></tr>
- <tr><td><a href="/round-rock/behrens-ranch">Behrens Ranch</a></td><td>$575K</td><td>Round Rock ISD</td><td>Round Rock High</td><td>Top schools + larger lots</td></tr>
- <tr><td><a href="/round-rock/brushy-creek">Brushy Creek</a></td><td>$510K</td><td>Round Rock ISD</td><td>Round Rock High</td><td>Top schools at lower price</td></tr>
- <tr><td><a href="/round-rock/mayfield-ranch">Mayfield Ranch</a></td><td>$500K</td><td>Leander ISD</td><td>Rouse</td><td>Leander ISD in Round Rock</td></tr>
- <tr><td><a href="/round-rock/cat-hollow">Cat Hollow</a></td><td>$475K</td><td>Round Rock ISD</td><td>Round Rock High</td><td>Established + top schools</td></tr>
- <tr><td><a href="/round-rock/stone-canyon">Stone Canyon</a></td><td>$595K</td><td>Round Rock ISD</td><td>Round Rock High</td><td>Larger homes + greenbelts</td></tr>
- <tr><td><a href="/round-rock/sonoma">Sonoma</a></td><td>$460K</td><td>Round Rock ISD</td><td>Stony Point</td><td>Best value master-planned</td></tr>
- <tr><td><a href="/round-rock/vista-oaks">Vista Oaks</a></td><td>$450K</td><td>Round Rock ISD</td><td>Round Rock High</td><td>Cheapest Round Rock High entry</td></tr>
+ <tr><td><a href="/round-rock/teravista">Teravista</a></td><td>{{live:sub=Teravista:medianPrice|Varies}}</td><td>Round Rock ISD</td><td>Stony Point</td><td>Golf course + amenities</td></tr>
+ <tr><td><a href="/round-rock/forest-creek">Forest Creek</a></td><td>{{live:sub=Forest Creek;city=Round Rock:medianPrice|Varies}}</td><td>Round Rock ISD</td><td>Cedar Ridge</td><td>Mature trees + Dell access</td></tr>
+ <tr><td><a href="/round-rock/paloma-lake">Paloma Lake</a></td><td>{{live:sub=Paloma Lake;city=Round Rock:medianPrice|Varies}}</td><td>Round Rock ISD</td><td>Stony Point</td><td>Lake + newer construction</td></tr>
+ <tr><td><a href="/round-rock/behrens-ranch">Behrens Ranch</a></td><td>{{live:sub=Behrens Ranch;city=Round Rock:medianPrice|Varies}}</td><td>Round Rock ISD</td><td>Round Rock High</td><td>Top schools + larger lots</td></tr>
+ <tr><td><a href="/round-rock/brushy-creek">Brushy Creek</a></td><td>{{live:sub=Brushy Creek;city=Round Rock:medianPrice|Varies}}</td><td>Round Rock ISD</td><td>Round Rock High</td><td>Top schools at lower price</td></tr>
+ <tr><td><a href="/round-rock/mayfield-ranch">Mayfield Ranch</a></td><td>{{live:sub=Mayfield Ranch;city=Round Rock:medianPrice|Varies}}</td><td>Leander ISD</td><td>Rouse</td><td>Leander ISD in Round Rock</td></tr>
+ <tr><td><a href="/round-rock/cat-hollow">Cat Hollow</a></td><td>{{live:sub=Cat Hollow;city=Round Rock:medianPrice|Varies}}</td><td>Round Rock ISD</td><td>Round Rock High</td><td>Established + top schools</td></tr>
+ <tr><td><a href="/round-rock/stone-canyon">Stone Canyon</a></td><td>{{live:sub=Stone Canyon;city=Round Rock:medianPrice|Varies}}</td><td>Round Rock ISD</td><td>Round Rock High</td><td>Larger homes + greenbelts</td></tr>
+ <tr><td><a href="/round-rock/sonoma">Sonoma</a></td><td>{{live:sub=Sonoma;city=Round Rock:medianPrice|Varies}}</td><td>Round Rock ISD</td><td>Stony Point</td><td>Best value master-planned</td></tr>
+ <tr><td><a href="/round-rock/vista-oaks">Vista Oaks</a></td><td>{{live:sub=Vista Oaks;city=Round Rock:medianPrice|Varies}}</td><td>Round Rock ISD</td><td>Round Rock High</td><td>Cheapest Round Rock High entry</td></tr>
  </tbody>
  </table>
  </div>
@@ -402,7 +402,7 @@
  <div class="faq-grid">
  <div class="faq-item">
  <div class="faq-q">Is Round Rock a good place to live?</div>
- <div class="faq-a">Round Rock consistently ranks as one of the best Austin suburbs. Strong Round Rock ISD schools, Dell HQ economic base, newer housing stock than central Austin, and 20 to 30 minute commutes to downtown Austin and the Domain. Median home price is roughly half of central Austin neighborhoods.</div>
+ <div class="faq-a">Round Rock consistently ranks as one of the best Austin suburbs. Strong Round Rock ISD schools, Dell HQ economic base, newer housing stock than central Austin, and 20 to 30 minute commutes to downtown Austin and the Domain. Right now the median asking price in Round Rock is {{live:city=Round Rock:medianPrice}}, compared with {{live:city=Austin:medianPrice}} across the City of Austin.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q">What school district is Round Rock in?</div>
@@ -414,7 +414,7 @@
  </div>
  <div class="faq-item">
  <div class="faq-q">How much are homes in Round Rock?</div>
- <div class="faq-a">Round Rock home prices range from roughly $350K for smaller established homes to $800K+ for larger Behrens Ranch or Stone Canyon homes. Median is approximately $475 to $525K, depending on neighborhood. That's about 50% of what comparable homes cost in central Austin.</div>
+ <div class="faq-a">Most active Round Rock listings are currently asking between {{live:city=Round Rock:p10Price}} and {{live:city=Round Rock:p90Price}}, with smaller established homes at the low end and larger Behrens Ranch or Stone Canyon homes at the top. The median asking price right now is {{live:city=Round Rock:medianPrice}}, and it varies by neighborhood. Comparable homes cost considerably more in central Austin.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q">How long is the commute from Round Rock to Austin?</div>

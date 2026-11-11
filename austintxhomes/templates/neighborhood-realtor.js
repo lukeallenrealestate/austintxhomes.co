@@ -12,7 +12,7 @@ module.exports = function renderNeighborhoodRealtorPage(n) {
   },
   {
   q: `How much do homes cost in ${n.name}?`,
-  a: `The median home price in ${n.name} is approximately ${n.medianPrice}, with the broader price range running ${n.priceRange}. Home values vary depending on location within ${n.name}, lot size, condition, and school assignment. Luke Allen can provide a precise current market analysis for any ${n.name} property.`
+  a: `The median asking price of homes for sale in ${n.name} right now is ${n.medianPrice}, with most active listings priced from ${n.priceRange}. Home values vary depending on location within ${n.name}, lot size, condition, and school assignment. Luke Allen can provide a precise current market analysis for any ${n.name} property.`
   },
   {
   q: `What is Luke Allen's experience in ${n.name}?`,

@@ -51,7 +51,7 @@
  {
  "@type": "Question",
  "name": "Are Austin home prices still falling in 2026?",
- "acceptedAnswer": { "@type": "Answer", "text": "No - Austin home prices are no longer falling as of 2026. After declining approximately 15 to 20% from the May 2022 peak, prices stabilized in late 2023 and have been flat-to-modestly-positive through 2025 to 2026 in most neighborhoods. The correction appears to be complete. Inner-loop neighborhoods are showing modest appreciation of 2 to 4% year-over-year; suburban areas are flat to slightly negative depending on submarket." }
+ "acceptedAnswer": { "@type": "Answer", "text": "No. After declining ~15 to 20% from the May 2022 peak, Austin prices stabilized in late 2023. The freefall is over. Right now the metro median asking price is {{live:metro:medianPrice}}, and {{live:metro:reducedPct}} of active listings carry a price cut. Supply-constrained inner-loop neighborhoods have held up best; suburbs with heavy new construction have been flatter. See the full market report for current data." }
  },
  {
  "@type": "Question",
@@ -76,7 +76,7 @@
  {
  "@type": "Question",
  "name": "Is now a good time to buy in Austin given the price history?",
- "acceptedAnswer": { "@type": "Answer", "text": "For a 5+ year hold, buying during the post-correction stabilization period (2024 to 2026) is historically a strong entry point. You're buying at prices 15 to 20% below the prior peak, with full inspection contingencies, reasonable negotiating leverage, and sellers motivated to close. The primary risk is that rates remain elevated - but rates can be refinanced when they eventually decline, while a good purchase price is permanent. The worst time to buy was 2021 to 2022; the best time relative to cycle is now." }
+ "acceptedAnswer": { "@type": "Answer", "text": "For a 5+ year hold, buying in the post-correction stabilization period is historically a strong entry point - prices below the 2022 peak, sellers negotiating, full inspection contingencies. The risk is sustained high rates hurting affordability. The opportunity is that a rate drop at any point essentially provides a built-in refinance option. Read the first-time buyer guide or the buyer's guide for full context." }
  }
  ]
  }
@@ -649,9 +649,9 @@
  </div>
  <div class="snap-card flat">
  <div class="snap-label">From 2022 Peak</div>
- <div class="snap-value down" style="font-size:2.2rem;">−17%</div>
- <div class="snap-change flat">→ Stabilized</div>
- <div class="snap-desc">Prices fell ~17% from the May 2022 peak of ~$550K and have since stabilized. Not recovering sharply, not falling further.</div>
+ <div class="snap-value" style="font-size:2.2rem;">{{live:metro:medianPrice}}</div>
+ <div class="snap-change flat">Median asking price now</div>
+ <div class="snap-desc">Compare with the ~$550K peak median of May 2022. Prices corrected through late 2023 and have since stabilized. Not recovering sharply, not falling further.</div>
  </div>
  </div>
  </div>
@@ -762,7 +762,7 @@
  <h2 class="section-h2">Price Changes<br><em>by Area</em></h2>
  <p style="font-size:.88rem;color:var(--mid);line-height:1.7;max-width:640px;margin-bottom:.5rem;">
  The correction was not uniform. Inner-loop, supply-constrained neighborhoods fell less.
- Outer suburbs with heavy new construction fell the most. Here's how each area performed.
+ Outer suburbs with heavy new construction fell the most. Here's how each area performed, with each area's live median asking price and price-cut share.
  </p>
  <div class="area-grid">
  <div class="area-card">
@@ -771,15 +771,15 @@
  <div class="area-zip">78701 · 78703 · 78704 · 78756 · 78757</div>
  <div class="area-desc">
  Travis Heights, Crestview, Bouldin Creek, Hyde Park. Limited land supply, walkability premium,
- and consistent renter demand floor kept declines modest. Inner-loop SFH fell 8 to 12% from peak
- and have largely recovered to near-peak pricing. Still the most resilient submarket in Austin.
+ and consistent renter demand floor kept declines modest. Inner-loop SFH fell the least from the 2022 peak
+ and have largely recovered. Still the most resilient submarket in Austin.
  </div>
  </div>
  <div class="area-change">
- <div class="area-change-num flat">−10%</div>
- <div class="area-change-label">From peak</div>
- <div class="area-change-num up" style="font-size:1rem;margin-top:.5rem;">+2 to 4%</div>
- <div class="area-change-label">YoY 2026</div>
+ <div class="area-change-num flat">{{live:zip=78701,78703,78704,78756,78757:medianPrice}}</div>
+ <div class="area-change-label">Median ask now</div>
+ <div class="area-change-num flat" style="font-size:1rem;margin-top:.5rem;">{{live:zip=78701,78703,78704,78756,78757:reducedPct}}</div>
+ <div class="area-change-label">With a price cut</div>
  </div>
  </div>
 
@@ -790,14 +790,14 @@
  <div class="area-desc">
  South Congress corridor, Zilker, Slaughter Lane. Strong renter demand and lifestyle appeal
  cushioned the decline. The sub-$500K segment in 78745 and 78748 has seen renewed
- competition from first-time buyers and investors. Prices down 12 to 15% from peak, mostly stabilized.
+ competition from first-time buyers and investors. Prices corrected less than the outer suburbs and have mostly stabilized.
  </div>
  </div>
  <div class="area-change">
- <div class="area-change-num down">−13%</div>
- <div class="area-change-label">From peak</div>
- <div class="area-change-num flat" style="font-size:1rem;margin-top:.5rem;">Flat</div>
- <div class="area-change-label">YoY 2026</div>
+ <div class="area-change-num flat">{{live:zip=78704,78745,78748:medianPrice}}</div>
+ <div class="area-change-label">Median ask now</div>
+ <div class="area-change-num flat" style="font-size:1rem;margin-top:.5rem;">{{live:zip=78704,78745,78748:reducedPct}}</div>
+ <div class="area-change-label">With a price cut</div>
  </div>
  </div>
 
@@ -806,17 +806,17 @@
  <div class="area-name">Westlake Hills / Eanes ISD</div>
  <div class="area-zip">78746 · 78733</div>
  <div class="area-desc">
- Top-rated school district, Hill Country setting, $900K to $3M+ price range. The luxury market
+ Top-rated school district, Hill Country setting, with most active listings asking between {{live:zip=78746,78733:p10Price}} and {{live:zip=78746,78733:p90Price}}. The luxury market
  is most sensitive to rate changes - fewer buyers at these price points means individual
- sales move medians significantly. Some properties sold 20 to 25% below 2022 comps.
+ sales move medians significantly. Some properties sold well below their 2022 comps.
  Market is thin; pricing everything. See <a href="/eanes-isd-homes-for-sale">Eanes ISD homes</a>.
  </div>
  </div>
  <div class="area-change">
- <div class="area-change-num down">−18%</div>
- <div class="area-change-label">From peak</div>
- <div class="area-change-num flat" style="font-size:1rem;margin-top:.5rem;">Flat</div>
- <div class="area-change-label">YoY 2026</div>
+ <div class="area-change-num flat">{{live:zip=78746,78733:medianPrice}}</div>
+ <div class="area-change-label">Median ask now</div>
+ <div class="area-change-num flat" style="font-size:1rem;margin-top:.5rem;">{{live:zip=78746,78733:reducedPct}}</div>
+ <div class="area-change-label">With a price cut</div>
  </div>
  </div>
 
@@ -826,16 +826,16 @@
  <div class="area-zip">78613 · 78641 · 78645</div>
  <div class="area-desc">
  Northwest corridor with new construction competition. Builders have been dominant here,
- offering rate buydowns and upgrades that resale homes can't match. Prices down 15 to 20%
- from peak. The good news: entry-level pricing ($350K to $480K) has created genuine
- first-time buyer demand. Sub-$450K is moving.
+ offering rate buydowns and upgrades that resale homes can't match. Prices corrected harder
+ than the inner loop. The good news: entry-level pricing has created genuine first-time buyer
+ demand, and {{live:zip=78613,78641,78645:under400k}} active listings here are currently asking under $400K.
  </div>
  </div>
  <div class="area-change">
- <div class="area-change-num down">−17%</div>
- <div class="area-change-label">From peak</div>
- <div class="area-change-num flat" style="font-size:1rem;margin-top:.5rem;">Flat</div>
- <div class="area-change-label">YoY 2026</div>
+ <div class="area-change-num flat">{{live:zip=78613,78641,78645:medianPrice}}</div>
+ <div class="area-change-label">Median ask now</div>
+ <div class="area-change-num flat" style="font-size:1rem;margin-top:.5rem;">{{live:zip=78613,78641,78645:reducedPct}}</div>
+ <div class="area-change-label">With a price cut</div>
  </div>
  </div>
 
@@ -846,15 +846,15 @@
  <div class="area-desc">
  Fastest-growing suburbs saw the sharpest corrections. New construction supply was
  overwhelming, and investor-buyers who purchased in 2021 to 2022 have been selling at losses.
- Entry-level SFH from $290K to $380K is attracting buyers who've been priced out of closer-in suburbs.
- Prices down 20 to 25% from peak, now stabilizing at more fundamental levels.
+ Entry-level SFH, with the lowest tenth of active listings asking under {{live:city=Kyle,Buda:p10Price}}, is attracting buyers who've been priced out of closer-in suburbs.
+ Prices took one of the deepest corrections in the metro and are now stabilizing at more fundamental levels.
  </div>
  </div>
  <div class="area-change">
- <div class="area-change-num down">−22%</div>
- <div class="area-change-label">From peak</div>
- <div class="area-change-num flat" style="font-size:1rem;margin-top:.5rem;">Stabilizing</div>
- <div class="area-change-label">YoY 2026</div>
+ <div class="area-change-num flat">{{live:city=Kyle,Buda:medianPrice}}</div>
+ <div class="area-change-label">Median ask now</div>
+ <div class="area-change-num flat" style="font-size:1rem;margin-top:.5rem;">{{live:city=Kyle,Buda:reducedPct}}</div>
+ <div class="area-change-label">With a price cut</div>
  </div>
  </div>
 
@@ -865,15 +865,15 @@
  <div class="area-desc">
  Strong employment base (Dell, Amazon, Kalahari) provides demand floor. Georgetown
  saw heavy new construction competition but population growth has absorbed most of it.
- Prices down 15 to 18% from peak. Round Rock's established neighborhoods are holding
+ Prices corrected with the rest of the northern suburbs. Round Rock's established neighborhoods are holding
  better than Georgetown's new-build-heavy outer edges.
  </div>
  </div>
  <div class="area-change">
- <div class="area-change-num down">−16%</div>
- <div class="area-change-label">From peak</div>
- <div class="area-change-num flat" style="font-size:1rem;margin-top:.5rem;">Flat</div>
- <div class="area-change-label">YoY 2026</div>
+ <div class="area-change-num flat">{{live:zip=78664,78626,78628:medianPrice}}</div>
+ <div class="area-change-label">Median ask now</div>
+ <div class="area-change-num flat" style="font-size:1rem;margin-top:.5rem;">{{live:zip=78664,78626,78628:reducedPct}}</div>
+ <div class="area-change-label">With a price cut</div>
  </div>
  </div>
  </div>
@@ -894,7 +894,7 @@
  The supply side has normalized after the construction boom.
  </p>
  <p>
- The swing factor is mortgage rates. At 7%+, roughly 40% of would-be Austin buyers
+ The swing factor is mortgage rates. When rates are elevated, a large share of would-be Austin buyers
  are sidelined - either waiting for rates to fall or locked in existing homes
  with 3% mortgages they can't afford to give up. When rates drop materially
  (to the 5.5 to 6% range), that pent-up demand will re-enter the market faster
@@ -910,7 +910,7 @@
  For <a href="/buy">buyers</a> and <a href="/investment-properties">investors</a>:
  current prices represent a post-correction entry point. The question is not
  "will prices fall more" - they probably won't. The question is "will I need
- to sell before rates normalize?" If not, buying now at 20% below peak is
+ to sell before rates normalize?" If not, buying now, below the 2022 peak, is
  a historically favorable setup.
  </p>
  </div>
@@ -919,8 +919,8 @@
  <li class="indicator-item">
  <div class="indicator-icon">📉</div>
  <div>
- <div class="indicator-title">Mortgage Rates (7%+)</div>
- <div class="indicator-body">The primary headwind on demand. At current rates, monthly payments on median Austin homes are at all-time highs relative to income. Any sustained move toward 5.5 to 6% would unlock significant pent-up demand.</div>
+ <div class="indicator-title">Mortgage Rates</div>
+ <div class="indicator-body">The primary headwind on demand. When rates are elevated, monthly payments on median Austin homes are stretched relative to income. Any sustained move lower would unlock significant pent-up demand.</div>
  <div class="indicator-signal bearish">↓ Bearish for near-term price recovery</div>
  </div>
  </li>
@@ -944,7 +944,7 @@
  <div class="indicator-icon">👥</div>
  <div>
  <div class="indicator-title">Population Growth</div>
- <div class="indicator-body">Austin continues to add 150+ residents per day. The migration slowdown from 2022 to 2023 has largely reversed. Long-term, Austin is adding population faster than housing supply - which puts a floor under prices.</div>
+ <div class="indicator-body">Austin continues to add residents every day. The migration slowdown from 2022 to 2023 has largely reversed. Long-term, Austin is adding population faster than housing supply - which puts a floor under prices.</div>
  <div class="indicator-signal bullish">↑ Bullish for long-term demand</div>
  </div>
  </li>
@@ -952,7 +952,7 @@
  <div class="indicator-icon">🔐</div>
  <div>
  <div class="indicator-title">Rate Lock-In Effect</div>
- <div class="indicator-body">~60% of Austin homeowners have mortgages below 4%. They won't sell voluntarily at 7% rates - keeping resale supply artificially constrained. This limits how far prices can fall, even in a soft market.</div>
+ <div class="indicator-body">A large share of Austin homeowners locked in mortgages below 4% in 2020 to 2021. Many won't sell voluntarily while market rates sit well above that - keeping resale supply artificially constrained. This limits how far prices can fall, even in a soft market.</div>
  <div class="indicator-signal neutral">→ Limits both downside and upside</div>
  </div>
  </li>
@@ -1020,9 +1020,10 @@
  <div class="faq-card">
  <div class="faq-q">Are Austin home prices still falling in 2026?</div>
  <div class="faq-a">
- No. After declining ~15 to 20% from the May 2022 peak, Austin prices stabilized in late 2023
- and have been flat-to-modestly-positive since. The freefall is over. Inner-loop neighborhoods
- are showing 2 to 4% YoY appreciation; suburbs are largely flat. See the
+ No. After declining ~15 to 20% from the May 2022 peak, Austin prices stabilized in late 2023.
+ The freefall is over. Right now the metro median asking price is {{live:metro:medianPrice}}, and
+ {{live:metro:reducedPct}} of active listings carry a price cut. Supply-constrained inner-loop neighborhoods
+ have held up best; suburbs with heavy new construction have been flatter. See the
  <a href="/market-report">full market report</a> for current data.
  </div>
  </div>
@@ -1058,7 +1059,7 @@
  <div class="faq-q">Is now a good time to buy given Austin price history?</div>
  <div class="faq-a">
  For a 5+ year hold, buying in the post-correction stabilization period is historically
- a strong entry point - prices 15 to 20% below peak, sellers negotiating, full inspection
+ a strong entry point - prices below the 2022 peak, sellers negotiating, full inspection
  contingencies. The risk is sustained high rates hurting affordability. The opportunity is
  that a rate drop at any point essentially provides a built-in refinance option.
  Read the <a href="/first-time-buyers">first-time buyer guide</a> or the
@@ -1165,7 +1166,7 @@
 
  // Update current year with live data
  if (liveMedian) PRICE_HISTORY[PRICE_HISTORY.length - 1].price = liveMedian;
- else PRICE_HISTORY[PRICE_HISTORY.length - 1].price = 460000;
+ else PRICE_HISTORY.pop();
 
  const html = PRICE_HISTORY.map(d => {
  const pct = Math.min(d.price / MAX_PRICE, 1);

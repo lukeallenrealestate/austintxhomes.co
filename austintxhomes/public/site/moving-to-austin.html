@@ -62,12 +62,12 @@
  {
  "@type": "Question",
  "name": "How much does it cost to live in Austin TX?",
- "acceptedAnswer": { "@type": "Answer", "text": "Austin's cost of living sits about 8 to 12% above the national average, driven mainly by housing. The median home price is around $525,000 in the city (lower in suburbs like Round Rock and Cedar Park). However, Texas has no state income tax, which meaningfully offsets higher housing costs for most households. Groceries, utilities, and everyday goods are near national averages." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Austin's cost of living sits above the national average, driven mainly by housing. The median asking price for homes in the city of Austin is currently {{live:city=Austin:medianPrice}} (lower in suburbs like Round Rock and Cedar Park). However, Texas has no state income tax, which meaningfully offsets higher housing costs for most households. Groceries, utilities, and everyday goods are near national averages." }
  },
  {
  "@type": "Question",
  "name": "What is the average home price in Austin TX?",
- "acceptedAnswer": { "@type": "Answer", "text": "The median home price in the Austin metro area is approximately $440,000 to $550,000 depending on the area. Central Austin and desirable inner neighborhoods like Tarrytown, Clarksville, and Barton Hills typically run $700K to $1.5M+. Suburbs like Round Rock, Cedar Park, and Pflugerville offer homes in the $350K to $500K range with more square footage." }
+ "acceptedAnswer": { "@type": "Answer", "text": "The median asking price across the Austin metro area is currently {{live:metro:medianPrice}}, and {{live:city=Austin:medianPrice}} inside the city of Austin. Central Austin and desirable inner neighborhoods like Tarrytown, Clarksville, and Barton Hills typically run well above that. Suburbs like Round Rock, Cedar Park, and Pflugerville offer more square footage for the money, at a combined median asking price of {{live:city=Round Rock,Cedar Park,Pflugerville:medianPrice}}." }
  },
  {
  "@type": "Question",
@@ -92,12 +92,12 @@
  {
  "@type": "Question",
  "name": "What should I know about Austin property taxes?",
- "acceptedAnswer": { "@type": "Answer", "text": "Texas property taxes are among the highest in the nation - plan for 1.8%, 2.5% of your home's assessed value per year. On a $600,000 home, that's roughly $12,000 to $15,000 annually. The good news: Texas has homestead exemptions that reduce your assessed value and cap annual increases at 10% once you establish homestead. Always factor property taxes into your monthly payment calculation when budgeting - not just the mortgage." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Texas property taxes are among the highest in the nation - plan for 1.8%, 2.5% of your home's assessed value per year. On a $600,000 home, for example, that's roughly $12,000 to $15,000 annually. The good news: Texas has homestead exemptions that reduce your assessed value and cap annual increases at 10% once you establish homestead. Always factor property taxes into your monthly payment calculation when budgeting - not just the mortgage." }
  },
  {
  "@type": "Question",
  "name": "Is Austin still a good place to buy a home in 2026?",
- "acceptedAnswer": { "@type": "Answer", "text": "Yes - with important nuance. The Austin market has cooled significantly from its 2021 to 2022 peak, giving buyers more negotiating power than they've had in years. Interest rates remain elevated, but prices in many suburbs and outer neighborhoods are 15 to 20% below their peak. Central Austin has held value better. For long-term owners planning to stay 5+ years, now is a genuinely favorable window compared to competing in a bidding war market." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Yes - with important nuance. The Austin market has cooled significantly from its 2021 to 2022 peak, giving buyers more negotiating power than they've had in years. Prices in many suburbs and outer neighborhoods remain below that peak. Central Austin has held value better. For long-term owners planning to stay 5+ years, now is a genuinely favorable window compared to competing in a bidding war market." }
  }
  ]
  }
@@ -453,8 +453,8 @@
  <div class="hero-stats">
  <h3>Austin at a Glance</h3>
  <div class="stat-row">
- <span class="stat-label">Median Home Price</span>
- <span class="stat-val gold">~$525K</span>
+ <span class="stat-label">Median Asking Price</span>
+ <span class="stat-val gold">{{live:city=Austin:medianPrice}}</span>
  </div>
  <div class="stat-row">
  <span class="stat-label">State Income Tax</span>
@@ -470,7 +470,7 @@
  </div>
  <div class="stat-row">
  <span class="stat-label">Cost of Living vs. National</span>
- <span class="stat-val">+8 to 12%</span>
+ <span class="stat-val">Higher (housing)</span>
  </div>
  <div class="stat-row">
  <span class="stat-label">Major Employers</span>
@@ -541,15 +541,15 @@
  <div class="section-inner">
  <p class="section-eyebrow" Numbers</p>
  <h2 class="section-title">Austin <em>Cost of Living</em></h2>
- <p class="section-intro">Austin's overall cost of living is about 8 to 12% above the national average, driven almost entirely by housing. Every other category is near or below average. Here's what to budget for.</p>
+ <p class="section-intro">Austin's overall cost of living runs above the national average, driven almost entirely by housing. Every other category is near or below average. Here's what to budget for.</p>
 
  <div class="col-grid">
  <div class="col-card">
  <div class="col-card-icon">🏠</div>
  <h3>Housing</h3>
- <div class="col-card-price">$440K to $1.2M+</div>
- <p>Median home price in the Austin MSA is ~$440K. Central Austin neighborhoods run $650K to $1.2M+. Suburbs like Round Rock and Cedar Park offer the best value at $350K to $500K for newer construction with more square footage.</p>
- <div class="col-compare">vs. SF: <span>60% cheaper</span> &nbsp;·&nbsp; vs. National: <span class="higher">~40% higher</span></div>
+ <div class="col-card-price">{{live:metro:p10Price}} to {{live:metro:p90Price}}</div>
+ <p>Median asking price in the Austin metro is currently {{live:metro:medianPrice}}, and most listings ask between the two figures above. Central Austin neighborhoods run well above the metro median. Suburbs like Round Rock and Cedar Park offer the best value, with a combined median asking price of {{live:city=Round Rock,Cedar Park:medianPrice}} for newer construction with more square footage.</p>
+ <div class="col-compare">vs. SF: <span>far cheaper</span> &nbsp;·&nbsp; vs. National: <span class="higher">higher</span></div>
  </div>
  <div class="col-card">
  <div class="col-card-icon">💰</div>
@@ -562,7 +562,7 @@
  <div class="col-card-icon">🏛️</div>
  <h3>Property Taxes</h3>
  <div class="col-card-price">1.8%, 2.5% / year</div>
- <p>On a $600,000 home, expect $10,800 to $15,000 per year in property taxes. The homestead exemption reduces your taxable value and caps annual assessment increases at 10% - file it in your first year. Travis County rates are typically lower than Williamson County suburbs. See the full <a href="/austin-property-taxes-explained-travis-county">Austin property taxes explained guide</a> for the rate breakdown by jurisdiction.</p>
+ <p>On a $600,000 home, for example, expect $10,800 to $15,000 per year in property taxes. The homestead exemption reduces your taxable value and caps annual assessment increases at 10% - file it in your first year. Travis County rates are typically lower than Williamson County suburbs. See the full <a href="/austin-property-taxes-explained-travis-county">Austin property taxes explained guide</a> for the rate breakdown by jurisdiction.</p>
  <div class="col-compare">vs. CA: <span class="higher">3 to 5x higher</span> &nbsp;·&nbsp; vs. National: <span class="higher">Top 10 highest</span></div>
  </div>
  <div class="col-card">
@@ -570,7 +570,7 @@
  <h3>Utilities</h3>
  <div class="col-card-price">$150 to $350/mo</div>
  <p>Austin Energy is competitive. Summer months spike - a 2,000 sq ft home can run $250 to $350 in July and August with A/C running continuously. Natural gas is cheap. Internet is widely competitive with multiple providers offering gigabit speeds at reasonable prices.</p>
- <div class="col-compare">vs. National: <span class="higher">15 to 25% higher in summer</span></div>
+ <div class="col-compare">vs. National: <span class="higher">higher in summer</span></div>
  </div>
  <div class="col-card">
  <div class="col-card-icon">🛒</div>
@@ -584,7 +584,7 @@
  <h3>Transportation</h3>
  <div class="col-card-price">Car-Dependent</div>
  <p>Austin is primarily car-dependent. Gas prices are typically below the national average. CapMetro provides bus and rail service, and the light rail (Project Connect) is expanding. Most people own a car - budget for insurance, registration, and maintenance. Parking downtown is limited and expensive.</p>
- <div class="col-compare">vs. National: <span>Gas 5 to 10% cheaper</span></div>
+ <div class="col-compare">vs. National: <span>Gas typically cheaper</span></div>
  </div>
  </div>
  </div>
@@ -601,63 +601,63 @@
  <a class="nbhd-card" href="/neighborhoods/mueller">
  <div class="nbhd-card-type">Best for Families</div>
  <h3>Mueller</h3>
- <div class="nbhd-card-price">Median: $575K to $750K</div>
+ <div class="nbhd-card-price">Median ask: {{live:sub=Mueller:medianPrice|varies by home type}}</div>
  <p>Master-planned, walkable, and built from scratch on the old airport site. Great schools, parks, farmers market, and a tight-knit community feel. New construction is still available. One of the best planned communities in Texas. See the full <a href="/best-family-friendly-neighborhoods-austin-good-schools">family-friendly Austin neighborhoods guide</a> for comparisons.</p>
  <span class="nbhd-card-arrow">Explore Mueller →</span>
  </a>
  <a class="nbhd-card" href="/neighborhoods/hyde-park">
  <div class="nbhd-card-type">Best for Character &amp; History</div>
  <h3>Hyde Park</h3>
- <div class="nbhd-card-price">Median: $650K to $850K</div>
+ <div class="nbhd-card-price">Median ask: {{live:nbhd=hyde-park:medianPrice|varies by home type}}</div>
  <p>Austin's oldest intact neighborhood. Bungalows and craftsman homes on tree-lined streets, minutes from UT and downtown. Beloved by academics, artists, and families who want Central Austin without East Austin prices.</p>
  <span class="nbhd-card-arrow">Explore Hyde Park →</span>
  </a>
  <a class="nbhd-card" href="/neighborhoods/east-austin">
  <div class="nbhd-card-type">Best for Young Professionals</div>
  <h3>East Austin</h3>
- <div class="nbhd-card-price">Median: $550K to $750K</div>
+ <div class="nbhd-card-price">Median ask: {{live:nbhd=east-austin:medianPrice|varies by sub-area}}</div>
  <p>The epicenter of Austin's creative and culinary boom. Walkable to dozens of restaurants, bars, and coffee shops. A mix of bungalows, modern infill, and condos. Highly walkable by Austin standards. Bikeable to downtown.</p>
  <span class="nbhd-card-arrow">Explore East Austin →</span>
  </a>
  <a class="nbhd-card" href="/neighborhoods/tarrytown">
  <div class="nbhd-card-type">Best for Luxury</div>
  <h3>Tarrytown</h3>
- <div class="nbhd-card-price">Median: $1.2M to $2.5M+</div>
+ <div class="nbhd-card-price">Median ask: {{live:nbhd=tarrytown:medianPrice|well above the Austin median}}</div>
  <p>West Austin's most prestigious address. Older estate homes on large lots, walkable to Lake Austin, and minutes from downtown. Eanes ISD for schools. Austin's closest equivalent to a true luxury enclave.</p>
  <span class="nbhd-card-arrow">Explore Tarrytown →</span>
  </a>
  <a class="nbhd-card" href="/neighborhoods/westlake-hills">
  <div class="nbhd-card-type">Best Schools in Austin</div>
  <h3>Westlake Hills</h3>
- <div class="nbhd-card-price">Median: $1.4M to $3M+</div>
+ <div class="nbhd-card-price">Median ask (78746): {{live:zip=78746:medianPrice}}</div>
  <p>Technically its own city within Travis County. Served exclusively by Eanes ISD - consistently ranked #1 school district in Austin. Hill country views, larger lots, and a quieter pace. Worth the premium for families prioritizing schools.</p>
  <span class="nbhd-card-arrow">Explore Westlake →</span>
  </a>
  <a class="nbhd-card" href="/neighborhoods/bouldin-creek">
  <div class="nbhd-card-type">Best Walkability</div>
  <h3>Bouldin Creek</h3>
- <div class="nbhd-card-price">Median: $700K to $950K</div>
+ <div class="nbhd-card-price">Median ask: {{live:nbhd=bouldin-creek:medianPrice|varies by home type}}</div>
  <p>South Congress, South Lamar, and Barton Springs within walking distance. Eclectic mix of craftsman bungalows and modern builds. Austin's most beloved neighborhood by longtime residents. Very competitive - homes move fast.</p>
  <span class="nbhd-card-arrow">Explore Bouldin Creek →</span>
  </a>
  <a class="nbhd-card" href="/neighborhoods/round-rock">
  <div class="nbhd-card-type">Best Value / Suburbs</div>
  <h3>Round Rock</h3>
- <div class="nbhd-card-price">Median: $350K to $480K</div>
+ <div class="nbhd-card-price">Median ask: {{live:city=Round Rock:medianPrice}}</div>
  <p>The most popular Austin suburb for a reason - great Round Rock ISD schools, newer construction, lower prices, and enough retail and restaurants that you rarely need to drive into Austin. Dell and major corporate campuses are nearby. Weighing city vs. suburb? Read the full <a href="/central-austin-neighborhoods-vs-round-rock-suburbs">Central Austin vs. Round Rock comparison</a>.</p>
  <span class="nbhd-card-arrow">Explore Round Rock →</span>
  </a>
  <a class="nbhd-card" href="/neighborhoods/cedar-park">
  <div class="nbhd-card-type">Best Northwest Suburb</div>
  <h3>Cedar Park</h3>
- <div class="nbhd-card-price">Median: $380K to $520K</div>
+ <div class="nbhd-card-price">Median ask: {{live:city=Cedar Park:medianPrice}}</div>
  <p>Fast-growing suburb northwest of Austin with excellent Leander ISD schools, newer master-planned communities, and easy access to the 183A toll road. Preferred by tech workers commuting to Apple's campus in north Austin. See <a href="/austin-areas-highest-yoy-property-appreciation-tech-jobs">Austin areas with the highest YoY appreciation from tech jobs</a> for the full breakdown.</p>
  <span class="nbhd-card-arrow">Explore Cedar Park →</span>
  </a>
  <a class="nbhd-card" href="/neighborhoods/travis-heights">
  <div class="nbhd-card-type">Best South Austin Vibe</div>
  <h3>Travis Heights</h3>
- <div class="nbhd-card-price">Median: $650K to $900K</div>
+ <div class="nbhd-card-price">Median ask: {{live:nbhd=travis-heights:medianPrice|varies by home type}}</div>
  <p>Quiet South Austin neighborhood on a hill overlooking downtown. Charming craftsman homes, Big Stacy Neighborhood Park, and a distinctly unpretentious Austin character. Walking distance to South Congress's best restaurants and shops.</p>
  <span class="nbhd-card-arrow">Explore Travis Heights →</span>
  </a>
@@ -794,14 +794,14 @@
  <span class="faq-q-text">How much does it cost to live in Austin TX?</span>
  <span class="faq-icon">+</span>
  </div>
- <div class="faq-a">Austin's cost of living sits about 8 to 12% above the national average, driven mainly by housing. The median home price is around $440,000 to $550,000 depending on the area. However, Texas has no state income tax, which meaningfully offsets higher housing costs for most households. Groceries, utilities, and everyday goods are near national averages.</div>
+ <div class="faq-a">Austin's cost of living sits above the national average, driven mainly by housing. The median asking price for homes in the city of Austin is currently {{live:city=Austin:medianPrice}} (lower in suburbs like Round Rock and Cedar Park). However, Texas has no state income tax, which meaningfully offsets higher housing costs for most households. Groceries, utilities, and everyday goods are near national averages.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">
  <span class="faq-q-text">What is the average home price in Austin TX?</span>
  <span class="faq-icon">+</span>
  </div>
- <div class="faq-a">The median home price in the Austin metro area is approximately $440,000 to $550,000. Central Austin and desirable inner neighborhoods like Tarrytown, Clarksville, and Barton Hills typically run $700K to $1.5M+. Suburbs like Round Rock, Cedar Park, and Pflugerville offer homes in the $350K to $500K range with more square footage for the money.</div>
+ <div class="faq-a">The median asking price across the Austin metro area is currently {{live:metro:medianPrice}}, and {{live:city=Austin:medianPrice}} inside the city of Austin. Central Austin and desirable inner neighborhoods like Tarrytown, Clarksville, and Barton Hills typically run well above that. Suburbs like Round Rock, Cedar Park, and Pflugerville offer more square footage for the money, at a combined median asking price of {{live:city=Round Rock,Cedar Park,Pflugerville:medianPrice}}.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">
@@ -829,14 +829,14 @@
  <span class="faq-q-text">What should I know about Austin property taxes?</span>
  <span class="faq-icon">+</span>
  </div>
- <div class="faq-a">Texas property taxes are among the highest in the nation - plan for 1.8%, 2.5% of your home's assessed value per year. On a $600,000 home, that's roughly $12,000 to $15,000 annually. The good news: Texas has homestead exemptions that reduce your assessed value and cap annual increases at 10% once you establish homestead. Always factor property taxes into your monthly payment calculation when budgeting - not just the mortgage.</div>
+ <div class="faq-a">Texas property taxes are among the highest in the nation - plan for 1.8%, 2.5% of your home's assessed value per year. On a $600,000 home, for example, that's roughly $12,000 to $15,000 annually. The good news: Texas has homestead exemptions that reduce your assessed value and cap annual increases at 10% once you establish homestead. Always factor property taxes into your monthly payment calculation when budgeting - not just the mortgage.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">
  <span class="faq-q-text">Is Austin still a good place to buy a home in 2026?</span>
  <span class="faq-icon">+</span>
  </div>
- <div class="faq-a">Yes - with important nuance. The Austin market has cooled significantly from its 2021 to 2022 peak, giving buyers more negotiating power than they've had in years. Prices in many suburbs and outer neighborhoods are 15 to 20% below their peak. Central Austin has held value better. For long-term owners planning to stay 5+ years, now is a genuinely favorable window compared to competing in a bidding war market.</div>
+ <div class="faq-a">Yes - with important nuance. The Austin market has cooled significantly from its 2021 to 2022 peak, giving buyers more negotiating power than they've had in years. Prices in many suburbs and outer neighborhoods remain below that peak. Central Austin has held value better. For long-term owners planning to stay 5+ years, now is a genuinely favorable window compared to competing in a bidding war market.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">

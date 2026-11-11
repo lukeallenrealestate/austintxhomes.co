@@ -102,12 +102,12 @@
    {
     "@type": "Question",
     "name": "Should I buy new construction from Brookfield or a 3-year-old resale in Easton Park?",
-    "acceptedAnswer": { "@type": "Answer", "text": "The 3 to 4 year old resale sweet spot usually wins on total value. A well-kept resale in one of the traditional pods, priced $10K to $15K under Brookfield net of incentive, comes with the backyard finished, blinds and fence in, no construction traffic, mature landscaping, and established HOA history. That is $20K to $45K of real value the new home does not include. Brookfield still makes sense when they are running an aggressive rate buydown or when a specific floor plan is not available on the resale market. The right answer depends on what Brookfield is running this month." }
+    "acceptedAnswer": { "@type": "Answer", "text": "The 3 to 4 year old resale sweet spot usually wins on total value. A well-kept resale in one of the traditional pods, priced modestly under Brookfield net of incentive, comes with the backyard finished, blinds and fence in, no construction traffic, mature landscaping, and established HOA history. That is $20K to $45K of real value the new home does not include. Brookfield still makes sense when they are running an aggressive rate buydown or when a specific floor plan is not available on the resale market. The right answer depends on what Brookfield is running this month." }
    },
    {
     "@type": "Question",
     "name": "How do you negotiate against Brookfield as a buyer in Easton Park?",
-    "acceptedAnswer": { "@type": "Answer", "text": "You do not negotiate the base price. You negotiate the incentive stack. Brookfield lowers price by adding rate buydowns, closing-cost credits, and design center allowances rather than cutting sticker. Ask what promo is running this month, ask if next month's promo has been set, and stack incentives when possible. Also ask about lot premiums that can be waived, extended warranties, and washer-dryer or fridge inclusions that Brookfield uses to hold the number. My Easton Park buyers routinely close on 6 to 15 percent effective discounts against the release-sheet base once we back out the full incentive value." }
+    "acceptedAnswer": { "@type": "Answer", "text": "You do not negotiate the base price. You negotiate the incentive stack. Brookfield lowers price by adding rate buydowns, closing-cost credits, and design center allowances rather than cutting sticker. Ask what promo is running this month, ask if next month's promo has been set, and stack incentives when possible. Also ask about lot premiums that can be waived, extended warranties, and washer-dryer or fridge inclusions that Brookfield uses to hold the number. My Easton Park buyers routinely close on meaningful effective discounts against the release-sheet base once we back out the full incentive value." }
    },
    {
     "@type": "Question",
@@ -258,18 +258,18 @@
  <div class="snapshot">
   <div class="snapshot-eyebrow">Live Market Snapshot</div>
   <h3>Easton Park inventory right now</h3>
-  <div class="snapshot-source">Source: ACTRIS MLS, pulled September 9, 2026.</div>
+  <div class="snapshot-source">Source: ACTRIS MLS, updated {{asof}}.</div>
   <div class="snapshot-grid">
-   <div class="snapshot-stat"><div class="snapshot-num">83</div><div class="snapshot-lbl">Active listings across all pods</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">21</div><div class="snapshot-lbl">New construction (Brookfield builder)</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">62</div><div class="snapshot-lbl">Resale listings (private sellers)</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">$578K</div><div class="snapshot-lbl">Median list price</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">45</div><div class="snapshot-lbl">4-bedroom homes active</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">$236</div><div class="snapshot-lbl">Median list $/sqft</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:sub=Easton Park:count}}</div><div class="snapshot-lbl">Active listings across all pods</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:sub=Easton Park:newConCount|Some}}</div><div class="snapshot-lbl">New construction (Brookfield builder)</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:sub=Easton Park:pendingCount|Steady}}</div><div class="snapshot-lbl">Homes pending</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:sub=Easton Park:medianPrice|Ask}}</div><div class="snapshot-lbl">Median list price</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:sub=Easton Park:medianDom|Varies}}</div><div class="snapshot-lbl">Median days on market</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:sub=Easton Park:medianPpsf|Ask}}</div><div class="snapshot-lbl">Median list $/sqft</div></div>
   </div>
  </div>
 
- <p>Three quarters of the active inventory is <strong>resale</strong>, not new construction. That is important. It means as a buyer you have real leverage to compare a resale against Brookfield's current release pricing, and you do not have to accept whatever Brookfield is quoting on the model home tour.</p>
+ <p>Right now only {{live:sub=Easton Park:newConPct|a minority}} of the active inventory is new construction; the rest is <strong>resale</strong>. That is important. It means as a buyer you have real leverage to compare a resale against Brookfield's current release pricing, and you do not have to accept whatever Brookfield is quoting on the model home tour.</p>
 
  <h2>New construction vs the <em>3-year resale sweet spot</em></h2>
 
@@ -306,12 +306,12 @@
   <li><strong>Pull the current promo before we tour.</strong> Brookfield publishes a monthly promo. I check what is running today and what has been signaled for next month.</li>
   <li><strong>Stack incentives instead of stacking base-price cuts.</strong> Ask for the rate buydown AND the closing cost credit AND the design center allowance. Brookfield will often give more in incentive value than they would in a base-price reduction because their internal accounting treats them differently.</li>
   <li><strong>Time the offer around Brookfield's quarter close.</strong> Sales quotas hit at end-of-quarter. Buyers who write a clean offer in the last 10 days of a quarter get better packages than buyers who sign in week one of a new quarter.</li>
-  <li><strong>Ask about lot premiums that can be waived.</strong> "Premium" lots (greenbelt-backing, cul-de-sac, larger square footage) carry a $5,000 to $50,000 premium. Some are negotiable and some are not. I know which is which.</li>
+  <li><strong>Ask about lot premiums that can be waived.</strong> "Premium" lots (greenbelt-backing, cul-de-sac, larger square footage) carry a premium that can run from a few thousand dollars to tens of thousands. Some are negotiable and some are not. I know which is which.</li>
   <li><strong>Include appliance and finish upgrades in the negotiation.</strong> Brookfield will often include the washer/dryer or upgrade the fridge to hold the sticker number.</li>
-  <li><strong>Bring a competing resale to the table.</strong> If a comparable resale is priced $20K under net-of-incentive Brookfield, that becomes leverage in your Brookfield negotiation. Brookfield hates losing a buyer to a resale down the street.</li>
+  <li><strong>Bring a competing resale to the table.</strong> If a comparable resale is priced well under net-of-incentive Brookfield, that becomes leverage in your Brookfield negotiation. Brookfield hates losing a buyer to a resale down the street.</li>
  </ul>
 
- <p>My Easton Park buyers routinely close on <strong>6 to 15 percent effective discounts against the release-sheet base price</strong> once we back out the full incentive value. That is not from beating Brookfield down on sticker. That is from stacking incentives Brookfield would have given away anyway if the buyer knew to ask.</p>
+ <p>My Easton Park buyers routinely close on <strong>meaningful effective discounts against the release-sheet base price</strong> once we back out the full incentive value. That is not from beating Brookfield down on sticker. That is from stacking incentives Brookfield would have given away anyway if the buyer knew to ask.</p>
 
  <h2>Which <em>pods</em> to buy in</h2>
 
@@ -328,7 +328,7 @@
   <div class="case-study-eyebrow">The Easton Park Buyer Playbook</div>
   <h3>Pull the promo. Compare the resales. Stack the incentives. Time the quarter close.</h3>
   <p>Every Easton Park buyer I represent goes through the same process: I pull Brookfield's active promo the week we tour. I identify the 3 to 5 resale homes in your budget that beat Brookfield net-of-incentive. We walk both. We write an offer on whichever comes out ahead <em>after the full comparison</em>, not before.</p>
-  <p>If we go with Brookfield, we stack every incentive layer they will give: rate buydown, closing costs, design center allowance, lot premium waiver, appliance inclusions. If we go with a resale, we lean on the disclosure packet, the warranty documentation, and the move-in-ready gap to negotiate a $10K to $15K discount under net-of-incentive new. Either way, you close on a home priced at fair market value, not sticker.</p>
+  <p>If we go with Brookfield, we stack every incentive layer they will give: rate buydown, closing costs, design center allowance, lot premium waiver, appliance inclusions. If we go with a resale, we lean on the disclosure packet, the warranty documentation, and the move-in-ready gap to negotiate a discount under net-of-incentive new. Either way, you close on a home priced at fair market value, not sticker.</p>
  </div>
 
  <h2>What your <em>daily life</em> looks like here</h2>
@@ -352,9 +352,9 @@
 
  <h2>My honest take on <em>timing</em> for a buyer right now</h2>
 
- <p>Easton Park is an absorbing market. 59 homes are pending against 83 active listings, and recent closes are hitting 100 percent of ask. That does not mean this is a seller-favored market for buyers to avoid. It means Brookfield keeps releasing lots and prices keep grinding higher, not lower. The buyer who waits six months for a better deal usually finds a market where Brookfield's incentive stack has thinned out and prices have crept up.</p>
+ <p>Easton Park is an absorbing market. Right now {{live:sub=Easton Park:pendingCount|a steady number of}} homes are pending against {{live:sub=Easton Park:count}} active listings. That does not mean this is a seller-favored market for buyers to avoid. It means Brookfield keeps releasing lots and prices keep grinding higher, not lower. The buyer who waits six months for a better deal usually finds a market where Brookfield's incentive stack has thinned out and prices have crept up.</p>
 
- <p>The buyer who moves now, with the right agent, can lock in a real discount against Brookfield through the incentive-stack negotiation OR a resale at $10K to $15K under net-of-incentive new. The buyer who waits gives up that leverage.</p>
+ <p>The buyer who moves now, with the right agent, can lock in a real discount against Brookfield through the incentive-stack negotiation OR a resale priced under net-of-incentive new. The buyer who waits gives up that leverage.</p>
 
  <h2>Bottom line</h2>
 

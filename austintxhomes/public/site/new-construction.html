@@ -55,7 +55,7 @@
  {
  "@type": "Question",
  "name": "What builder incentives are available on new construction in Austin in 2026?",
- "acceptedAnswer": { "@type": "Answer", "text": "In 2026, Austin builders are offering significant incentives to move inventory: mortgage rate buydowns to as low as 4.99% (temporary or permanent), free upgrade packages worth $15,000 to $40,000, closing cost contributions of 3 to 6%, and in some cases, price reductions on standing inventory. Incentives vary by builder and community - and many are only disclosed when you ask directly or have an agent negotiating on your behalf." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Builders commonly offer mortgage rate buydowns (temporary or permanent), free upgrade packages, closing cost contributions, lot premium waivers, and price reductions on standing inventory. The size of each varies by builder, community, and month - and many are only disclosed when you ask directly or have an agent negotiating on your behalf." }
  },
  {
  "@type": "Question",
@@ -70,12 +70,12 @@
  {
  "@type": "Question",
  "name": "Is new construction a good deal in Austin right now?",
- "acceptedAnswer": { "@type": "Answer", "text": "Yes - with nuance. Builder incentives in 2026 are the best they've been since before 2021. Effective rate buydowns, free upgrades, and closing cost contributions can be worth $30,000 to $80,000 of real value on the right deal. However, new construction in outer suburbs is competing with a large inventory of slightly-used 2021 to 2023 resale homes also available at reduced prices. Compare both before deciding - a good buyer's agent will run the true cost comparison for you." }
+ "acceptedAnswer": { "@type": "Answer", "text": "It can be. When builders are carrying inventory, rate buydowns, free upgrades, and closing cost contributions can add up to tens of thousands of dollars of real value on the right deal. Right now {{live:metro;newcon=1:count}} new construction homes are listed across the Austin metro. Compare carefully against resale options - a good buyer's agent will run the true cost comparison for you." }
  },
  {
  "@type": "Question",
  "name": "What is a builder's preferred lender and should I use them?",
- "acceptedAnswer": { "@type": "Answer", "text": "Most builders have a preferred or in-house lender and will offer additional incentives (extra closing cost credits, bonus upgrades) if you use them. This can be genuinely valuable - sometimes $5,000 to $15,000 in additional credits. However, you should always get a competing quote from an outside lender first. Builder lenders are not always the most competitive on rate, and a slightly higher rate over 30 years can cost more than the incentive is worth. Get both quotes, then decide." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Sometimes - but always get a competing quote first. Builders offer additional incentives (extra closing cost credits, bonus upgrades) for using their preferred lender. However, if their rate is significantly higher than outside lenders, the savings from the incentive can be wiped out over the life of the loan. Get both quotes, run the math, then decide." }
  }
  ]
  }
@@ -320,11 +320,11 @@
  <h3>New Construction at a Glance</h3>
  <div class="hc-row">
  <span class="hc-label">Active New Construction</span>
- <span class="hc-val gold" id="nc-count"> - </span>
+ <span class="hc-val gold" id="nc-count">{{live:metro;newcon=1:count}}</span>
  </div>
  <div class="hc-row">
  <span class="hc-label">Median New Home Price</span>
- <span class="hc-val" id="nc-median"> - </span>
+ <span class="hc-val" id="nc-median">{{live:metro;newcon=1:medianPrice|Varies}}</span>
  </div>
  <div class="hc-row">
  <span class="hc-label">Rate Buydowns</span>
@@ -369,7 +369,7 @@
  <div class="area-card">
  <div class="area-label">Northwest - Best Value</div>
  <h3>Georgetown &amp; Liberty Hill</h3>
- <div class="area-price">From $280K - Median ~$390K</div>
+ <div class="area-price">Median new-build ask {{live:city=Georgetown,Liberty Hill;newcon=1:medianPrice|varies by community}}</div>
  <p>The most active new construction corridor in the metro. Master-planned communities from major builders (D.R. Horton, Lennar, Perry) with large lots, modern floor plans, and aggressive incentives. Best price-per-sqft in greater Austin.</p>
  <div class="area-tags">
  <span class="area-tag">Large lots</span>
@@ -380,7 +380,7 @@
  <div class="area-card">
  <div class="area-label">Northwest - Closer In</div>
  <h3>Cedar Park &amp; Leander</h3>
- <div class="area-price">From $380K - Median ~$480K</div>
+ <div class="area-price">Median new-build ask {{live:city=Cedar Park,Leander;newcon=1:medianPrice|varies by community}}</div>
  <p>Strong Leander ISD schools, proximity to Apple's north campus, and CapMetro rail access make Cedar Park the most practical suburb for tech workers. New communities still available but inventory is tighter than further-out areas.</p>
  <div class="area-tags">
  <span class="area-tag">Top schools</span>
@@ -391,7 +391,7 @@
  <div class="area-card">
  <div class="area-label">South - Growing Fast</div>
  <h3>Kyle &amp; Buda</h3>
- <div class="area-price">From $290K - Median ~$380K</div>
+ <div class="area-price">Median new-build ask {{live:city=Kyle,Buda;newcon=1:medianPrice|varies by community}}</div>
  <p>South Austin's fastest-growing corridor. Kyle has expanded dramatically with major new communities along I-35. Closer to Tesla's Giga Texas than most Austin neighborhoods. Hays ISD is improving. Best option for south-facing commuters.</p>
  <div class="area-tags">
  <span class="area-tag">Near Tesla</span>
@@ -402,7 +402,7 @@
  <div class="area-card">
  <div class="area-label">Northeast - Best Price/Sqft</div>
  <h3>Pflugerville &amp; Hutto</h3>
- <div class="area-price">From $260K - Median ~$340K</div>
+ <div class="area-price">Median new-build ask {{live:city=Pflugerville,Hutto;newcon=1:medianPrice|varies by community}}</div>
  <p>The most affordable new construction in the metro. Pflugerville in particular offers excellent value and has improved significantly in recent years. Round Rock ISD serves parts of Pflugerville. Easy access to Dell's headquarters and the Domain.</p>
  <div class="area-tags">
  <span class="area-tag">Most affordable</span>
@@ -413,7 +413,7 @@
  <div class="area-card">
  <div class="area-label">Central Austin - Premium</div>
  <h3>Mueller</h3>
- <div class="area-price">From $550K - Median ~$720K</div>
+ <div class="area-price">Median new-build ask {{live:sub=Mueller;newcon=1:medianPrice|varies by community}}</div>
  <p>The only master-planned new construction community in central Austin. Built on the old Mueller Airport site, with walkable retail, parks, and a farmers market. Limited remaining new inventory makes it competitive. Served by Austin ISD's top programs.</p>
  <div class="area-tags">
  <span class="area-tag">Walkable</span>
@@ -424,7 +424,7 @@
  <div class="area-card">
  <div class="area-label">Southwest - Hill Country</div>
  <h3>Dripping Springs &amp; Wimberley</h3>
- <div class="area-price">From $420K - Median ~$560K</div>
+ <div class="area-price">Median new-build ask {{live:city=Dripping Springs,Wimberley;newcon=1:medianPrice|varies by community}}</div>
  <p>For buyers who want hill country scenery and privacy over proximity. Exemplary Dripping Springs ISD draws families willing to commute. Larger lots, newer homes, and a distinct character from suburban Austin. Best for remote workers.</p>
  <div class="area-tags">
  <span class="area-tag">Hill country</span>
@@ -478,41 +478,41 @@
  <div class="section-inner">
  <p class="section-eyebrow">2026 Market</p>
  <h2 class="section-title">Current Builder <em>Incentives</em> in Austin</h2>
- <p class="section-intro">Builders are competing aggressively for buyers in 2026. These are the incentive types currently available - most require you to ask directly or have an agent negotiate on your behalf.</p>
+ <p class="section-intro">Builders compete for buyers with incentives, and the mix shifts with inventory. Right now {{live:metro;newcon=1:count}} new construction homes are listed across the metro. These are the incentive types builders use most - most require you to ask directly or have an agent negotiate on your behalf.</p>
  <div class="incentives-grid">
  <div class="incentive-card">
  <div class="incentive-icon">📉</div>
  <h3>Mortgage Rate Buydowns</h3>
- <div class="incentive-val">4.99%, 5.49%</div>
- <p>Many major builders are offering temporary 2-1 buydowns or permanent rate reductions through their preferred lenders. On a $450K home, a 1% rate reduction saves roughly $250/month - that's $3,000/year in real savings.</p>
+ <div class="incentive-val">Below-market rate</div>
+ <p>Many major builders are offering temporary 2-1 buydowns or permanent rate reductions through their preferred lenders. For example, on a $450K home, a 1% rate reduction saves roughly $250/month - that's $3,000/year in real savings.</p>
  <div class="incentive-note">Always compare with outside lenders before committing to builder's preferred lender.</div>
  </div>
  <div class="incentive-card">
  <div class="incentive-icon">🏠</div>
  <h3>Free Upgrade Packages</h3>
- <div class="incentive-val">$15K to $40K value</div>
- <p>Appliance packages, upgraded flooring, additional lighting, garage door openers, landscaping packages - builders are bundling these to move inventory. The stated retail value is often $20K to $40K, though the actual builder cost is lower.</p>
+ <div class="incentive-val">Builder-funded</div>
+ <p>Appliance packages, upgraded flooring, additional lighting, garage door openers, landscaping packages - builders are bundling these to move inventory. The stated retail value is often well above the actual builder cost.</p>
  <div class="incentive-note">Negotiate for upgrades you actually want rather than accepting the standard package.</div>
  </div>
  <div class="incentive-card">
  <div class="incentive-icon">💰</div>
  <h3>Closing Cost Contributions</h3>
- <div class="incentive-val">3%, 6% of price</div>
- <p>On a $400K home, 3% closing cost help is $12,000 - enough to cover most or all of your buyer's closing costs. Some builders stack this on top of other incentives, particularly on standing inventory (completed homes) that need to move.</p>
+ <div class="incentive-val">A share of the price</div>
+ <p>For example, on a $400K home, 3% closing cost help is $12,000 - enough to cover most or all of your buyer's closing costs. Some builders stack this on top of other incentives, particularly on standing inventory (completed homes) that need to move.</p>
  <div class="incentive-note">Often tied to using builder's preferred lender. Compare total cost carefully.</div>
  </div>
  <div class="incentive-card">
  <div class="incentive-icon">🏷️</div>
  <h3>Price Reductions on Standing Inventory</h3>
- <div class="incentive-val">$20K to $60K off</div>
+ <div class="incentive-val">Negotiable</div>
  <p>Completed homes sitting unsold are the best deal in new construction. Builders hate carrying completed inventory - they'll negotiate aggressively. Combine a price reduction with rate buydown and upgrade package for maximum value.</p>
  <div class="incentive-note">Standing inventory is often negotiable in ways that to-be-built contracts aren't.</div>
  </div>
  <div class="incentive-card">
  <div class="incentive-icon">🔑</div>
  <h3>Lot Premiums Waived</h3>
- <div class="incentive-val">$5K to $25K savings</div>
- <p>Premium lots (cul-de-sac, greenbelt, larger) typically carry premiums of $5K to $25K. Builders will waive these on slower-moving lots to generate traffic. Ask specifically about lot premium waivers - they're rarely advertised.</div>
+ <div class="incentive-val">Premium waived</div>
+ <p>Premium lots (cul-de-sac, greenbelt, larger) typically carry a premium over standard lots. Builders will waive these on slower-moving lots to generate traffic. Ask specifically about lot premium waivers - they're rarely advertised.</div>
  <div class="incentive-note">Greenbelt and cul-de-sac lots hold value best long-term - worth paying for if the waiver isn't available.</div>
  </div>
  <div class="incentive-card">
@@ -558,14 +558,14 @@
  <div class="know-num">04</div>
  <div class="know-body">
  <h3>The model home price isn't your starting point</h3>
- <p>Model home pricing includes the lot, upgrades, and often premium finishes that aren't in the base price. The "from $320K" figure gets buyers in the door - by the time you add standard lot selection, necessary structural options, and basic upgrades, it's typically $350K to $400K+. Get an itemized quote before comparing to resale homes.</p>
+ <p>Model home pricing includes the lot, upgrades, and often premium finishes that aren't in the base price. For example, a "from $320K" figure gets buyers in the door - by the time you add standard lot selection, necessary structural options, and basic upgrades, the real price is often tens of thousands higher. Get an itemized quote before comparing to resale homes.</p>
  </div>
  </div>
  <div class="know-item">
  <div class="know-num">05</div>
  <div class="know-body">
  <h3>Community HOA fees and MUDs add to your monthly cost</h3>
- <p>Many new construction communities in Austin are served by Municipal Utility Districts (MUDs) - special taxing entities that fund infrastructure. MUD tax rates can add 0.5%, 1.5% to your effective property tax rate. Add HOA fees on top (typically $50 to $200/month), and your true monthly cost can be meaningfully higher than the mortgage payment alone. Want the HOA-free alternative? See the guide to <a href="/new-construction-homes-south-austin-no-hoa" style="color:#b8935a;">new construction homes in South Austin with no HOA</a>.</p>
+ <p>Many new construction communities in Austin are served by Municipal Utility Districts (MUDs) - special taxing entities that fund infrastructure. MUD tax rates can add roughly 0.5% to 1.5% to your effective property tax rate. Add HOA fees on top (typically $50 to $200/month), and your true monthly cost can be meaningfully higher than the mortgage payment alone. Want the HOA-free alternative? See the guide to <a href="/new-construction-homes-south-austin-no-hoa" style="color:#b8935a;">new construction homes in South Austin with no HOA</a>.</p>
  </div>
  </div>
  <div class="know-item">
@@ -597,7 +597,7 @@
  <span class="faq-q-text">What builder incentives are available in Austin in 2026?</span>
  <span class="faq-icon">+</span>
  </div>
- <div class="faq-a">Builders are offering rate buydowns to 4.99%, 5.49%, free upgrade packages worth $15K to $40K, closing cost contributions of 3 to 6%, lot premium waivers, and price reductions on standing inventory. Incentives vary by builder and community - and many are only disclosed when you ask directly or have an agent negotiating on your behalf.</div>
+ <div class="faq-a">Builders commonly offer mortgage rate buydowns (temporary or permanent), free upgrade packages, closing cost contributions, lot premium waivers, and price reductions on standing inventory. The size of each varies by builder, community, and month - and many are only disclosed when you ask directly or have an agent negotiating on your behalf.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">
@@ -611,21 +611,21 @@
  <span class="faq-q-text">Is new construction a good deal in Austin right now?</span>
  <span class="faq-icon">+</span>
  </div>
- <div class="faq-a">Yes - builder incentives in 2026 are the best they've been since before 2021. Rate buydowns, free upgrades, and closing cost contributions can be worth $30,000 to $80,000 of real value on the right deal. Compare carefully against resale options - a good buyer's agent will run the true cost comparison for you.</div>
+ <div class="faq-a">It can be. When builders are carrying inventory, rate buydowns, free upgrades, and closing cost contributions can add up to tens of thousands of dollars of real value on the right deal. Right now {{live:metro;newcon=1:count}} new construction homes are listed across the Austin metro. Compare carefully against resale options - a good buyer's agent will run the true cost comparison for you.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">
  <span class="faq-q-text">Should I use the builder's preferred lender?</span>
  <span class="faq-icon">+</span>
  </div>
- <div class="faq-a">Sometimes - but always get a competing quote first. Builders offer additional incentives (extra closing cost credits, bonus upgrades worth $5K to $15K) for using their preferred lender. However, if their rate is significantly higher than outside lenders, the savings from the incentive can be wiped out over the life of the loan. Get both quotes, run the math, then decide.</div>
+ <div class="faq-a">Sometimes - but always get a competing quote first. Builders offer additional incentives (extra closing cost credits, bonus upgrades) for using their preferred lender. However, if their rate is significantly higher than outside lenders, the savings from the incentive can be wiped out over the life of the loan. Get both quotes, run the math, then decide.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0">
  <span class="faq-q-text">What is a MUD and how does it affect my taxes?</span>
  <span class="faq-icon">+</span>
  </div>
- <div class="faq-a">A Municipal Utility District (MUD) is a special taxing district that finances infrastructure (water, sewer, roads) in new developments. MUD taxes are in addition to your regular property taxes and typically add 0.5%, 1.5% to your effective rate. On a $400K home, a 1% MUD rate means $4,000/year in additional taxes. Always ask about MUD rates before buying in a new community - they're not always prominently disclosed.</div>
+ <div class="faq-a">A Municipal Utility District (MUD) is a special taxing district that finances infrastructure (water, sewer, roads) in new developments. MUD taxes are in addition to your regular property taxes and typically add roughly 0.5% to 1.5% to your effective rate. For example, on a $400K home, a 1% MUD rate means $4,000/year in additional taxes. Always ask about MUD rates before buying in a new community - they're not always prominently disclosed.</div>
  </div>
  </div>
  </div>

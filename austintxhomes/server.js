@@ -160,6 +160,71 @@ app.use((req, res, next) => {
   next();
 });
 
+// ── Live market numbers ({{live:...}} tokens) ─────────────────────────────────
+// RULE: no stale numbers on undated pages. Market figures on evergreen pages are
+// written as tokens and resolved here from the ACTRIS snapshot (lib/liveStats.js).
+// Registered BEFORE the author-block middleware so its wrappers sit inside the
+// author block's: the block (which carries its own {{asof}} token) is injected
+// first, then every token in the finished page is resolved.
+const liveStats = require('./lib/liveStats');
+const { areaForPath } = require('./lib/liveAreas');
+const { renderMarketWidget, WIDGET_MARKER } = require('./templates/market-widget');
+// Start building/loading the snapshot immediately; refresh every 30 minutes.
+setImmediate(() => liveStats.warm());
+setInterval(() => liveStats.warm(), 30 * 60 * 1000);
+setTimeout(() => liveStats.backfillSchoolDistrict(), 3 * 60 * 1000);
+
+// Every neighborhood / ZIP / ISD page gets the live snapshot widget, placed
+// just above the author block (or the footer script when there is no block).
+function injectLiveWidget(html, reqPath) {
+  if (html.includes(WIDGET_MARKER) || html.includes('id="live-market"')) return html;
+  const area = areaForPath(reqPath);
+  if (!area) return html;
+  const widget = renderMarketWidget(area.scope, { areaName: area.name, pageUrl: 'https://austintxhomes.co' + reqPath });
+  if (!widget.includes(WIDGET_MARKER)) return html; // thin sample: skip
+  let at = html.indexOf(AUTHOR_BLOCK_MARKER);
+  if (at === -1) at = html.indexOf('<script src="/js/footer.js"');
+  if (at === -1) at = html.lastIndexOf('</body>');
+  if (at === -1) return html;
+  return html.slice(0, at) + widget + '\n' + html.slice(at);
+}
+
+app.use((req, res, next) => {
+  const realSend = res.send.bind(res);
+  res.send = function (body, ...rest) {
+    if (typeof body === 'string' && req.method === 'GET' && body.length > 500 && body.includes('</body>')) {
+      try { body = injectLiveWidget(body, req.path); } catch (e) { console.warn('[live-widget]', req.path, e.message); }
+    }
+    if (typeof body === 'string' && body.indexOf('{{') !== -1) {
+      // First boot after a deploy builds the snapshot in the background (~1 min).
+      // Never let the edge cache a page whose live numbers are still pending.
+      if (!liveStats.isReady() && liveStats.hasLiveTokens(body)) res.set('Cache-Control', 'no-store');
+      const unresolved = [];
+      body = liveStats.applyLiveTokens(body, unresolved);
+      if (unresolved.length) {
+        console.warn('[live-tokens]', req.path, 'unresolved:', unresolved.join(' ; '));
+        // Machine-checkable marker for scripts/check-live-tokens.js (prod check).
+        body = body.replace('</body>', `<!-- live-unresolved: ${unresolved.length} -->\n</body>`);
+      }
+    }
+    return realSend(body, ...rest);
+  };
+  const realSendFile = res.sendFile.bind(res);
+  res.sendFile = function (fp, ...rest) {
+    if (typeof fp === 'string' && fp.endsWith('.html')) {
+      try {
+        const html = fs.readFileSync(fp, 'utf8');
+        if (html.indexOf('{{') !== -1 || areaForPath(req.path)) {
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          return res.send(html);
+        }
+      } catch { /* fall through to the real sendFile */ }
+    }
+    return realSendFile(fp, ...rest);
+  };
+  next();
+});
+
 // ── E-E-A-T author block injection ────────────────────────────────────────────
 // Wraps res.sendFile so any HTML page in public/site/ gets a visible "About the
 // Author" block injected before the footer script tag. Adds visible SQEG /
@@ -183,10 +248,15 @@ const AUTHOR_BLOCK_SKIP = new Set([
   '/account',
   '/search',
 ]);
+// Real "last content change" dates from git (scripts/build-page-dates.js).
+// File mtime is NOT used: Render resets it on every deploy, which made every
+// page claim it was updated today.
+let PAGE_DATES = {};
+try { PAGE_DATES = require('./data/page-dates.json'); } catch { console.warn('[author-block] data/page-dates.json missing; run scripts/build-page-dates.js'); }
 function injectAuthorBlock(html, lastUpdated) {
   if (typeof html !== 'string' || !html.includes('<body')) return html;
   if (html.includes(AUTHOR_BLOCK_MARKER)) return html;
-  const block = authorBlockHTML({ lastUpdated: lastUpdated || new Date() });
+  const block = authorBlockHTML({ lastUpdated: lastUpdated || null, liveData: liveStats.hasLiveTokens(html) });
   const footerAnchor = html.indexOf('<script src="/js/footer.js"');
   const bodyClose = html.lastIndexOf('</body>');
   const anchor = footerAnchor !== -1 ? footerAnchor : bodyClose;
@@ -206,9 +276,8 @@ app.use((req, res, next) => {
     try {
       let html = require('fs').readFileSync(fp, 'utf8');
       if (html.includes(AUTHOR_BLOCK_MARKER)) return origSendFile(fp, ...rest);
-      let mtime = null;
-      try { mtime = require('fs').statSync(fp).mtime; } catch {}
-      html = injectAuthorBlock(html, mtime);
+      const d = PAGE_DATES[path.basename(fp)];
+      html = injectAuthorBlock(html, d ? new Date(d + 'T12:00:00-06:00') : null);
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       return res.send(html);
     } catch (e) {
@@ -1634,20 +1703,19 @@ app.get('/ut-residency-guide', (_req, res) => res.sendFile(path.join(__dirname, 
 //    neighborhood pages just before <script src="/js/footer.js" ...>. Falls
 //    back to plain sendFile if anything goes wrong so a bad DB read can't
 //    take down these pages.
-const { renderMarketWidget } = require('./templates/market-widget');
+// renderMarketWidget is required near the top (live-numbers middleware).
 function ssrWithMarketWidget(fileName, filter, opts) {
   return (_req, res) => {
     const p = path.join(__dirname, 'public/site', fileName);
     try {
       let html = require('fs').readFileSync(p, 'utf8');
-      const widget = renderMarketWidget(filter, opts);
-      // Also inject the author block for E-E-A-T signal (uses file mtime
-      // as the last-updated date). Skips if the page already contains one.
+      const widget = renderMarketWidget(filter, { ...opts, pageUrl: 'https://austintxhomes.co' + _req.path });
+      // Also inject the author block for E-E-A-T signal, dated from git
+      // (data/page-dates.json), never file mtime. Skips if already present.
       let block = '';
       if (!html.includes(AUTHOR_BLOCK_MARKER)) {
-        let mtime = null;
-        try { mtime = require('fs').statSync(p).mtime; } catch {}
-        block = authorBlockHTML({ lastUpdated: mtime });
+        const d = PAGE_DATES[fileName];
+        block = authorBlockHTML({ lastUpdated: d ? new Date(d + 'T12:00:00-06:00') : null, liveData: true });
       }
       const anchor = html.indexOf('<script src="/js/footer.js"');
       if (anchor !== -1) {
@@ -1857,6 +1925,30 @@ app.get('/deal-radar-admin', (_req, res) => res.sendFile(path.join(__dirname, 'p
 app.get('/deal-radar/:id',   (_req, res) => res.sendFile(path.join(__dirname, 'public/site/deal-radar-detail.html')));
 
 // Sitemap index — points Google to both the static sitemap and the dynamic listing sitemap
+// ── /llms.txt + /llms-full.txt (live, see lib/llmsTxt.js) ────────────────────
+// Built per request from site facts, page FAQs, and {{live:...}} tokens that the
+// live-numbers middleware resolves on send. Cached at the edge like any page.
+function routePathsForLlms() {
+  const out = [];
+  const stack = (app._router && app._router.stack) || [];
+  for (const layer of stack) {
+    const p = layer.route && layer.route.path;
+    if (typeof p === 'string' && layer.route.methods && layer.route.methods.get) out.push(p);
+  }
+  for (const slug of Object.keys(require('./data/neighborhoods'))) out.push('/neighborhoods/' + slug);
+  return out;
+}
+app.get(['/llms.txt', '/llms-full.txt'], (req, res) => {
+  try {
+    const txt = require('./lib/llmsTxt').build({ full: req.path === '/llms-full.txt', routePaths: routePathsForLlms() });
+    res.type('text/plain; charset=utf-8');
+    res.send(txt);
+  } catch (e) {
+    console.error('[llms.txt]', e.message);
+    res.status(500).type('text/plain').send('llms.txt temporarily unavailable');
+  }
+});
+
 app.get('/sitemap-index.xml', (_req, res) => {
   res.setHeader('Content-Type', 'application/xml');
   res.send(`<?xml version="1.0" encoding="UTF-8"?>

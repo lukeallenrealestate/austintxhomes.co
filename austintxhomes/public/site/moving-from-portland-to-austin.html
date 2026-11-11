@@ -104,7 +104,7 @@
  {
  "@type": "Question",
  "name": "How does Austin housing compare to Portland?",
- "acceptedAnswer": { "@type": "Answer", "text": "Central Portland and central Austin are remarkably similar in price: Alberta Arts and East Austin, Hawthorne and South Congress all overlap in the $500K to $900K range. Portland's property tax (~1.0 to 1.1%) is lower than Austin's (1.8 to 2.4%). The financial advantage of Austin is primarily the income tax stack." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Central Portland and central Austin are closer in price than most people expect: Alberta Arts and East Austin, Hawthorne and South Congress are comparable neighborhoods at comparable budgets, and East Austin's median asking price right now is {{live:nbhd=east-austin:medianPrice|in a similar range}}. Portland's property tax (~1.0 to 1.1%) is lower than Austin's (1.8 to 2.4%). The financial advantage of Austin is primarily the income tax stack." }
  },
  {
  "@type": "Question",
@@ -918,12 +918,12 @@
  <div class="housing-col left">
  <p class="col-title">Portland / Oregon</p>
  <ul class="housing-list">
- <li>🏠 Alberta Arts / Mississippi Ave 3BR SFH: $550K to $900K</li>
- <li>🏠 Hawthorne / Sellwood 3BR SFH: $500K to $850K</li>
- <li>🏠 Pearl District 2BR condo: $500K to $850K</li>
- <li>🏠 NW Portland / Nob Hill 2BR condo: $450K to $750K</li>
- <li>🏠 Beaverton / Hillsboro (Intel) 3BR: $450K to $750K</li>
- <li>🏠 Lake Oswego 3BR: $600K to $1.2M</li>
+ <li>🏠 Alberta Arts / Mississippi Ave 3BR SFH: priced close to East Austin</li>
+ <li>🏠 Hawthorne / Sellwood 3BR SFH: priced close to South Austin bungalows</li>
+ <li>🏠 Pearl District 2BR condo: priced close to downtown Austin condos</li>
+ <li>🏠 NW Portland / Nob Hill 2BR condo: a step below the Pearl</li>
+ <li>🏠 Beaverton / Hillsboro (Intel) 3BR: suburban pricing, similar to Austin's northern suburbs</li>
+ <li>🏠 Lake Oswego 3BR: school-district premium, like Westlake</li>
  <li>💰 OR property tax: ~1.0 to 1.1% (Measure 5 capped)</li>
  <li>🌧️ 144 rainy days/year; 144 sunny days</li>
  <li>💸 OR income tax: 9.9% state + up to 2.5% local (Portland)</li>
@@ -932,12 +932,12 @@
  <div class="housing-col right">
  <p class="col-title">Austin</p>
  <ul class="housing-list">
- <li>🏠 East Austin 3BR: $550K to $900K</li>
- <li>🏠 Hyde Park / Rosedale 3BR: $520K to $900K</li>
- <li>🏠 Westlake Hills 3BR (Eanes ISD): $900K to $2M</li>
- <li>🏠 Domain / NW Austin 3BR: $400K to $700K</li>
- <li>🏠 Cedar Park / Round Rock 3BR: $380K to $620K</li>
- <li>🏠 Lake Travis area 3BR: $550K to $1.1M</li>
+ <li>🏠 East Austin, median ask right now: {{live:nbhd=east-austin:medianPrice|close to Alberta Arts}}</li>
+ <li>🏠 Hyde Park, median ask right now: {{live:nbhd=hyde-park:medianPrice|close to Hawthorne}}</li>
+ <li>🏠 Westlake Hills (Eanes ISD, 78746), median ask right now: {{live:zip=78746:medianPrice}}</li>
+ <li>🏠 Domain / NW Austin (78758, 78759), median ask right now: {{live:zip=78758,78759:medianPrice}}</li>
+ <li>🏠 Cedar Park, median ask right now: {{live:city=Cedar Park:medianPrice}}</li>
+ <li>🏠 Lake Travis area (78734, 78738), median ask right now: {{live:zip=78734,78738:medianPrice}}</li>
  <li>💰 TX property tax: 1.8 to 2.4%</li>
  <li>☀️ 300 sunny days; dry heat; Barton Springs year-round</li>
  <li>💸 TX income tax: $0</li>
@@ -959,7 +959,7 @@
  <div class="neigh-card">
  <p class="neigh-equiv">≈ Alberta Arts District / Mississippi Ave</p>
  <h3 class="neigh-name">East Austin</h3>
- <p class="neigh-price">$500K to $950K buy · $1,700 to $2,800/mo rent</p>
+ <p class="neigh-price">Median ask now {{live:nbhd=east-austin:medianPrice|close to Alberta Arts pricing}}</p>
  <ul>
  <li>Alberta Arts energy: bungalow belt, walkable arts corridor, food carts, creative class</li>
  <li>Austin's most vibrant urban neighborhood, same vibe, different latitude</li>
@@ -972,7 +972,7 @@
  <div class="neigh-card">
  <p class="neigh-equiv">≈ Hawthorne / Division</p>
  <h3 class="neigh-name">Bouldin Creek / South Congress</h3>
- <p class="neigh-price">$620K to $1.1M buy · $2,000 to $3,200/mo rent</p>
+ <p class="neigh-price">Median ask now {{live:nbhd=bouldin-creek:medianPrice|a step above East Austin}}</p>
  <ul>
  <li>Hawthorne's DNA: quirky, walkable, local-owned everything, food and coffee culture</li>
  <li>South Congress is Austin's Hawthorne, independently-owned, walkable, beloved</li>
@@ -985,7 +985,7 @@
  <div class="neigh-card">
  <p class="neigh-equiv">≈ NW Portland / Nob Hill</p>
  <h3 class="neigh-name">Clarksville / Tarrytown</h3>
- <p class="neigh-price">$750K to $1.8M buy · $2,500 to $4,500/mo rent</p>
+ <p class="neigh-price">Median ask now {{live:nbhd=clarksville:medianPrice|at the top of central Austin}}</p>
  <ul>
  <li>NW Portland's urban walkability and refinement: close to downtown, historic character</li>
  <li>West 6th walkable; Pease Park nearby; proper urban neighborhood feel</li>
@@ -998,7 +998,7 @@
  <div class="neigh-card">
  <p class="neigh-equiv">≈ Sellwood / Moreland / Eastmoreland</p>
  <h3 class="neigh-name">Hyde Park / Rosedale</h3>
- <p class="neigh-price">$520K to $900K buy · $1,800 to $2,800/mo rent</p>
+ <p class="neigh-price">Median ask now {{live:nbhd=hyde-park:medianPrice|close to Hawthorne pricing}}</p>
  <ul>
  <li>Sellwood's established residential character: historic, walkable, good schools</li>
  <li>Strong AISD elementary campuses; UT Austin adjacent; Hyde Park Diner culture</li>
@@ -1011,7 +1011,7 @@
  <div class="neigh-card">
  <p class="neigh-equiv">≈ Lake Oswego</p>
  <h3 class="neigh-name">Westlake Hills / Eanes ISD</h3>
- <p class="neigh-price">$900K to $2M+ buy · $3,500 to $6,000/mo rent</p>
+ <p class="neigh-price">Median ask now (78746) {{live:zip=78746:medianPrice}}</p>
  <ul>
  <li>Lake Oswego's DNA: top school district, affluent suburban, close enough to downtown</li>
  <li>Eanes ISD is Austin's top school district; Westlake HS ranks top 5 in Texas</li>
@@ -1023,7 +1023,7 @@
  <div class="neigh-card">
  <p class="neigh-equiv">≈ Beaverton / Hillsboro Intel Corridor</p>
  <h3 class="neigh-name">Domain / NW Austin / Cedar Park</h3>
- <p class="neigh-price">$380K to $650K buy · $1,400 to $2,400/mo rent</p>
+ <p class="neigh-price">Median ask now (Cedar Park) {{live:city=Cedar Park:medianPrice}}</p>
  <ul>
  <li>Hillsboro Intel campus energy: tech corridor, newer construction, good schools</li>
  <li>Apple, Google, Meta, Nvidia, Amazon all within 5 miles of Domain</li>
@@ -1116,7 +1116,7 @@
  </div>
  <div class="school-card">
  <h3>Eanes ISD<br>Westlake Hills</h3>
- <p>The Lake Oswego SD equivalent in Austin. Westlake HS ranks top 5 in Texas. Homes $900K to $2M+. The right call for Portland families who prioritized school quality in Lake Oswego or West Hills. 15 to 20 min from downtown, 25 min from Domain/Intel Austin.</p>
+ <p>The Lake Oswego SD equivalent in Austin. Westlake HS ranks top 5 in Texas. Most active Eanes ISD listings ask between {{live:isd=Eanes ISD:p10Price|seven figures}} and {{live:isd=Eanes ISD:p90Price|well beyond}}. The right call for Portland families who prioritized school quality in Lake Oswego or West Hills. 15 to 20 min from downtown, 25 min from Domain/Intel Austin.</p>
  </div>
  <div class="school-card">
  <h3>Austin ISD<br>Central Austin</h3>
@@ -1153,7 +1153,7 @@
  <li><span class="check-box"></span>Bring your rain gear, Austin does get storms, just not the persistent gray drizzle variety</li>
  <li><span class="check-box"></span>Get pre-approved before your Austin search, Hyde Park and East Austin move fast</li>
  <li><span class="check-box"></span>Download Lady Bird Lake / Barton Springs apps, your year-round outdoor replacement</li>
- <li><span class="check-box"></span>Contact Luke Allen 60 to 90 days before your move date, East Austin at $600K to $900K moves quickly</li>
+ <li><span class="check-box"></span>Contact Luke Allen 60 to 90 days before your move date, East Austin's core price range moves quickly</li>
  </ul>
  </div>
  </div>
@@ -1184,7 +1184,7 @@
  </div>
  <div class="faq-item">
  <p class="faq-q">How does Austin housing compare to Portland?</p>
- <p class="faq-a">Central Portland and central Austin are remarkably similar in price: Alberta Arts and East Austin, Hawthorne and South Congress, Pearl District and the Domain all overlap in the $500K to $900K range. Portland's property tax (~1.0 to 1.1%) is lower than Austin's (1.8 to 2.4%), partially offsetting income tax savings at lower price points. The full financial advantage of Austin is primarily the income tax stack, at $250K income, that's $22,500 to $30,000 per year depending on where in Portland you live.</p>
+ <p class="faq-a">Central Portland and central Austin are closer in price than most people expect: Alberta Arts and East Austin, Hawthorne and South Congress, Pearl District and the Domain are comparable neighborhoods at comparable budgets, and East Austin's median asking price right now is {{live:nbhd=east-austin:medianPrice|in a similar range}}. Portland's property tax (~1.0 to 1.1%) is lower than Austin's (1.8 to 2.4%), partially offsetting income tax savings at lower price points. The full financial advantage of Austin is primarily the income tax stack, at $250K income, that's $22,500 to $30,000 per year depending on where in Portland you live.</p>
  </div>
  <div class="faq-item">
  <p class="faq-q">What's Austin's outdoor scene like compared to Portland?</p>
@@ -1201,7 +1201,7 @@
  <p class="section-eyebrow" style="color: var(--gold);">Work With Luke</p>
  <h2>Let's Find Your<br><em>Austin Home</em></h2>
  <p>I help Portland transplants find their Austin neighborhood, whether that's the Alberta Arts energy of East Austin, the Hawthorne feel of South Congress, or the Lake Oswego schools of Westlake Hills. The Oregon income tax stack adds up faster than most Portland residents realize, and Austin's year-round outdoor access is genuinely different. My buyer representation is free.</p>
- <p>East Austin and Hyde Park at $600K to $900K move faster than comparable Portland neighborhoods. If you're within 60 to 90 days of your Austin start date, or just running the Oregon tax math, reach out.</p>
+ <p>Well-priced homes in East Austin and Hyde Park move faster than comparable Portland neighborhoods. If you're within 60 to 90 days of your Austin start date, or just running the Oregon tax math, reach out.</p>
  </div>
  <div>
  <div class="contact-form-wrap">

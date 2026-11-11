@@ -84,13 +84,13 @@
  "@type": "FAQPage",
  "mainEntity": [
  { "@type": "Question", "name": "How many homes are for sale in Horseshoe Bay TX right now?",
- "acceptedAnswer": { "@type": "Answer", "text": "Active inventory in Horseshoe Bay typically ranges from 60 to 130 homes at any given time, depending on the season. Spring and fall are the most active listing seasons. The live MLS feed on this page shows the current count and lists every active property updated daily." } },
+ "acceptedAnswer": { "@type": "Answer", "text": "There are {{live:city=Horseshoe Bay:count}} active homes for sale in Horseshoe Bay right now, and inventory shifts with the season. Spring and fall are the most active listing seasons. The live MLS feed on this page shows the current count and lists every active property updated daily." } },
  { "@type": "Question", "name": "What's the price range for Horseshoe Bay homes?",
- "acceptedAnswer": { "@type": "Answer", "text": "Horseshoe Bay homes range from approximately $400K for entry-level condos and patio homes to $10M+ for premium open-water Lake LBJ estates. The bulk of inventory falls between $700K and $2.5M. Lakefront and golf-course-adjacent homes carry premiums; off-water non-golf inventory is the most affordable entry point." } },
+ "acceptedAnswer": { "@type": "Answer", "text": "Horseshoe Bay homes range from entry-level condos and patio homes to premium open-water Lake LBJ estates at the very top of the market. Right now most active listings ask between {{live:city=Horseshoe Bay:p10Price}} and {{live:city=Horseshoe Bay:p90Price}}, with a median asking price of {{live:city=Horseshoe Bay:medianPrice}}. Lakefront and golf-course-adjacent homes carry premiums; off-water non-golf inventory is the most affordable entry point." } },
  { "@type": "Question", "name": "Can I see homes for sale on a specific Horseshoe Bay golf course?",
  "acceptedAnswer": { "@type": "Answer", "text": "Yes, Apple Rock, Slick Rock, and Ram Rock each have their own micro-market with distinct inventory and pricing. The /horseshoe-bay-golf-homes page details each course. For lakefront homes specifically, see /horseshoe-bay-waterfront-homes." } },
  { "@type": "Question", "name": "How fast do Horseshoe Bay homes sell?",
- "acceptedAnswer": { "@type": "Answer", "text": "Days-on-market in Horseshoe Bay runs longer than urban Austin neighborhoods because the buyer pool is mostly out-of-market second-home buyers who shop on weekend trips. Well-priced homes with strong photography can move in 30 to 60 days; off-water inventory or homes priced above market can sit 90 to 180 days. Pricing strategy matters more here than in any Austin-area submarket." } },
+ "acceptedAnswer": { "@type": "Answer", "text": "Days-on-market in Horseshoe Bay runs longer than urban Austin neighborhoods because the buyer pool is mostly out-of-market second-home buyers who shop on weekend trips. Right now the median active Horseshoe Bay listing has been on the market {{live:city=Horseshoe Bay:medianDom}} days. Well-priced homes with strong photography move fastest; off-water inventory or homes priced above market can sit for months. Pricing strategy matters more here than in any Austin-area submarket." } },
  { "@type": "Question", "name": "Are Horseshoe Bay listings updated in real time?",
  "acceptedAnswer": { "@type": "Answer", "text": "The MLS feed powering this page refreshes throughout the day. New listings, price changes, and status updates from Central Texas MLS appear within minutes of being posted. The data is the same MLS feed agents use." } }
  ]
@@ -238,7 +238,7 @@
  <p class="hero-sub">Every active home for sale in Horseshoe Bay, TX, Lake LBJ waterfront, RTJ Sr. golf course homes, condos, and Hill Country resort properties. Updated daily from MLS.</p>
  <div class="hero-stats">
  <div class="hero-stat">Live MLS data</div>
- <div class="hero-stat"><strong>$400K to $10M+</strong></div>
+ <div class="hero-stat"><strong>{{live:city=Horseshoe Bay:p10Price}} to {{live:city=Horseshoe Bay:p90Price}}</strong></div>
  <div class="hero-stat">Lake LBJ</div>
  <div class="hero-stat">Free buyer rep</div>
  </div>
@@ -294,11 +294,11 @@
  <div>
  <p>Horseshoe Bay is Texas Hill Country's most exclusive resort city, about 50 miles northwest of Austin on Lake LBJ, the constant-level lake that makes Horseshoe Bay's waterfront fundamentally different from Lake Travis or any other Highland Lake. The city covers roughly 7,500 acres total, of which only a fraction is buildable, which is why long-term values have held up remarkably well.</p>
  <p>The market is dominated by <strong>Lake LBJ waterfront</strong>, three <strong>Robert Trent Jones Sr. championship golf courses</strong> (Apple Rock, Slick Rock, Ram Rock), and the <strong>Horseshoe Bay Resort</strong>, a 4-star resort with Yacht Club, marinas, spa, and dining. Most homes are second residences, weekend getaways, or retirement homes for buyers from Austin, Houston, Dallas, and San Antonio.</p>
- <p>Active inventory typically runs 60 to 130 homes at any given moment. Spring and fall are the most active listing seasons. The <strong>median price sits around $850K to $1.2M</strong>, with entry condos starting near $400K and the highest-end open-water Lake LBJ estates closing at $5M to $10M+.</p>
+ <p>There are {{live:city=Horseshoe Bay:count}} active listings in Horseshoe Bay right now, and spring and fall are the most active listing seasons. The <strong>median asking price is {{live:city=Horseshoe Bay:medianPrice}}</strong>, and most active listings ask between {{live:city=Horseshoe Bay:p10Price}} and {{live:city=Horseshoe Bay:p90Price}}, with entry condos at the low end and open-water Lake LBJ estates at the very top.</p>
  </div>
  <div>
  <p>What buyers should know going in: <strong>country club membership doesn't always convey</strong> with the property, and the membership category (Premier vs. Cap Rock) determines what amenities you actually get. <strong>Dock categories matter</strong>, open Lake LBJ frontage, protected coves, shared community docks, and "lake-view" lots all command very different prices.</p>
- <p>Schools are split between <strong>Marble Falls ISD</strong> (south side) and <strong>Llano ISD</strong> (north side). For full-time families, most homes that work are on the Marble Falls ISD side. <strong>Property taxes</strong> run 1.6 to 1.9%, meaningfully below Austin, because there's no MUD or PID overlay in most of the city.</p>
+ <p>Schools are split between <strong>Marble Falls ISD</strong> (south side) and <strong>Llano ISD</strong> (north side). For full-time families, most homes that work are on the Marble Falls ISD side. <strong>Property taxes</strong> generally run meaningfully below Austin, because there's no MUD or PID overlay in most of the city.</p>
  <p>Working with a Horseshoe Bay-specialist agent matters more here than in most Texas markets because the asset details (membership rights, dock categories, water-rights nuances, HOA structures) are easy for outsiders to miss. <a href="/horseshoe-bay-realtor">Luke Allen</a> represents buyers and sellers across the full range, condos to lakefront estates.</p>
  </div>
  </div>
@@ -314,32 +314,32 @@
  <div class="area-grid">
  <div class="area-card">
  <h3><a href="/horseshoe-bay-waterfront-homes">Lake LBJ Waterfront</a></h3>
- <div class="area-range">$1M, $10M+</div>
+ <div class="area-range">Highest price tier</div>
  <p>Open-water and protected-cove waterfront. The premium Horseshoe Bay inventory and the most recession-resistant.</p>
  </div>
  <div class="area-card">
  <h3><a href="/horseshoe-bay-golf-homes">Apple Rock Golf Homes</a></h3>
- <div class="area-range">$700K, $3M</div>
+ <div class="area-range">Upper-middle tier</div>
  <p>The original RTJ Sr. course. Established streets, mature trees, family-oriented.</p>
  </div>
  <div class="area-card">
  <h3><a href="/horseshoe-bay-golf-homes">Slick Rock Golf Homes</a></h3>
- <div class="area-range">$650K, $2.5M</div>
+ <div class="area-range">Mid to upper tier</div>
  <p>Dramatic terrain and panoramic Hill Country views from elevated lots.</p>
  </div>
  <div class="area-card">
  <h3><a href="/horseshoe-bay-golf-homes">Ram Rock Golf Homes</a></h3>
- <div class="area-range">$600K, $2.2M</div>
+ <div class="area-range">Mid to upper tier, limited supply</div>
  <p>The most challenging RTJ Sr. course. Smallest course-side inventory.</p>
  </div>
  <div class="area-card">
  <h3>Cape Esperanza & Summit Rock</h3>
- <div class="area-range">$500K, $1.5M</div>
+ <div class="area-range">Summit Rock median ask {{live:city=Horseshoe Bay;sub=Summit Rock:medianPrice|available on request}}</div>
  <p>Newer luxury subdivisions, custom Hill Country homes with golf and lake access.</p>
  </div>
  <div class="area-card">
  <h3>Resort Condominiums</h3>
- <div class="area-range">$400K, $1.1M</div>
+ <div class="area-range">Median condo ask {{live:city=Horseshoe Bay;type=condo:medianPrice|available on request}}</div>
  <p>Lock-and-leave condos. Strongest short-term-rental income potential.</p>
  </div>
  </div>
@@ -351,10 +351,10 @@
  <div class="faq-inner">
  <p class="section-eyebrow" style="text-align:center">Horseshoe Bay Homes for Sale, FAQ</p>
  <h2>Common <em>questions</em>.</h2>
- <div class="faq-item"><button class="faq-q" aria-expanded="false">How many homes are for sale in Horseshoe Bay TX right now? <span class="faq-icon">+</span></button><div class="faq-a">Active inventory in Horseshoe Bay typically ranges from 60 to 130 homes at any given time, depending on the season. Spring and fall are the most active listing seasons. The live MLS feed on this page shows the current count and lists every active property updated daily.</div></div>
- <div class="faq-item"><button class="faq-q" aria-expanded="false">What's the price range for Horseshoe Bay homes? <span class="faq-icon">+</span></button><div class="faq-a">Horseshoe Bay homes range from approximately $400K for entry-level condos and patio homes to $10M+ for premium open-water Lake LBJ estates. The bulk of inventory falls between $700K and $2.5M. Lakefront and golf-course-adjacent homes carry premiums; off-water non-golf inventory is the most affordable entry point.</div></div>
+ <div class="faq-item"><button class="faq-q" aria-expanded="false">How many homes are for sale in Horseshoe Bay TX right now? <span class="faq-icon">+</span></button><div class="faq-a">There are {{live:city=Horseshoe Bay:count}} active homes for sale in Horseshoe Bay right now, and inventory shifts with the season. Spring and fall are the most active listing seasons. The live MLS feed on this page shows the current count and lists every active property updated daily.</div></div>
+ <div class="faq-item"><button class="faq-q" aria-expanded="false">What's the price range for Horseshoe Bay homes? <span class="faq-icon">+</span></button><div class="faq-a">Horseshoe Bay homes range from entry-level condos and patio homes to premium open-water Lake LBJ estates at the very top of the market. Right now most active listings ask between {{live:city=Horseshoe Bay:p10Price}} and {{live:city=Horseshoe Bay:p90Price}}, with a median asking price of {{live:city=Horseshoe Bay:medianPrice}}. Lakefront and golf-course-adjacent homes carry premiums; off-water non-golf inventory is the most affordable entry point.</div></div>
  <div class="faq-item"><button class="faq-q" aria-expanded="false">Can I see homes for sale on a specific Horseshoe Bay golf course? <span class="faq-icon">+</span></button><div class="faq-a">Yes, Apple Rock, Slick Rock, and Ram Rock each have their own micro-market with distinct inventory and pricing. The <a href="/horseshoe-bay-golf-homes">/horseshoe-bay-golf-homes</a> page details each course. For lakefront homes specifically, see <a href="/horseshoe-bay-waterfront-homes">/horseshoe-bay-waterfront-homes</a>.</div></div>
- <div class="faq-item"><button class="faq-q" aria-expanded="false">How fast do Horseshoe Bay homes sell? <span class="faq-icon">+</span></button><div class="faq-a">Days-on-market in Horseshoe Bay runs longer than urban Austin neighborhoods because the buyer pool is mostly out-of-market second-home buyers who shop on weekend trips. Well-priced homes with strong photography can move in 30 to 60 days; off-water inventory or homes priced above market can sit 90 to 180 days. Pricing strategy matters more here than in any Austin-area submarket.</div></div>
+ <div class="faq-item"><button class="faq-q" aria-expanded="false">How fast do Horseshoe Bay homes sell? <span class="faq-icon">+</span></button><div class="faq-a">Days-on-market in Horseshoe Bay runs longer than urban Austin neighborhoods because the buyer pool is mostly out-of-market second-home buyers who shop on weekend trips. Right now the median active Horseshoe Bay listing has been on the market {{live:city=Horseshoe Bay:medianDom}} days. Well-priced homes with strong photography move fastest; off-water inventory or homes priced above market can sit for months. Pricing strategy matters more here than in any Austin-area submarket.</div></div>
  <div class="faq-item"><button class="faq-q" aria-expanded="false">Are Horseshoe Bay listings updated in real time? <span class="faq-icon">+</span></button><div class="faq-a">The MLS feed powering this page refreshes throughout the day. New listings, price changes, and status updates from Central Texas MLS appear within minutes of being posted. The data is the same MLS feed agents use.</div></div>
  </div>
 </div>

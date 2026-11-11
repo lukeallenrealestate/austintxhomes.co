@@ -203,12 +203,12 @@
  <div class="input-row">
  <label>Builder DOM (Days on Market - Self-Marketed)</label>
  <input type="number" id="builderDom" value="96" min="0" step="1" />
- <div class="desc">Q1 2026 Austin median for builder-marketed product not on MLS: 96 days</div>
+ <div class="desc">Illustrative default for self-marketed product kept off the MLS. Replace with your own DOM history on prior projects.</div>
  </div>
  <div class="input-row">
  <label>Broker DOM (MLS-Listed)</label>
  <input type="number" id="brokerDom" value="73" min="0" step="1" />
- <div class="desc">Q1 2026 Austin median for MLS-launched new construction: 73 days</div>
+ <div class="desc">Illustrative default. For reference, active new-construction listings in Austin currently show a median of {{live:city=Austin;newcon=1:medianDom|several dozen}} days on market.</div>
  </div>
  <div class="input-row">
  <label>Builder Marketing Budget Per Unit</label>
@@ -256,8 +256,8 @@
  <p>The calculator runs two parallel scenarios on your project specifics and reports the net proceeds delta. The inputs that drive the comparison are days on market (DOM), carry cost per unit per month, marketing spend, commission rate, and price lift from MLS exposure.</p>
  <p><strong>Builder-led scenario.</strong> Net = (List Price - Cost Basis - Marketing Budget - (Carry x Builder DOM / 30)) x Units. The builder keeps 100% of the closed price minus their costs and saved commission, but pays full carry cost during the longer DOM and absorbs marketing expenses directly.</p>
  <p><strong>Broker-listed scenario.</strong> Net = (List Price x (1 + Price Lift) - Cost Basis - (List Price x Commission Rate) - (Carry x Broker DOM / 30)) x Units. The builder pays commission on the higher closed price but eliminates marketing budget (broker covers it), captures the price lift, and reduces carry by the DOM delta.</p>
- <p><strong>What flips the comparison?</strong> The break-even point depends on how aggressive the price lift assumption is and how high carry cost runs. On a $4,200/month carry per unit at the Q1 2026 Austin DOM medians (96 vs 73 days), the broker scenario typically wins on net even before the price lift kicks in. On lower-carry, lower-priced suburban product, the comparison narrows. The calculator lets you stress-test your specific project rather than relying on a generic rule of thumb.</p>
- <p><strong>Conservative inputs.</strong> The defaults are set conservatively. The 2% price lift assumption is below the 3-5% typical, the 73-day broker DOM is the Q1 2026 median (some submarkets run faster), and the $12K builder marketing budget per unit reflects what builders actually spend, not what they think they spend. Higher accuracy comes from plugging in your actual cost basis, your actual carry rate, and your honest DOM history on prior projects.</p>
+ <p><strong>What flips the comparison?</strong> The break-even point depends on how aggressive the price lift assumption is and how high carry cost runs. On a $4,200/month carry per unit at the default DOM assumptions (96 vs 73 days), the broker scenario typically wins on net even before the price lift kicks in. On lower-carry, lower-priced suburban product, the comparison narrows. The calculator lets you stress-test your specific project rather than relying on a generic rule of thumb.</p>
+ <p><strong>Conservative inputs.</strong> The defaults are set conservatively. The 2% price lift assumption is below the 3-5% typical, the 73-day broker DOM is an illustrative default (some submarkets run faster), and the $12K builder marketing budget per unit reflects what builders actually spend, not what they think they spend. Higher accuracy comes from plugging in your actual cost basis, your actual carry rate, and your honest DOM history on prior projects.</p>
  </div>
  </section>
 
@@ -282,7 +282,7 @@
  <li><strong>Construction loan covenant pressure.</strong> Lenders typically require sales pace milestones during the construction loan term. Falling behind triggers covenant pressure and can force price drops. Broker partnerships with predictable MLS launch timelines reduce this risk - not modeled in the calculator but real on every project.</li>
  <li><strong>Repeat business and reputation.</strong> Building a track record of fast-absorbing projects with broker partnerships compounds across the next project, the next capital partner, and the next land acquisition opportunity. Self-marketed slow projects compound the opposite direction.</li>
  </ul>
- <p>The point of the calculator is to anchor the comparison in numbers rather than vibes. The numbers say broker-listed wins on most Austin builder math at current Q1 2026 inputs. The numbers do not capture the strategic value of a repeat partnership. Both matter.</p>
+ <p>The point of the calculator is to anchor the comparison in numbers rather than vibes. The numbers say broker-listed wins on most Austin builder math at the default inputs. The numbers do not capture the strategic value of a repeat partnership. Both matter.</p>
  </div>
  </section>
 

@@ -186,7 +186,7 @@ function mapListing(p) {
     elementary_school: p.ElementarySchool || null,
     middle_school: p.MiddleOrJuniorSchool || null,
     high_school: p.HighSchool || null,
-    school_district: p.SchoolDistrict || null,
+    school_district: p.SchoolDistrict || p.HighSchoolDistrict || null,
     days_on_market: p.DaysOnMarket || null,
     listing_contract_date: p.ListingContractDate || null,
     // MLS GRID / ACTRIS doesn't expose ClosePrice/CloseDate on the IDX feed.

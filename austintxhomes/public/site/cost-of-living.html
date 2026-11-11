@@ -73,7 +73,7 @@
  {
  "@type": "Question",
  "name": "Is Austin TX expensive to live in?",
- "acceptedAnswer": { "@type": "Answer", "text": "Austin is more expensive than the Texas average but significantly cheaper than coastal tech cities like San Francisco, Seattle, or New York. The median home price around $485K and median 2BR rent of $1,650/month place it in the mid-range for major US metros. The no-state-income-tax benefit partially offsets higher housing and property tax costs." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Austin is more expensive than the Texas average but significantly cheaper than coastal tech cities like San Francisco, Seattle, or New York. The metro median asking price of {{live:metro:medianPrice}} right now places it in the mid-range for major US metros. The no-state-income-tax benefit partially offsets higher housing and property tax costs." }
  },
  {
  "@type": "Question",
@@ -83,17 +83,17 @@
  {
  "@type": "Question",
  "name": "How much has Austin's cost of living increased?",
- "acceptedAnswer": { "@type": "Answer", "text": "Austin experienced significant cost-of-living increases from 2020 to 2023, with home prices rising 40 to 60% and rents spiking 20 to 30%. Since 2023, the market has moderated, home prices are down 10 to 15% from peak, and rents have softened in many submarkets. 2025 to 2026 represents a more stable entry point than the pandemic-era surge." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Austin experienced significant cost-of-living increases from 2020 to 2023, with home prices rising 40 to 60% and rents spiking 20 to 30%. Since 2023, the market has moderated, home prices remain below their 2022 peak, and rents have softened in many submarkets. 2025 to 2026 represents a more stable entry point than the pandemic-era surge." }
  },
  {
  "@type": "Question",
  "name": "Is it cheaper to live in Austin suburbs?",
- "acceptedAnswer": { "@type": "Answer", "text": "Yes, significantly. Kyle, Buda, and outer Pflugerville offer new construction homes 30 to 40% below Central Austin prices, with the tradeoff of longer commutes (30 to 45 min to downtown). Cedar Park, Round Rock, and Leander are mid-range, 20 to 30% below Central Austin with 25 to 35 min commutes. The suburb premium is time, not money." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Yes, significantly. Kyle, Buda, and outer Pflugerville offer new construction homes well below Central Austin prices (Kyle's median asking price is currently {{live:city=Kyle:medianPrice}}, versus {{live:city=Austin:medianPrice}} in the City of Austin), with the tradeoff of longer commutes (30 to 45 min to downtown). Cedar Park, Round Rock, and Leander are mid-range (Round Rock's median asking price is currently {{live:city=Round Rock:medianPrice}}) with 25 to 35 min commutes. The suburb premium is time, not money." }
  },
  {
  "@type": "Question",
  "name": "How does Texas property tax affect Austin's cost of living?",
- "acceptedAnswer": { "@type": "Answer", "text": "Texas property taxes are high, effective rates in the Austin area run 1.8%, 2.4% of assessed value, compared to 0.7%, 1.0% in California or Colorado. On a $500K home, that's $9,000 to $12,000/year in property taxes. It's the most common surprise for buyers relocating from lower-property-tax states, and it should be factored into any mortgage affordability calculation." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Texas property taxes are high. Rates are reset every year, but effective rates in the Austin area have typically run around 1.8% to 2.4% of assessed value, compared to roughly 0.7% to 1.0% in California or Colorado. For example, at those rates a $500K home would owe $9,000 to $12,000/year in property taxes. It's the most common surprise for buyers relocating from lower-property-tax states, and it should be factored into any mortgage affordability calculation." }
  },
  {
  "@type": "Question",
@@ -378,7 +378,7 @@
  <p class="hero-sub">A complete breakdown of what it actually costs to live in Austin in 2026, housing, food, transportation, utilities, and how Austin stacks up against the cities people are moving here from.</p>
  <div class="hero-pills">
  <span class="hero-pill">No State Income Tax</span>
- <span class="hero-pill">7 to 10% Below National Peak</span>
+ <span class="hero-pill">Live MLS Home Prices</span>
  </div>
  <nav class="hero-anchors">
  <a href="#housing">Housing</a>
@@ -396,27 +396,27 @@
  <div class="stats-bar-inner">
  <div class="stats-grid">
  <div class="stat-item">
- <div class="stat-label">Median Home Price</div>
- <div class="stat-value">$485K</div>
+ <div class="stat-label">Median Asking Price</div>
+ <div class="stat-value">{{live:metro:medianPrice}}</div>
  <div class="stat-desc">Austin metro, all types</div>
  </div>
  <div class="stat-item">
- <div class="stat-label">Median Monthly Rent (2BR)</div>
- <div class="stat-value">$1,650</div>
- <div class="stat-desc">Metro-wide average</div>
+ <div class="stat-label">City of Austin Median</div>
+ <div class="stat-value">{{live:city=Austin:medianPrice}}</div>
+ <div class="stat-desc">Asking price, active listings</div>
  </div>
  <div class="stat-item">
- <div class="stat-label">Median Household Income</div>
- <div class="stat-value">$82K</div>
- <div class="stat-desc">Travis County</div>
+ <div class="stat-label">Homes for Sale</div>
+ <div class="stat-value">{{live:metro:count}}</div>
+ <div class="stat-desc">Austin metro, right now</div>
  </div>
  <div class="stat-item">
- <div class="stat-label">Cost of Living vs US Avg</div>
- <div class="stat-value">+12%</div>
- <div class="stat-desc">Above national average</div>
+ <div class="stat-label">Median Price per Sq Ft</div>
+ <div class="stat-value">{{live:metro:medianPpsf}}</div>
+ <div class="stat-desc">Austin metro, asking</div>
  </div>
  </div>
- <p class="stats-source">Sources: Austin Board of Realtors, Census ACS 2024, BLS 2025</p>
+ <p class="stats-source">Source: Luke Allen's ACTRIS MLS feed, active listings, updated {{asof}}</p>
  </div>
 </section>
 
@@ -430,8 +430,8 @@
  <div class="cost-card">
  <span class="cost-icon">🏠</span>
  <div class="cost-name">Housing</div>
- <div class="cost-range">$1,400 to $4,500+/mo</div>
- <p class="cost-desc">The biggest variable. Renting a 1BR in Central Austin runs $1,400 to $1,900/mo; 2BR in walkable neighborhoods $1,700 to $2,600. Owning in the suburbs cuts housing cost vs renting in the city for buyers who qualify.</p>
+ <div class="cost-range">Your biggest variable</div>
+ <p class="cost-desc">The biggest variable. Rent depends heavily on location, with Central Austin and walkable neighborhoods at the top of the range. On the ownership side, the metro median asking price is {{live:metro:medianPrice}} right now. Owning in the suburbs cuts housing cost vs renting in the city for buyers who qualify.</p>
  </div>
  <div class="cost-card">
  <span class="cost-icon">🍽️</span>
@@ -474,26 +474,26 @@
  <p class="section-eyebrow">The Biggest Line Item</p>
  <h2 class="section-title">Austin Housing Costs<br><em>in 2026</em></h2>
  <p>Housing is where Austin's cost of living story gets nuanced. Austin proper, especially Central Austin, East Austin, and South Congress, has seen strong appreciation and remains expensive relative to Texas norms. But the metro is large, and price ranges vary enormously by location.</p>
- <p>The median home price across the Austin metro sits around $485K, but that average hides a $280K entry-level new construction home in Kyle versus a $1.2M bungalow in Travis Heights. For renters, Central Austin 2BR apartments run $1,700 to $2,400/mo; the same budget gets a 3BR house in Cedar Park or Pflugerville.</p>
+ <p>The median asking price across the Austin metro is {{live:metro:medianPrice}} right now, but that figure hides a huge spread: Kyle's median asking price is currently {{live:city=Kyle:medianPrice}}, while the median in Travis Heights is {{live:nbhd=travis-heights:medianPrice|well above the metro median}}. For renters, a Central Austin 2BR apartment budget often stretches to a 3BR house in Cedar Park or Pflugerville.</p>
  </div>
  <div>
  <table class="price-table">
  <thead>
  <tr>
  <th>Area</th>
- <th>Median Home Price</th>
- <th>Median 2BR Rent</th>
+ <th>Median Asking Price</th>
+ <th>Most Listings Asking</th>
  </tr>
  </thead>
  <tbody>
- <tr><td>Downtown / Central</td><td>$750K to $1.5M</td><td>$2,200 to $3,500</td></tr>
- <tr><td>East Austin</td><td>$550K to $900K</td><td>$1,800 to $2,600</td></tr>
- <tr><td>South Congress / SoCo</td><td>$600K to $1.1M</td><td>$1,900 to $2,800</td></tr>
- <tr><td>North Austin (78750s)</td><td>$450K to $750K</td><td>$1,500 to $2,100</td></tr>
- <tr><td>Cedar Park / Round Rock</td><td>$380K to $600K</td><td>$1,400 to $1,900</td></tr>
- <tr><td>Pflugerville / Georgetown</td><td>$320K to $500K</td><td>$1,300 to $1,700</td></tr>
- <tr><td>Kyle / Buda</td><td>$280K to $450K</td><td>$1,250 to $1,650</td></tr>
- <tr><td>Leander</td><td>$380K to $700K</td><td>$1,500 to $2,000</td></tr>
+ <tr><td>Downtown / Central (78701, 78703)</td><td>{{live:zip=78701,78703:medianPrice}}</td><td>{{live:zip=78701,78703:p10Price}} to {{live:zip=78701,78703:p90Price}}</td></tr>
+ <tr><td>East Austin (78702)</td><td>{{live:zip=78702:medianPrice}}</td><td>{{live:zip=78702:p10Price}} to {{live:zip=78702:p90Price}}</td></tr>
+ <tr><td>South Congress / SoCo (78704)</td><td>{{live:zip=78704:medianPrice}}</td><td>{{live:zip=78704:p10Price}} to {{live:zip=78704:p90Price}}</td></tr>
+ <tr><td>North Austin (78750, 78759)</td><td>{{live:zip=78750,78759:medianPrice}}</td><td>{{live:zip=78750,78759:p10Price}} to {{live:zip=78750,78759:p90Price}}</td></tr>
+ <tr><td>Cedar Park / Round Rock</td><td>{{live:city=Cedar Park,Round Rock:medianPrice}}</td><td>{{live:city=Cedar Park,Round Rock:p10Price}} to {{live:city=Cedar Park,Round Rock:p90Price}}</td></tr>
+ <tr><td>Pflugerville / Georgetown</td><td>{{live:city=Pflugerville,Georgetown:medianPrice}}</td><td>{{live:city=Pflugerville,Georgetown:p10Price}} to {{live:city=Pflugerville,Georgetown:p90Price}}</td></tr>
+ <tr><td>Kyle / Buda</td><td>{{live:city=Kyle,Buda:medianPrice}}</td><td>{{live:city=Kyle,Buda:p10Price}} to {{live:city=Kyle,Buda:p90Price}}</td></tr>
+ <tr><td>Leander</td><td>{{live:city=Leander:medianPrice}}</td><td>{{live:city=Leander:p10Price}} to {{live:city=Leander:p90Price}}</td></tr>
  </tbody>
  </table>
  </div>
@@ -519,7 +519,7 @@
  <div class="rvb-section-head">Cons</div>
  <ul class="rvb-list">
  <li>No equity builds with each payment</li>
- <li>Rent increases 5 to 15%/year in hot markets</li>
+ <li>Rent can rise sharply year to year in hot markets</li>
  <li>No mortgage interest or property tax deductions</li>
  <li>Subject to landlord decisions on lease renewal</li>
  </ul>
@@ -568,58 +568,44 @@
  <thead>
  <tr>
  <th>City</th>
- <th>Median Home Price</th>
- <th>2BR Rent/mo</th>
+ <th>Home Prices</th>
  <th>State Income Tax</th>
- <th>Cost of Living Index</th>
  </tr>
  </thead>
  <tbody>
  <tr class="austin-row">
  <td>Austin, TX</td>
- <td>$485K</td>
- <td>$1,650</td>
+ <td>{{live:metro:medianPrice}} median asking (live)</td>
  <td>None</td>
- <td>112</td>
  </tr>
  <tr>
  <td>Denver, CO</td>
- <td>$560K</td>
- <td>$2,100</td>
+ <td>Higher than Austin</td>
  <td>4.4%</td>
- <td>118</td>
  </tr>
  <tr>
  <td>Seattle, WA</td>
- <td>$780K</td>
- <td>$2,400</td>
+ <td>Much higher than Austin</td>
  <td>None</td>
- <td>142</td>
  </tr>
  <tr>
  <td>Chicago, IL</td>
- <td>$340K</td>
- <td>$1,950</td>
+ <td>Lower than Austin</td>
  <td>4.95%</td>
- <td>107</td>
  </tr>
  <tr>
  <td>San Francisco, CA</td>
- <td>$1.3M</td>
- <td>$3,200</td>
+ <td>Far higher than Austin</td>
  <td>13.3%</td>
- <td>194</td>
  </tr>
  <tr>
  <td>Nashville, TN</td>
- <td>$440K</td>
- <td>$1,800</td>
+ <td>Similar to Austin</td>
  <td>None</td>
- <td>108</td>
  </tr>
  </tbody>
  </table>
- <p class="compare-note">Cost of Living Index: 100 = US national average. Sources: Numbeo, C2ER 2025 estimates.</p>
+ <p class="compare-note">Austin figure is live from Luke Allen's ACTRIS MLS feed (active listings, updated {{asof}}). Other cities are shown as relative comparisons.</p>
  </div>
 </section>
 
@@ -630,7 +616,7 @@
  <p class="section-eyebrow">The Texas Advantage</p>
  <h2 class="section-title">No State Income Tax<br><em>What It's Actually Worth</em></h2>
  <p>Texas has no state income tax. For someone earning $120K/year, that's $5,000 to $15,000 in annual savings compared to California, New York, or Oregon. Over 10 years, compounded, that gap is material.</p>
- <p>The offset: Texas has higher-than-average property taxes. Austin-area effective rates run 1.8%, 2.4% of assessed value, on a $485K home, that's $8,700 to $11,600/year. The property tax burden is real and should be factored into any rent vs. buy or Austin vs. elsewhere comparison.</p>
+ <p>The offset: Texas has higher-than-average property taxes. Rates are reset every year, so confirm current rates with the appraisal district; as an example, at an assumed effective rate of 1.8% to 2.4% of assessed value, a $485K home would owe $8,700 to $11,600/year. The property tax burden is real and should be factored into any rent vs. buy or Austin vs. elsewhere comparison.</p>
  </div>
  <div class="savings-card">
  <h3>Annual Tax Savings vs. Other States<br>(on $120K income)</h3>
@@ -669,7 +655,7 @@
  <div class="budget-grid">
  <div class="budget-card">
  <div class="budget-tier">Under $400K</div>
- <div class="budget-rent">Under $1,500/mo rent</div>
+ <div class="budget-rent">Kyle median asking: {{live:city=Kyle:medianPrice}}</div>
  <ul class="budget-areas">
  <li>Kyle, Buda, Pflugerville</li>
  <li>Georgetown outer areas</li>
@@ -685,7 +671,7 @@
  </div>
  <div class="budget-card">
  <div class="budget-tier">$400K to $650K</div>
- <div class="budget-rent">$1,500 to $2,100/mo rent</div>
+ <div class="budget-rent">Round Rock median asking: {{live:city=Round Rock:medianPrice}}</div>
  <ul class="budget-areas">
  <li>Cedar Park, Round Rock</li>
  <li>Leander, Mueller</li>
@@ -701,7 +687,7 @@
  </div>
  <div class="budget-card">
  <div class="budget-tier">$650K+</div>
- <div class="budget-rent">$2,100+/mo rent</div>
+ <div class="budget-rent">78703 median asking: {{live:zip=78703:medianPrice}}</div>
  <ul class="budget-areas">
  <li>Tarrytown, Travis Heights</li>
  <li>East Austin, South Congress</li>
@@ -727,7 +713,7 @@
  <div class="faq-grid">
  <div class="faq-item">
  <div class="faq-q">Is Austin TX expensive to live in?</div>
- <div class="faq-a">Austin is more expensive than the Texas average but significantly cheaper than coastal tech cities like San Francisco, Seattle, or New York. The median home price around $485K and median 2BR rent of $1,650/month place it in the mid-range for major US metros. The no-state-income-tax benefit partially offsets higher housing and property tax costs.</div>
+ <div class="faq-a">Austin is more expensive than the Texas average but significantly cheaper than coastal tech cities like San Francisco, Seattle, or New York. The metro median asking price of {{live:metro:medianPrice}} right now places it in the mid-range for major US metros. The no-state-income-tax benefit partially offsets higher housing and property tax costs.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q">What is a good salary to live comfortably in Austin TX?</div>
@@ -735,15 +721,15 @@
  </div>
  <div class="faq-item">
  <div class="faq-q">How much has Austin's cost of living increased?</div>
- <div class="faq-a">Austin experienced significant cost-of-living increases from 2020 to 2023, with home prices rising 40 to 60% and rents spiking 20 to 30%. Since 2023, the market has moderated, home prices are down 10 to 15% from peak, and rents have softened in many submarkets. 2025 to 2026 represents a more stable entry point than the pandemic-era surge.</div>
+ <div class="faq-a">Austin experienced significant cost-of-living increases from 2020 to 2023, with home prices rising 40 to 60% and rents spiking 20 to 30%. Since 2023, the market has moderated, home prices remain below their 2022 peak, and rents have softened in many submarkets. 2025 to 2026 represents a more stable entry point than the pandemic-era surge.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q">Is it cheaper to live in Austin suburbs?</div>
- <div class="faq-a">Yes, significantly. Kyle, Buda, and outer Pflugerville offer new construction homes 30 to 40% below Central Austin prices, with the tradeoff of longer commutes (30 to 45 min to downtown). Cedar Park, Round Rock, and Leander are mid-range, 20 to 30% below Central Austin with 25 to 35 min commutes. The suburb premium is time, not money.</div>
+ <div class="faq-a">Yes, significantly. Kyle, Buda, and outer Pflugerville offer new construction homes well below Central Austin prices (Kyle's median asking price is currently {{live:city=Kyle:medianPrice}}, versus {{live:city=Austin:medianPrice}} in the City of Austin), with the tradeoff of longer commutes (30 to 45 min to downtown). Cedar Park, Round Rock, and Leander are mid-range (Round Rock's median asking price is currently {{live:city=Round Rock:medianPrice}}) with 25 to 35 min commutes. The suburb premium is time, not money.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q">How does Texas property tax affect Austin's cost of living?</div>
- <div class="faq-a">Texas property taxes are high, effective rates in the Austin area run 1.8%, 2.4% of assessed value, compared to 0.7%, 1.0% in California or Colorado. On a $500K home, that's $9,000 to $12,000/year in property taxes. It's the most common surprise for buyers relocating from lower-property-tax states, and it should be factored into any mortgage affordability calculation.</div>
+ <div class="faq-a">Texas property taxes are high. Rates are reset every year, but effective rates in the Austin area have typically run around 1.8% to 2.4% of assessed value, compared to roughly 0.7% to 1.0% in California or Colorado. For example, at those rates a $500K home would owe $9,000 to $12,000/year in property taxes. It's the most common surprise for buyers relocating from lower-property-tax states, and it should be factored into any mortgage affordability calculation.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q">What are the hidden costs of moving to Austin?</div>
