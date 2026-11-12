@@ -226,6 +226,7 @@
   <ul class="sf-links">
   <li><a href="/best-austin-realtors-2026">Best Austin Realtors ${year} <span class="sf-badge">New</span></a></li>
   <li><a href="/moving-to-austin-from-california-realtor">California to Austin Realtor <span class="sf-badge">New</span></a></li>
+  <li><a href="/austin-market-pulse">Weekly Market Report <span class="sf-badge">New</span></a></li>
   <li><a href="/market-report">Market Report ${year} <span class="sf-badge">Live</span></a></li>
   <li><a href="/austin-multifamily-market-report">Multifamily Report <span class="sf-badge">Live</span></a></li>
   <li><a href="/austin-buyers-or-sellers-market">Buyer's or Seller's Market? <span class="sf-badge">Live</span></a></li>

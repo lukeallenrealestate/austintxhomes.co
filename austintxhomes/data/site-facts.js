@@ -18,4 +18,5 @@ module.exports = {
   reviewCount: 41,
   reviewsVerified: '2026-11-06',
   fullTimeSince: 2019,
+  education: 'Management degree, The University of Texas at Austin McCombs School of Business',
 };

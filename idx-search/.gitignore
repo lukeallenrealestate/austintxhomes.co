@@ -9,3 +9,5 @@ test-*.js
 # Live-stats snapshot cache written next to the DB by austintxhomes/lib/liveStats.js
 live-snapshot.json
 live-snapshot.json.*.tmp
+market-pulse.json
+market-pulse.json.*.tmp

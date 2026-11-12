@@ -49,7 +49,7 @@
  *   every apartment complex, so describe the source as MLS-listed rentals.
  *
  * <format>: auto ($725K / $1.25M), usd ($1,234,567), k ($725K), m ($1.3M),
- *   usd2 ($1.62), num (1,234), pct (12%), raw. Default: auto for prices, num otherwise,
+ *   usd2 ($1.62), num (1,234), pct (12%), pct1 (12.3%), raw. Default: auto for prices, num otherwise,
  *   pct for *Pct stats.
  *
  * COMPLIANCE: only ACTIVE and PENDING listing data is used. Closed sale prices
@@ -507,6 +507,7 @@ function fmtValue(v, stat, fmt) {
       if (v >= 999500) return '$' + (v / 1e6).toFixed(2).replace(/0$/, '').replace(/\.0$/, '') + 'M';
       return '$' + Math.round(v / 1000).toLocaleString('en-US') + 'K';
     case 'pct': return Math.round(v) + '%';
+    case 'pct1': return (Math.round(v * 10) / 10).toFixed(1) + '%';
     case 'raw': return String(Math.round(v));
     case 'num':
     default: return Math.round(v).toLocaleString('en-US');

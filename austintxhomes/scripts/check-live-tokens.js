@@ -44,7 +44,7 @@ const STATS = new Set(['count', 'pendingCount', 'medianPrice', 'avgPrice', 'medi
   'p10Price', 'p90Price', 'minPrice', 'maxPrice', 'reducedPct', 'reducedCount', 'newConPct', 'newConCount',
   'newLast7', 'newLast30', 'under400k', 't400_600k', 't600k_1m', 't1m_2m', 'over2m', 'p25Price', 'p75Price', 'avgCutPct',
   'medianRent', 'avgRent', 'p25Rent', 'p75Rent', 'minRent', 'maxRent', 'rentPpsf']);
-const FORMATS = new Set(['auto', 'usd', 'usd2', 'k', 'm', 'num', 'pct', 'raw']);
+const FORMATS = new Set(['auto', 'usd', 'usd2', 'pct1', 'k', 'm', 'num', 'pct', 'raw']);
 const FRAGILE = /(^|;)\s*(nbhd|sub|isd|elem|high|type|min|max|newcon|lease|beds)\b/;
 const RENT_ONLY = /Rent$|^rentPpsf$/;
 

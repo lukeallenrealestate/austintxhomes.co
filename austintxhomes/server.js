@@ -91,14 +91,14 @@ const renderBlogPost = (...a) => require('./templates/blog-post')(...a);
 const renderBlogIndex = (...a) => require('./templates/blog-index')(...a);
 let blogPosts = require('./data/blog-posts');
 
-// Weekly generated market reports (prepended to blog feed)
-const WEEKLY_REPORTS_FILE = path.join(__dirname, 'data/weekly-reports.json');
-let weeklyReports = [];
-try { weeklyReports = JSON.parse(fs.readFileSync(WEEKLY_REPORTS_FILE, 'utf8')); } catch (_) {}
-const allBlogPosts = () => [...weeklyReports, ...blogPosts];
-
-// Weekly report generator
-const generateWeeklyReport = require('./scripts/generate-weekly-report');
+// The old generated weekly blog reports (data/weekly-reports.json +
+// scripts/generate-weekly-report.js) were retired 2026-11-12: they published
+// capped samples as totals ("1,000 active", "0 days on market"), closed-price
+// figures, and outside numbers, and their writer and reader used different
+// files, so new posts vanished on every restart. Replaced by the Austin Market
+// Pulse (lib/marketPulse.js); the old /blog/austin-market-report-* URLs 301 to it.
+const allBlogPosts = () => blogPosts;
+const marketPulse = require('./lib/marketPulse');
 
 // Luxury listing page system (programmatic SEO for $1M+ properties)
 const renderListingPage = (...a) => require('./templates/listing').renderListingPage(...a);
@@ -322,35 +322,47 @@ function saveCashFlowSubs(subs) {
   fs.writeFileSync(CASH_FLOW_SUBS_FILE, JSON.stringify(subs, null, 2));
 }
 
-// Weekly market report — every Monday at 9:00am CDT (14:00 UTC)
-// Generates GBP blurb + full blog post from live MLS data, emails to Luke
-cron.schedule('0 14 * * 1', async () => {
-  console.log('[WeeklyReport] Starting Monday morning report generation...');
-  try {
-    const post = await generateWeeklyReport(weeklyReports);
-    if (post) console.log(`[WeeklyReport] Done — published /blog/${post.slug}`);
-  } catch (e) {
-    console.error('[WeeklyReport] Cron failed:', e.message);
-    // Notify Luke so a missed week is never invisible again
-    try {
-      const nodemailer = require('nodemailer');
-      const transport = nodemailer.createTransport({
-        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-        port: parseInt(process.env.EMAIL_PORT || '587'),
-        secure: process.env.EMAIL_SECURE === 'true',
-        auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
-      });
-      await transport.sendMail({
-        from: `"Austin TX Homes" <${process.env.EMAIL_USER}>`,
-        to: 'Luke@austinmdg.com',
-        subject: 'Weekly Market Report Failed',
-        text: `The Monday weekly market report cron failed.\n\nError: ${e.message}\n\nManual trigger:\ncurl -X POST https://austintxhomes.co/api/weekly-report/generate -H "x-admin-key: ${process.env.DEAL_RADAR_ADMIN_KEY || 'austin-admin-2026'}"`
-      });
-    } catch (mailErr) {
-      console.error('[WeeklyReport] Failure notification also failed:', mailErr.message);
+// Austin Market Pulse: weekly dated market report (lib/marketPulse.js).
+// Due every Monday 9am Central; checked every 20 minutes so a restart or a
+// still-loading snapshot never skips a week. Emails Luke a Google Business
+// Profile blurb when a new edition publishes.
+function emailTransport() {
+  const nodemailer = require('nodemailer');
+  return nodemailer.createTransport({
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.EMAIL_PORT || '587'),
+    secure: process.env.EMAIL_SECURE === 'true',
+    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+  });
+}
+async function publishMarketPulse({ force = false, sendEmail = true } = {}) {
+  const before = marketPulse.editions()[0];
+  const ed = marketPulse.generate({ force });
+  if (!ed) return null;
+  const isNew = force || !before || before.id !== ed.id;
+  if (isNew) {
+    console.log(`[MarketPulse] published ${marketPulse.editionUrl(ed)}`);
+    if (sendEmail && process.env.EMAIL_USER) {
+      try {
+        await emailTransport().sendMail({
+          from: `"Austin TX Homes" <${process.env.EMAIL_USER}>`,
+          to: 'Luke@austinmdg.com',
+          subject: `Austin Market Pulse is live: week of ${ed.weekStart}`,
+          text: `This week's Austin Market Pulse is live:\nhttps://austintxhomes.co${marketPulse.editionUrl(ed)}\n\nGoogle Business Profile post (copy and paste):\n\n${marketPulse.gbpBlurb(ed)}\n`,
+        });
+      } catch (e) { console.error('[MarketPulse] email failed:', e.message); }
     }
   }
-});
+  return ed;
+}
+function checkMarketPulse() {
+  try {
+    if (!liveStats.isReady() || !marketPulse.isDue()) return;
+    publishMarketPulse().catch(e => console.error('[MarketPulse] publish failed:', e.message));
+  } catch (e) { console.error('[MarketPulse] check failed:', e.message); }
+}
+setTimeout(checkMarketPulse, 4 * 60 * 1000);
+setInterval(checkMarketPulse, 20 * 60 * 1000);
 
 // Daily cash flow alert — 8:30am CDT (13:30 UTC)
 cron.schedule('30 13 * * *', async () => {
@@ -614,22 +626,15 @@ app.delete('/api/cash-flow/subscribe/:id', (req, res) => {
   res.json({ ok: true });
 });
 
-// ── Weekly report manual trigger (must come BEFORE the generic /api proxy) ───
-// Options in body:
-//   targetDate   — YYYY-MM-DD to regenerate a specific week in place. Existing
-//                  reports with the same slug are REPLACED (not duplicated),
-//                  so the public /blog/{slug} URL preserves its indexing.
-//   sendEmail    — set to false to skip Luke's notification email on backfills.
-app.post('/api/weekly-report/generate', async (req, res) => {
+// ── Austin Market Pulse manual trigger (must come BEFORE the generic /api proxy) ───
+//   curl -X POST https://austintxhomes.co/api/market-pulse/generate -H "x-admin-key: $ADMIN_KEY" -H "content-type: application/json" -d '{"force":true}'
+// force=true rebuilds THIS week's edition in place (same URL). Past editions are never rewritten.
+app.post('/api/market-pulse/generate', async (req, res) => {
   if (req.headers['x-admin-key'] !== ADMIN_KEY) return res.status(401).json({ error: 'Unauthorized' });
   try {
-    const opts = {
-      targetDate: req.body && req.body.targetDate,
-      sendEmail: req.body && req.body.sendEmail
-    };
-    const post = await generateWeeklyReport(weeklyReports, opts);
-    if (!post) return res.status(503).json({ error: 'No MLS data available — is the idx-search server running?' });
-    res.json({ ok: true, slug: post.slug, url: `https://austintxhomes.co/blog/${post.slug}`, backfilled: !!opts.targetDate });
+    const ed = await publishMarketPulse({ force: !!(req.body && req.body.force), sendEmail: !(req.body && req.body.sendEmail === false) });
+    if (!ed) return res.status(503).json({ error: 'Live market snapshot is still loading; try again in a minute.' });
+    res.json({ ok: true, url: `https://austintxhomes.co${marketPulse.editionUrl(ed)}` });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -1913,6 +1918,9 @@ app.get('/sitemap-index.xml', (_req, res) => {
     <lastmod>${new Date().toISOString().slice(0, 10)}</lastmod>
   </sitemap>
   <sitemap>
+    <loc>https://austintxhomes.co/market-pulse-sitemap.xml</loc>
+  </sitemap>
+  <sitemap>
     <loc>https://austintxhomes.co/listing-sitemap.xml</loc>
     <lastmod>${new Date().toISOString().slice(0, 10)}</lastmod>
   </sitemap>
@@ -2143,6 +2151,28 @@ app.get('/blog', (req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.send(renderBlogIndex(pagePosts, { category, page, totalPages }));
 });
+
+// Austin Market Pulse (weekly dated report). Hub + one page per week.
+app.get(marketPulse.HUB, (_req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=600, stale-while-revalidate=86400');
+  res.send(marketPulse.renderHub());
+});
+app.get(marketPulse.HUB + '/:id(\\d{4}-\\d{2}-\\d{2})', (req, res) => {
+  const ed = marketPulse.edition(req.params.id);
+  if (!ed) return res.status(404).sendFile(path.join(__dirname, 'public/site/404.html'), () => res.status(404).send('Not found'));
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400');
+  res.send(marketPulse.renderEdition(ed));
+});
+app.get('/market-pulse-sitemap.xml', (_req, res) => {
+  const eds = marketPulse.editions();
+  const urls = [`  <url><loc>https://austintxhomes.co${marketPulse.HUB}</loc>${eds[0] ? `<lastmod>${eds[0].published}</lastmod>` : ''}<changefreq>weekly</changefreq><priority>0.8</priority></url>`,
+    ...eds.map(e => `  <url><loc>https://austintxhomes.co${marketPulse.editionUrl(e)}</loc><lastmod>${e.published}</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>`)];
+  res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`);
+});
+// Retired generated weekly posts -> the Market Pulse hub.
+app.get('/blog/austin-market-report-:rest', (_req, res) => res.redirect(301, marketPulse.HUB));
 
 app.get('/blog/:slug', (req, res) => {
   try { delete require.cache[require.resolve('./data/blog-posts')]; blogPosts = require('./data/blog-posts'); } catch(e) {}

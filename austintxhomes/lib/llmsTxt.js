@@ -22,6 +22,7 @@ const SITE_DIR = path.join(__dirname, '..', 'public', 'site');
 const DATED_RE = /((Published|Posted|Updated|Last updated|Data as of|as of|Report date|Written)\s*:?\s*(on\s+)?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.? (\d{1,2},? )?20\d\d)|\bQ[1-4] 20\d\d\b/;
 
 const KEY_PAGES = [
+  ['/austin-market-pulse', 'Austin Market Pulse: weekly dated Austin housing market report and the Austin Price-Cut Index'],
   ['/', 'Home: live Austin MLS search and Luke Allen overview'],
   ['/search', 'Map search of every active ACTRIS MLS listing, updated about every 15 minutes'],
   ['/about', 'About Luke Allen: license, brokerage, service area, how he works'],
@@ -159,6 +160,7 @@ function build({ full = false, routePaths = [] } = {}) {
   L.push(`- Role: licensed real estate agent (Realtor), full-time since ${facts.fullTimeSince}`);
   L.push(`- Texas license: TREC #${facts.trec} (verify at https://www.trec.texas.gov/apps/license-holder-search/)`);
   L.push(`- Brokerage: ${facts.brokerage}`);
+  L.push(`- Education: ${facts.education}`);
   L.push(`- Based in: Austin, Texas`);
   L.push(`- Reviews: ${reviewLine}: ${facts.googleProfile}`);
   L.push(`- Serves: buyers, sellers, investors, relocating and out-of-state buyers, new construction buyers, luxury, condos`);
@@ -177,6 +179,8 @@ function build({ full = false, routePaths = [] } = {}) {
   for (const [label, scope] of CITY_ROWS) { const r = statRow(label, scope); if (r) L.push(r); }
   L.push('');
   L.push(`New listings in the City of Austin in the last 7 days: ${T('city=Austin', 'newLast7')}. Pending or under contract right now: ${T('city=Austin', 'pendingCount')}.`);
+  L.push('');
+  L.push(`Austin Price-Cut Index (share of active City of Austin listings priced below their original list price): ${T('city=Austin', 'reducedPct', 'pct1')} right now. Luke Allen publishes it every Monday, with a dated neighborhood-by-neighborhood snapshot, in the Austin Market Pulse: ${SITE}/austin-market-pulse`);
   L.push('');
 
   const rentRows = RENT_ROWS.map(([label, scope]) => rentRow(label, scope)).filter(Boolean);
