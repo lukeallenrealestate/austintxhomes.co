@@ -218,12 +218,12 @@
  <div class="input-row">
  <label>Broker Total Commission</label>
  <div class="suffix" data-suffix="%"><input type="number" id="commission" value="5" min="0" max="10" step="0.1" /></div>
- <div class="desc">Total commission paid (split between listing side + buyer side). 5% is typical Austin builder partnership.</div>
+ <div class="desc">Total commission paid (split between listing side + buyer side). 5% is only a starting default; commissions are negotiable, so enter the figure in your agreement.</div>
  </div>
  <div class="input-row">
  <label>Price Lift From MLS Launch</label>
  <div class="suffix" data-suffix="%"><input type="number" id="priceLift" value="2" min="0" max="10" step="0.1" /></div>
- <div class="desc">Conservative estimate: MLS exposure typically achieves 1-3% higher closed price vs builder-direct</div>
+ <div class="desc">Your assumption for how much more an MLS launch brings than builder-direct marketing. The 2% default is illustrative; stress-test it at zero.</div>
  </div>
  </div>
  <div class="results">
@@ -257,14 +257,15 @@
  <p><strong>Builder-led scenario.</strong> Net = (List Price - Cost Basis - Marketing Budget - (Carry x Builder DOM / 30)) x Units. The builder keeps 100% of the closed price minus their costs and saved commission, but pays full carry cost during the longer DOM and absorbs marketing expenses directly.</p>
  <p><strong>Broker-listed scenario.</strong> Net = (List Price x (1 + Price Lift) - Cost Basis - (List Price x Commission Rate) - (Carry x Broker DOM / 30)) x Units. The builder pays commission on the higher closed price but eliminates marketing budget (broker covers it), captures the price lift, and reduces carry by the DOM delta.</p>
  <p><strong>What flips the comparison?</strong> The break-even point depends on how aggressive the price lift assumption is and how high carry cost runs. On a $4,200/month carry per unit at the default DOM assumptions (96 vs 73 days), the broker scenario typically wins on net even before the price lift kicks in. On lower-carry, lower-priced suburban product, the comparison narrows. The calculator lets you stress-test your specific project rather than relying on a generic rule of thumb.</p>
- <p><strong>Conservative inputs.</strong> The defaults are set conservatively. The 2% price lift assumption is below the 3-5% typical, the 73-day broker DOM is an illustrative default (some submarkets run faster), and the $12K builder marketing budget per unit reflects what builders actually spend, not what they think they spend. Higher accuracy comes from plugging in your actual cost basis, your actual carry rate, and your honest DOM history on prior projects.</p>
+ <p><strong>Conservative inputs.</strong> The defaults are set conservatively. The 2% price lift is a modest placeholder rather than a measured figure, the 73-day broker DOM is an illustrative default (some submarkets run faster), and the $12K builder marketing budget per unit reflects what builders actually spend, not what they think they spend. Higher accuracy comes from plugging in your actual cost basis, your actual carry rate, and your honest DOM history on prior projects.</p>
  </div>
  </section>
 
  <section class="content cream">
  <div class="content-inner">
- <span class="content-eye">Real Numbers</span>
+ <span class="content-eye">Illustrative Math</span>
  <h2 class="content-title">Worked Examples by <em>Project Type</em></h2>
+ <p>The three scenarios below are hypothetical inputs chosen to show how the math moves, not reports of specific projects or current market figures.</p>
  <p><strong>Spec home in 78704, $1.2M list, $880K cost basis.</strong> Builder-led at 96 DOM: $1.2M - $880K - $12K marketing - $13.4K carry = $294,600 net. Broker-listed at 73 DOM with 2% lift and 5% commission: $1.224M - $880K - $61.2K commission - $10.2K carry = $272,600 net. On this specific math, builder-led wins by $22K because the $61K commission outweighs the carry savings and price lift. The break-even price lift is 4.1% - achievable in 78704 where MLS exposure to qualified buyer pool typically lifts pricing 3-5%.</p>
  <p><strong>20-unit townhome project, $580K list per unit, $410K cost basis.</strong> Builder-led at 8 month average absorption: $580K - $410K - $12K marketing - $33.6K carry = $124,400 net per unit, $2.49M total. Broker-listed at 6 month absorption with 2% lift: $591.6K - $410K - $29.6K commission - $25.2K carry = $126,800 net per unit, $2.54M total. Broker wins by $48K total even with conservative 2% lift assumption. With 3% lift, broker wins by $164K. The townhome model favors broker partnerships because per-unit carry compounds across 20 units.</p>
  <p><strong>10-unit duplex project, $720K list per duplex (2 units sold separately), $510K cost basis per unit.</strong> Self-marketed across an 18 month absorption window with builder DOM averaging 145 days per unit. Carry per unit per month: $3,800. Broker-listed cuts DOM to 90 days per unit. Builder-led: $720K - $510K - $14K marketing - $18.4K carry = $177,600 net per unit. Broker-listed: $734.4K - $510K - $36.7K commission - $11.4K carry = $176,300 net per unit. Roughly break-even on conservative inputs, broker wins clearly with 3%+ price lift, and broker wins on the carry math alone if interest rates rise during the absorption window. The risk-adjusted comparison favors broker.</p>
@@ -277,8 +278,8 @@
  <h2 class="content-title">Inputs the Calculator <em>Does Not Model</em></h2>
  <ul>
  <li><strong>Builder time cost.</strong> Self-marketing consumes builder hours on listing inquiries, showings, qualifying buyers, contract review. The calculator does not assign a $/hour cost to builder time. Realistic estimate: 8-12 hours per unit during active marketing window. At builder hourly opportunity cost (typically $200+/hour at the boutique scale), that is $1,600-$2,400 per unit not captured in the math.</li>
- <li><strong>Buyer-pool quality.</strong> MLS-listed product reaches the full buyer-agent network. Builder-marketed product often misses 60%+ of qualified buyers represented by exclusive buyer agents. The price lift assumption is the proxy for this effect, but in tight markets the access advantage compounds beyond price into transaction certainty.</li>
- <li><strong>Closing certainty.</strong> Builder-marketed contracts have higher fall-out rates because the buyer pool skews toward unrepresented buyers with less due diligence support. Each fall-out adds 30-60 DOM to the actual close timeline. The calculator uses median DOM but real-world variance is higher for self-marketed product.</li>
+ <li><strong>Buyer-pool quality.</strong> MLS-listed product reaches the full buyer-agent network. Builder-marketed product often never reaches the many qualified buyers who are working exclusively through a buyer agent. The price lift assumption is the proxy for this effect, but in tight markets the access advantage compounds beyond price into transaction certainty.</li>
+ <li><strong>Closing certainty.</strong> Builder-marketed contracts have higher fall-out rates because the buyer pool skews toward unrepresented buyers with less due diligence support. Each fall-out sends the home back to market and restarts much of the clock. The calculator uses median DOM but real-world variance is higher for self-marketed product.</li>
  <li><strong>Construction loan covenant pressure.</strong> Lenders typically require sales pace milestones during the construction loan term. Falling behind triggers covenant pressure and can force price drops. Broker partnerships with predictable MLS launch timelines reduce this risk - not modeled in the calculator but real on every project.</li>
  <li><strong>Repeat business and reputation.</strong> Building a track record of fast-absorbing projects with broker partnerships compounds across the next project, the next capital partner, and the next land acquisition opportunity. Self-marketed slow projects compound the opposite direction.</li>
  </ul>

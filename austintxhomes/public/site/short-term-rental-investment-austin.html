@@ -108,7 +108,7 @@
    {
     "@type": "Question",
     "name": "What is a realistic cap rate on an Austin short-term rental?",
-    "acceptedAnswer": { "@type": "Answer", "text": "Honest number after all costs is 3 to 6 percent for well-managed STRs in the two viable Austin markets, not the 10 to 15 percent that BiggerPockets calculators and STR investment blogs show. The gap between the two numbers is the operating cost stack that beginner investors either underestimate or omit. Cleaning turnover ($120 to $180 per turn, 3 to 6 turns per month). Property management ($300 to $600 monthly for a hands-off setup, or 20 to 25 percent of gross for a full-service management company). Higher utilities than a long-term rental because guests do not conserve. Higher insurance because standard homeowner policies do not cover STR use. Occupancy tax collection and remittance overhead. Vacancy in the shoulder months. Guest damage reserves. Add all of it up and the honest net yield on a $700,000 Austin STR is materially closer to 4 to 5 percent than to the 12 percent your spreadsheet suggested." }
+    "acceptedAnswer": { "@type": "Answer", "text": "Far lower than BiggerPockets calculators and STR investment blogs show. In the labeled $700,000 operating example on this page, a well-run Austin STR nets 3.7 percent once every cost is counted. The gap between the blog number and the honest number is the operating cost stack that beginner investors either underestimate or omit. Cleaning turnover ($120 to $180 per turn, 3 to 6 turns per month). Property management ($300 to $600 monthly for a hands-off setup, or 20 to 25 percent of gross for a full-service management company). Higher utilities than a long-term rental because guests do not conserve. Higher insurance because standard homeowner policies do not cover STR use. Occupancy tax collection and remittance overhead. Vacancy in the shoulder months. Guest damage reserves. Add all of it up and the honest net yield on a $700,000 Austin STR is materially closer to 4 to 5 percent than to the 12 percent your spreadsheet suggested." }
    },
    {
     "@type": "Question",
@@ -300,25 +300,25 @@
  <div class="snapshot-inner">
   <div class="snapshot-eyebrow">Live inventory in the two viable markets</div>
   <h2 class="snap-title">The <em>two viable</em> Austin STR markets today</h2>
-  <div class="snapshot-source">Source: ACTRIS MLS, pulled September 29, 2026.</div>
+  <div class="snapshot-source">Source: ACTRIS MLS active listings, refreshed {{asof}}.</div>
   <div class="snapshot-columns">
    <div class="snapshot-card">
     <span class="snapshot-col-tag market1">Market 1</span>
     <h3>HOA-permitted downtown condos</h3>
     <div class="sc-sub">78701 &middot; Some buildings allow STR, some ban, verify per building</div>
-    <div class="snapshot-line"><span class="l">Total active 78701 condos</span><span class="n">356</span></div>
-    <div class="snapshot-line"><span class="l">In the $500K to $1M STR band</span><span class="n">116</span></div>
-    <div class="snapshot-line"><span class="l">Median $/sqft in band</span><span class="n">$752</span></div>
-    <div class="snapshot-line"><span class="l">Expected occupancy</span><span class="n">65-80%</span></div>
+    <div class="snapshot-line"><span class="l">Total active 78701 condos</span><span class="n">{{live:zip=78701;type=condo:count|Live}}</span></div>
+    <div class="snapshot-line"><span class="l">In the $500K to $1M STR band</span><span class="n">{{live:zip=78701;type=condo;min=500000;max=1000000:count|Live}}</span></div>
+    <div class="snapshot-line"><span class="l">Median $/sqft in band</span><span class="n">{{live:zip=78701;type=condo;min=500000;max=1000000:medianPpsf|Live}}</span></div>
+    <div class="snapshot-line"><span class="l">STR permission</span><span class="n">Per building</span></div>
    </div>
    <div class="snapshot-card">
     <span class="snapshot-col-tag market2">Market 2</span>
     <h3>Lake Travis waterfront-adjacent</h3>
     <div class="sc-sub">Lakeway 78734 &middot; Spicewood 78669 &middot; Point Venture / Lago Vista 78645</div>
-    <div class="snapshot-line"><span class="l">Combined active SFH + condos</span><span class="n">975</span></div>
-    <div class="snapshot-line"><span class="l">Waterfront listings</span><span class="n">363</span></div>
-    <div class="snapshot-line"><span class="l">In the $600K to $2M STR band</span><span class="n">439</span></div>
-    <div class="snapshot-line"><span class="l">Median $/sqft in band</span><span class="n">$365</span></div>
+    <div class="snapshot-line"><span class="l">Combined active SFH + condos</span><span class="n">{{live:zip=78734,78669,78645:count|Live}}</span></div>
+    <div class="snapshot-line"><span class="l">Waterfront share</span><span class="n">Premium tier</span></div>
+    <div class="snapshot-line"><span class="l">In the $600K to $2M STR band</span><span class="n">{{live:zip=78734,78669,78645;min=600000;max=2000000:count|Live}}</span></div>
+    <div class="snapshot-line"><span class="l">Median $/sqft in band</span><span class="n">{{live:zip=78734,78669,78645;min=600000;max=2000000:medianPpsf|Live}}</span></div>
    </div>
   </div>
  </div>
@@ -326,7 +326,7 @@
 
 <article class="article">
 
- <p class="lede">Austin STR investment is not what it was in 2016. The city passed a restrictive ordinance, courts partially struck it down, the city adjusted, and the current 2026 reality is that most of the "Austin Airbnb" content that ranks on Google is describing a market that no longer exists. This page describes the market that actually exists. There are two viable investment paths, both of them narrow, both of them require verification per property, and both of them produce honest cap rates in the 3 to 6 percent range once you account for real operating costs and real property tax reassessment. If that reality still fits your investment thesis, this page walks through how to make it work.</p>
+ <p class="lede">Austin STR investment is not what it was in 2016. The city passed a restrictive ordinance, courts partially struck it down, the city adjusted, and the current 2026 reality is that most of the "Austin Airbnb" content that ranks on Google is describing a market that no longer exists. This page describes the market that actually exists. There are two viable investment paths, both of them narrow, both of them require verification per property, and both of them produce honest cap rates far below the blog math once you account for real operating costs and real property tax reassessment. If that reality still fits your investment thesis, this page walks through how to make it work.</p>
 
  <div class="disclaimer">
   <strong>Important.</strong> I am a licensed Texas real estate agent (TREC #788149), not a zoning attorney, tax professional, or STR compliance consultant. Nothing on this page is legal or tax advice for your specific property. Austin's STR ordinance and its enforcement have been actively litigated and adjusted for years, and the specific rules can change materially. Before you buy any Austin metro property with STR intent, verify current STR eligibility with a real estate attorney familiar with the specific jurisdiction, and read the property's HOA or condo association documents in full. If you skip this step, you are gambling your down payment.</p>
@@ -362,7 +362,7 @@
 
  <p>Downtown Austin condos in Type 3 mixed-use zones can legally operate as STRs if the specific building's HOA rules permit it. Not every downtown building does. Some ban STRs outright. Some allow with a minimum-stay restriction (typically 30 nights, which kills the short-term rental economics). Some allow with owner-present requirements. A small number allow legitimate short-term operation with no significant restriction. That last group is where legitimate downtown STR investment happens.</p>
 
- <p>My default when I represent a downtown-condo STR buyer is to hand them a pre-filtered short list of buildings I know allow STR use under current HOA rules, then we tour only units in those buildings. Trying to sort this at the individual-unit level across all 356 active downtown condo listings is a slow-motion trap. Two-thirds of downtown active inventory is either explicitly STR-banned or wrapped in restrictions that make the numbers not pencil.</p>
+ <p>My default when I represent a downtown-condo STR buyer is to hand them a pre-filtered short list of buildings I know allow STR use under current HOA rules, then we tour only units in those buildings. Trying to sort this at the individual-unit level across all {{live:zip=78701;type=condo:count|of the}} active downtown condo listings is a slow-motion trap. Most downtown active inventory is either explicitly STR-banned or wrapped in restrictions that make the numbers not pencil.</p>
 
  <p class="pull">Buying a downtown condo without reading the HOA STR clauses before you write an offer is the single most expensive mistake I see in this market. Twice this year I have seen buyers close on units where the association had banned STRs six months before their purchase, and they had no legal use for the property matching their business plan.</p>
 
@@ -374,13 +374,13 @@
   <p class="market-sub">Fits: investor with $600K to $2M+, wants leisure-travel demand, higher management overhead accepted</p>
  </div>
 
- <p>The Lake Travis area is the other legitimate Austin metro STR market today. Demand is real and specific: weekend and event travel from Austin, family reunions, bachelorette weekends, wedding parties, and lake-recreation stays that fill the summer high season. Waterfront and lake-view properties command materially higher nightly rates than inland Lake Travis area properties, and the 363 active waterfront listings across the four main Lake Travis zips represent the premium tier of this market.</p>
+ <p>The Lake Travis area is the other legitimate Austin metro STR market today. Demand is real and specific: weekend and event travel from Austin, family reunions, bachelorette weekends, wedding parties, and lake-recreation stays that fill the summer high season. Waterfront and lake-view properties command materially higher nightly rates than inland Lake Travis area properties, and the waterfront listings scattered across the main Lake Travis zips represent the premium tier of this market.</p>
 
  <p>The regulatory story is more permissive than City of Austin STR rules but it is not uniform across the area. Some Lake Travis property sits inside City of Austin STR jurisdiction and follows the same restrictions as residential Austin. Some sits in unincorporated Travis County. Some sits in Lakeway, Spicewood, or Lago Vista city limits with their own ordinances that range from relatively permissive to explicitly restrictive. Because the rules vary block by block, verification has to happen property by property. My investor-buyer process on Lake Travis is to identify the specific jurisdiction, check the current STR rules for that jurisdiction, and read the HOA documents on any property in a POA-governed community before we schedule a tour.</p>
 
  <h2>The <em>honest cap rate</em> on an Austin STR</h2>
 
- <p>Almost every online Austin STR cap rate calculation overstates the yield by 3 to 6 percentage points. Here is why. The typical BiggerPockets-style calculation includes gross rental income, subtracts a mortgage payment, and calls the remainder cash flow. It leaves out cleaning, higher utilities, higher insurance, management, occupancy tax compliance overhead, shoulder-month vacancy, and the property-tax reassessment risk. Realistic operating math on a $700,000 STR-viable Austin property looks approximately like this:</p>
+ <p>Almost every online Austin STR cap rate calculation overstates the yield, often badly. Here is why. The typical BiggerPockets-style calculation includes gross rental income, subtracts a mortgage payment, and calls the remainder cash flow. It leaves out cleaning, higher utilities, higher insurance, management, occupancy tax compliance overhead, shoulder-month vacancy, and the property-tax reassessment risk. Realistic operating math on a $700,000 STR-viable Austin property looks approximately like this:</p>
 
  <div class="cap-calc">
   <h3>$700,000 Austin STR &middot; annual operating example</h3>
@@ -396,7 +396,7 @@
   <div class="cap-line total"><span class="cl">Cap rate on $700K purchase</span><span class="cn">3.7%</span></div>
  </div>
 
- <p>That is the honest number. Better-managed STRs in stronger nightly-rate submarkets can push it up to 5 or 6 percent net. Worse-managed properties or ones that hit an occupancy air pocket easily fall to 2 percent net or negative in a bad year. What almost never happens is the 10 to 15 percent cap rate a beginner spreadsheet suggests.</p>
+ <p>That is the honest number for this example. Better-managed STRs in stronger nightly-rate submarkets can beat it; worse-managed properties or ones that hit an occupancy air pocket can slide toward break-even or negative in a bad year. What almost never happens is the double-digit cap rate a beginner spreadsheet suggests.</p>
 
  <h2>The <em>due-diligence checklist</em> I run before any Austin STR offer</h2>
 
@@ -429,7 +429,7 @@
 
  <h2>Bottom line</h2>
 
- <p>Austin STR investment is a narrow but real market in 2026. If you are prepared for 3 to 6 percent honest cap rates, willing to do the per-property due-diligence work, and comfortable operating inside the two viable markets rather than fighting the city ordinance on residential SFH, the returns are competitive with other Central Texas real estate investment options. If you are looking for the 12 to 15 percent yields that Austin STR content circa 2018 was promising, that market is gone and the last few investors trying to force it are being enforced against.</p>
+ <p>Austin STR investment is a narrow but real market in 2026. If you are prepared for single-digit honest cap rates like the worked example above, willing to do the per-property due-diligence work, and comfortable operating inside the two viable markets rather than fighting the city ordinance on residential SFH, the returns are competitive with other Central Texas real estate investment options. If you are looking for the double-digit yields that Austin STR content circa 2018 was promising, that market is gone and the last few investors trying to force it are being enforced against.</p>
 
  <p>If you want an honest read on whether a specific Austin STR opportunity actually pencils, reach out with the address, building name, or general submarket, and I will run the eligibility check and realistic cap rate math before you write an offer.</p>
 

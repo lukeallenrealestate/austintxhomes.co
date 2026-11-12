@@ -68,227 +68,86 @@ function fmtTimestamp(d = new Date()) {
   }) + ' CT';
 }
 
-// ─── Stat computations (direct DB, no HTTP roundtrip) ──────────────
+// ─── Stat computations ─────────────────────────────────────────────
+// Rebuilt 2026-11-12 on lib/liveStats (the same snapshot behind every live
+// token, the market widgets, and llms.txt), so the homepage, this page, and
+// the rest of the site always agree. Rules:
+//   * Residential for-sale listings only (no leases, land, or commercial).
+//   * No invented fallbacks. The old version silently substituted "industry
+//     baseline" values (60 days, 5.5 months, 35%, 97%) when a number looked
+//     odd; now an unavailable stat is null and the card says so.
+//   * No sold prices. The feed's close_price equals the final LIST price on
+//     every closed record, so the old "list-to-close ratio" was really the
+//     final ask vs the original ask. It is now labeled as exactly that.
+const live = require('./liveStats');
+const METRO_SCOPE = 'city=' + AUSTIN_METRO_CITIES.join(',');
+const SALE_TYPES = ['Single Family Residence', 'Condominium', 'Townhouse', 'Duplex', 'Manufactured Home'];
+
+function closingsLast90() {
+  const cityPh = AUSTIN_METRO_CITIES.map(() => '?').join(',');
+  const typePh = SALE_TYPES.map(() => '?').join(',');
+  return listingDb.prepare(
+    `SELECT list_price, original_list_price FROM listings
+     WHERE standard_status = 'Closed' AND property_type = 'Residential'
+       AND property_sub_type IN (${typePh})
+       AND city IN (${cityPh})
+       AND list_price >= 75000
+       AND close_date >= date('now', '-90 days')`
+  ).all(...SALE_TYPES, ...AUSTIN_METRO_CITIES);
+}
+
 function getMarketStats() {
+  const s = live.computeStats(METRO_SCOPE);
+  if (!s || s.medianPrice == null) return null; // snapshot still loading
   return cached('marketStats', STATS_TTL, () => {
-    const cityPlaceholders = AUSTIN_METRO_CITIES.map(() => '?').join(',');
-    // Total active count — primary "active listings" stat
-    const totalActive = listingDb.prepare(
-      `SELECT COUNT(*) AS n FROM listings
-       WHERE standard_status = 'Active' AND mlg_can_view = 1
-         AND city IN (${cityPlaceholders})
-         AND list_price > 50000`
-    ).get(...AUSTIN_METRO_CITIES)?.n || 0;
-
-    // Median + mean list price — pull all prices, sort, pick middle
-    const prices = listingDb.prepare(
-      `SELECT list_price FROM listings
-       WHERE standard_status = 'Active' AND mlg_can_view = 1
-         AND city IN (${cityPlaceholders})
-         AND list_price > 50000
-       ORDER BY list_price ASC`
-    ).all(...AUSTIN_METRO_CITIES).map(r => r.list_price);
-
-    const medianPrice = prices.length ? prices[Math.floor(prices.length / 2)] : 0;
-    const avgPrice = prices.length
-      ? Math.round(prices.reduce((s, p) => s + p, 0) / prices.length)
-      : 0;
-    const under500 = prices.filter(p => p < 500_000).length;
-
-    // Closed sales last 90 days → monthly absorption pace
-    const closedLast90 = listingDb.prepare(
-      `SELECT COUNT(*) AS n FROM listings
-       WHERE standard_status = 'Closed'
-         AND city IN (${cityPlaceholders})
-         AND close_price > 50000
-         AND close_date >= date('now', '-90 days')`
-    ).get(...AUSTIN_METRO_CITIES)?.n || 0;
-    // Months of supply = active / monthly absorption. Susceptible to the
-    // same data-quality drag as DOM: if the DB doesn't have a complete
-    // closed-sales history, monthlySales is undercounted and supply gets
-    // overstated. Cap at 7 (deep buyer's market) and substitute an
-    // industry baseline if the raw value is implausible.
-    const monthlySales = closedLast90 / 3;
-    const rawSupply = monthlySales > 0 ? totalActive / monthlySales : 0;
-    const FALLBACK_SUPPLY = 5.5;
-    const monthsSupply = (rawSupply > 7 || rawSupply <= 0) ? FALLBACK_SUPPLY : rawSupply;
-
-    // Calculated DOM — derive from listing_contract_date because the MLS
-    // days_on_market field is sparse. Use MEDIAN, not mean: the MLS feed
-    // contains a long tail of stale Active listings (months-old flags
-    // that should have been delisted but stayed in), and the mean gets
-    // dragged into nonsense territory by them. Median is naturally robust
-    // to those outliers. Also discard anything over 180 days as
-    // data-suspect — a legitimately fresh-on-market listing in Austin
-    // simply doesn't sit longer than that without delisting or repricing.
-    const domSample = listingDb.prepare(
-      `SELECT listing_contract_date FROM listings
-       WHERE standard_status = 'Active' AND mlg_can_view = 1
-         AND city IN (${cityPlaceholders})
-         AND listing_contract_date IS NOT NULL
-       LIMIT 5000`
-    ).all(...AUSTIN_METRO_CITIES);
-    const now = Date.now();
-    const cleanDoms = domSample.map(r => {
-      const t = new Date(r.listing_contract_date).getTime();
-      return isNaN(t) ? null : Math.floor((now - t) / 86_400_000);
-    }).filter(d => d != null && d >= 0 && d <= 180)
+    const totalActive = s.count;
+    const closed = closingsLast90();
+    const closedLast90 = closed.length;
+    // Months of supply = active inventory / average monthly closings.
+    const rawSupply = closedLast90 > 0 ? totalActive / (closedLast90 / 3) : null;
+    const monthsSupply = rawSupply != null && isFinite(rawSupply) && rawSupply > 0 && rawSupply < 36 ? rawSupply : null;
+    // Final ask vs original ask, for homes that went to closing in 90 days.
+    const ratios = closed
+      .filter(r => r.original_list_price > 0 && r.list_price > 0)
+      .map(r => r.list_price / r.original_list_price)
+      .filter(x => x > 0.5 && x < 1.5)
       .sort((a, b) => a - b);
-    const medianDom = cleanDoms.length ? cleanDoms[Math.floor(cleanDoms.length / 2)] : 0;
-    // Final sanity clamp: if even the median is implausibly high (>120 d),
-    // the data is too corrupt to trust — fall back to an industry-reported
-    // value rather than display nonsense to AI engines / crawlers.
-    const FALLBACK_DOM = 60;
-    const avgDom = (medianDom > 120 || medianDom === 0) ? FALLBACK_DOM : medianDom;
+    const finalAskPct = ratios.length >= 30 ? 100 * ratios[Math.floor(ratios.length / 2)] : null;
 
-    // New construction count
-    const newConstruction = listingDb.prepare(
-      `SELECT COUNT(*) AS n FROM listings
-       WHERE standard_status = 'Active' AND mlg_can_view = 1
-         AND new_construction_yn = 1
-         AND city IN (${cityPlaceholders})`
-    ).get(...AUSTIN_METRO_CITIES)?.n || 0;
+    const under500 = live.computeStats(METRO_SCOPE + ';max=500000')?.count ?? null;
+    const reductionRate = s.reducedPct != null ? Math.round(s.reducedPct) : null;
+    const avgReduction = s.avgCutPct;
+    const escrowCount = s.pendingCount;
+    const escrowRatio = totalActive > 0 ? Math.round((escrowCount / totalActive) * 100) : null;
+    const avgDom = s.medianDom != null ? Math.round(s.medianDom) : null; // a MEDIAN; name kept for API compatibility
 
-    // ─── PRICE-REDUCTION RATE ───────────────────────────────────
-    // What share of active listings have cut their original asking price.
-    // Strongest single signal of seller capitulation — when >40% have
-    // reduced, sellers as a class have lost pricing confidence. Uses
-    // SQLite's json_extract() to pull OriginalListPrice from the raw RETS
-    // JSON without parsing every full row in Node (which would be ~50 MB
-    // of JSON to parse). Sample 1500 freshest listings — large enough for
-    // a stable percentage, small enough to stay sub-100ms.
-    // Sample listings 14-180 days on market. The 14-day floor excludes
-    // fresh listings (haven't had time to reduce, would deflate the
-    // rate). The 180-day ceiling excludes the same stale "Active" tail
-    // we already filter out of DOM — those listings have been on market
-    // for years and almost all have multiple accumulated reductions, so
-    // including them inflates the rate (first hotfix landed at 71% from
-    // them; truly marketable Austin inventory reductions are 30-45%).
-    const reductionRows = listingDb.prepare(
-      `SELECT json_extract(raw_data, '$.OriginalListPrice') AS orig, list_price
-       FROM listings
-       WHERE standard_status = 'Active' AND mlg_can_view = 1
-         AND city IN (${cityPlaceholders})
-         AND raw_data IS NOT NULL
-         AND list_price > 50000
-         AND listing_contract_date IS NOT NULL
-         AND date(listing_contract_date) <= date('now', '-14 days')
-         AND date(listing_contract_date) >= date('now', '-180 days')
-       LIMIT 3000`
-    ).all(...AUSTIN_METRO_CITIES);
-    let reductionSample = 0, reducedCount = 0, reductionSum = 0;
-    for (const r of reductionRows) {
-      if (r.orig && r.orig > 0 && r.list_price > 0) {
-        reductionSample++;
-        if (r.orig > r.list_price) {
-          reducedCount++;
-          reductionSum += (r.orig - r.list_price) / r.orig;
-        }
-      }
-    }
-    const rawReductionRate = reductionSample > 0
-      ? Math.round((reducedCount / reductionSample) * 100)
-      : 0;
-    // Two iterations on the SQL sampling window (freshness bias gave 4%;
-    // 14+ day floor gave 71%; 14-180 day window gave 69%) made clear
-    // there is no purely-statistical way to extract a credible reduction
-    // rate from this DB while the stale-Active tail accumulates. Final
-    // sanity clamp matches what we did for DOM and months-supply: if the
-    // raw value lands outside the plausible market range (10-55% for a
-    // metro this size in 2026), fall back to the industry baseline of
-    // 35% rather than display a number that contradicts the rest of the
-    // page. The avgReduction value below is real — it survives the
-    // clamp because the cohort that actually reduced still shows the
-    // correct cut depth.
-    const reductionRate = (rawReductionRate >= 10 && rawReductionRate <= 55)
-      ? rawReductionRate
-      : 35;
-    const avgReduction = reducedCount > 0
-      ? (reductionSum / reducedCount) * 100
-      : 0;
-
-    // ─── IN-ESCROW PIPELINE ─────────────────────────────────────
-    // Pending + Active Under Contract gives a real demand snapshot — how
-    // much current inventory has already been spoken for. Ratio against
-    // active is the absorption signal: > 30% = strong demand (seller
-    // territory), < 15% = weak demand (buyer territory).
-    const escrowCount = listingDb.prepare(
-      `SELECT COUNT(*) AS n FROM listings
-       WHERE standard_status IN ('Pending', 'Active Under Contract')
-         AND mlg_can_view = 1
-         AND city IN (${cityPlaceholders})
-         AND list_price > 50000`
-    ).get(...AUSTIN_METRO_CITIES)?.n || 0;
-    const escrowRatio = totalActive > 0
-      ? Math.round((escrowCount / totalActive) * 100)
-      : 0;
-
-    // ─── LIST-TO-CLOSE RATIO (last 90 days) ─────────────────────
-    // Sealed historical truth — for closed sales, what % of the ORIGINAL
-    // asking price did houses actually transact at. The only stat that
-    // reflects what buyers actually paid, not what sellers wanted. Use
-    // OriginalListPrice (not current list_price) so we don't get fooled
-    // by sellers who reduced just before closing — that masks buyer
-    // leverage. > 100% = bidding wars (seller); 96-99% = balanced; < 96%
-    // = buyers winning negotiations.
-    const closedRows = listingDb.prepare(
-      `SELECT close_price, json_extract(raw_data, '$.OriginalListPrice') AS orig
-       FROM listings
-       WHERE standard_status = 'Closed'
-         AND city IN (${cityPlaceholders})
-         AND close_date >= date('now', '-90 days')
-         AND close_price > 50000
-         AND raw_data IS NOT NULL
-       LIMIT 3000`
-    ).all(...AUSTIN_METRO_CITIES);
-    const closeRatios = [];
-    for (const r of closedRows) {
-      if (r.orig && r.orig > 0 && r.close_price > 0) {
-        closeRatios.push(r.close_price / r.orig);
-      }
-    }
-    closeRatios.sort((a, b) => a - b);
-    const rawL2c = closeRatios.length ? closeRatios[Math.floor(closeRatios.length / 2)] : 0;
-    // Sanity clamp: ratio should be between 0.8 and 1.10 in a realistic
-    // market. Anything outside that is data-suspect — fall back to 0.97
-    // (balanced default).
-    const l2cMedian = (rawL2c < 0.80 || rawL2c > 1.10)
-      ? 0.97
-      : rawL2c;
-    const l2cPct = (l2cMedian * 100).toFixed(1);
-    const l2cSampleSize = closeRatios.length;
-
-    // Verdict & composite score. Months of supply is the canonical signal:
-    // < 4 mo = seller's market, 4–6 = balanced, > 6 = buyer's market. The
-    // composite score nudges around 50 (perfectly balanced) by ±10 per
-    // month of supply above/below 5.
-    let score = Math.round(50 - (monthsSupply - 5) * 10);
+    // Verdict. Months of supply is the canonical signal (< 4 seller's, 4 to 6
+    // balanced, > 6 buyer's); the price-cut share is the fallback signal.
+    let score;
+    if (monthsSupply != null) score = Math.round(50 - (monthsSupply - 5) * 10);
+    else if (reductionRate != null) score = Math.round(50 - (reductionRate - 40) * 2);
+    else score = 50;
     score = Math.max(0, Math.min(100, score));
+    const supplyTxt = monthsSupply != null ? `about ${monthsSupply.toFixed(1)} months of supply` : `${fmtThousands(s.pendingCount)} homes in escrow`;
+    const cutTxt = reductionRate != null ? `${reductionRate}% of active listings below their original asking price` : 'widespread price cuts';
     let verdict, verdictClass, verdictIcon, verdictDesc;
     if (score >= 60) {
-      verdict = "Seller's Market";
-      verdictClass = 'seller';
-      verdictIcon = '🔥';
-      verdictDesc = `Austin is currently a seller's market. With approximately ${monthsSupply.toFixed(1)} months of supply, ${fmtThousands(totalActive)} active listings, and well-priced inventory clearing quickly, sellers retain pricing leverage. Buyers should expect competition on fresh listings in the most desirable price tiers. Live MLS data below refreshes on each page load.`;
+      verdict = "Seller's Market"; verdictClass = 'seller'; verdictIcon = '🔥';
+      verdictDesc = `Greater Austin is currently a seller's market, with ${supplyTxt} across ${fmtThousands(totalActive)} active listings. Well-priced homes are clearing quickly and sellers hold pricing leverage, so buyers should expect competition on fresh listings in the most desirable price tiers.`;
     } else if (score >= 40) {
-      verdict = 'Balanced Market';
-      verdictClass = 'balanced';
-      verdictIcon = '⚖️';
-      verdictDesc = `Austin is currently a balanced market. With approximately ${monthsSupply.toFixed(1)} months of supply across ${fmtThousands(totalActive)} active listings, neither buyers nor sellers hold decisive leverage. Pricing accuracy matters most — well-priced homes still move quickly, while overpriced inventory sits and reduces. Live MLS data below refreshes on each page load.`;
+      verdict = 'Balanced Market'; verdictClass = 'balanced'; verdictIcon = '⚖️';
+      verdictDesc = `Greater Austin is currently a balanced market, with ${supplyTxt} across ${fmtThousands(totalActive)} active listings and ${cutTxt}. Neither side holds decisive leverage. Pricing accuracy matters most: well-priced homes still move, while overpriced inventory sits and gets reduced.`;
     } else {
-      verdict = "Buyer's Market";
-      verdictClass = 'buyer';
-      verdictIcon = '⚖️';
-      verdictDesc = `Austin is currently a buyer's market. With approximately ${monthsSupply.toFixed(1)} months of supply, ${fmtThousands(totalActive)} active listings, and ${avgDom} days median time on market, buyers in 2026 have meaningful negotiating leverage they didn't have in 2021-2022. Live MLS data below refreshes on each page load.`;
+      verdict = "Buyer's Market"; verdictClass = 'buyer'; verdictIcon = '⚖️';
+      verdictDesc = `Greater Austin is currently a buyer's market, with ${supplyTxt}, ${fmtThousands(totalActive)} active listings, ${avgDom != null ? avgDom + ' median days on market, ' : ''}and ${cutTxt}. Buyers have real negotiating leverage on price, repairs, and closing costs.`;
     }
 
     return {
-      totalActive, medianPrice, avgPrice, avgDom,
-      monthsSupply, under500, newConstruction, closedLast90,
-      // Sprint 6B+ buyer/seller signals
+      totalActive, medianPrice: s.medianPrice, avgPrice: s.avgPrice, avgDom,
+      monthsSupply, under500, newConstruction: s.newConCount, closedLast90,
       reductionRate, avgReduction,
       escrowCount, escrowRatio,
-      l2cMedian, l2cPct, l2cSampleSize,
+      finalAskPct, finalAskSampleSize: ratios.length,
       score, verdict, verdictClass, verdictIcon, verdictDesc,
       updated: new Date()
     };
@@ -383,7 +242,9 @@ function renderWithCache(filePath, renderFn) {
   let html;
   try {
     html = fs.readFileSync(filePath, 'utf8');
-    html = renderFn(html);
+    const out = renderFn(html);
+    if (out == null) return html; // live data not ready yet: serve static, do not cache
+    html = out;
   } catch (e) {
     console.warn(`[ssrInject] render failed for ${filePath}:`, e.message);
     // Fall back to whatever's on disk — Sprint 6A fallback values still display.
@@ -396,9 +257,15 @@ function renderWithCache(filePath, renderFn) {
 function renderHomepage(filePath) {
   return renderWithCache(filePath, html => {
     const s = getMarketStats();
+    if (!s) return null;
     html = replaceById(html, 'sb-listings', fmtThousands(s.totalActive));
     html = replaceById(html, 'sb-price', fmtPriceCompact(s.avgPrice));
-    html = replaceById(html, 'sb-dom', `${s.avgDom} days`);
+    html = replaceById(html, 'sb-dom', s.avgDom != null ? `${s.avgDom} days` : 'n/a');
+    html = replaceById(html, 'hf-listings', fmtThousands(s.totalActive));
+    html = replaceById(html, 'hf-price', fmtPriceCompact(s.avgPrice));
+    html = replaceById(html, 'hf-dom', s.avgDom != null ? String(s.avgDom) : 'n/a');
+    html = replaceById(html, 'pp-listings', fmtThousands(s.totalActive));
+    html = replaceById(html, 'dr-count', fmtThousands(s.totalActive) + '+');
     // SSR the Recently Listed grid so Googlebot sees actual listing cards,
     // not "Loading listings…". Fetches 3 newest active residential listings.
     // Falls back silently to the client-side fetch if the DB query fails.
@@ -484,10 +351,11 @@ function escrowSignal(pct) {
   if (pct < 15) return { cls: 'buyer', label: '↑ Weak demand' };
   return { cls: 'neutral', label: '→ Balanced demand' };
 }
-function l2cSignal(pct) {
-  if (pct >= 100) return { cls: 'seller', label: '↓ Bidding wars' };
-  if (pct < 96) return { cls: 'buyer', label: '↑ Buyers winning' };
-  return { cls: 'neutral', label: '→ Balanced' };
+// Final ask as a share of the original ask, for homes that went to closing.
+function finalAskSignal(pct) {
+  if (pct >= 99) return { cls: 'seller', label: '↓ Few cuts before contract' };
+  if (pct < 95) return { cls: 'buyer', label: '↑ Deep cuts before contract' };
+  return { cls: 'neutral', label: '→ Modest cuts' };
 }
 function activeSignal(n) {
   if (n > 12000) return { cls: 'buyer', label: '↑ Elevated inventory' };
@@ -518,6 +386,8 @@ function setSignalChipClass(html, signalId, cls) {
 function renderBuyersSellers(filePath) {
   return renderWithCache(filePath, html => {
     const s = getMarketStats();
+    if (!s) return null;
+    const na = 'n/a';
     // Verdict block
     html = replaceById(html, 'verdict-text', s.verdict);
     html = replaceById(html, 'verdict-desc', s.verdictDesc);
@@ -527,50 +397,31 @@ function renderBuyersSellers(filePath) {
     // Meter
     html = replaceById(html, 'meter-score', `${s.score} / 100`);
     html = replaceById(html, 'meter-score-note',
-      `Composite buyer/seller score based on active inventory (${fmtThousands(s.totalActive)}), median days on market (${s.avgDom}), and months of supply (${s.monthsSupply.toFixed(1)}) across greater Austin. Scores below 40 indicate buyer-favorable conditions; 40-60 is balanced; above 60 is seller-favorable.`);
+      `Composite buyer/seller score for greater Austin, driven by ${s.monthsSupply != null ? `months of supply (${s.monthsSupply.toFixed(1)})` : `the share of listings with a price cut (${s.reductionRate}%)`}, with ${fmtThousands(s.totalActive)} active listings and ${s.avgDom != null ? s.avgDom + ' median days on market' : 'current days on market'} as context. Below 40 favors buyers, 40 to 60 is balanced, above 60 favors sellers.`);
     // ── Stat card values
     html = replaceById(html, 'stat-active', fmtThousands(s.totalActive));
     html = replaceById(html, 'stat-median', fmtPriceCompact(s.medianPrice));
-    html = replaceById(html, 'stat-dom', `${s.avgDom} days`);
-    html = replaceById(html, 'stat-supply', `${s.monthsSupply.toFixed(1)} mo`);
+    html = replaceById(html, 'stat-dom', s.avgDom != null ? `${s.avgDom} days` : na);
+    html = replaceById(html, 'stat-supply', s.monthsSupply != null ? `${s.monthsSupply.toFixed(1)} mo` : na);
     html = replaceById(html, 'stat-reduction',
-      s.avgReduction > 0
-        ? `${s.reductionRate}<span> (avg -${s.avgReduction.toFixed(1)}%)</span>`
+      s.reductionRate == null ? na
+        : s.avgReduction != null ? `${s.reductionRate}<span>% (avg cut ${s.avgReduction.toFixed(1)}%)</span>`
         : `${s.reductionRate}<span>%</span>`);
     html = replaceById(html, 'stat-escrow',
-      `${s.escrowRatio}<span>% (${fmtThousands(s.escrowCount)} in escrow)</span>`);
-    html = replaceById(html, 'stat-l2c',
-      `${s.l2cPct}<span>%</span>`);
+      s.escrowRatio != null ? `${s.escrowRatio}<span>% (${fmtThousands(s.escrowCount)} in escrow)</span>` : na);
+    html = replaceById(html, 'stat-l2c', s.finalAskPct != null ? `${s.finalAskPct.toFixed(1)}<span>%</span>` : na);
     // ── Per-stat signal classes + chip labels
-    const aSig = activeSignal(s.totalActive);
-    html = setSignalClass(html, 'card-active', aSig.cls);
-    html = setSignalChipClass(html, 'stat-active-signal', aSig.cls);
-    html = replaceById(html, 'stat-active-signal', aSig.label);
-
-    const dSig = domSignal(s.avgDom);
-    html = setSignalClass(html, 'card-dom', dSig.cls);
-    html = setSignalChipClass(html, 'stat-dom-signal', dSig.cls);
-    html = replaceById(html, 'stat-dom-signal', dSig.label);
-
-    const mSig = supplySignal(s.monthsSupply);
-    html = setSignalClass(html, 'card-supply', mSig.cls);
-    html = setSignalChipClass(html, 'stat-supply-signal', mSig.cls);
-    html = replaceById(html, 'stat-supply-signal', mSig.label);
-
-    const rSig = reductionSignal(s.reductionRate);
-    html = setSignalClass(html, 'card-reduction', rSig.cls);
-    html = setSignalChipClass(html, 'stat-reduction-signal', rSig.cls);
-    html = replaceById(html, 'stat-reduction-signal', rSig.label);
-
-    const eSig = escrowSignal(s.escrowRatio);
-    html = setSignalClass(html, 'card-escrow', eSig.cls);
-    html = setSignalChipClass(html, 'stat-escrow-signal', eSig.cls);
-    html = replaceById(html, 'stat-escrow-signal', eSig.label);
-
-    const lSig = l2cSignal(parseFloat(s.l2cPct));
-    html = setSignalClass(html, 'card-l2c', lSig.cls);
-    html = setSignalChipClass(html, 'stat-l2c-signal', lSig.cls);
-    html = replaceById(html, 'stat-l2c-signal', lSig.label);
+    const apply = (card, chip, sig) => {
+      html = setSignalClass(html, card, sig.cls);
+      html = setSignalChipClass(html, chip, sig.cls);
+      html = replaceById(html, chip, sig.label);
+    };
+    apply('card-active', 'stat-active-signal', activeSignal(s.totalActive));
+    if (s.avgDom != null) apply('card-dom', 'stat-dom-signal', domSignal(s.avgDom));
+    if (s.monthsSupply != null) apply('card-supply', 'stat-supply-signal', supplySignal(s.monthsSupply));
+    if (s.reductionRate != null) apply('card-reduction', 'stat-reduction-signal', reductionSignal(s.reductionRate));
+    if (s.escrowRatio != null) apply('card-escrow', 'stat-escrow-signal', escrowSignal(s.escrowRatio));
+    if (s.finalAskPct != null) apply('card-l2c', 'stat-l2c-signal', finalAskSignal(s.finalAskPct));
 
     // Last-updated stamp under the verdict card
     html = injectLastUpdated(html, s.updated);
@@ -814,7 +665,7 @@ function invalidateAll() {
 
 module.exports = {
   renderHomepage, renderBuyersSellers, renderNeighborhoods,
-  getMarketStats, getNeighborhoodCounts,
+  getMarketStats, getNeighborhoodCounts, AUSTIN_METRO_CITIES,
   getNeighborhoodListings, renderNeighborhoodListingCardsHtml,
   invalidateAll,
   fmtTimestamp

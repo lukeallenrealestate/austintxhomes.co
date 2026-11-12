@@ -9,6 +9,8 @@ module.exports = {
   subdivisionName: 'Teravista',
   priceRange: '{{live:sub=Teravista:p10Price|the entry level}} to {{live:sub=Teravista:p90Price|the top of the market}}',
   medianPrice: '{{live:sub=Teravista:medianPrice|above the Round Rock median}}',
+  // Rentals: enough MLS-listed rentals here for a neighborhood-level asking-rent figure.
+  rentScope: 'sub=Teravista;lease=1',
   homeTypes: 'Single-family on golf course, greenbelt lots, 3–5 bedrooms',
   schools: 'Round Rock ISD - Teravista Elementary (on-site), Hopewell Middle, Stony Point High',
   commute: '20 min to Domain, 28 min to downtown Austin, 10 min to Dell HQ',
@@ -194,6 +196,8 @@ module.exports = {
   subdivisionName: 'Mayfield Ranch',
   priceRange: '{{live:sub=Mayfield Ranch:p10Price|the entry level}} to {{live:sub=Mayfield Ranch:p90Price|the top of the market}}',
   medianPrice: '{{live:sub=Mayfield Ranch:medianPrice|above the Round Rock median}}',
+  // Rentals: enough MLS-listed rentals here for a neighborhood-level asking-rent figure.
+  rentScope: 'sub=Mayfield Ranch;lease=1',
   homeTypes: 'Master-planned, newer construction, 3–4 bedrooms, 2,000–3,500 sqft',
   schools: 'Leander ISD - Parkside Elementary, Stiles Middle, Rouse High',
   commute: '25 min to Domain, 32 min to downtown, 20 min to Dell HQ',

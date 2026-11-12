@@ -69,6 +69,30 @@ const CITY_ROWS = [
 
 const ISD_ROWS = [['Austin ISD', 'Austin ISD'], ['Eanes ISD', 'Eanes ISD'], ['Lake Travis ISD', 'Lake Travis ISD'], ['Leander ISD', 'Leander ISD'], ['Round Rock ISD', 'Round Rock ISD'], ['Pflugerville ISD', 'Pflugerville ISD'], ['Dripping Springs ISD', 'Dripping Springs ISD'], ['Hays CISD', 'Hays']];
 
+// Asking rents of active MLS rental listings (lease=1 scopes).
+const RENT_ROWS = [
+  ['Austin (city), all rentals', 'city=Austin;lease=1'],
+  ['Austin 1-bedroom', 'city=Austin;lease=1;beds=1'],
+  ['Austin 2-bedroom', 'city=Austin;lease=1;beds=2'],
+  ['Austin 3-bedroom house', 'city=Austin;lease=1;type=sfr;beds=3'],
+  ['Austin 4+ bedroom house', 'city=Austin;lease=1;type=sfr;beds=4+'],
+  ['78704 (South Austin)', 'zip=78704;lease=1'],
+  ['78705 (West Campus / UT)', 'zip=78705;lease=1'],
+  ['78701 (Downtown)', 'zip=78701;lease=1'],
+  ['Round Rock', 'city=Round Rock;lease=1'],
+  ['Pflugerville', 'city=Pflugerville;lease=1'],
+  ['Cedar Park', 'city=Cedar Park;lease=1'],
+  ['Georgetown', 'city=Georgetown;lease=1'],
+  ['Leander', 'city=Leander;lease=1'],
+  ['Kyle', 'city=Kyle;lease=1'],
+];
+
+function rentRow(label, scope) {
+  const st = live.computeStats(scope);
+  if (!st || st.count < 10 || st.medianRent == null) return null;
+  return `| ${label} | ${T(scope, 'count')} | ${T(scope, 'medianRent')} | ${T(scope, 'p25Rent')} to ${T(scope, 'p75Rent')} | ${T(scope, 'rentPpsf')} | ${T(scope, 'medianDom')} |`;
+}
+
 const T = (scope, stat, fmt) => `{{live:${scope}:${stat}${fmt ? ':' + fmt : ''}|n/a}}`;
 
 function statRow(label, scope, url) {
@@ -154,6 +178,17 @@ function build({ full = false, routePaths = [] } = {}) {
   L.push('');
   L.push(`New listings in the City of Austin in the last 7 days: ${T('city=Austin', 'newLast7')}. Pending or under contract right now: ${T('city=Austin', 'pendingCount')}.`);
   L.push('');
+
+  const rentRows = RENT_ROWS.map(([label, scope]) => rentRow(label, scope)).filter(Boolean);
+  if (rentRows.length) {
+    L.push(`## Asking rents (active MLS rental listings, as of {{asof}})`);
+    L.push(`Method: monthly asking rent of rental listings currently active in ACTRIS MLS (houses, condos, townhomes, duplexes, and apartment units listed on the MLS; large apartment complexes that do not list on the MLS are not included). These are asking rents, not signed lease amounts. Computed by Luke Allen from his MLS feed.`);
+    L.push('');
+    L.push(`| Area | Active rentals | Median asking rent | Middle half of asking rents | Median asking rent per sqft | Median days listed |`);
+    L.push(`|---|---|---|---|---|---|`);
+    L.push(...rentRows);
+    L.push('');
+  }
 
   const isdRows = ISD_ROWS.map(([label, d]) => statRow(label, 'isd=' + d)).filter(Boolean);
   if (isdRows.length) {

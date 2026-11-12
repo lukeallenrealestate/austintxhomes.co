@@ -42,13 +42,24 @@ if (!files.length) { console.error('usage: check-live-tokens.js <files...> | --a
 const L = require('../lib/liveStats');
 const STATS = new Set(['count', 'pendingCount', 'medianPrice', 'avgPrice', 'medianPpsf', 'medianDom', 'medianSqft',
   'p10Price', 'p90Price', 'minPrice', 'maxPrice', 'reducedPct', 'reducedCount', 'newConPct', 'newConCount',
-  'newLast7', 'newLast30', 'under400k', 't400_600k', 't600k_1m', 't1m_2m', 'over2m']);
-const FORMATS = new Set(['auto', 'usd', 'k', 'm', 'num', 'pct', 'raw']);
-const FRAGILE = /(^|;)\s*(nbhd|sub|isd|elem|high|type|min|max|newcon)\b/;
+  'newLast7', 'newLast30', 'under400k', 't400_600k', 't600k_1m', 't1m_2m', 'over2m', 'p25Price', 'p75Price', 'avgCutPct',
+  'medianRent', 'avgRent', 'p25Rent', 'p75Rent', 'minRent', 'maxRent', 'rentPpsf']);
+const FORMATS = new Set(['auto', 'usd', 'usd2', 'k', 'm', 'num', 'pct', 'raw']);
+const FRAGILE = /(^|;)\s*(nbhd|sub|isd|elem|high|type|min|max|newcon|lease|beds)\b/;
+const RENT_ONLY = /Rent$|^rentPpsf$/;
 
 const KW = /(median|average|avg\.?|typical(ly)? (price|home|list)|days on (the )?market|\bDOM\b|active listings?|homes? (for sale|listed|on the market|currently)|inventory|months? of (supply|inventory)|per (square foot|sq\.? ?ft)|\/sq ?ft|\/sf\b|price per|sale[- ]to[- ]list|list[- ]to[- ]sale|price (cuts?|reductions?|drops?)|reduced|year[- ]over[- ]year|\bYoY\b|appreciat|homes sold|closed sales?|sold (for|in|homes)|sells? for|listings? (are|is)|currently|right now|this (month|quarter|year)|mortgage rates?|interest rates?|rents? (are|average|run)|cap rate|price range|starting (at|from)|priced (from|at|between)|range from)/i;
 const NUM = /(\$\s?\d[\d,.]*\s?[KkMm]?\b|\b\d{1,3}(,\d{3})+\b|\b\d+(\.\d+)?\s?%|\b\d+\s+(days|homes|listings|sales|months|properties))/;
-const DATE_RE = /((Published|Posted|Updated|Last updated|Data as of|as of|Report date|Written)\s*:?\s*(on\s+)?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.? (\d{1,2},? )?20\d\d)|\bQ[1-4] 20\d\d\b/;
+// DATED (Luke, 2026-11-12): an "Updated <date>" byline does NOT make a page
+// dated. Only a genuine dated report (listed here) or a page with a visible
+// "Published/Posted <date>" line may keep frozen numbers.
+const DATED_REPORTS = new Set([
+  'allandale-market-report', 'barton-hills-market-report', 'brentwood-market-report', 'crestview-market-report',
+  'horseshoe-bay-market-report', 'hyde-park-market-report', 'mueller-market-report', 'tarrytown-market-report',
+  'westlake-market-report', 'zilker-market-report', 'austin-homebuyer-report-2026-q3',
+  'austin-new-construction-market-report', 'austin-multifamily-market-report', 'austin-luxury-homes-3m-plus',
+]);
+const DATE_RE = /(Published|Posted|Report date|Written)\s*:?\s*(on\s+)?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.? (\d{1,2},? )?20\d\d/;
 
 const TOKEN_ANY = /\{\{([^{}]*)\}\}/g;
 
@@ -87,6 +98,9 @@ function checkFile(rel) {
     const [, scope, stat, fmt] = parts;
     if (!STATS.has(stat)) { errors.push(`unknown stat "${stat}": {{${raw}}}`); continue; }
     if (fmt && !FORMATS.has(fmt)) { errors.push(`unknown format "${fmt}": {{${raw}}}`); continue; }
+    const leaseScope = /(^|;)\s*lease=1\b/.test(scope);
+    if (RENT_ONLY.test(stat) && !leaseScope) { errors.push(`rent stat needs a lease=1 scope: {{${raw}}}`); continue; }
+    if (leaseScope && !RENT_ONLY.test(stat) && !['count', 'medianDom', 'medianSqft', 'newLast7', 'newLast30', 'reducedPct', 'reducedCount'].includes(stat)) { errors.push(`use a rent stat (medianRent etc.) on a lease scope: {{${raw}}}`); continue; }
     const st = L.computeStats(scope);
     if (!st) { errors.push(`scope does not resolve: {{${raw}}}`); continue; }
     if (st.count === 0 && !hasFb) errors.push(`scope has 0 listings locally: {{${raw}}}`);
@@ -96,7 +110,7 @@ function checkFile(rel) {
   const text = visibleText(src.replace(/\{\{[^{}]*\}\}/g, 'LIVEVALUE'), isHtml);
   const sentences = text.split(/(?<=[.!?])\s+/);
   const candidates = sentences.filter(s => KW.test(s) && NUM.test(s)).map(s => s.trim().slice(0, 240));
-  const dated = isHtml ? DATE_RE.test(visibleText(src, true)) : false;
+  const dated = isHtml ? (DATED_REPORTS.has(path.basename(rel, '.html')) || DATE_RE.test(visibleText(src, true))) : false;
   return { rel, tokens, errors, fragile, candidates, dated };
 }
 

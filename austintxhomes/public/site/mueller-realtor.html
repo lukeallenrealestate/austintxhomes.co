@@ -103,7 +103,7 @@
    {
     "@type": "Question",
     "name": "What property types are available at Mueller and at what price points?",
-    "acceptedAnswer": { "@type": "Answer", "text": "Mueller active inventory spans four distinct property type tiers. Condos (Parkside/Mueller Condos, Concourse at Mueller Condominiums) run approximately $320K to $700K, with 16 current active listings averaging $444K. Yard homes and row homes (small single-family and attached townhome product) run approximately $700K to $1.1M, with 23 current active listings averaging $809K. Larger single-family and custom builds run approximately $1.1M to $1.6M, with 7 active listings averaging $1.22M. Premium custom single-family runs $1.6M+, with 2 active listings averaging $2.16M, top end around $2.39M. The property type diversity is a defining Mueller feature, not an accident. The community was designed to deliver a range of housing options from entry-tier condo through custom single-family within one walkable master plan." }
+    "acceptedAnswer": { "@type": "Answer", "text": "Mueller active inventory spans four distinct property type tiers. Condos (Parkside/Mueller Condos, Concourse at Mueller Condominiums) form the entry tier: {{live:nbhd=mueller;type=condo:count|several}} are listed now at a median ask of {{live:nbhd=mueller;type=condo:medianPrice|the lowest price point in Mueller}}. Yard homes and row homes (small single-family and attached townhome product) fill the $700K to $1.1M band, where {{live:nbhd=mueller;min=700000;max=1100000:count|a steady supply of}} listings carry a median ask of {{live:nbhd=mueller;min=700000;max=1100000:medianPrice|the middle of that band}}. Larger single-family and custom builds sit between $1.1M and $1.6M, usually only a few at a time. Premium custom single-family starts above $1.6M and is the thinnest tier; the most expensive Mueller listing right now asks {{live:nbhd=mueller:maxPrice|well above $2M}}. The property type diversity is a defining Mueller feature, not an accident. The community was designed to deliver a range of housing options from entry-tier condo through custom single-family within one walkable master plan." }
    },
    {
     "@type": "Question",
@@ -320,34 +320,34 @@
    <div class="tier-card t1">
     <div class="tier-tag">Tier 1 &middot; Condo</div>
     <h3 class="tier-h">Parkside + Concourse</h3>
-    <div class="tier-price">$444K</div>
-    <div class="tier-range">$320K-$700K average</div>
+    <div class="tier-price">{{live:nbhd=mueller;type=condo:medianPrice|Entry tier}}</div>
+    <div class="tier-range">median condo ask</div>
     <div class="tier-body">Parkside at Mueller Condos and Concourse at Mueller Condominiums. Entry-tier condo product, walkable to Mueller Central retail, HOA covers exterior maintenance. The lowest-dollar entry into Mueller addresses.</div>
-    <div class="tier-mls"><strong>16 active</strong> at $444K average.</div>
+    <div class="tier-mls"><strong>{{live:nbhd=mueller;type=condo:count|Several}} condos</strong> listed, most between {{live:nbhd=mueller;type=condo:p10Price|entry pricing}} and {{live:nbhd=mueller;type=condo:p90Price|the larger units}}.</div>
    </div>
    <div class="tier-card t2">
     <div class="tier-tag">Tier 2 &middot; Yard home + row home</div>
     <h3 class="tier-h">Small single-family + attached</h3>
-    <div class="tier-price">$809K</div>
-    <div class="tier-range">$700K-$1.1M average</div>
+    <div class="tier-price">{{live:nbhd=mueller;min=700000;max=1100000:medianPrice|$700K+}}</div>
+    <div class="tier-range">median ask, $700K to $1.1M</div>
     <div class="tier-body">Yard homes, row homes, and small detached single-family. The volume tier at Mueller. 1,500 to 2,400 square feet typical, small yard, walkable to Mueller Central, mix of 2010s and 2020s construction.</div>
-    <div class="tier-mls"><strong>23 active</strong> at $809K average.</div>
+    <div class="tier-mls"><strong>{{live:nbhd=mueller;min=700000;max=1100000:count|A steady supply}}</strong> in this band right now.</div>
    </div>
    <div class="tier-card t3">
     <div class="tier-tag">Tier 3 &middot; Larger single-family</div>
     <h3 class="tier-h">Section-specific larger plans</h3>
-    <div class="tier-price">$1.22M</div>
-    <div class="tier-range">$1.1M-$1.6M average</div>
+    <div class="tier-price">{{live:nbhd=mueller;min=1100000;max=1600000:medianPrice|$1.1M+}}</div>
+    <div class="tier-range">$1.1M to $1.6M band</div>
     <div class="tier-body">Larger single-family inventory, typically 2,500 to 3,500 square feet with more substantial lot size. Sections 05, 10, VI, and VII at Mueller carry much of this inventory. Family-stage pricing for central Austin.</div>
-    <div class="tier-mls"><strong>7 active</strong> at $1.22M average.</div>
+    <div class="tier-mls"><strong>{{live:nbhd=mueller;min=1100000;max=1600000:count|A few}} listed</strong> at this level today; supply is thin.</div>
    </div>
    <div class="tier-card t4">
     <div class="tier-tag">Tier 4 &middot; Premium custom</div>
     <h3 class="tier-h">Section 11 + premier</h3>
-    <div class="tier-price">$2.16M</div>
-    <div class="tier-range">$1.6M+ band, top end around $2.39M</div>
+    <div class="tier-price">{{live:nbhd=mueller;min=1600000:medianPrice|$1.6M+}}</div>
+    <div class="tier-range">$1.6M+ band; top ask now {{live:nbhd=mueller:maxPrice|above $2M}}</div>
     <div class="tier-body">Premium custom single-family at the top of the Mueller market. Section 11 and the newer architectural statement homes. 3,500+ square feet with premium interior finishes, larger lots within the master plan constraints.</div>
-    <div class="tier-mls"><strong>2 active</strong> at $2.16M average.</div>
+    <div class="tier-mls"><strong>{{live:nbhd=mueller;min=1600000:count|A couple}}</strong> listed in this band now; it is always the thinnest tier.</div>
    </div>
   </div>
  </div>
@@ -415,7 +415,7 @@
 
  <h2>How Mueller <em>compares to other Austin options</em></h2>
 
- <p><strong>Vs. Westlake.</strong> Mueller is central Austin AISD, not Eanes ISD. Mueller has walkable urbanism and condo-through-single-family mix; Westlake is detached single-family only with no walkable retail center. Mueller is $100K-$500K lower at comparable square footage. Westlake wins on school district (Eanes consistently top-ranked), lot sizes, and country-club density. Mueller wins on walkability, commute to downtown, property type optionality, and healthcare proximity.</p>
+ <p><strong>Vs. Westlake.</strong> Mueller is central Austin AISD, not Eanes ISD. Mueller has walkable urbanism and condo-through-single-family mix; Westlake is detached single-family only with no walkable retail center. Per foot, Mueller single-family listings ask a median of {{live:nbhd=mueller;type=sfr:medianPpsf|noticeably less}} against {{live:isd=Eanes;type=sfr:medianPpsf|considerably more}} across Eanes ISD. Westlake wins on school district (Eanes consistently top-ranked), lot sizes, and country-club density. Mueller wins on walkability, commute to downtown, property type optionality, and healthcare proximity.</p>
 
  <p><strong>Vs. Steiner Ranch.</strong> Mueller is 711 acres central Austin; Steiner Ranch is 4,600 acres NW Austin suburban. Mueller delivers urban-ish walkability; Steiner Ranch delivers master-planned suburban amenity density including UT Golf Club, equestrian center, Lake Austin frontage. Mueller is downtown-commute-first; Steiner Ranch is school-feeder-first. Different households, different answers.</p>
 

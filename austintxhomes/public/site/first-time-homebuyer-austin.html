@@ -123,7 +123,7 @@
    {
     "@type": "Question",
     "name": "Where should I look for a first Austin home under $500K?",
-    "acceptedAnswer": { "@type": "Answer", "text": "Ten Austin metro cities have real starter inventory in the $250,000 to $500,000 band. Austin proper leads with roughly 1,800 active listings in the band (but skewed to smaller condos and townhomes at that price). Georgetown, Hutto, Pflugerville, Kyle, Round Rock, and Buda all have 500-1,000 active listings each in the starter band. Leander, Manor, and Bastrop round out the top 10. Each has different commute times, school districts, and neighborhood feel. My default recommendation for a first-time Austin buyer is to define your two must-haves (typically employer commute cap and school district preference, or in some cases community feel) before we tour, then narrow the 10 cities to the 2 or 3 that fit. Trying to shop all 10 without a filter is one of the most common time-waste patterns I see with new buyers." }
+    "acceptedAnswer": { "@type": "Answer", "text": "Ten Austin metro cities have real starter inventory in the $250,000 to $500,000 band. Austin proper has the deepest pool, {{live:city=Austin;min=250000;max=500000:count}} active listings in the band right now (skewed to smaller condos and townhomes at that price). Georgetown, Hutto, Pflugerville, Kyle, Round Rock, and Buda each carry hundreds of starter listings of their own; Georgetown alone has {{live:city=Georgetown;min=250000;max=500000:count}}. Leander, Manor, and Bastrop round out the ten. Each has different commute times, school districts, and neighborhood feel. My default recommendation for a first-time Austin buyer is to define your two must-haves (typically employer commute cap and school district preference, or in some cases community feel) before we tour, then narrow the 10 cities to the 2 or 3 that fit. Trying to shop all 10 without a filter is one of the most common time-waste patterns I see with new buyers." }
    },
    {
     "@type": "Question",
@@ -392,67 +392,67 @@
  <div class="cities-inner">
   <div class="cities-eyebrow">Where the starter inventory is</div>
   <h2 class="cities-title">The <em>ten Austin metro cities</em> with real starter inventory under $500K</h2>
-  <div class="cities-source">Source: ACTRIS MLS, pulled September 30, 2026. Single-family homes $250K-$500K.</div>
+  <div class="cities-source">Source: ACTRIS MLS, refreshed automatically. Active listings of every home type asking $250K-$500K.</div>
   <div class="cities-grid">
    <div class="city-tile">
     <div class="city-tile-name">Austin</div>
-    <div class="city-tile-count">1,799</div>
+    <div class="city-tile-count">{{live:city=Austin;min=250000;max=500000:count}}</div>
     <div class="city-tile-lbl">active $250-500K</div>
-    <div class="city-tile-avg">Avg $398K &middot; mostly condo/townhome</div>
+    <div class="city-tile-avg">Median {{live:city=Austin;min=250000;max=500000:medianPrice|under $500K}} &middot; mostly condo/townhome</div>
    </div>
    <div class="city-tile">
     <div class="city-tile-name">Georgetown</div>
-    <div class="city-tile-count">1,062</div>
+    <div class="city-tile-count">{{live:city=Georgetown;min=250000;max=500000:count}}</div>
     <div class="city-tile-lbl">active $250-500K</div>
-    <div class="city-tile-avg">Avg $391K &middot; strong schools</div>
+    <div class="city-tile-avg">Median {{live:city=Georgetown;min=250000;max=500000:medianPrice|under $500K}} &middot; strong schools</div>
    </div>
    <div class="city-tile">
     <div class="city-tile-name">Hutto</div>
-    <div class="city-tile-count">671</div>
+    <div class="city-tile-count">{{live:city=Hutto;min=250000;max=500000:count}}</div>
     <div class="city-tile-lbl">active $250-500K</div>
-    <div class="city-tile-avg">Avg $352K &middot; heavy new construction</div>
+    <div class="city-tile-avg">Median {{live:city=Hutto;min=250000;max=500000:medianPrice|under $500K}} &middot; heavy new construction</div>
    </div>
    <div class="city-tile">
     <div class="city-tile-name">Pflugerville</div>
-    <div class="city-tile-count">653</div>
+    <div class="city-tile-count">{{live:city=Pflugerville;min=250000;max=500000:count}}</div>
     <div class="city-tile-lbl">active $250-500K</div>
-    <div class="city-tile-avg">Avg $380K &middot; 20 min to central Austin</div>
+    <div class="city-tile-avg">Median {{live:city=Pflugerville;min=250000;max=500000:medianPrice|under $500K}} &middot; 20 min to central Austin</div>
    </div>
    <div class="city-tile">
     <div class="city-tile-name">Kyle</div>
-    <div class="city-tile-count">650</div>
+    <div class="city-tile-count">{{live:city=Kyle;min=250000;max=500000:count}}</div>
     <div class="city-tile-lbl">active $250-500K</div>
-    <div class="city-tile-avg">Avg $347K &middot; value pick south</div>
+    <div class="city-tile-avg">Median {{live:city=Kyle;min=250000;max=500000:medianPrice|under $500K}} &middot; value pick south</div>
    </div>
    <div class="city-tile">
     <div class="city-tile-name">Round Rock</div>
-    <div class="city-tile-count">592</div>
+    <div class="city-tile-count">{{live:city=Round Rock;min=250000;max=500000:count}}</div>
     <div class="city-tile-lbl">active $250-500K</div>
-    <div class="city-tile-avg">Avg $388K &middot; RRISD schools</div>
+    <div class="city-tile-avg">Median {{live:city=Round Rock;min=250000;max=500000:medianPrice|under $500K}} &middot; RRISD schools</div>
    </div>
    <div class="city-tile">
     <div class="city-tile-name">Buda</div>
-    <div class="city-tile-count">541</div>
+    <div class="city-tile-count">{{live:city=Buda;min=250000;max=500000:count}}</div>
     <div class="city-tile-lbl">active $250-500K</div>
-    <div class="city-tile-avg">Avg $371K &middot; family-friendly</div>
+    <div class="city-tile-avg">Median {{live:city=Buda;min=250000;max=500000:medianPrice|under $500K}} &middot; family-friendly</div>
    </div>
    <div class="city-tile">
     <div class="city-tile-name">Leander</div>
-    <div class="city-tile-count">475</div>
+    <div class="city-tile-count">{{live:city=Leander;min=250000;max=500000:count}}</div>
     <div class="city-tile-lbl">active $250-500K</div>
-    <div class="city-tile-avg">Avg $393K &middot; LISD schools</div>
+    <div class="city-tile-avg">Median {{live:city=Leander;min=250000;max=500000:medianPrice|under $500K}} &middot; LISD schools</div>
    </div>
    <div class="city-tile">
     <div class="city-tile-name">Manor</div>
-    <div class="city-tile-count">384</div>
+    <div class="city-tile-count">{{live:city=Manor;min=250000;max=500000:count}}</div>
     <div class="city-tile-lbl">active $250-500K</div>
-    <div class="city-tile-avg">Avg $354K &middot; closest east metro value</div>
+    <div class="city-tile-avg">Median {{live:city=Manor;min=250000;max=500000:medianPrice|under $500K}} &middot; closest east metro value</div>
    </div>
    <div class="city-tile">
     <div class="city-tile-name">Bastrop</div>
-    <div class="city-tile-count">358</div>
+    <div class="city-tile-count">{{live:city=Bastrop;min=250000;max=500000:count}}</div>
     <div class="city-tile-lbl">active $250-500K</div>
-    <div class="city-tile-avg">Avg $372K &middot; USDA-eligible pockets</div>
+    <div class="city-tile-avg">Median {{live:city=Bastrop;min=250000;max=500000:medianPrice|under $500K}} &middot; USDA-eligible pockets</div>
    </div>
   </div>
  </div>

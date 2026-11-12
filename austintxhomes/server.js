@@ -921,105 +921,60 @@ app.get('/api/neighborhood-counts', (_req, res) => {
 // the same source of truth for the new buyer/seller signals.
 const ssrInject = require('./lib/ssrInject');
 
-app.get('/api/market-stats', async (_req, res) => {
+app.get('/api/market-stats', (_req, res) => {
+  // Same numbers as the SSR-rendered homepage / buyer's-vs-seller's page and
+  // every live token (lib/liveStats via ssrInject.getMarketStats): residential
+  // for-sale listings across the Austin metro city list, full inventory (not
+  // a sample), no invented fallbacks. Rebuilt 2026-11-12.
   try {
-    // Serve cached stats if fresh (< 1 hour)
-    if (marketStatsCache && (Date.now() - marketStatsCacheTime) < 3600000) {
+    if (marketStatsCache && (Date.now() - marketStatsCacheTime) < 15 * 60 * 1000) {
       return res.json(marketStatsCache);
     }
-
-    // Austin metro cities (Travis, Williamson, Hays, Bastrop counties — excludes Temple, Killeen, New Braunfels, etc.)
-    const AUSTIN_METRO_CITIES = [
-      'Austin','Round Rock','Georgetown','Cedar Park','Leander','Pflugerville',
-      'Kyle','Buda','San Marcos','Bastrop','Manor','Hutto','Taylor','Del Valle',
-      'Lakeway','Bee Cave','Dripping Springs','Wimberley','Buda','Lockhart',
-      'Elgin','Liberty Hill','Jarrell','Spicewood','Lago Vista','Driftwood',
-      'Manchaca','Bee Cave','Westlake Hills','West Lake Hills','Rollingwood',
-      'Sunset Valley','Jonestown','Volente','Hudson Bend','Briarcliff','Rob Roy'
-    ].join(',');
-
-    // Fetch a large sample for accurate stats (Austin metro only)
-    const data = await fetchJSON(`${IDX_SERVER}/api/properties/search?limit=2000&status=Active&property_type=Residential&city=${encodeURIComponent(AUSTIN_METRO_CITIES)}`);
-    const all = (data.listings || []).filter(l => l.list_price > 50000);
-    const prices = all.map(l => l.list_price).sort((a, b) => a - b);
-    const total  = data.total || all.length;
-
-    const median = prices.length ? prices[Math.floor(prices.length / 2)] : 0;
-    const avg    = prices.length ? Math.round(prices.reduce((s, p) => s + p, 0) / prices.length) : 0;
-
-    // Price tiers
-    const tiers = { under400: 0, t400to600: 0, t600to900: 0, t900to1500: 0, over1500: 0 };
-    for (const p of prices) {
-      if (p < 400000)       tiers.under400++;
-      else if (p < 600000)  tiers.t400to600++;
-      else if (p < 900000)  tiers.t600to900++;
-      else if (p < 1500000) tiers.t900to1500++;
-      else                  tiers.over1500++;
-    }
-
-    // City breakdown (top cities)
-    const cityMap = {};
-    for (const l of all) {
-      const c = l.city || 'Other';
-      cityMap[c] = (cityMap[c] || 0) + 1;
-    }
-    const topCities = Object.entries(cityMap)
-      .sort((a, b) => b[1] - a[1]).slice(0, 8)
-      .map(([city, count]) => ({ city, count }));
-
-    // Property sub-types
-    const newConstruction = all.filter(l => l.new_construction_yn).length;
-    const condos = all.filter(l => /condo|townhouse/i.test(l.property_sub_type || '')).length;
-    const singleFamily = all.filter(l => /single family/i.test(l.property_sub_type || '')).length;
-
-    // % under $500K
-    const under500k = prices.filter(p => p < 500000).length;
-    const pctUnder500 = prices.length ? Math.round((under500k / prices.length) * 100) : 0;
-
-    // Merge in the SSR-derived buyer/seller signals (price reduction rate,
-    // in-escrow ratio, list-to-close ratio, sanity-clamped DOM + months
-    // supply). Same source of truth as the SSR-rendered HTML, so the
-    // client-side refresh doesn't disagree with the crawler-visible values.
-    let signals = {};
-    try {
-      const s = ssrInject.getMarketStats();
-      signals = {
-        avgDom: s.avgDom,
-        monthsSupply: s.monthsSupply,
-        reductionRate: s.reductionRate,
-        avgReduction: s.avgReduction,
-        escrowCount: s.escrowCount,
-        escrowRatio: s.escrowRatio,
-        l2cPct: s.l2cPct,
-        l2cSampleSize: s.l2cSampleSize
-      };
-    } catch (e) {
-      console.warn('[market-stats] ssrInject signals unavailable:', e.message);
-    }
-
+    const s = ssrInject.getMarketStats();
+    if (!s) return res.status(503).json({ error: true, loading: true });
+    const live = require('./lib/liveStats');
+    const scope = 'city=' + ssrInject.AUSTIN_METRO_CITIES.join(',');
+    const band = (min, max) => live.computeStats(scope + (min ? ';min=' + min : '') + (max ? ';max=' + max : ''))?.count ?? 0;
+    const tiers = {
+      under400: band(0, 400000), t400to600: band(400000, 600000), t600to900: band(600000, 900000),
+      t900to1500: band(900000, 1500000), over1500: band(1500000, 0),
+    };
+    const topCities = ssrInject.AUSTIN_METRO_CITIES
+      .map(city => ({ city, count: live.computeStats('city=' + city)?.count ?? 0 }))
+      .filter(c => c.count > 0)
+      .sort((x, y) => y.count - x.count).slice(0, 8);
+    const typeCount = t => live.computeStats(scope + ';type=' + t)?.count ?? 0;
     const stats = {
-      totalActive: total,
-      sampleSize: all.length,
-      medianPrice: median,
-      avgPrice: avg,
-      avgDom: signals.avgDom || 38, // SSR-derived; falls back to industry baseline
-      pctUnder500,
+      totalActive: s.totalActive,
+      activeListings: s.totalActive,
+      sampleSize: s.totalActive,
+      medianPrice: s.medianPrice,
+      avgPrice: s.avgPrice,
+      avgDom: s.avgDom, // median days on market
+      medianDom: s.avgDom,
+      pctUnder500: s.under500 != null && s.totalActive ? Math.round(100 * s.under500 / s.totalActive) : null,
       tiers,
       topCities,
-      newConstruction,
-      condos,
-      singleFamily,
-      ...signals,
-      updated: new Date().toISOString()
+      newConstruction: s.newConstruction,
+      condos: typeCount('condo') + typeCount('townhome'),
+      singleFamily: typeCount('sfr'),
+      monthsSupply: s.monthsSupply,
+      reductionRate: s.reductionRate,
+      avgReduction: s.avgReduction,
+      escrowCount: s.escrowCount,
+      escrowRatio: s.escrowRatio,
+      finalAskPct: s.finalAskPct,
+      finalAskSampleSize: s.finalAskSampleSize,
+      score: s.score, verdict: s.verdict, verdictClass: s.verdictClass, verdictIcon: s.verdictIcon, verdictDesc: s.verdictDesc,
+      updated: new Date(s.updated).toISOString(),
     };
-
     marketStatsCache = stats;
     marketStatsCacheTime = Date.now();
     res.json(stats);
   } catch (e) {
-    // Return cached data if available, else fallback
+    console.error('[market-stats]', e.message);
     if (marketStatsCache) return res.json(marketStatsCache);
-    res.json({ totalActive: 0, medianPrice: 0, avgPrice: 0, avgDom: 0, error: true });
+    res.status(503).json({ error: true });
   }
 });
 

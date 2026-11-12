@@ -371,6 +371,7 @@
  .cost-table tr:last-child td { border-bottom: none; }
  .cost-table tr:hover td { background: var(--warm); }
  .cost-table td:first-child { font-weight: 500; }
+ @media (max-width: 600px) { .cost-table th, .cost-table td { padding: 10px 8px; font-size: 12.5px; } }
 
  /* ── Remote/industry ── */
  .industry-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -831,17 +832,18 @@
  <th>Neighborhood</th>
  <th>Median Asking Price</th>
  <th>Active Listings</th>
+ <th>Median Asking Rent (2+ BR)</th>
  </tr>
  </thead>
  <tbody>
- <tr><td>East Austin</td><td>{{live:nbhd=east-austin:medianPrice|ask for pricing}}</td><td>{{live:nbhd=east-austin:count}}</td></tr>
- <tr><td>Bouldin Creek</td><td>{{live:nbhd=bouldin-creek:medianPrice|ask for pricing}}</td><td>{{live:nbhd=bouldin-creek:count}}</td></tr>
- <tr><td>Travis Heights</td><td>{{live:nbhd=travis-heights:medianPrice|ask for pricing}}</td><td>{{live:nbhd=travis-heights:count}}</td></tr>
- <tr><td>Barton Hills</td><td>{{live:nbhd=barton-hills:medianPrice|ask for pricing}}</td><td>{{live:nbhd=barton-hills:count}}</td></tr>
- <tr><td>Hyde Park</td><td>{{live:nbhd=hyde-park:medianPrice|ask for pricing}}</td><td>{{live:nbhd=hyde-park:count}}</td></tr>
- <tr><td>Tarrytown / Clarksville (78703)</td><td>{{live:zip=78703:medianPrice}}</td><td>{{live:zip=78703:count}}</td></tr>
- <tr><td>Round Rock</td><td>{{live:city=Round Rock:medianPrice}}</td><td>{{live:city=Round Rock:count}}</td></tr>
- <tr><td>Cedar Park / Leander</td><td>{{live:city=Cedar Park,Leander:medianPrice}}</td><td>{{live:city=Cedar Park,Leander:count}}</td></tr>
+ <tr><td>East Austin</td><td>{{live:nbhd=east-austin:medianPrice|ask for pricing}}</td><td>{{live:nbhd=east-austin:count}}</td><td>{{live:nbhd=east-austin;lease=1;beds=2+:medianRent|on request}}</td></tr>
+ <tr><td>Bouldin Creek</td><td>{{live:nbhd=bouldin-creek:medianPrice|ask for pricing}}</td><td>{{live:nbhd=bouldin-creek:count}}</td><td>{{live:nbhd=bouldin-creek;lease=1;beds=2+:medianRent|on request}}</td></tr>
+ <tr><td>Travis Heights</td><td>{{live:nbhd=travis-heights:medianPrice|ask for pricing}}</td><td>{{live:nbhd=travis-heights:count}}</td><td>{{live:nbhd=travis-heights;lease=1;beds=2+:medianRent|on request}}</td></tr>
+ <tr><td>Barton Hills</td><td>{{live:nbhd=barton-hills:medianPrice|ask for pricing}}</td><td>{{live:nbhd=barton-hills:count}}</td><td>{{live:nbhd=barton-hills;lease=1;beds=2+:medianRent|on request}}</td></tr>
+ <tr><td>Hyde Park</td><td>{{live:nbhd=hyde-park:medianPrice|ask for pricing}}</td><td>{{live:nbhd=hyde-park:count}}</td><td>{{live:nbhd=hyde-park;lease=1;beds=2+:medianRent|on request}}</td></tr>
+ <tr><td>Tarrytown / Clarksville (78703)</td><td>{{live:zip=78703:medianPrice}}</td><td>{{live:zip=78703:count}}</td><td>{{live:zip=78703;lease=1;beds=2+:medianRent|on request}}</td></tr>
+ <tr><td>Round Rock</td><td>{{live:city=Round Rock:medianPrice}}</td><td>{{live:city=Round Rock:count}}</td><td>{{live:city=Round Rock;lease=1;beds=2+:medianRent|on request}}</td></tr>
+ <tr><td>Cedar Park / Leander</td><td>{{live:city=Cedar Park,Leander:medianPrice}}</td><td>{{live:city=Cedar Park,Leander:count}}</td><td>{{live:city=Cedar Park,Leander;lease=1;beds=2+:medianRent|on request}}</td></tr>
  </tbody>
  </table>
  <div class="copy-block">
@@ -978,7 +980,7 @@
  </div>
  <div class="faq-item">
  <div class="faq-q">Should I rent first or buy immediately when moving from Chicago?</div>
- <div class="faq-a">For most Chicago transplants: rent for 3 to 6 months, particularly if you're selling a Chicago home with closing timing complexity. Austin's central neighborhoods (East Austin, Bouldin Creek, Hyde Park) are distinctly different from each other, the difference between East Austin and Hyde Park will matter to you after you've spent a month in each. East Austin has significant apartment inventory that makes renting while you buy a viable bridge strategy. If you've already visited Austin multiple times and know exactly where you want to land, the buy-immediately path also works, but give yourself 60 to 90 days pre-move to start the mortgage process.</div>
+ <div class="faq-a">For most Chicago transplants: rent for 3 to 6 months, particularly if you're selling a Chicago home with closing timing complexity. Austin's central neighborhoods (East Austin, Bouldin Creek, Hyde Park) are distinctly different from each other, the difference between East Austin and Hyde Park will matter to you after you've spent a month in each. East Austin has deep rental inventory on the MLS (the middle half of 78702 listings currently ask monthly rents from {{live:zip=78702;lease=1:p25Rent|the modest end}} to {{live:zip=78702;lease=1:p75Rent|the premium end}}), which makes renting while you buy a viable bridge strategy. If you've already visited Austin multiple times and know exactly where you want to land, the buy-immediately path also works, but give yourself 60 to 90 days pre-move to start the mortgage process.</div>
  </div>
  </div>
  </div>

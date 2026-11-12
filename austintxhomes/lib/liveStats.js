@@ -28,14 +28,28 @@
  *   type=sfr|condo|townhome|duplex   property sub-type filter
  *   min=1000000 / max=2000000        list price band
  *   newcon=1               new construction only
+ *   lease=1                ACTIVE RENTAL listings instead of for-sale listings
+ *                          (MLS "Residential Lease": houses, condos, townhomes,
+ *                          duplexes, and apartment units listed on the MLS)
+ *   beds=2 / beds=4+       bedroom count (exact, or N and up)
  *
  * <stat>: count, medianPrice, avgPrice, medianPpsf, medianDom, medianSqft,
  *   p10Price, p90Price, minPrice, maxPrice, reducedPct, reducedCount,
  *   newConPct, newConCount, newLast7, newLast30, pendingCount,
- *   under400k, t400_600k, t600k_1m, t1m_2m, over2m
+ *   under400k, t400_600k, t600k_1m, t1m_2m, over2m,
+ *   p25Price, p75Price, avgCutPct (average size of the cut, among listings
+ *   that have cut their price)
+ *
+ * Rent stats (lease=1 scopes only; formatted as $2,450):
+ *   medianRent, avgRent, p25Rent, p75Rent, minRent, maxRent, rentPpsf ($1.62)
+ *   plus count, medianDom, medianSqft, newLast7, newLast30.
+ *   These are ASKING rents of currently listed rentals. Say "asking rent" or
+ *   "listed for", never "rents for" as if it were a signed lease. The MLS
+ *   covers rental houses, condos, townhomes, and some apartment units, not
+ *   every apartment complex, so describe the source as MLS-listed rentals.
  *
  * <format>: auto ($725K / $1.25M), usd ($1,234,567), k ($725K), m ($1.3M),
- *   num (1,234), pct (12%), raw. Default: auto for prices, num otherwise,
+ *   usd2 ($1.62), num (1,234), pct (12%), raw. Default: auto for prices, num otherwise,
  *   pct for *Pct stats.
  *
  * COMPLIANCE: only ACTIVE and PENDING listing data is used. Closed sale prices
@@ -64,7 +78,10 @@ const TYPE_MAP = {
   townhouse: ['Townhouse'],
   duplex: ['Duplex'],
   manufactured: ['Manufactured Home'],
+  apartment: ['Apartment'],
+  multiplex: ['Duplex', 'Triplex', 'Quadruplex'],
 };
+const LEASE_TYPES = ['Single Family Residence', 'Condominium', 'Townhouse', 'Duplex', 'Triplex', 'Quadruplex', 'Apartment'];
 
 // ── polygons (shared with ssrInject) ─────────────────────────────────
 let polyData = null;
@@ -123,10 +140,16 @@ const SNAP_COLS = `listing_key, modification_timestamp, list_price, living_area,
            mlg_can_view, property_type, latitude, longitude, city, postal_code,
            lower(subdivision_name) AS sub, property_sub_type AS ptype,
            lower(coalesce(elementary_school,'')) AS elem, lower(coalesce(high_school,'')) AS high,
-           lower(coalesce(school_district,'')) AS isd`;
+           lower(coalesce(school_district,'')) AS isd, bedrooms_total AS beds`;
+const SNAP_VERSION = 2; // bump when SNAP_COLS or qualify rules change (invalidates the persisted file)
 const LIVE_STATUSES = new Set(['Active', 'Pending', 'Active Under Contract']);
-const qualifies = r => LIVE_STATUSES.has(r.standard_status) && r.mlg_can_view === 1 &&
+const isLease = r => r.property_type === 'Residential Lease';
+const qualifiesSale = r => LIVE_STATUSES.has(r.standard_status) && r.mlg_can_view === 1 &&
   r.list_price >= 75000 && !String(r.property_type || '').includes('Lease') && RES_TYPES.includes(r.ptype);
+// Rentals: active only; $300 to $50,000 a month screens out typos and annual figures.
+const qualifiesLease = r => r.standard_status === 'Active' && r.mlg_can_view === 1 && isLease(r) &&
+  r.list_price >= 300 && r.list_price <= 50000 && LEASE_TYPES.includes(r.ptype);
+const qualifies = r => qualifiesSale(r) || qualifiesLease(r);
 
 // Reading original_list_price walks past the large raw_data column, so a full
 // load costs ~20s of synchronous SQLite time. To never block requests:
@@ -149,7 +172,7 @@ function persist(force) {
   lastPersist = Date.now();
   try {
     const tmp = SNAP_FILE + '.' + process.pid + '.tmp';
-    fs.writeFile(tmp, JSON.stringify({ maxMod, savedAt: Date.now(), rows: SNAP }), err => {
+    fs.writeFile(tmp, JSON.stringify({ v: SNAP_VERSION, maxMod, savedAt: Date.now(), rows: SNAP }), err => {
       if (err) return console.warn('[liveStats] persist failed', err.message);
       fs.rename(tmp, SNAP_FILE, () => {}); // atomic swap: readers never see a half-written file
     });
@@ -176,7 +199,7 @@ function publish(t0, label) {
 function loadFromDisk() {
   try {
     const j = JSON.parse(fs.readFileSync(SNAP_FILE, 'utf8'));
-    if (!j || !Array.isArray(j.rows) || Date.now() - j.savedAt > 3 * 86400000) return false;
+    if (!j || j.v !== SNAP_VERSION || !Array.isArray(j.rows) || Date.now() - j.savedAt > 3 * 86400000) return false;
     MAP = new Map(j.rows.map(r => [r.listing_key, r]));
     maxMod = j.maxMod || '';
     lastPersist = Date.now();
@@ -193,7 +216,7 @@ function buildInChunks(chunk = 300, pauseMs = 100) {
   const pick = listingDb.prepare(`
     SELECT rowid AS _rid, ${SNAP_COLS} FROM listings
     WHERE rowid > ? AND standard_status IN ('Active','Pending','Active Under Contract')
-      AND mlg_can_view = 1 AND list_price >= 75000
+      AND mlg_can_view = 1 AND (list_price >= 75000 OR property_type = 'Residential Lease')
     ORDER BY rowid LIMIT ?`);
   const step = () => {
     try {
@@ -334,8 +357,19 @@ function rowsFor(scope) {
   const high = scope.high ? String(scope.high).toLowerCase() : null;
   const min = scope.min ? Number(scope.min) : null;
   const max = scope.max ? Number(scope.max) : null;
+  const wantLease = !!scope.lease && scope.lease !== '0';
+  let bedsMin = null, bedsEq = null;
+  if (scope.beds != null) {
+    const b = String(scope.beds).trim();
+    if (/^\d+\+$/.test(b)) bedsMin = Number(b.slice(0, -1));
+    else if (/^\d+$/.test(b)) bedsEq = Number(b);
+    else return null;
+  }
 
   return snapshot().filter(r => {
+    if (isLease(r) !== wantLease) return false;
+    if (bedsEq != null && r.beds !== bedsEq) return false;
+    if (bedsMin != null && !(r.beds >= bedsMin)) return false;
     if (types && !types.includes(r.ptype)) return false;
     if (min != null && r.list_price < min) return false;
     if (max != null && r.list_price >= max) return false;
@@ -351,6 +385,8 @@ function rowsFor(scope) {
     return true;
   });
 }
+
+const wantLeaseScope = scope => !!scope.lease && scope.lease !== '0';
 
 function median(a) {
   if (!a.length) return null;
@@ -396,7 +432,8 @@ function computeStats(scopeStr) {
       const ppsf = active.filter(r => r.living_area > 0).map(r => r.list_price / r.living_area);
       const sqft = active.map(r => r.living_area).filter(x => x > 0);
       const doms = active.map(ageDays).filter(d => d != null && d >= 0 && d <= 730);
-      const reduced = active.filter(r => r.original_list_price && r.original_list_price > r.list_price).length;
+      const reducedRows = active.filter(r => r.original_list_price && r.original_list_price > r.list_price);
+      const reduced = reducedRows.length;
       const newCon = active.filter(r => r.new_construction_yn === 1).length;
       const n = active.length;
       const enough = n >= MIN_SAMPLE;
@@ -423,7 +460,25 @@ function computeStats(scopeStr) {
         t600k_1m: prices.filter(p => p >= 600000 && p < 1000000).length,
         t1m_2m: prices.filter(p => p >= 1000000 && p < 2000000).length,
         over2m: prices.filter(p => p >= 2000000).length,
+        p25Price: enough ? pctile(prices, 25) : null,
+        p75Price: enough ? pctile(prices, 75) : null,
+        avgCutPct: reduced >= MIN_SAMPLE
+          ? 100 * reducedRows.reduce((a, r) => a + (r.original_list_price - r.list_price) / r.original_list_price, 0) / reduced
+          : null,
       };
+      if (wantLeaseScope(scope)) {
+        // Rent aliases: the only stats that make sense for rentals, and they
+        // format as whole dollars ($2,450) instead of $2K.
+        Object.assign(value, {
+          medianRent: value.medianPrice, avgRent: value.avgPrice,
+          p25Rent: value.p25Price, p75Rent: value.p75Price,
+          minRent: value.minPrice, maxRent: value.maxPrice,
+          rentPpsf: value.medianPpsf,
+        });
+        // Sale-only stats are meaningless on a rental scope.
+        for (const k of ['medianPrice', 'avgPrice', 'p10Price', 'p90Price', 'p25Price', 'p75Price', 'minPrice', 'maxPrice',
+          'medianPpsf', 'pendingCount', 'under400k', 't400_600k', 't600k_1m', 't1m_2m', 'over2m', 'newConPct', 'newConCount']) delete value[k];
+      }
     }
   } catch (e) {
     console.error('[liveStats] scope failed', scopeStr, e.message);
@@ -434,11 +489,16 @@ function computeStats(scopeStr) {
 }
 
 // ── formatting ───────────────────────────────────────────────────────
-const PRICE_STATS = new Set(['medianPrice', 'avgPrice', 'p10Price', 'p90Price', 'minPrice', 'maxPrice', 'medianPpsf']);
+const PRICE_STATS = new Set(['medianPrice', 'avgPrice', 'p10Price', 'p90Price', 'p25Price', 'p75Price', 'minPrice', 'maxPrice', 'medianPpsf']);
+const RENT_STATS = new Set(['medianRent', 'avgRent', 'p25Rent', 'p75Rent', 'minRent', 'maxRent']);
 function fmtValue(v, stat, fmt) {
   if (v == null || Number.isNaN(v)) return null;
-  const f = fmt || (PRICE_STATS.has(stat) ? (stat === 'medianPpsf' ? 'usd' : 'auto') : (/Pct$/.test(stat) ? 'pct' : 'num'));
+  const f = fmt || (stat === 'rentPpsf' ? 'usd2'
+    : RENT_STATS.has(stat) ? 'usd'
+    : PRICE_STATS.has(stat) ? (stat === 'medianPpsf' ? 'usd' : 'auto')
+    : (/Pct$/.test(stat) ? 'pct' : 'num'));
   switch (f) {
+    case 'usd2': return '$' + v.toFixed(2);
     case 'usd': return '$' + Math.round(v).toLocaleString('en-US');
     case 'k': return '$' + Math.round(v / 1000).toLocaleString('en-US') + 'K';
     case 'm': return '$' + (v / 1e6).toFixed(v >= 1e7 ? 0 : 1).replace(/\.0$/, '') + 'M';

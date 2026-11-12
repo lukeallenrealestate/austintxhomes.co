@@ -7,47 +7,16 @@ module.exports = [
   category: 'Market Update',
   neighborhood: 'tarrytown',
   neighborhoodName: 'Tarrytown',
-  excerpt: 'Here\'s what\'s actually happening in Tarrytown real estate right now - inventory, pricing, recent sales, and where this market is headed over the next 90 days.',
+  excerpt: 'Here\'s what\'s actually happening in Tarrytown real estate right now - inventory, pricing, and where this market is headed over the next 90 days.',
   content: `<p>Here's what's happening in the Tarrytown real estate market right now. Not the headline-grabbing numbers from a national real estate report, not Zillow's algorithm - the actual on-the-ground conditions as of March 2026 in one of Austin's most consistently competitive neighborhoods.</p>
 
-<h2>Tarrytown Market Snapshot - March 2026</h2>
+<h2>Where to Find Current Tarrytown Numbers</h2>
 
-<div class="data-highlight">
-  <span class="stat">$1,150,000</span>
-  <span class="stat-label">Median Sale Price</span>
-</div>
-<div class="data-highlight">
-  <span class="stat">$485</span>
-  <span class="stat-label">Avg Price Per SqFt</span>
-</div>
-<div class="data-highlight">
-  <span class="stat">28 days</span>
-  <span class="stat-label">Avg Days on Market</span>
-</div>
-<div class="data-highlight">
-  <span class="stat">~40</span>
-  <span class="stat-label">Active Listings</span>
-</div>
-<div class="data-highlight">
-  <span class="stat">34%</span>
-  <span class="stat-label">Sold Over Asking Price</span>
-</div>
-
-<p>What do these numbers tell us? Tarrytown is moving. 28 days on market is brisk by any measure - the homes that are sitting longer than that are either priced aggressively or have issues that the market is correctly discounting. And with 34% of sales going over asking, well-priced homes in good condition are still generating competition. This isn't a frenzy like 2021-2022, but it's a seller-favorable market, particularly in the $800K to $1.4M range where buyer demand is thickest.</p>
-
-<h2>What Sold Recently</h2>
-
-<p>To understand what the market is actually doing, you have to look at specific transactions - not averages. Here are three representative recent sales that tell the story.</p>
-
-<p>A three-bedroom, two-bath ranch on Pecos Street - original hardwoods, updated kitchen, original bathrooms - listed at $895,000 and sold in 8 days at $925,000. That's 3.4% over asking, which isn't unusual for a clean, move-in-ready home in this price range. The sellers did the smart thing: they priced it correctly from day one instead of testing the market high, and buyers responded.</p>
-
-<p>On Exposition Boulevard, a 4/3 new construction townhome asked $1,375,000. It sat for 41 days before selling at $1,340,000 - about 2.5% under asking. This isn't a bad outcome, but it illustrates something important: even Tarrytown buyers have limits. New construction at that price point faces real competition from fully renovated older homes with mature lots and established landscaping.</p>
-
-<p>A striking exception was a 1950s cottage on Mohle Drive, 2/1, at 1,100 square feet on a 6,500-square-foot lot. The sellers listed it at $699,000 - which for Tarrytown is genuinely affordable - and received multiple offers, ultimately selling at $755,000, nearly 8% over asking. The buyer essentially paid for the lot and got the house as a bonus. In Tarrytown, that's not unusual. The land has intrinsic value here that doesn't exist in most Austin zip codes.</p>
+<p>Market figures age quickly, so this post does not freeze a set of medians in place. For today's count of active Tarrytown listings, the median asking price, asking price per square foot, days on market, and the share of sellers who have cut their price, see the live snapshot on the <a href="/neighborhoods/tarrytown">Tarrytown neighborhood page</a>, which updates from ACTRIS MLS data every 30 minutes, and the deeper <a href="/tarrytown-market-report">Tarrytown market report</a>. The rest of this post is about how the market behaves, which changes far more slowly than the numbers do.</p>
 
 <h2>Inventory Analysis: What's Available and Where the Competition Is</h2>
 
-<p>With roughly 40 active listings, Tarrytown is sitting at about 2.2 months of supply - which by conventional real estate standards remains a seller's market (typically defined as anything under 3 months). But inventory is not uniform across price tiers, and understanding the tiers matters.</p>
+<p>Tarrytown inventory is thin by design: the neighborhood is built out, owners hold for decades, and only a small number of homes come to market at any one time. But inventory is not uniform across price tiers, and understanding the tiers matters.</p>
 
 <p>At <strong>$750K to $1.1M</strong>, there are maybe 12-15 homes available at any given time, and they move fast. This is the most competitive tier because it captures both move-up buyers from other Austin neighborhoods and buyers who are stretching to get into Tarrytown. Well-priced homes in this range that show well are typically under contract within two weeks.</p>
 

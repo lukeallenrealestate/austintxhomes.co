@@ -279,7 +279,7 @@ Run the shingle check as the last step before commit. If overlap is above the th
 **No page may show a market number that can go out of date, unless the page visibly says when it was written.**
 
 - **Evergreen pages** (anything without a specific visible date): every market figure is a live token, resolved at request time from the ACTRIS snapshot by `lib/liveStats.js`. Never type a median, price range, $/sqft, inventory count, days on market, price-cut share, YoY change, rent, or rate into an evergreen page.
-- **Dated pages** (blog posts, a "Q3 2026" report, a page that shows "Published June 19, 2026" or "Data as of June 2026" near its figures) may keep frozen numbers, because the date tells the reader when they were true. A year alone in the title ("2026") does not make a page dated.
+- **Dated pages** (blog posts with a visible "Published <date>", and the genuine dated reports listed in `DATED_REPORTS` in `scripts/check-live-tokens.js`: the ten neighborhood `*-market-report` pages, the Q3 homebuyer report, the new-construction and multifamily market reports, the $3M+ luxury report) may keep frozen numbers, because the date tells the reader when they were true. A year alone in the title ("2026") does not make a page dated, and **an "Updated <date>" byline does not make a page dated either** (Luke, 2026-11-12): service pages, relocation guides, and "realtor" pages are evergreen and use live tokens.
 - Worked examples and calculator inputs are fine when labeled as examples ("on a $500,000 home, for example..."). Tax rates must name their tax year.
 - Luke's own facts (review count, rating, TREC #) live in `data/site-facts.js`; static pages that repeat them must be swept when they change.
 
@@ -290,11 +290,15 @@ Token syntax (works in copy, meta tags, and JSON-LD; full reference at the top o
 {{live:zip=78704:count}}                          -> 312
 {{live:isd=Eanes ISD:medianDom}}                  -> 41
 {{live:city=Austin;type=condo:medianPrice:k}}     -> $375K
-{{live:nbhd=clarksville:p10Price|under $1M}}      -> fallback text if the sample is thin
+{{live:nbhd=clarksville:p10Price|well into seven figures}} -> fallback text if the sample is thin
+{{live:zip=78704;lease=1;type=sfr;beds=3:medianRent|...}}  -> $3,450 (asking rent)
 {{asof}}  {{asof:month}}  {{year}}
 ```
 
 - Only ACTIVE/PENDING listing data is exposed. There is deliberately no closed-sale stat (TX MLS compliance, commit 048d389). Say "asking price" / "list price", never "sale price", next to a token.
+- **Never show closed-sale prices or ratios anywhere** (Luke, 2026-11-12). In this feed `close_price` equals the final LIST price on 100% of closed records, so "sold for", "median sold price", "closed $/sqft", "closed at 100% of list", and "list-to-close" figures are all wrong. Aggregate counts of closings are fine. The buyer's/seller's page shows "final ask vs original ask" for closed homes, labeled as exactly that.
+- **Rents:** `lease=1` scopes give ASKING rents of active MLS rental listings (`medianRent`, `p25Rent`, `p75Rent`, `rentPpsf`, with `beds=3` / `beds=4+` and `type=` filters). Phrase as "asking rent" / "listed for", and describe the source as MLS-listed rentals (large apartment complexes are not on the MLS). No cap rates or yields as numbers.
+- **No invented fallbacks:** if a live stat is unavailable, show "n/a" or a timeless fallback phrase, never a made-up "industry baseline" number.
 - Fragile scopes (nbhd, sub, isd, elem, high, type, min/max, newcon) need a `|fallback` that reads naturally and is itself timeless.
 - FAQ JSON-LD answers must carry the same tokens as the visible answers.
 - The author block automatically adds "Market figures on this page update automatically... last refreshed {{asof}}" when a page contains tokens, and dates the written copy from `data/page-dates.json` (git), never file mtime.

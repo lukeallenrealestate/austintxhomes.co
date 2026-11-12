@@ -284,7 +284,7 @@
  .btn-ghost-w { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); border-radius: 2px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; transition: all .2s; }
  .btn-ghost-w:hover { color: #fff; border-color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.07); }
 
- /* ─── SOLD STATS BAR ─── */
+ /* ─── STATS BAR ─── */
  .stats-bar { background: #0e0c09; padding: 36px 52px; border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); }
  .stats-bar-inner { max-width: var(--w); margin: 0 auto; display: flex; gap: 0; }
  .sb-item { flex: 1; padding: 0 40px; border-right: 1px solid rgba(255,255,255,0.07); text-align: center; }
@@ -325,19 +325,6 @@
  .mktg-num { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 400; color: rgba(184,147,90,0.5); letter-spacing: .2em; margin-bottom: 20px; }
  .mktg-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; color: #fff; line-height: 1.2; margin-bottom: 14px; }
  .mktg-body { font-size: 13.5px; font-weight: 300; color: rgba(255,255,255,0.4); line-height: 1.85; }
-
- /* ─── RECENT SALES ─── */
- .sales { background: var(--cream); padding: 112px 52px; }
- .sales-inner { max-width: var(--w); margin: 0 auto; }
- .sales-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 56px; }
- .sales-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--border); }
- .sale-card { background: var(--bg); padding: 40px 36px; }
- .sale-label { font-size: 9.5px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
- .sale-price { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 300; color: var(--text); line-height: 1; margin-bottom: 8px; }
- .sale-addr { font-size: 13.5px; font-weight: 300; color: var(--mid); margin-bottom: 20px; }
- .sale-meta { display: flex; gap: 20px; flex-wrap: wrap; }
- .sale-stat { font-size: 11px; color: var(--light); display: flex; align-items: center; gap: 5px; }
- .sale-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
 
  /* ─── DISCRETION ─── */
  .disc { background: var(--bg); padding: 112px 52px; }
@@ -419,7 +406,6 @@
  .sb-item { border-right: none; flex: none; width: calc(50% - 16px); }
  .why-inner.disc-inner { grid-template-columns: 1fr; gap: 56px; }
  .mktg-grid { grid-template-columns: 1fr 1fr; }
- .sales-grid { grid-template-columns: 1fr; }
  .spokes-grid { grid-template-columns: 1fr 1fr; }
  .spokes-grid-2 { grid-template-columns: 1fr 1fr; max-width: 100%; }
  .luke-inner { grid-template-columns: 1fr; }
@@ -428,12 +414,11 @@
  @media (max-width: 768px) {
  .hero { padding: 0 20px; }
  .hero h1 { font-size: clamp(40px, 10vw, 60px); }
- .why.mktg.sales.disc.spokes.luke.faq { padding-left: 20px; padding-right: 20px; }
+ .why.mktg.disc.spokes.luke.faq { padding-left: 20px; padding-right: 20px; }
  .stats-bar { padding-left: 20px; padding-right: 20px; }
  .mktg-grid { grid-template-columns: 1fr; }
  .spokes-grid.spokes-grid-2 { grid-template-columns: 1fr; }
  .fg-row { grid-template-columns: 1fr; }
- .sales-head { flex-direction: column; align-items: flex-start; gap: 16px; }
  }
  
  /* ── Agent Identity Strip ── */
@@ -516,9 +501,9 @@
  <label>Estimated Value Range</label>
  <select name="price_range" aria-label="Price range">
  <option value="">Select a range</option>
- <option value="2m-3m">$2M, $3M</option>
- <option value="3m-5m">$3M, $5M</option>
- <option value="5m-10m">$5M, $10M</option>
+ <option value="2m-3m">$2M to $3M</option>
+ <option value="3m-5m">$3M to $5M</option>
+ <option value="5m-10m">$5M to $10M</option>
  <option value="10m+">$10M+</option>
  <option value="unsure">I'm not sure</option>
  </select>
@@ -531,7 +516,7 @@
  </div>
 </section>
 
-<!-- SOLD STATS BAR -->
+<!-- STATS BAR -->
 <div class="stats-bar">
  <div class="stats-bar-inner">
  <div class="sb-item">
@@ -669,51 +654,6 @@
  </div>
 </section>
 
-<!-- RECENT SALES -->
-<section class="sales">
- <div class="sales-inner">
- <div class="sales-head">
- <div>
- <div class="sec-ey">Track Record</div>
- <h2 class="serif">Recent <em>Luxury Sales</em></h2>
- </div>
- <a href="/what-is-my-home-worth" class="arrow-link">Get Your Valuation →</a>
- </div>
- <div class="sales-grid">
- <div class="sale-card">
- <div class="sale-label">Sold · Westlake Hills</div>
- <div class="sale-price">$6,850,000</div>
- <div class="sale-addr">Hillside estate · 6BR · Pool · Hill country views</div>
- <div class="sale-meta">
- <div class="sale-stat"><div class="sale-dot"></div>22 days on market</div>
- <div class="sale-stat"><div class="sale-dot"></div>Listed at ask</div>
- <div class="sale-stat"><div class="sale-dot"></div>Private network buyer</div>
- </div>
- </div>
- <div class="sale-card">
- <div class="sale-label">Sold · Tarrytown</div>
- <div class="sale-price">$4,200,000</div>
- <div class="sale-addr">1930s estate · 5BR · Deep lot · Original detail</div>
- <div class="sale-meta">
- <div class="sale-stat"><div class="sale-dot"></div>8 days on market</div>
- <div class="sale-stat"><div class="sale-dot"></div>3% over ask</div>
- <div class="sale-stat"><div class="sale-dot"></div>Multiple offers</div>
- </div>
- </div>
- <div class="sale-card">
- <div class="sale-label">Sold · Lake Austin</div>
- <div class="sale-price">$9,400,000</div>
- <div class="sale-addr">Waterfront estate · Boat dock · Guest house</div>
- <div class="sale-meta">
- <div class="sale-stat"><div class="sale-dot"></div>31 days on market</div>
- <div class="sale-stat"><div class="sale-dot"></div>Off-market sale</div>
- <div class="sale-stat"><div class="sale-dot"></div>No public listing</div>
- </div>
- </div>
- </div>
- </div>
-</section>
-
 <!-- DISCRETION SECTION -->
 <section class="disc">
  <div class="disc-inner">
@@ -842,7 +782,7 @@
 
  <div class="faq-item">
  <div class="faq-q" onclick="toggleFaq(this)">Can I sell my Austin luxury home without it appearing publicly on MLS?<span class="faq-chevron">+</span></div>
- <div class="faq-a">Yes. For sellers who require confidentiality, an off-market or private listing strategy is available. This involves marketing the property exclusively to qualified buyers through a private network, with NDA-protected showings and no public MLS listing until (and unless) the seller chooses to go public. The trade-off is a potentially smaller initial buyer pool, but for the right property in the right location, the motivated buyer is often reachable through the private network alone - as demonstrated by several significant recent sales that never appeared on MLS.</div>
+ <div class="faq-a">Yes. For sellers who require confidentiality, an off-market or private listing strategy is available. This involves marketing the property exclusively to qualified buyers through a private network, with NDA-protected showings and no public MLS listing until (and unless) the seller chooses to go public. The trade-off is a potentially smaller initial buyer pool, but for the right property in the right location, the motivated buyer is often reachable through the private network alone.</div>
  </div>
 
  <div class="faq-item">

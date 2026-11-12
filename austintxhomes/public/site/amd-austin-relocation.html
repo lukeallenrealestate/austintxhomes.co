@@ -117,7 +117,7 @@
    {
     "@type": "Question",
     "name": "What is your market timing take right now?",
-    "acceptedAnswer": { "@type": "Answer", "text": "Austin is 1 to 2 months from the bottom of this cycle. Buyers who sat on the sidelines all summer are starting to move on the deals currently listed. Sellers who priced correctly are getting activity. If you are relocating to Austin for AMD in Q4 2026 or Q1 2027, closing now beats waiting for the obvious bottom because by then you will have missed it." }
+    "acceptedAnswer": { "@type": "Answer", "text": "I watch two live numbers: {{live:city=Austin:reducedPct}} of active Austin listings currently carry a price cut, and the median listing has been on the market {{live:city=Austin:medianDom}} days. When both run high, decisive buyers get real negotiating room on the deals currently listed. If your AMD start date is within the next two quarters, closing on the right house beats waiting for the obvious bottom, because by the time the bottom is obvious you will have missed it." }
    }
   ]
  }
@@ -250,14 +250,14 @@
  <div class="snapshot">
   <div class="snapshot-eyebrow">Live Market Snapshot</div>
   <h3>Homes for sale in AMD-favored submarkets</h3>
-  <div class="snapshot-source">Source: ACTRIS MLS, pulled August 19, 2026. Active listings above $200K in each ZIP.</div>
+  <div class="snapshot-source">Source: ACTRIS MLS active listings above $200K in each ZIP, refreshed {{asof}}.</div>
   <div class="snapshot-grid">
-   <div class="snapshot-stat"><div class="snapshot-num">683</div><div class="snapshot-lbl">Active 3+ bed listings within 5 miles of AMD Southwest Parkway</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">51</div><div class="snapshot-lbl">Active in 78749 (Circle C area)</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">320</div><div class="snapshot-lbl">Active in 78738 (Bee Cave / Lakeway)</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">477</div><div class="snapshot-lbl">Active in 78620 (Dripping Springs)</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">49</div><div class="snapshot-lbl">Active in 78733 (Westlake / Eanes ISD adjacent)</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">59</div><div class="snapshot-lbl">Active in 78735 (Oak Hill, AMD's own ZIP)</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:zip=78749,78738,78620,78733,78735;beds=3+;min=200000:count|Hundreds}}</div><div class="snapshot-lbl">Active 3+ bed listings across the five ZIPs below</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:zip=78749;min=200000:count|Dozens}}</div><div class="snapshot-lbl">Active in 78749 (Circle C area)</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:zip=78738;min=200000:count|Hundreds}}</div><div class="snapshot-lbl">Active in 78738 (Bee Cave / Lakeway)</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:zip=78620;min=200000:count|Hundreds}}</div><div class="snapshot-lbl">Active in 78620 (Dripping Springs)</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:zip=78733;min=200000:count|Dozens}}</div><div class="snapshot-lbl">Active in 78733 (Westlake / Eanes ISD adjacent)</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:zip=78735;min=200000:count|Dozens}}</div><div class="snapshot-lbl">Active in 78735 (Oak Hill, AMD's own ZIP)</div></div>
   </div>
  </div>
 
@@ -316,9 +316,9 @@
 
  <h2>Market timing <em>right now</em></h2>
 
- <p>Austin is 1 to 2 months from the bottom of this cycle, in my read. Buyers who sat on the sidelines all summer are starting to move on the deals currently listed. Sellers who priced correctly are getting activity. Sellers who over-priced are dropping.</p>
+ <p>My timing read starts with two numbers I check every week. Today {{live:city=Austin:reducedPct}} of active Austin listings carry at least one price cut, and the median listing has been on the market {{live:city=Austin:medianDom}} days. When both of those run high, buyers who move decisively on the deals currently listed get real negotiating room. Sellers who priced correctly still get activity; sellers who over-priced end up dropping.</p>
 
- <p><strong>If you are relocating for AMD in Q4 2026 or Q1 2027, closing now beats waiting.</strong> Eanes ISD in particular sees demand recover before the broader market moves because school-district-driven demand is less rate-sensitive than typical Austin buyer demand.</p>
+ <p><strong>If your AMD start date is within the next two quarters, closing on the right house beats waiting for a perfect bottom.</strong> Eanes ISD in particular sees demand recover before the broader market moves because school-district-driven demand is less rate-sensitive than typical Austin buyer demand.</p>
 
  <h2>Bottom line</h2>
 

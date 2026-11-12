@@ -60,8 +60,8 @@
  },
  {
  "@type": "Question",
- "name": "How do you determine if a market is buyer's or seller's?",
- "acceptedAnswer": { "@type": "Answer", "text": "The three primary indicators are: (1) Months of supply - under 4 months is a seller's market, 4 to 6 months is balanced, over 6 months is a buyer's market. (2) Days on market - faster = seller's advantage. (3) Sale-to-list price ratio - above 100% means homes sell over asking (seller's market); below 98% means buyers have leverage. Austin's current data puts it in buyer's-to-balanced territory across most price ranges." }
+ "name": "How do Austin conditions compare to Dallas and Houston?",
+ "acceptedAnswer": { "@type": "Answer", "text": "All three Texas metros have seen inventory increases since 2022. Dallas and Houston have generally recovered more quickly in the mid-range due to higher job density in those cores. Austin experienced a sharper price run-up (and therefore a sharper correction) relative to fundamentals. That correction has largely played out - Austin's current pricing is more rational than it was in 2021 to 2022, and the long-term demand story (tech migration, UT, population growth) remains intact." }
  },
  {
  "@type": "Question",
@@ -681,9 +681,9 @@
  <div class="stat-signal neutral" id="stat-escrow-signal">→ Balanced demand</div>
  </div>
  <div class="stat-card neutral-signal" id="card-l2c">
- <div class="stat-card-label">List-to-Close Ratio (90-day)</div>
+ <div class="stat-card-label">Final Ask vs. Original Ask (90-day)</div>
  <div class="stat-card-value" id="stat-l2c">Live</div>
- <div class="stat-card-desc">For closed sales in the last 90 days, median percentage of <em>original</em> asking price that homes actually sold for. Over 100% = bidding wars; 96-99% = balanced; under 96% = buyers winning negotiations.</div>
+ <div class="stat-card-desc">For homes that went to closing in the last 90 days, the median final list price as a share of the <em>original</em> list price. Near 100% = sellers rarely had to cut; under 95% = most had to cut meaningfully before a buyer committed.</div>
  <div class="stat-signal neutral" id="stat-l2c-signal">→ Balanced</div>
  </div>
  </div>
@@ -1145,206 +1145,66 @@
  <script>
  // ── FETCH LIVE MLS STATS AND POPULATE PAGE ────────────────────
  (async function () {
+ // Refreshes the server-rendered numbers (lib/ssrInject.js) with the same
+ // live figures from /api/market-stats. The server computes everything,
+ // including the verdict and score, so this script never invents values:
+ // if the API is unavailable the server-rendered page simply stays as is.
  try {
  const res = await fetch('/api/market-stats');
+ if (!res.ok) return;
  const d = await res.json();
-
- // ── Market Score Calculation ──────────────────────────────
- // Score 0 to 100: 0 = extreme buyer's, 50 = balanced, 100 = extreme seller's
- // We invert DOM and months of supply to match (lower = seller)
- const dom = d.avgDom || 38;
- const activeCount = d.totalActive || 0;
-
- // DOM score: 0 days = 100 (pure seller), 60+ days = 0 (pure buyer)
- const domScore = Math.max(0, Math.min(100, 100 - (dom / 60) * 100));
-
- // Inventory score: fewer listings = seller's (higher score)
- // Baseline: 3000 listings = balanced (50). Normalize around that.
- const inventoryScore = activeCount > 0
- ? Math.max(0, Math.min(100, 100 - ((activeCount - 1500) / 3000) * 100))
- : 50;
-
- // Composite: weight DOM heavier (60%) than inventory (40%)
- const rawScore = (domScore * 0.6) + (inventoryScore * 0.4);
- const score = Math.round(rawScore);
-
- // Classify
- let classification, verdictLabel, verdictClass, icon, desc;
- if (score >= 58) {
- classification = "Seller's Market";
- verdictClass = 'seller';
- icon = '🔥';
- desc = `With ${dom} avg. days on market and ${activeCount.toLocaleString()} active listings,
- conditions favor sellers in this price segment. Buyers should be pre-approved and ready to move quickly.`;
- } else if (score >= 38) {
- classification = 'Balanced Market';
- verdictClass = 'balanced';
- icon = '⚖️';
- desc = `Austin sits near equilibrium - ${dom} avg. days on market and ${activeCount.toLocaleString()} active listings.
- Neither buyers nor sellers hold a decisive advantage. Negotiation is key on both sides.`;
- } else {
- classification = "Buyer's Market";
- verdictClass = 'buyer';
- icon = '🏡';
- desc = `With ${dom} avg. days on market and ${activeCount.toLocaleString()} active listings,
- buyers hold leverage in most price ranges across greater Austin. Inspection contingencies are standard;
- price negotiation is expected.`;
- }
-
- // ── Update Hero Verdict ───────────────────────────────────
- const heroUpdated = document.getElementById('hero-updated');
- if (heroUpdated) {
- const dateStr = d.updated
- ? new Date(d.updated).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
- : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
- document.getElementById('update-date').textContent = `Live data as of ${dateStr}`;
- }
-
- const verdictIcon = document.getElementById('verdict-icon');
- const verdictText = document.getElementById('verdict-text');
- const verdictDescEl = document.getElementById('verdict-desc');
- const verdictCard = document.getElementById('verdict-card');
-
- verdictIcon.className = `verdict-icon ${verdictClass}`;
- verdictIcon.textContent = icon;
- verdictText.className = `verdict-text ${verdictClass}`;
- verdictText.textContent = classification;
- verdictDescEl.textContent = desc;
-
- // ── Update Meter ──────────────────────────────────────────
- // Invert: higher score = seller's (right). Position needle 0=left(buyer) 100=right(seller).
- const needlePos = score; // 0% = buyer's side, 100% = seller's side
- const needle = document.getElementById('meter-needle');
- needle.className = `meter-needle meter-needle-${verdictClass}`;
- // Give it a tick to render, then animate
- setTimeout(() => { needle.style.left = `${needlePos}%`; }, 50);
-
- const meterScore = document.getElementById('meter-score');
- const meterScoreNote = document.getElementById('meter-score-note');
- meterScore.textContent = score;
- meterScore.style.color = score >= 58 ? '#ef4444' : score >= 38 ? 'var(--gold)' : '#3b82f6';
-
- const scoreDirection = score >= 58
- ? 'tilted toward sellers'
- : score >= 38
- ? 'near equilibrium'
- : 'tilted toward buyers';
- meterScoreNote.textContent = `Composite market index score out of 100 - currently ${scoreDirection}.
- Calculated from days on market (${dom} days avg.) and active listing count (${activeCount.toLocaleString()} homes).
- Score reflects conditions across the greater Austin metro; individual neighborhoods vary.`;
-
- // ── Update Stats Grid (per-id, NOT innerHTML rebuild) ─────
- // The SSR layer in lib/ssrInject.js renders the full 7-card grid at
- // request time so crawlers see real values. JS here just refreshes the
- // text content and signal classes on top of that, no full rebuild,
- // so AI-crawler-visible HTML survives client hydration. New (Sprint
- // 6B+) cards: % with price reduction, in-escrow ratio, list-to-close
- // ratio. Demoted: under-$500K, new-construction (still on the page
- // narrative but no longer in the verdict-driving grid).
- const fmt = (n) => n >= 1000000
- ? '$' + (n / 1000000).toFixed(2) + 'M'
- : n >= 1000
- ? '$' + Math.round(n / 1000) + 'K'
- : n.toString();
-
- const setCard = (cardId, valueId, signalId, value, signalCls, signalLabel) => {
- const card = document.getElementById(cardId);
- if (card) card.className = `stat-card ${signalCls}-signal`;
- const v = document.getElementById(valueId);
- if (v) v.innerHTML = value;
- const sig = document.getElementById(signalId);
- if (sig) {
- sig.className = `stat-signal ${signalCls}`;
- sig.textContent = signalLabel;
- }
+ if (!d || d.error) return;
+ const $ = id => document.getElementById(id);
+ const n = v => Number(v).toLocaleString('en-US');
+ const fmt = v => v >= 999500 ? '$' + (v / 1e6).toFixed(2).replace(/0$/, '') + 'M' : '$' + Math.round(v / 1000) + 'K';
+ const setCard = (cardId, valueId, signalId, value, sig) => {
+ const v = $(valueId); if (v) v.innerHTML = value;
+ if (!sig) return;
+ const card = $(cardId); if (card) card.className = `stat-card ${sig.cls}-signal`;
+ const chip = $(signalId); if (chip) { chip.className = `stat-signal ${sig.cls}`; chip.textContent = sig.label; }
  };
 
- // Active inventory signal
- const activeSig = activeCount > 12000 ? 'buyer'
- : activeCount < 6000 ? 'seller' : 'neutral';
- const activeLabel = activeCount > 12000 ? '↑ Elevated inventory'
- : activeCount < 6000 ? '↓ Tight inventory' : '→ Moderate inventory';
- setCard('card-active', 'stat-active', 'stat-active-signal',
- activeCount.toLocaleString(), activeSig, activeLabel);
-
- // Median price, always neutral (context metric)
- const medianEl = document.getElementById('stat-median');
- if (medianEl) medianEl.textContent = fmt(d.medianPrice || 0);
-
- // DOM signal (med DOM thresholds: <30 seller, >60 buyer)
- const domSig = dom < 30 ? 'seller' : dom > 60 ? 'buyer' : 'neutral';
- const domLabel = dom < 30 ? '↓ Seller signal' : dom > 60 ? '↑ Buyer signal' : '→ Balanced';
- setCard('card-dom', 'stat-dom', 'stat-dom-signal',
- `${dom}<span> days</span>`, domSig, domLabel);
-
- // Months of supply, read from server when present, else estimate
- const monthsSupplyNum = d.monthsSupply != null
- ? Number(d.monthsSupply)
- : (dom > 0 ? activeCount / Math.round(activeCount / dom * 30) : 0);
- const monthsSig = monthsSupplyNum < 4 ? 'seller' : monthsSupplyNum > 6 ? 'buyer' : 'neutral';
- const monthsLabel = monthsSig === 'seller' ? '↓ Seller signal'
- : monthsSig === 'buyer' ? '↑ Buyer signal' : '→ Balanced';
- setCard('card-supply', 'stat-supply', 'stat-supply-signal',
- `${monthsSupplyNum.toFixed(1)}<span> mo</span>`, monthsSig, monthsLabel);
-
- // ── New buyer/seller signal stats (Sprint 6B+) ───────────
- // Price reduction rate, % of active with price cut
- if (d.reductionRate != null) {
- const r = d.reductionRate;
- const sig = r >= 40 ? 'buyer' : r >= 25 ? 'buyer' : r < 15 ? 'seller' : 'neutral';
- const label = r >= 40 ? '↑ Strong buyer leverage'
- : r >= 25 ? '↑ Buyer signal'
- : r < 15 ? '↓ Sellers holding firm'
- : '→ Balanced';
- const value = d.avgReduction > 0
- ? `${r}<span> (avg -${Number(d.avgReduction).toFixed(1)}%)</span>`
- : `${r}<span>%</span>`;
- setCard('card-reduction', 'stat-reduction', 'stat-reduction-signal',
- value, sig, label);
+ // Verdict + meter (server-computed)
+ if (d.verdict) {
+ const vi = $('verdict-icon'), vt = $('verdict-text'), vd = $('verdict-desc');
+ if (vi) { vi.className = `verdict-icon ${d.verdictClass}`; vi.textContent = d.verdictIcon; }
+ if (vt) { vt.className = `verdict-text ${d.verdictClass}`; vt.textContent = d.verdict; }
+ if (vd) vd.textContent = d.verdictDesc;
  }
-
- // In-escrow ratio
- if (d.escrowRatio != null) {
- const e = d.escrowRatio;
- const sig = e > 30 ? 'seller' : e < 15 ? 'buyer' : 'neutral';
- const label = e > 30 ? '↓ Strong demand' : e < 15 ? '↑ Weak demand' : '→ Balanced demand';
- const value = d.escrowCount != null
- ? `${e}<span>% (${Number(d.escrowCount).toLocaleString()} in escrow)</span>`
- : `${e}<span>%</span>`;
- setCard('card-escrow', 'stat-escrow', 'stat-escrow-signal',
- value, sig, label);
+ if (d.score != null) {
+ const needle = $('meter-needle');
+ if (needle) {
+ needle.className = `meter-needle meter-needle-${d.verdictClass}`;
+ setTimeout(() => { needle.style.left = `${d.score}%`; }, 50);
  }
-
- // List-to-close ratio
- if (d.l2cPct != null) {
- const pct = Number(d.l2cPct);
- const sig = pct >= 100 ? 'seller' : pct < 96 ? 'buyer' : 'neutral';
- const label = pct >= 100 ? '↓ Bidding wars' : pct < 96 ? '↑ Buyers winning' : '→ Balanced';
- setCard('card-l2c', 'stat-l2c', 'stat-l2c-signal',
- `${pct.toFixed(1)}<span>%</span>`, sig, label);
+ const ms = $('meter-score');
+ if (ms) {
+ ms.textContent = `${d.score} / 100`;
+ ms.style.color = d.score >= 60 ? '#ef4444' : d.score >= 40 ? 'var(--gold)' : '#3b82f6';
  }
+ }
+ const upd = $('update-date');
+ if (upd && d.updated) upd.textContent = 'Live data as of ' + new Date(d.updated).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
+ // Stat cards
+ const a = d.totalActive;
+ if (a) setCard('card-active', 'stat-active', 'stat-active-signal', n(a),
+ a > 12000 ? { cls: 'buyer', label: '↑ Elevated inventory' } : a < 6000 ? { cls: 'seller', label: '↓ Tight inventory' } : { cls: 'neutral', label: '→ Moderate inventory' });
+ if (d.medianPrice) { const m = $('stat-median'); if (m) m.textContent = fmt(d.medianPrice); }
+ if (d.avgDom != null) setCard('card-dom', 'stat-dom', 'stat-dom-signal', `${d.avgDom}<span> days</span>`,
+ d.avgDom < 30 ? { cls: 'seller', label: '↓ Seller signal' } : d.avgDom > 60 ? { cls: 'buyer', label: '↑ Buyer signal' } : { cls: 'neutral', label: '→ Balanced' });
+ if (d.monthsSupply != null) { const m = Number(d.monthsSupply); setCard('card-supply', 'stat-supply', 'stat-supply-signal', `${m.toFixed(1)}<span> mo</span>`,
+ m < 4 ? { cls: 'seller', label: '↓ Seller signal' } : m > 6 ? { cls: 'buyer', label: '↑ Buyer signal' } : { cls: 'neutral', label: '→ Balanced' }); }
+ if (d.reductionRate != null) { const r = d.reductionRate; setCard('card-reduction', 'stat-reduction', 'stat-reduction-signal',
+ d.avgReduction != null ? `${r}<span>% (avg cut ${Number(d.avgReduction).toFixed(1)}%)</span>` : `${r}<span>%</span>`,
+ r >= 40 ? { cls: 'buyer', label: '↑ Strong buyer leverage' } : r >= 25 ? { cls: 'buyer', label: '↑ Buyer signal' } : r < 15 ? { cls: 'seller', label: '↓ Sellers holding firm' } : { cls: 'neutral', label: '→ Balanced' }); }
+ if (d.escrowRatio != null) { const e = d.escrowRatio; setCard('card-escrow', 'stat-escrow', 'stat-escrow-signal',
+ `${e}<span>% (${n(d.escrowCount)} in escrow)</span>`,
+ e > 30 ? { cls: 'seller', label: '↓ Strong demand' } : e < 15 ? { cls: 'buyer', label: '↑ Weak demand' } : { cls: 'neutral', label: '→ Balanced demand' }); }
+ if (d.finalAskPct != null) { const f = Number(d.finalAskPct); setCard('card-l2c', 'stat-l2c', 'stat-l2c-signal', `${f.toFixed(1)}<span>%</span>`,
+ f >= 99 ? { cls: 'seller', label: '↓ Few cuts before contract' } : f < 95 ? { cls: 'buyer', label: '↑ Deep cuts before contract' } : { cls: 'neutral', label: '→ Modest cuts' }); }
  } catch (err) {
- console.warn('[market-conditions] Failed to load stats:', err.message);
- // Show static fallback
- const updEl = document.getElementById('update-date');
- if (updEl) updEl.textContent = 'Data temporarily unavailable - check back shortly';
-
- const vt = document.getElementById('verdict-text');
- const vd = document.getElementById('verdict-desc');
- const vi = document.getElementById('verdict-icon');
- if (vt) { vt.textContent = "Buyer's Market"; vt.className = 'verdict-text buyer'; }
- if (vi) { vi.textContent = '🏡'; vi.className = 'verdict-icon buyer'; }
- if (vd) vd.textContent = 'Austin is currently a buyer\'s market in most price ranges - see the analysis below for details.';
-
- const needle = document.getElementById('meter-needle');
- if (needle) setTimeout(() => { needle.style.left = '25%'; }, 50);
-
- const ms = document.getElementById('meter-score');
- if (ms) { ms.textContent = '28'; ms.style.color = '#3b82f6'; }
-
- const mn = document.getElementById('meter-score-note');
- if (mn) mn.textContent = 'Based on current Austin MLS absorption data - buyer\'s market conditions prevail across most of the metro.';
+ console.warn('[market-conditions] live refresh skipped:', err.message);
  }
  })();
 

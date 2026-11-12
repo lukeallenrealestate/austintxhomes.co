@@ -636,6 +636,15 @@ ${listingsGridScript({ forRent: false, citySlug: n.slug, subdivisionName: n.subd
 // PAGE 3: Homes for Rent - /round-rock/:slug/homes-for-rent
 // ============================================================
 function renderHomesForRent(n) {
+  // Asking rents from active MLS rental listings (live tokens). Only
+  // neighborhoods with a deep rental sample carry a rentScope; the rest show
+  // a clearly labeled Round Rock-wide figure instead of a thin local median.
+  const rentLead = n.rentScope
+    ? ` Monthly asking rents for the middle half of current listings run from {{live:${n.rentScope}:p25Rent|the low end}} to {{live:${n.rentScope}:p75Rent|the high end of the Round Rock range}}.`
+    : ` ${escHtml(n.name)} usually has only a handful of rentals listed at once, so for context: the median monthly ask for MLS-listed rental houses across Round Rock is {{live:city=Round Rock;lease=1;type=sfr:medianRent|refreshed daily from the MLS}}.`;
+  const rentStat = n.rentScope
+    ? `<div class="stat-num">{{live:${n.rentScope}:medianRent|See listings}}</div><div class="stat-label">Median Asking Rent</div>`
+    : `<div class="stat-num">{{live:city=Round Rock;lease=1;type=sfr:medianRent|See listings}}</div><div class="stat-label">Round Rock House Rent (Median Ask)</div>`;
   const title = `Homes for Rent in ${n.name} Round Rock TX | Live MLS | Luke Allen`;
   const description = `Browse homes for rent in ${n.name}, Round Rock TX. ${n.schools.split(' - ')[0]}. Updated daily from MLS. Free renter representation.`;
   const canonical = `https://austintxhomes.co/round-rock/${n.slug}/homes-for-rent`;
@@ -665,7 +674,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
       <div class="hero-breadcrumb"><a href="/round-rock">Round Rock</a> &nbsp;›&nbsp; <a href="/round-rock/${n.slug}">${escHtml(n.name)}</a> &nbsp;›&nbsp; Homes for Rent</div>
       <p class="hero-eye">Homes for Rent</p>
       <h1>${escHtml(n.name)} Homes <em>For Rent</em></h1>
-      <p class="lead">Current rentals in ${escHtml(n.name)}, Round Rock - updated daily from MLS.</p>
+      <p class="lead">Current rentals in ${escHtml(n.name)}, Round Rock - updated daily from MLS.${rentLead}</p>
     </div>
     <div class="hero-form">
       <h3>${escHtml(n.name)} Rental Help</h3>
@@ -692,7 +701,7 @@ ${renderHead({ title, description, canonical, schemaBlocks })}
     <div class="stat"><div class="stat-num">${escHtml(n.schools.split(' - ')[0])}</div><div class="stat-label">School District</div></div>
     <div class="stat"><div class="stat-num">${escHtml(n.zips.join(', '))}</div><div class="stat-label">Zip Code${n.zips.length > 1 ? 's' : ''}</div></div>
     <div class="stat"><div class="stat-num">Free</div><div class="stat-label">Representation</div></div>
-    <div class="stat"><div class="stat-num">Daily</div><div class="stat-label">MLS Updates</div></div>
+    <div class="stat">${rentStat}</div>
   </div>
 </div>
 

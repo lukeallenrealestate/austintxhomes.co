@@ -118,7 +118,7 @@
    {
     "@type": "Question",
     "name": "Which Austin submarkets have the most new construction right now?",
-    "acceptedAnswer": { "@type": "Answer", "text": "Roughly 5,363 active new-construction listings across the metro today. Highest inventory concentrations: Austin proper (1,037 active, avg $915K), Georgetown (468, avg $534K), Kyle (305, avg $337K), Liberty Hill (278, avg $589K), Leander (271, avg $530K), Buda (223, avg $346K), Elgin (217, avg $264K), Pflugerville (209, avg $397K), Hutto (183, avg $462K, driven partly by Samsung Taylor supplier demand), and Bastrop (169, avg $391K). Each submarket has its own set of active builders, incentive patterns, and typical buyer profile. Elgin, Kyle, and Buda skew first-time and value buyers. Georgetown skews family and 55-plus. Austin proper skews close-in luxury and downtown condo new-build. The right submarket for your specific need is usually not the one the sales trailer is aggressively marketing." }
+    "acceptedAnswer": { "@type": "Answer", "text": "The MLS shows {{live:metro;newcon=1:count}} active new-construction listings across the metro right now. Austin proper carries the most ({{live:city=Austin;newcon=1:count}} active, median ask {{live:city=Austin;newcon=1:medianPrice|the highest in the metro}}), followed by Georgetown ({{live:city=Georgetown;newcon=1:count}}, median {{live:city=Georgetown;newcon=1:medianPrice|suburban family pricing}}). Kyle, Liberty Hill, Leander, Buda, Elgin, Pflugerville, Hutto (where Samsung Taylor supplier demand adds pressure), and Bastrop each hold deep new-build inventory as well; Kyle's median new-build ask is {{live:city=Kyle;newcon=1:medianPrice|among the lowest in the metro}} and Liberty Hill's is {{live:city=Liberty Hill;newcon=1:medianPrice|in the suburban family tier}}. Each submarket has its own set of active builders, incentive patterns, and typical buyer profile. Elgin, Kyle, and Buda skew first-time and value buyers. Georgetown skews family and 55-plus. Austin proper skews close-in luxury and downtown condo new-build. The right submarket for your specific need is usually not the one the sales trailer is aggressively marketing." }
    },
    {
     "@type": "Question",
@@ -299,84 +299,84 @@
 <section class="inv-section">
  <div class="inv-inner">
   <div class="inv-eyebrow">The Austin new-construction market</div>
-  <h2 class="inv-title">Roughly <em>5,363 active</em> new-build listings across the metro</h2>
-  <div class="inv-source">Source: ACTRIS MLS, pulled September 30, 2026. Active new-construction homes only.</div>
+  <h2 class="inv-title"><em>{{live:metro;newcon=1:count}} active</em> new-build listings across the metro</h2>
+  <div class="inv-source">Source: ACTRIS MLS, refreshed automatically. Active new-construction homes only; prices are median asking prices.</div>
   <div class="metro-count">
-   <div class="mc-num">5,363</div>
+   <div class="mc-num">{{live:metro;newcon=1:count}}</div>
    <div class="mc-lbl">Active new-construction listings, Austin metro</div>
   </div>
   <div class="cities-grid">
    <div class="city-card">
     <div class="city-name">Austin</div>
-    <div class="city-count">1,037</div>
+    <div class="city-count">{{live:city=Austin;newcon=1:count}}</div>
     <div class="city-count-lbl">active</div>
-    <div class="city-price">Avg $915K</div>
+    <div class="city-price">Median {{live:city=Austin;newcon=1:medianPrice|new-build pricing}}</div>
    </div>
    <div class="city-card">
     <div class="city-name">Georgetown</div>
-    <div class="city-count">468</div>
+    <div class="city-count">{{live:city=Georgetown;newcon=1:count}}</div>
     <div class="city-count-lbl">active</div>
-    <div class="city-price">Avg $534K</div>
+    <div class="city-price">Median {{live:city=Georgetown;newcon=1:medianPrice|new-build pricing}}</div>
    </div>
    <div class="city-card">
     <div class="city-name">Kyle</div>
-    <div class="city-count">305</div>
+    <div class="city-count">{{live:city=Kyle;newcon=1:count}}</div>
     <div class="city-count-lbl">active</div>
-    <div class="city-price">Avg $337K</div>
+    <div class="city-price">Median {{live:city=Kyle;newcon=1:medianPrice|new-build pricing}}</div>
    </div>
    <div class="city-card">
     <div class="city-name">Liberty Hill</div>
-    <div class="city-count">278</div>
+    <div class="city-count">{{live:city=Liberty Hill;newcon=1:count}}</div>
     <div class="city-count-lbl">active</div>
-    <div class="city-price">Avg $589K</div>
+    <div class="city-price">Median {{live:city=Liberty Hill;newcon=1:medianPrice|new-build pricing}}</div>
    </div>
    <div class="city-card">
     <div class="city-name">Leander</div>
-    <div class="city-count">271</div>
+    <div class="city-count">{{live:city=Leander;newcon=1:count}}</div>
     <div class="city-count-lbl">active</div>
-    <div class="city-price">Avg $530K</div>
+    <div class="city-price">Median {{live:city=Leander;newcon=1:medianPrice|new-build pricing}}</div>
    </div>
    <div class="city-card">
     <div class="city-name">Buda</div>
-    <div class="city-count">223</div>
+    <div class="city-count">{{live:city=Buda;newcon=1:count}}</div>
     <div class="city-count-lbl">active</div>
-    <div class="city-price">Avg $346K</div>
+    <div class="city-price">Median {{live:city=Buda;newcon=1:medianPrice|new-build pricing}}</div>
    </div>
    <div class="city-card">
     <div class="city-name">Elgin</div>
-    <div class="city-count">217</div>
+    <div class="city-count">{{live:city=Elgin;newcon=1:count}}</div>
     <div class="city-count-lbl">active</div>
-    <div class="city-price">Avg $264K</div>
+    <div class="city-price">Median {{live:city=Elgin;newcon=1:medianPrice|new-build pricing}}</div>
    </div>
    <div class="city-card">
     <div class="city-name">Pflugerville</div>
-    <div class="city-count">209</div>
+    <div class="city-count">{{live:city=Pflugerville;newcon=1:count}}</div>
     <div class="city-count-lbl">active</div>
-    <div class="city-price">Avg $397K</div>
+    <div class="city-price">Median {{live:city=Pflugerville;newcon=1:medianPrice|new-build pricing}}</div>
    </div>
    <div class="city-card">
     <div class="city-name">San Marcos</div>
-    <div class="city-count">198</div>
+    <div class="city-count">{{live:city=San Marcos;newcon=1:count}}</div>
     <div class="city-count-lbl">active</div>
-    <div class="city-price">Avg $316K</div>
+    <div class="city-price">Median {{live:city=San Marcos;newcon=1:medianPrice|new-build pricing}}</div>
    </div>
    <div class="city-card">
     <div class="city-name">Jarrell</div>
-    <div class="city-count">188</div>
+    <div class="city-count">{{live:city=Jarrell;newcon=1:count}}</div>
     <div class="city-count-lbl">active</div>
-    <div class="city-price">Avg $268K</div>
+    <div class="city-price">Median {{live:city=Jarrell;newcon=1:medianPrice|new-build pricing}}</div>
    </div>
    <div class="city-card">
     <div class="city-name">Hutto</div>
-    <div class="city-count">183</div>
+    <div class="city-count">{{live:city=Hutto;newcon=1:count}}</div>
     <div class="city-count-lbl">active</div>
-    <div class="city-price">Avg $462K</div>
+    <div class="city-price">Median {{live:city=Hutto;newcon=1:medianPrice|new-build pricing}}</div>
    </div>
    <div class="city-card">
     <div class="city-name">Bastrop</div>
-    <div class="city-count">169</div>
+    <div class="city-count">{{live:city=Bastrop;newcon=1:count}}</div>
     <div class="city-count-lbl">active</div>
-    <div class="city-price">Avg $391K</div>
+    <div class="city-price">Median {{live:city=Bastrop;newcon=1:medianPrice|new-build pricing}}</div>
    </div>
   </div>
  </div>
@@ -519,10 +519,10 @@
  <p>The 12 cities in the snapshot above cover the metro's active new-construction inventory, but they serve very different buyer profiles.</p>
 
  <ul>
-  <li><strong>Elgin ($264K avg), Kyle ($337K), Buda ($346K), San Marcos ($316K), Jarrell ($268K).</strong> First-time and value-buyer market. Long commutes to central Austin but strong new-build inventory in the $250K-$400K band. Best for buyers whose employer is not in central Austin and who want maximum square footage per dollar.</li>
-  <li><strong>Pflugerville ($397K), Bastrop ($391K), Hutto ($462K).</strong> Working middle-band. Growing family buyer segment. Hutto has additional demand pressure from Samsung Taylor and supplier ecosystem. See the Samsung Taylor relocation guide for the Hutto specifics.</li>
-  <li><strong>Leander ($530K), Georgetown ($534K), Liberty Hill ($589K).</strong> Suburban family tier with strong school districts (Leander ISD, Georgetown ISD). Georgetown has additional 55-plus concentration through Sun City. See the downsizing playbook.</li>
-  <li><strong>Austin proper ($915K).</strong> Central Austin close-in new-build luxury, downtown condo new construction, and infill in-town SFH. Materially different price band from the surrounding metro cities. Best for buyers with FAANG-elite compensation or existing significant equity from a previous sale.</li>
+  <li><strong>Elgin ({{live:city=Elgin;newcon=1:medianPrice|entry pricing}} median), Kyle ({{live:city=Kyle;newcon=1:medianPrice|entry pricing}}), Buda ({{live:city=Buda;newcon=1:medianPrice|entry pricing}}), San Marcos ({{live:city=San Marcos;newcon=1:medianPrice|entry pricing}}), Jarrell ({{live:city=Jarrell;newcon=1:medianPrice|entry pricing}}).</strong> First-time and value-buyer market. Long commutes to central Austin but deep new-build inventory at the lowest price points in the metro. Best for buyers whose employer is not in central Austin and who want maximum square footage per dollar.</li>
+  <li><strong>Pflugerville ({{live:city=Pflugerville;newcon=1:medianPrice|middle-band pricing}}), Bastrop ({{live:city=Bastrop;newcon=1:medianPrice|middle-band pricing}}), Hutto ({{live:city=Hutto;newcon=1:medianPrice|middle-band pricing}}).</strong> Working middle-band. Growing family buyer segment. Hutto has additional demand pressure from Samsung Taylor and supplier ecosystem. See the Samsung Taylor relocation guide for the Hutto specifics.</li>
+  <li><strong>Leander ({{live:city=Leander;newcon=1:medianPrice|family-tier pricing}}), Georgetown ({{live:city=Georgetown;newcon=1:medianPrice|family-tier pricing}}), Liberty Hill ({{live:city=Liberty Hill;newcon=1:medianPrice|family-tier pricing}}).</strong> Suburban family tier with strong school districts (Leander ISD, Georgetown ISD). Georgetown has additional 55-plus concentration through Sun City. See the downsizing playbook.</li>
+  <li><strong>Austin proper ({{live:city=Austin;newcon=1:medianPrice|the top price band}} median new-build ask).</strong> Central Austin close-in new-build luxury, downtown condo new construction, and infill in-town SFH. Materially different price band from the surrounding metro cities. Best for buyers with FAANG-elite compensation or existing significant equity from a previous sale.</li>
  </ul>
 
  <h2>How I actually <em>work</em> a new-construction deal</h2>

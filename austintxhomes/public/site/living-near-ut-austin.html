@@ -59,7 +59,7 @@
  "@context": "https://schema.org",
  "@type": "FAQPage",
  "mainEntity": [
- { "@type": "Question", "name": "What is the best neighborhood near UT Austin for students?", "acceptedAnswer": { "@type": "Answer", "text": "West Campus is the most popular neighborhood for UT students. It's within walking distance of campus (5-10 minutes), packed with high-rise apartments, condos, co-ops, restaurants, and coffee shops along Guadalupe Street ('The Drag'). About 90% of off-campus UT students live in West Campus. Most active listings in its 78705 ZIP are asking between {{live:zip=78705:p10Price}} and {{live:zip=78705:p90Price}} right now." }},
+ { "@type": "Question", "name": "What is the best neighborhood near UT Austin for students?", "acceptedAnswer": { "@type": "Answer", "text": "West Campus is the most popular neighborhood for UT students. It's within walking distance of campus (5-10 minutes), packed with high-rise apartments, condos, co-ops, restaurants, and coffee shops along Guadalupe Street ('The Drag'). About 90% of off-campus UT students live in West Campus. Most active listings in its 78705 ZIP are asking between {{live:zip=78705:p10Price}} and {{live:zip=78705:p90Price}} right now. On the rental side, the median monthly asking rent across rentals listed on the MLS in 78705 is {{live:zip=78705;lease=1:medianRent|easy to check against current West Campus listings}}." }},
  { "@type": "Question", "name": "Is it worth buying a condo near UT Austin instead of renting?", "acceptedAnswer": { "@type": "Answer", "text": "For many out-of-state families, buying a condo near UT Austin is a smart financial move. It eliminates 4 years of rent, can help the student establish Texas residency for in-state tuition (saving approximately $100K over 3 years), and builds equity. West Campus listings start around {{live:zip=78705:p10Price}} right now, while North Campus and East Austin offer more space at higher price points. Many parents recoup their investment, or profit, when they sell after graduation." }},
  { "@type": "Question", "name": "How do UT Austin students get around without a car?", "acceptedAnswer": { "@type": "Answer", "text": "UT students get a free CapMetro bus pass with their UT ID, which covers all city bus routes and the MetroRail. The campus and West Campus are very walkable. Protected bike lanes connect North Campus, East Austin, and Downtown to the university. Most students in West Campus or North Campus don't need a car. Students living in East Austin, Downtown, or South Austin typically use the bus, bike, or rideshare." }},
  { "@type": "Question", "name": "Is it safe to live near UT Austin?", "acceptedAnswer": { "@type": "Answer", "text": "The UT campus area is generally safe. UTPD (University of Texas Police Department) patrols the campus and surrounding neighborhoods 24/7. The SURE Walk program provides free walking escorts for students at night. West Campus and North Campus have well-lit streets and high foot traffic. As with any urban area, students should stay aware of their surroundings, especially late at night. Crime maps from UTPD and APD are publicly available." }},
@@ -248,8 +248,8 @@
  <select name="budget" aria-label="Budget">
  <option value="">Select</option>
  <option>Under $300K</option>
- <option>$300K, $500K</option>
- <option>$500K, $800K</option>
+ <option>$300K to $500K</option>
+ <option>$500K to $800K</option>
  <option>$800K+</option>
  <option>Renting Only</option>
  </select>
@@ -303,6 +303,7 @@
  <div class="hood-sidebar">
  <div class="sidebar-row"><span class="sidebar-label">Distance to UT</span><span class="sidebar-val">5 to 10 min walk</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Typical Asking Range</span><span class="sidebar-val">{{live:zip=78705:p10Price}} to {{live:zip=78705:p90Price}}</span></div>
+ <div class="sidebar-row"><span class="sidebar-label">Median Asking Rent</span><span class="sidebar-val">{{live:zip=78705;lease=1:medianRent|See current rentals}}</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Rental Demand</span><span class="sidebar-val">Highest, student-driven</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Walk Score</span><span class="sidebar-val">95</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Vibe</span><span class="sidebar-val">High-energy, social</span></div>
@@ -323,12 +324,13 @@
  <li>Restaurants and shops along Duval Street</li>
  <li>Established, safe, family-friendly neighborhood</li>
  </ul>
- <p>Most active listings in North Campus and Hyde Park's 78751 ZIP are asking between <strong>{{live:zip=78751:p10Price}} and {{live:zip=78751:p90Price}}</strong> right now. Rent typically runs a little below West Campus. Properties here tend to hold value well due to the neighborhood's historic character and strong demand from both students and young professionals.</p>
+ <p>Most active listings in North Campus and Hyde Park's 78751 ZIP are asking between <strong>{{live:zip=78751:p10Price}} and {{live:zip=78751:p90Price}}</strong> right now. For rentals, the median monthly asking rent among MLS-listed units in 78751 is {{live:zip=78751;lease=1:medianRent|in the same general range as West Campus}}, versus {{live:zip=78705;lease=1:medianRent|the West Campus median}} in 78705. Properties here tend to hold value well due to the neighborhood's historic character and strong demand from both students and young professionals.</p>
  <a href="/hyde-park-homes-for-sale" class="hood-link">Browse Hyde Park homes for sale &#8594;</a>
  </div>
  <div class="hood-sidebar">
  <div class="sidebar-row"><span class="sidebar-label">Distance to UT</span><span class="sidebar-val">10 to 15 min bike</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Typical Asking Range</span><span class="sidebar-val">{{live:zip=78751:p10Price}} to {{live:zip=78751:p90Price}}</span></div>
+ <div class="sidebar-row"><span class="sidebar-label">Median Asking Rent</span><span class="sidebar-val">{{live:zip=78751;lease=1:medianRent|See current rentals}}</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Rental Demand</span><span class="sidebar-val">Steady, below West Campus</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Walk Score</span><span class="sidebar-val">82</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Vibe</span><span class="sidebar-val">Calm, charming, local</span></div>
@@ -355,6 +357,7 @@
  <div class="hood-sidebar">
  <div class="sidebar-row"><span class="sidebar-label">Distance to UT</span><span class="sidebar-val">15 to 20 min bus/bike</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Typical Asking Range</span><span class="sidebar-val">{{live:zip=78702:p10Price}} to {{live:zip=78702:p90Price}}</span></div>
+ <div class="sidebar-row"><span class="sidebar-label">Median Asking Rent</span><span class="sidebar-val">{{live:zip=78702;lease=1:medianRent|See current rentals}}</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Rental Demand</span><span class="sidebar-val">Strong, upperclassmen and grads</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Walk Score</span><span class="sidebar-val">78</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Vibe</span><span class="sidebar-val">Trendy, creative, growing</span></div>
@@ -375,11 +378,12 @@
  <li>Congress Avenue, 2nd Street District, and Warehouse District all nearby</li>
  <li>Strong rental demand from young professionals after the student graduates</li>
  </ul>
- <p>Most active downtown listings in 78701 are asking between <strong>{{live:zip=78701:p10Price}} and {{live:zip=78701:p90Price}}</strong> right now, and rents sit at the top of the UT-area market. This is the premium tier of UT-area real estate. The investment thesis is strong: downtown condos appeal to students, young professionals, and corporate renters alike, so the exit strategy is flexible.</p>
+ <p>Most active downtown listings in 78701 are asking between <strong>{{live:zip=78701:p10Price}} and {{live:zip=78701:p90Price}}</strong> right now, and the median monthly asking rent for MLS-listed rentals downtown is {{live:zip=78701;lease=1:medianRent|the highest of these five areas}}. This is the premium tier of UT-area real estate. The investment thesis is strong: downtown condos appeal to students, young professionals, and corporate renters alike, so the exit strategy is flexible.</p>
  </div>
  <div class="hood-sidebar">
  <div class="sidebar-row"><span class="sidebar-label">Distance to UT</span><span class="sidebar-val">15 to 20 min walk/bus</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Typical Asking Range</span><span class="sidebar-val">{{live:zip=78701:p10Price}} to {{live:zip=78701:p90Price}}</span></div>
+ <div class="sidebar-row"><span class="sidebar-label">Median Asking Rent</span><span class="sidebar-val">{{live:zip=78701;lease=1:medianRent|See current rentals}}</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Rental Demand</span><span class="sidebar-val">Premium, professional tenants</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Walk Score</span><span class="sidebar-val">90</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Vibe</span><span class="sidebar-val">Upscale, urban, vibrant</span></div>
@@ -406,6 +410,7 @@
  <div class="hood-sidebar">
  <div class="sidebar-row"><span class="sidebar-label">Distance to UT</span><span class="sidebar-val">20 to 25 min bus</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Typical Asking Range</span><span class="sidebar-val">{{live:zip=78704:p10Price}} to {{live:zip=78704:p90Price}}</span></div>
+ <div class="sidebar-row"><span class="sidebar-label">Median Asking Rent</span><span class="sidebar-val">{{live:zip=78704;lease=1:medianRent|See current rentals}}</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Rental Demand</span><span class="sidebar-val">Long-term, family tenants</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Walk Score</span><span class="sidebar-val">72</span></div>
  <div class="sidebar-row"><span class="sidebar-label">Vibe</span><span class="sidebar-val">Outdoorsy, laid-back</span></div>
@@ -423,7 +428,7 @@
  <div class="sh">
  <span class="eyebrow">Side by Side</span>
  <h2>Neighborhood <em>Comparison Table</em></h2>
- <p>A quick-reference comparison of all five neighborhoods near UT Austin, distance, price, rental demand, walkability, and overall vibe. Asking ranges cover the middle 80% of active listings in each area's main ZIP code and update automatically.</p>
+ <p>A quick-reference comparison of all five neighborhoods near UT Austin, distance, price, rental demand, walkability, and overall vibe. Asking ranges cover the middle 80% of active for-sale listings in each area's main ZIP code, rents are the median monthly asking rent of rentals currently listed on the MLS in that ZIP, and both update automatically.</p>
  </div>
  <div class="comp-table-wrap">
  <table class="comp-table">
@@ -432,6 +437,7 @@
  <th>Neighborhood</th>
  <th>Distance to UT</th>
  <th>Typical Asking Range</th>
+ <th>Median Asking Rent</th>
  <th>Rental Demand</th>
  <th>Walk Score</th>
  <th>Vibe</th>
@@ -442,6 +448,7 @@
  <td>West Campus</td>
  <td>5 to 10 min walk</td>
  <td>{{live:zip=78705:p10Price}} to {{live:zip=78705:p90Price}}</td>
+ <td>{{live:zip=78705;lease=1:medianRent|Varies}}</td>
  <td>Highest, student-driven</td>
  <td>95</td>
  <td>High-energy, social</td>
@@ -450,6 +457,7 @@
  <td>North Campus / Hyde Park</td>
  <td>10 to 15 min bike</td>
  <td>{{live:zip=78751:p10Price}} to {{live:zip=78751:p90Price}}</td>
+ <td>{{live:zip=78751;lease=1:medianRent|Varies}}</td>
  <td>Steady</td>
  <td>82</td>
  <td>Calm, charming</td>
@@ -458,6 +466,7 @@
  <td>East Austin</td>
  <td>15 to 20 min bus/bike</td>
  <td>{{live:zip=78702:p10Price}} to {{live:zip=78702:p90Price}}</td>
+ <td>{{live:zip=78702;lease=1:medianRent|Varies}}</td>
  <td>Strong</td>
  <td>78</td>
  <td>Trendy, creative</td>
@@ -466,6 +475,7 @@
  <td>Downtown / Rainey St.</td>
  <td>15 to 20 min walk/bus</td>
  <td>{{live:zip=78701:p10Price}} to {{live:zip=78701:p90Price}}</td>
+ <td>{{live:zip=78701;lease=1:medianRent|Varies}}</td>
  <td>Premium</td>
  <td>90</td>
  <td>Upscale, urban</td>
@@ -474,6 +484,7 @@
  <td>South Austin / Zilker</td>
  <td>20 to 25 min bus</td>
  <td>{{live:zip=78704:p10Price}} to {{live:zip=78704:p90Price}}</td>
+ <td>{{live:zip=78704;lease=1:medianRent|Varies}}</td>
  <td>Long-term, family</td>
  <td>72</td>
  <td>Outdoorsy, laid-back</td>
@@ -550,7 +561,7 @@
  <div class="faq-list">
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0"><span class="faq-q-text">What is the best neighborhood near UT Austin for students?</span><span class="faq-icon">+</span></div>
- <div class="faq-a">West Campus is the most popular neighborhood for UT students. It's within walking distance of campus (5 to 10 minutes), packed with high-rise apartments, condos, co-ops, restaurants, and coffee shops along Guadalupe Street ("The Drag"). About 90% of off-campus UT students live in West Campus. Most active listings in its 78705 ZIP are asking between {{live:zip=78705:p10Price}} and {{live:zip=78705:p90Price}} right now.</div>
+ <div class="faq-a">West Campus is the most popular neighborhood for UT students. It's within walking distance of campus (5 to 10 minutes), packed with high-rise apartments, condos, co-ops, restaurants, and coffee shops along Guadalupe Street ("The Drag"). About 90% of off-campus UT students live in West Campus. Most active listings in its 78705 ZIP are asking between {{live:zip=78705:p10Price}} and {{live:zip=78705:p90Price}} right now. On the rental side, the median monthly asking rent across rentals listed on the MLS in 78705 is {{live:zip=78705;lease=1:medianRent|easy to check against current West Campus listings}}.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q" role="button" tabindex="0"><span class="faq-q-text">Is it worth buying a condo near UT Austin instead of renting?</span><span class="faq-icon">+</span></div>

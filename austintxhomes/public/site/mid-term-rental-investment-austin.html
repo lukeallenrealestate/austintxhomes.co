@@ -114,7 +114,7 @@
    {
     "@type": "Question",
     "name": "What is a realistic cap rate on an Austin mid-term rental?",
-    "acceptedAnswer": { "@type": "Answer", "text": "Honest number for a well-run Austin MTR is 5 to 8 percent net after operating costs, which is materially better than long-term rental (typically 4 to 5 percent) and materially better than the honest STR number (3 to 6 percent net after all costs and property tax reassessment). The MTR yield advantage comes from three places: the furnished premium is 40 to 80 percent above unfurnished long-term rent, turnover cost is dramatically lower than STR (one turnover per 30-90 days versus one per 3-5 days), and MTR tenants tend to be professionally screened and stable. Cap rate downside cases exist too. A poorly located MTR outside the three demand corridors can easily fall to long-term rental economics or worse." }
+    "acceptedAnswer": { "@type": "Answer", "text": "There is no honest single number, because the yield depends on the corridor, the purchase price, the HOA, and how well the unit stays booked, and I run that math property by property rather than quoting a market-wide figure. What holds in general: a well-run Austin MTR in one of the three demand corridors usually nets more than a 12-month lease on the same unit, and it tends to beat the honest STR result once STR costs and property tax reassessment are counted. The MTR advantage comes from three places: furnished monthly rates sit well above unfurnished 12-month asking rents, turnover cost is dramatically lower than STR (one turnover per 30-90 days versus one per 3-5 days), and MTR tenants tend to be professionally screened and stable. Cap rate downside cases exist too. A poorly located MTR outside the three demand corridors can easily fall to long-term rental economics or worse." }
    },
    {
     "@type": "Question",
@@ -287,7 +287,7 @@
  <div class="hero-veil"></div>
  <p class="hero-eyebrow">Mid-term rental investment &middot; Austin TX</p>
  <h1>Austin mid-term rentals: <em>the STR-refugee</em> strategy that actually works</h1>
- <p class="hero-sub">Furnished 30 to 90 day rentals sidestep the Austin STR ordinance entirely, deliver 5 to 8 percent honest cap rates, and draw a professional tenant base (travel nurses, corporate temp, insurance housing) that most investors never build for. Three demand corridors, real MLS inventory, and the working economics from an Austin realtor who has closed both STR and long-term rental deals.</p>
+ <p class="hero-sub">Furnished 30 to 90 day rentals sidestep the Austin STR ordinance entirely, can out-earn a standard 12-month lease on the same property, and draw a professional tenant base (travel nurses, corporate temp, insurance housing) that most investors never build for. Three demand corridors, real MLS inventory, and the working economics from an Austin realtor who has closed both STR and long-term rental deals.</p>
  <p class="hero-meta">By Luke Allen &middot; TREC #788149 &middot; Updated September 29, 2026</p>
  <a href="#connect" class="hero-cta">Talk to Luke about your Austin MTR purchase</a>
 </section>
@@ -342,29 +342,32 @@
  <div class="snapshot-inner">
   <div class="snapshot-eyebrow">Live inventory in the three MTR corridors</div>
   <h2 class="snap-title">The <em>three demand corridors</em> that drive Austin MTR</h2>
-  <div class="snapshot-source">Source: ACTRIS MLS, pulled September 29, 2026. Single-family + condo.</div>
+  <div class="snapshot-source">Source: ACTRIS MLS, live as of {{asof}}. Sale listings unless noted; rent figures are asking rents on MLS-listed rentals.</div>
   <div class="snapshot-columns">
    <div class="snapshot-card">
     <div class="snapshot-col-title">Medical corridor 78702 / 78722 / 78704 / 78723</div>
-    <div class="snapshot-line"><span class="l">Active SFH + condo total</span><span class="n">941</span></div>
-    <div class="snapshot-line"><span class="l">In the $400-800K MTR band</span><span class="n">310</span></div>
-    <div class="snapshot-line"><span class="l">Median $/sqft in band</span><span class="n">$462</span></div>
+    <div class="snapshot-line"><span class="l">Active for-sale listings</span><span class="n">{{live:zip=78702,78722,78704,78723:count}}</span></div>
+    <div class="snapshot-line"><span class="l">In the $400-800K MTR band</span><span class="n">{{live:zip=78702,78722,78704,78723;min=400000;max=800000:count|Dozens}}</span></div>
+    <div class="snapshot-line"><span class="l">Median $/sqft in band</span><span class="n">{{live:zip=78702,78722,78704,78723;min=400000;max=800000:medianPpsf|Varies}}</span></div>
+    <div class="snapshot-line"><span class="l">Median asking rent, 2BR rentals</span><span class="n">{{live:zip=78702,78722,78704,78723;lease=1;beds=2:medianRent|Varies}}</span></div>
     <div class="snapshot-line"><span class="l">Primary tenant</span><span class="n">Travel nurses</span></div>
     <div class="snapshot-line"><span class="l">Peak season</span><span class="n">Year-round</span></div>
    </div>
    <div class="snapshot-card">
     <div class="snapshot-col-title">Tech corridor 78759 / 78758 / 78727 / 78729</div>
-    <div class="snapshot-line"><span class="l">Active SFH + condo total</span><span class="n">406</span></div>
-    <div class="snapshot-line"><span class="l">In the $400-700K MTR band</span><span class="n">122</span></div>
-    <div class="snapshot-line"><span class="l">Median $/sqft in band</span><span class="n">$291</span></div>
+    <div class="snapshot-line"><span class="l">Active for-sale listings</span><span class="n">{{live:zip=78759,78758,78727,78729:count}}</span></div>
+    <div class="snapshot-line"><span class="l">In the $400-700K MTR band</span><span class="n">{{live:zip=78759,78758,78727,78729;min=400000;max=700000:count|Dozens}}</span></div>
+    <div class="snapshot-line"><span class="l">Median $/sqft in band</span><span class="n">{{live:zip=78759,78758,78727,78729;min=400000;max=700000:medianPpsf|Varies}}</span></div>
+    <div class="snapshot-line"><span class="l">Median asking rent, 3BR rentals</span><span class="n">{{live:zip=78759,78758,78727,78729;lease=1;beds=3:medianRent|Varies}}</span></div>
     <div class="snapshot-line"><span class="l">Primary tenant</span><span class="n">Corporate temp</span></div>
     <div class="snapshot-line"><span class="l">Peak season</span><span class="n">Year-round, Q1 heavy</span></div>
    </div>
    <div class="snapshot-card">
     <div class="snapshot-col-title">Downtown 78701 condos</div>
-    <div class="snapshot-line"><span class="l">Active 78701 condos total</span><span class="n">356</span></div>
-    <div class="snapshot-line"><span class="l">In the $400-800K MTR band</span><span class="n">114</span></div>
-    <div class="snapshot-line"><span class="l">Median $/sqft in band</span><span class="n">$697</span></div>
+    <div class="snapshot-line"><span class="l">Active 78701 condos total</span><span class="n">{{live:zip=78701;type=condo:count|Dozens}}</span></div>
+    <div class="snapshot-line"><span class="l">In the $400-800K MTR band</span><span class="n">{{live:zip=78701;type=condo;min=400000;max=800000:count|Dozens}}</span></div>
+    <div class="snapshot-line"><span class="l">Median $/sqft in band</span><span class="n">{{live:zip=78701;type=condo;min=400000;max=800000:medianPpsf|Varies}}</span></div>
+    <div class="snapshot-line"><span class="l">Median asking rent, condo rentals</span><span class="n">{{live:zip=78701;lease=1;type=condo:medianRent|Varies}}</span></div>
     <div class="snapshot-line"><span class="l">Primary tenant</span><span class="n">Executives + digital nomads</span></div>
     <div class="snapshot-line"><span class="l">Peak season</span><span class="n">Spring + fall event calendar</span></div>
    </div>
@@ -386,31 +389,31 @@
 
  <div class="cap-comp">
   <div class="cap-comp-row header">
-   <div>Strategy</div><div style="text-align: right;">Cap rate</div><div>Overhead</div>
+   <div>Strategy</div><div style="text-align: right;">Net yield, relative</div><div>Overhead</div>
   </div>
   <div class="cap-comp-row">
    <div class="cap-comp-strategy">Long-term rental (12-month lease)</div>
-   <div class="cap-comp-cap">4-5%</div>
+   <div class="cap-comp-cap">Baseline</div>
    <div class="cap-comp-note">Lowest</div>
   </div>
   <div class="cap-comp-row">
    <div class="cap-comp-strategy"><strong>Mid-term rental (30-90 nights)</strong></div>
-   <div class="cap-comp-cap mtr">5-8%</div>
+   <div class="cap-comp-cap mtr">Above LTR</div>
    <div class="cap-comp-note">Moderate</div>
   </div>
   <div class="cap-comp-row">
    <div class="cap-comp-strategy">Short-term rental (Airbnb, viable submarkets)</div>
-   <div class="cap-comp-cap">3-6%</div>
+   <div class="cap-comp-cap">Volatile</div>
    <div class="cap-comp-note">Highest</div>
   </div>
   <div class="cap-comp-row">
    <div class="cap-comp-strategy">Investor multifamily (small MF)</div>
-   <div class="cap-comp-cap">4-6%</div>
+   <div class="cap-comp-cap">Near LTR</div>
    <div class="cap-comp-note">Moderate-high</div>
   </div>
  </div>
 
- <p>The MTR yield advantage is real and durable in the three demand corridors. It comes from three specific places: the furnished premium (rents 40 to 80 percent above unfurnished long-term in the same building), the low turnover cost (one turn per 30 to 90 days versus one per 3 to 5 nights for STR), and the professional tenant screening built into MTR bookings (travel nurse agencies pre-screen, corporate travel departments pre-screen, insurance housing coordinators pre-screen). None of that infrastructure exists on the STR side, and it removes the two biggest cost centers that eat STR yields.</p>
+ <p>The MTR yield advantage is real and durable in the three demand corridors. It comes from three specific places: the furnished premium (a furnished month-to-month rate sits well above the unfurnished 12-month asking rent in the same building; for a baseline, MLS-listed 2-bedroom rentals in the medical corridor ask a median of {{live:zip=78702,78722,78704,78723;lease=1;beds=2:medianRent|a solid monthly figure}} a month today), the low turnover cost (one turn per 30 to 90 days versus one per 3 to 5 nights for STR), and the professional tenant screening built into MTR bookings (travel nurse agencies pre-screen, corporate travel departments pre-screen, insurance housing coordinators pre-screen). None of that infrastructure exists on the STR side, and it removes the two biggest cost centers that eat STR yields.</p>
 
  <p class="pull">Mid-term rental is the rare Austin investment strategy where a moderate income increase, a moderate overhead decrease, and a regulatory-risk decrease all move in the same direction. That is why it works.</p>
 
@@ -424,7 +427,7 @@
 
  <p>The Austin medical corridor is the strongest and most consistent MTR demand pocket in the metro. Dell Medical School and its affiliated teaching-hospital network, UT Health Austin, Ascension Seton, and the various St. David's Medical Center facilities together employ thousands of physicians, nurses, and allied health workers, and they rotate a continuous flow of travel-contract nurses and healthcare consultants who need furnished 13 week housing. Furnished Finder is where most of these tenants book, and Furnished Finder search ranks by proximity to the specific hospital, which means proximity to the hospital is the single biggest variable in whether the property fills.</p>
 
- <p>My recommended MTR product in the medical corridor is a 1 or 2 bedroom furnished unit within a 10 minute drive of at least two of the major hospital campuses, priced $400K to $700K on acquisition and furnished for $18K to $25K. Cap rate for a well-placed unit at 75 percent occupancy runs 6 to 8 percent net, which is materially above long-term rental in the same neighborhood. The primary risk is off-season occupancy dips during winter holiday and mid-summer weeks, which every MTR operator plans for.</p>
+ <p>My recommended MTR product in the medical corridor is a 1 or 2 bedroom furnished unit within a 10 minute drive of at least two of the major hospital campuses, priced $400K to $700K on acquisition and furnished for $18K to $25K. A well-placed unit that stays booked should net meaningfully more than a 12-month lease in the same neighborhood, and I run that comparison on the specific unit before you write an offer. The primary risk is off-season occupancy dips during winter holiday and mid-summer weeks, which every MTR operator plans for.</p>
 
  <h2>Corridor 2  -  <em>Tech</em>, the corporate-temp thesis</h2>
 
@@ -434,9 +437,9 @@
   <p class="corridor-sub">Fits: investor targeting Apple, AMD, Samsung supplier, tech-consultant temp assignments, $400-600K</p>
  </div>
 
- <p>The tech corridor MTR thesis rides the corporate temp market that surrounds the Apple Parmer Lane campus (see <a href="/apple-austin-relocation">/apple-austin-relocation</a>), the AMD Northwest cluster (see <a href="/amd-austin-relocation">/amd-austin-relocation</a>), the growing Samsung supplier ecosystem in the northeast metro, and the Domain area corporate hotel and consulting-firm activity. Corporate tenants book longer average stays than travel nurses (30 to 180 days typical) and pay corporate housing rates that are 20 to 40 percent above furnished-consumer market. They also expect higher-quality furnishing, faster response times, and dedicated business-grade internet.</p>
+ <p>The tech corridor MTR thesis rides the corporate temp market that surrounds the Apple Parmer Lane campus (see <a href="/apple-austin-relocation">/apple-austin-relocation</a>), the AMD Northwest cluster (see <a href="/amd-austin-relocation">/amd-austin-relocation</a>), the growing Samsung supplier ecosystem in the northeast metro, and the Domain area corporate hotel and consulting-firm activity. Corporate tenants book longer average stays than travel nurses (30 to 180 days typical) and pay corporate housing rates that sit above what individual furnished-rental guests pay. They also expect higher-quality furnishing, faster response times, and dedicated business-grade internet.</p>
 
- <p>MTR product here works best as a 2 or 3 bedroom furnished house or townhome in a quiet neighborhood with corporate-office proximity. Median $/sqft in the $400-700K band runs materially lower than the medical corridor because you are buying suburban tract product rather than close-in Central Austin, which is what makes the yield math work at this price band. Q1 tends to be the strongest occupancy period as new hires start and quarterly project rotations begin.</p>
+ <p>MTR product here works best as a 2 or 3 bedroom furnished house or townhome in a quiet neighborhood with corporate-office proximity. Median $/sqft in the $400-700K band ({{live:zip=78759,78758,78727,78729;min=400000;max=700000:medianPpsf|see the corridor table}} right now) runs materially lower than in the medical corridor's band ({{live:zip=78702,78722,78704,78723;min=400000;max=800000:medianPpsf|see the corridor table}}), because you are buying suburban tract product rather than close-in Central Austin, which is what makes the yield math work at this price band. Q1 tends to be the strongest occupancy period as new hires start and quarterly project rotations begin.</p>
 
  <h2>Corridor 3  -  <em>Downtown</em>, the executive and digital-nomad thesis</h2>
 
@@ -446,7 +449,7 @@
   <p class="corridor-sub">Fits: investor targeting executive placements and digital nomads, $400-800K condo band</p>
  </div>
 
- <p>Downtown 78701 condos work for MTR when the specific building's HOA rules permit 30-day or 60-day minimum stays (some buildings cap the minimum stay at 6 or 12 months, which kills MTR economics). Executive placement companies (Zeus, Blueground) source aggressively from this inventory for interim CEO and board-consulting placements, and Airbnb 30-day-minimum listings pull digital nomads and long-stay leisure travelers. The 78701 core has 356 active condos with 114 in the $400-800K MTR band, and roughly a third of that band sits in buildings where the HOA rules actually permit sub-6-month leases.</p>
+ <p>Downtown 78701 condos work for MTR when the specific building's HOA rules permit 30-day or 60-day minimum stays (some buildings cap the minimum stay at 6 or 12 months, which kills MTR economics). Executive placement companies (Zeus, Blueground) source aggressively from this inventory for interim CEO and board-consulting placements, and Airbnb 30-day-minimum listings pull digital nomads and long-stay leisure travelers. The 78701 core currently lists {{live:zip=78701;type=condo:count|dozens of}} condos for sale, {{live:zip=78701;type=condo;min=400000;max=800000:count|many}} of them in the $400-800K MTR band, and only part of that band sits in buildings where the HOA rules actually permit sub-6-month leases.</p>
 
  <p>The trade-off in downtown MTR is the HOA and building operating cost. Condo dues, amenity fees, and reserve contributions add $700 to $1,200 per month to the operating stack, which compresses the cap rate versus the other two corridors. What it buys you is truly premium tenant demand and truly hands-off operational overhead once the property is furnished and listed. For an out-of-town investor who wants a passive Austin MTR position, downtown is often the right answer despite the yield compression.</p>
 

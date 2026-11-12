@@ -253,15 +253,15 @@
 
  <div class="snapshot">
   <div class="snapshot-eyebrow">Live Market Snapshot</div>
-  <h3>Homes for sale within 10 miles of Gigafactory</h3>
-  <div class="snapshot-source">Source: ACTRIS MLS, pulled August 19, 2026. Filtered to 3+ bedroom active listings under 10 miles from 1 Tesla Rd.</div>
+  <h3>Homes for sale in the ZIPs around Gigafactory</h3>
+  <div class="snapshot-source">Source: ACTRIS MLS, refreshed automatically. Active listings in 78617, 78653, 78724, 78725, and 78744, the ZIPs closest to 1 Tesla Rd.</div>
   <div class="snapshot-grid">
-   <div class="snapshot-stat"><div class="snapshot-num">1,904</div><div class="snapshot-lbl">Active 3+ bed listings within 10 miles of Giga</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">$356K</div><div class="snapshot-lbl">Median list price in 78725 (Hornsby Bend)</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">$511K</div><div class="snapshot-lbl">Median list price in 78744 (South East Austin)</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">145</div><div class="snapshot-lbl">Active listings in 78617 (Del Valle)</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">357</div><div class="snapshot-lbl">Active listings in 78653 (Manor)</div></div>
-   <div class="snapshot-stat"><div class="snapshot-num">81</div><div class="snapshot-lbl">Active listings in 78724 (Sendero Hills area)</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:zip=78724,78653,78617,78725,78744;beds=3+:count|Hundreds}}</div><div class="snapshot-lbl">Active 3+ bed listings across the five Giga-side ZIPs</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:zip=78725:medianPrice}}</div><div class="snapshot-lbl">Median list price in 78725 (Hornsby Bend)</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:zip=78744:medianPrice}}</div><div class="snapshot-lbl">Median list price in 78744 (South East Austin)</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:zip=78617:count}}</div><div class="snapshot-lbl">Active listings in 78617 (Del Valle)</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:zip=78653:count}}</div><div class="snapshot-lbl">Active listings in 78653 (Manor)</div></div>
+   <div class="snapshot-stat"><div class="snapshot-num">{{live:zip=78724:count}}</div><div class="snapshot-lbl">Active listings in 78724 (Sendero Hills area)</div></div>
   </div>
  </div>
 
@@ -271,7 +271,7 @@
 
  <ul>
   <li><strong>Sendero Hills (78724).</strong> New construction, master-planned, 20 to 25 minute commute to Giga. This is the most common landing spot for my Tesla clients. New-build inventory is deep, builders have been running incentives, and the community amenities appeal to buyers relocating from out of state.</li>
-  <li><strong>Manor (78653).</strong> Similar story to Sendero Hills but further out. Newer construction, more square footage for the money, 25 to 30 minute commute. If your budget wants a 4 bed / 3 bath under $600K, Manor is where you land.</li>
+  <li><strong>Manor (78653).</strong> Similar story to Sendero Hills but further out. Newer construction, more square footage for the money, 25 to 30 minute commute. If your budget wants a 4 bed / 3 bath without stretching, Manor is where you land: homes with four or more bedrooms in 78653 currently ask a median of {{live:zip=78653;beds=4+:medianPrice|less than comparable space closer in}}.</li>
   <li><strong>Del Valle (78617).</strong> The closest of the four to Gigafactory. Commute time drops to 15 to 20 minutes. Inventory is a mix of newer builds and older homes. Best pick if commute is the number one priority.</li>
   <li><strong>East Austin (78702).</strong> A different profile entirely. Older housing stock, walkable to bars and food, closer to downtown. Tesla employees who want an urban lifestyle over a big backyard end up here. Higher price per square foot but you gain the East Austin proximity to everything.</li>
  </ul>
@@ -306,7 +306,7 @@
  <p>The fix: start looking earlier than feels necessary. If you know your Tesla start date, we should be looking 45 to 60 days out, not 20. That gives us the space to walk multiple options and negotiate hard on the right one.</p>
 
  <h3>2. Renting first and regretting it a year later</h3>
- <p>I see this over and over. A new Tesla hire decides to rent for a year to "get a feel" for Austin. Twelve months later they call me, ready to buy, and prices in their target submarket have moved 5 to 12 percent in the meantime. The rent they paid disappears, the price they wanted disappears, and their entry point is worse.</p>
+ <p>I see this over and over. A new Tesla hire decides to rent for a year to "get a feel" for Austin. Twelve months later they call me, ready to buy, and prices in their target submarket have moved on them in the meantime. The rent they paid disappears, the price they wanted disappears, and their entry point is worse.</p>
  <p>My take: <strong>buy first.</strong> Austin has such a strong rental market that if life changes at Tesla and you need to relocate, you can rent your place out easily and buy again wherever you land. The downside of buying and renting it out later is much smaller than the downside of watching prices move without you.</p>
 
  <h2>Tesla RSUs and getting a <em>mortgage</em></h2>
@@ -315,7 +315,7 @@
 
  <h2>My take on the <em>market timing</em> right now</h2>
 
- <p>Austin is 1 to 2 months from the bottom of this cycle, in my read. I am seeing buyers who sat on the sidelines all summer starting to move on the deals that are currently listed. Sellers who priced correctly are getting activity. Sellers who over-priced are dropping.</p>
+ <p>In my read, Austin is near the bottom of this cycle. I am seeing buyers who sat on the sidelines all summer starting to move on the deals that are currently listed. Sellers who priced correctly are getting activity. Sellers who over-priced are dropping.</p>
 
  <p>Prices will start picking up again as more buyers re-enter. If you have a Tesla start date in Q4 2026 or Q1 2027 and are thinking about renting to "wait out the bottom," my honest answer is that the bottom is now, and the window to buy before other Tesla employees pile in is closing.</p>
 

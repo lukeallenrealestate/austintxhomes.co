@@ -89,7 +89,7 @@
  {
  "@type": "Question",
  "name": "Is Austin TX a good market for BRRRR investing?",
- "acceptedAnswer": { "@type": "Answer", "text": "Austin is one of the strongest BRRRR markets in the country for several reasons: strong rental demand from 50,000+ annual new residents, no state income tax on rental income, significant spread between distressed and renovated property values in neighborhoods like East Austin, Rundberg, and South Austin, and lenders who are familiar with Texas cash-out refinance rules." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Austin is one of the strongest BRRRR markets in the country for several reasons: strong rental demand from more than a decade of fast population growth, no state income tax on rental income, significant spread between distressed and renovated property values in neighborhoods like East Austin, Rundberg, and South Austin, and lenders who are familiar with Texas cash-out refinance rules." }
  },
  {
  "@type": "Question",
@@ -532,8 +532,8 @@
  <div class="stat-lbl">Metro Listings Under $400K Now</div>
  </div>
  <div class="stat-item">
- <div class="stat-val">50K+</div>
- <div class="stat-lbl">New Residents Per Year</div>
+ <div class="stat-val">{{live:metro;lease=1;type=sfr;beds=3:medianRent|Updating}}</div>
+ <div class="stat-lbl">Median Asking Rent, 3BR Houses (Metro)</div>
  </div>
  <div class="stat-item">
  <div class="stat-val">0%</div>
@@ -603,7 +603,7 @@
  <div class="step-content">
  <h3>Rent to Establish Cash Flow</h3>
  <p>Before you can refinance, you need to demonstrate rental income. Most DSCR lenders (the standard refinance product for investment properties) require 3 to 6 months of seasoning on the rental income, though some will lend on market rent estimates alone immediately post-renovation.</p>
- <p>Austin's rental market is deep, from family suburbs like Pflugerville to renovated East Austin homes that command premium rents. On a well-bought deal, the rent covers your mortgage, taxes, insurance, and property management - with positive cash flow - setting you up for the refinance from a position of strength.</p>
+ <p>Austin's rental market is deep, from family suburbs like Pflugerville to renovated East Austin homes that command premium rents. Right now the median monthly asking rent for 3-bedroom houses listed for lease on the MLS is {{live:zip=78660;lease=1;type=sfr;beds=3:medianRent|solid}} in Pflugerville's 78660 and {{live:zip=78702,78721;lease=1;type=sfr;beds=3:medianRent|higher}} across East Austin's 78702 and 78721. On a well-bought deal, the rent covers your mortgage, taxes, insurance, and property management - with positive cash flow - setting you up for the refinance from a position of strength.</p>
  <div class="step-tip"><strong>Seasoning strategy:</strong> Price rent slightly below peak market to lease quickly. A property sitting vacant for 45 days while you hunt a top-dollar tenant costs more than the incremental rent difference - and delays your refinance timeline.</div>
  </div>
  </div>
@@ -676,7 +676,7 @@
  <div class="section" id="neighborhoods">
  <p class="section-label">Where to BRRRR in Austin</p>
  <h2>Best Austin-Area Neighborhoods for BRRRR Investing</h2>
- <p>Successful BRRRR investing is fundamentally about the spread between distressed purchase price and post-renovation ARV. These Austin-area markets consistently produce the widest spreads, strongest rental demand, and most reliable cash-out refinance appraisals. The median asking price and median price per square foot for each ZIP update automatically from active MLS listings.</p>
+ <p>Successful BRRRR investing is fundamentally about the spread between distressed purchase price and post-renovation ARV. These Austin-area markets consistently produce the widest spreads, strongest rental demand, and most reliable cash-out refinance appraisals. The median asking price, median price per square foot, and median monthly asking rent for 3-bedroom houses listed for lease in each ZIP update automatically from active MLS listings.</p>
 
  <div class="nbhd-grid">
  <div class="nbhd-card">
@@ -688,6 +688,7 @@
  <div class="nbhd-stats">
  <div class="ns"><div class="nv">{{live:zip=78721:medianPrice}}</div><div class="nl">Median Asking Price</div></div>
  <div class="ns"><div class="nv">{{live:zip=78721:medianPpsf}}</div><div class="nl">Median Ask / Sq Ft</div></div>
+ <div class="ns" style="grid-column:1/-1;"><div class="nv">{{live:zip=78721;lease=1;type=sfr;beds=3:medianRent|See current rentals}}</div><div class="nl">Median Asking Rent, 3BR Houses Listed for Lease</div></div>
  </div>
  <p>Gentrification still in progress means distressed buys remain possible. Strong millennial renter demand. Some of Austin's best buy-to-ARV spreads remain in outer East Austin pockets before full pricing catches up.</p>
  </div>
@@ -701,6 +702,7 @@
  <div class="nbhd-stats">
  <div class="ns"><div class="nv">{{live:zip=78660:medianPrice}}</div><div class="nl">Median Asking Price</div></div>
  <div class="ns"><div class="nv">{{live:zip=78660:medianPpsf}}</div><div class="nl">Median Ask / Sq Ft</div></div>
+ <div class="ns" style="grid-column:1/-1;"><div class="nv">{{live:zip=78660;lease=1;type=sfr;beds=3:medianRent|See current rentals}}</div><div class="nl">Median Asking Rent, 3BR Houses Listed for Lease</div></div>
  </div>
  <p>High family rental demand, excellent schools, tech worker concentration. 1980s, 1990s stock offers cosmetic rehab opportunities with predictable ARV comps. One of the most consistent BRRRR execution markets in the metro.</p>
  </div>
@@ -714,6 +716,7 @@
  <div class="nbhd-stats">
  <div class="ns"><div class="nv">{{live:zip=78653:medianPrice}}</div><div class="nl">Median Asking Price</div></div>
  <div class="ns"><div class="nv">{{live:zip=78653:medianPpsf}}</div><div class="nl">Median Ask / Sq Ft</div></div>
+ <div class="ns" style="grid-column:1/-1;"><div class="nv">{{live:zip=78653;lease=1;type=sfr;beds=3:medianRent|See current rentals}}</div><div class="nl">Median Asking Rent, 3BR Houses Listed for Lease</div></div>
  </div>
  <p>Austin's fastest-growing eastern suburb. Affordable entry points, rapid appreciation trajectory, and strong working-family rental demand. Lower ARVs mean lower capital requirements - ideal for BRRRR beginners building first deals.</p>
  </div>
@@ -727,6 +730,7 @@
  <div class="nbhd-stats">
  <div class="ns"><div class="nv">{{live:zip=78640,78610:medianPrice}}</div><div class="nl">Median Asking Price</div></div>
  <div class="ns"><div class="nv">{{live:zip=78640,78610:medianPpsf}}</div><div class="nl">Median Ask / Sq Ft</div></div>
+ <div class="ns" style="grid-column:1/-1;"><div class="nv">{{live:zip=78640,78610;lease=1;type=sfr;beds=3:medianRent|See current rentals}}</div><div class="nl">Median Asking Rent, 3BR Houses Listed for Lease</div></div>
  </div>
  <p>Two of the fastest-growing cities in Texas. Massive employer relocations (Tesla nearby), great schools, and a rapidly expanding renter base. Older 1980s, 1990s inventory available below ARV for BRRRR execution.</p>
  </div>
@@ -740,6 +744,7 @@
  <div class="nbhd-stats">
  <div class="ns"><div class="nv">{{live:zip=78753:medianPrice}}</div><div class="nl">Median Asking Price</div></div>
  <div class="ns"><div class="nv">{{live:zip=78753:medianPpsf}}</div><div class="nl">Median Ask / Sq Ft</div></div>
+ <div class="ns" style="grid-column:1/-1;"><div class="nv">{{live:zip=78753;lease=1;type=sfr;beds=3:medianRent|See current rentals}}</div><div class="nl">Median Asking Rent, 3BR Houses Listed for Lease</div></div>
  </div>
  <p>In transition - central location close to Domain employers driving rent appreciation. Some of Austin's widest buy-to-ARV spreads remain here. Higher execution complexity (deferred maintenance) offset by outsized upside for experienced operators.</p>
  </div>
@@ -753,6 +758,7 @@
  <div class="nbhd-stats">
  <div class="ns"><div class="nv">{{live:zip=78745:medianPrice}}</div><div class="nl">Median Asking Price</div></div>
  <div class="ns"><div class="nv">{{live:zip=78745:medianPpsf}}</div><div class="nl">Median Ask / Sq Ft</div></div>
+ <div class="ns" style="grid-column:1/-1;"><div class="nv">{{live:zip=78745;lease=1;type=sfr;beds=3:medianRent|See current rentals}}</div><div class="nl">Median Asking Rent, 3BR Houses Listed for Lease</div></div>
  </div>
  <p>Higher ARVs require higher acquisition discipline. When off-market deals surface - estate sales, divorce, probate - South Austin BRRRR deals produce premium rents and strong long-term appreciation. For investors with larger capital bases.</p>
  </div>
@@ -900,7 +906,7 @@
  </div>
  <div class="faq-item">
  <div class="faq-q">Is Austin a good market for BRRRR investing?</div>
- <div class="faq-a">Austin is one of the strongest BRRRR markets in the country. Strong rental demand from 50,000+ annual new residents, no state income tax on rental income, and significant buy-to-ARV spreads in neighborhoods like East Austin, Pflugerville, Manor, and Rundberg make the math work consistently. Texas investment property cash-out refinance rules are also investor-friendly compared to most states.</div>
+ <div class="faq-a">Austin is one of the strongest BRRRR markets in the country. Strong rental demand driven by a fast-growing metro population, no state income tax on rental income, and significant buy-to-ARV spreads in neighborhoods like East Austin, Pflugerville, Manor, and Rundberg make the math work consistently. Texas investment property cash-out refinance rules are also investor-friendly compared to most states.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q">How much money do I need to start a BRRRR deal in Austin?</div>

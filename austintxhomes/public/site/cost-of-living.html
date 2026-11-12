@@ -5,14 +5,14 @@
  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
  <meta name="facebook-domain-verification" content="95x8nbmaj8yii9ie0wsl3z7sgw6uqh" />
  <title>Austin TX Cost of Living 2026 | Luke Allen, Realtor</title>
- <meta name="description" content="Complete Austin TX cost of living guide for 2026, median home prices, rent, food, transportation, utilities, and how Austin compares to Denver, Seattle, and." />
+ <meta name="description" content="Complete Austin TX cost of living guide for 2026, median home prices, rent, food, transportation, utilities, and how Austin compares to Denver, Seattle, and Chicago." />
  <link rel="canonical" href="https://austintxhomes.co/cost-of-living" />
  <link rel="icon" href="/favicon.ico" sizes="any" />
  <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
  <link rel="apple-touch-icon" href="/favicon-96.png" />
  <meta property="og:type" content="article" />
  <meta property="og:title" content="Austin TX Cost of Living 2026 | Luke Allen, Realtor" />
- <meta property="og:description" content="Complete Austin TX cost of living guide for 2026, median home prices, rent, food, transportation, utilities, and how Austin compares to Denver, Seattle, and." />
+ <meta property="og:description" content="Complete Austin TX cost of living guide for 2026, median home prices, rent, food, transportation, utilities, and how Austin compares to Denver, Seattle, and Chicago." />
  <meta property="og:url" content="https://austintxhomes.co/cost-of-living" />
  <meta property="og:image" content="https://austintxhomes.co/images/luke-allen.jpg" />
  <meta name="twitter:card" content="summary_large_image" />
@@ -39,7 +39,7 @@
  "url": "https://austintxhomes.co",
  "telephone": "+12547182567"
  },
- "description": "Complete Austin TX cost of living guide for, median home prices, rent, food, transportation, utilities, and how Austin compares to Denver, Seattle, and Chicago.",
+ "description": "Complete Austin TX cost of living guide, median home prices, rent, food, transportation, utilities, and how Austin compares to Denver, Seattle, and Chicago.",
  "url": "https://austintxhomes.co/cost-of-living"
  }
  </script>
@@ -73,7 +73,7 @@
  {
  "@type": "Question",
  "name": "Is Austin TX expensive to live in?",
- "acceptedAnswer": { "@type": "Answer", "text": "Austin is more expensive than the Texas average but significantly cheaper than coastal tech cities like San Francisco, Seattle, or New York. The metro median asking price of {{live:metro:medianPrice}} right now places it in the mid-range for major US metros. The no-state-income-tax benefit partially offsets higher housing and property tax costs." }
+ "acceptedAnswer": { "@type": "Answer", "text": "Austin is more expensive than the Texas average but significantly cheaper than coastal tech cities like San Francisco, Seattle, or New York. The metro median asking price of {{live:metro:medianPrice}} right now (and a median monthly ask of {{live:metro;lease=1;beds=2:medianRent|moderate by big-city standards}} for an MLS-listed 2-bedroom rental) places it in the mid-range for major US metros. The no-state-income-tax benefit partially offsets higher housing and property tax costs." }
  },
  {
  "@type": "Question",
@@ -241,6 +241,7 @@
  .price-table td:first-child { font-weight: 500; }
  .price-table td:not(:first-child) { color: var(--mid); }
  .price-table tr:hover td { background: rgba(184,147,90,0.04); }
+ @media (max-width: 600px) { .price-table th, .price-table td { padding: 10px 8px; font-size: 12.5px; } }
 
  /* RENT VS BUY */
  .rvb { padding: 80px 2rem; background: var(--bg); }
@@ -401,9 +402,9 @@
  <div class="stat-desc">Austin metro, all types</div>
  </div>
  <div class="stat-item">
- <div class="stat-label">City of Austin Median</div>
- <div class="stat-value">{{live:city=Austin:medianPrice}}</div>
- <div class="stat-desc">Asking price, active listings</div>
+ <div class="stat-label">Median 2BR Asking Rent</div>
+ <div class="stat-value">{{live:metro;lease=1;beds=2:medianRent|Updating}}</div>
+ <div class="stat-desc">MLS-listed rentals, per month</div>
  </div>
  <div class="stat-item">
  <div class="stat-label">Homes for Sale</div>
@@ -416,7 +417,7 @@
  <div class="stat-desc">Austin metro, asking</div>
  </div>
  </div>
- <p class="stats-source">Source: Luke Allen's ACTRIS MLS feed, active listings, updated {{asof}}</p>
+ <p class="stats-source">Source: Luke Allen's ACTRIS MLS feed, active for-sale and rental listings (rents are asking rents), updated {{asof}}</p>
  </div>
 </section>
 
@@ -431,7 +432,7 @@
  <span class="cost-icon">🏠</span>
  <div class="cost-name">Housing</div>
  <div class="cost-range">Your biggest variable</div>
- <p class="cost-desc">The biggest variable. Rent depends heavily on location, with Central Austin and walkable neighborhoods at the top of the range. On the ownership side, the metro median asking price is {{live:metro:medianPrice}} right now. Owning in the suburbs cuts housing cost vs renting in the city for buyers who qualify.</p>
+ <p class="cost-desc">Rent depends heavily on location, with Central Austin and walkable neighborhoods at the top of the range. Median monthly ask for MLS-listed rentals in the central ZIPs (78701 through 78705, 78751, 78756) right now: 1BR {{live:zip=78701,78702,78703,78704,78705,78751,78756;lease=1;beds=1:medianRent|on request}}, 2BR {{live:zip=78701,78702,78703,78704,78705,78751,78756;lease=1;beds=2:medianRent|on request}}. On the ownership side, the metro median asking price is {{live:metro:medianPrice}} right now. Owning in the suburbs cuts housing cost vs renting in the city for buyers who qualify.</p>
  </div>
  <div class="cost-card">
  <span class="cost-icon">🍽️</span>
@@ -474,7 +475,7 @@
  <p class="section-eyebrow">The Biggest Line Item</p>
  <h2 class="section-title">Austin Housing Costs<br><em>in 2026</em></h2>
  <p>Housing is where Austin's cost of living story gets nuanced. Austin proper, especially Central Austin, East Austin, and South Congress, has seen strong appreciation and remains expensive relative to Texas norms. But the metro is large, and price ranges vary enormously by location.</p>
- <p>The median asking price across the Austin metro is {{live:metro:medianPrice}} right now, but that figure hides a huge spread: Kyle's median asking price is currently {{live:city=Kyle:medianPrice}}, while the median in Travis Heights is {{live:nbhd=travis-heights:medianPrice|well above the metro median}}. For renters, a Central Austin 2BR apartment budget often stretches to a 3BR house in Cedar Park or Pflugerville.</p>
+ <p>The median asking price across the Austin metro is {{live:metro:medianPrice}} right now, but that figure hides a huge spread: Kyle's median asking price is currently {{live:city=Kyle:medianPrice}}, while the median in Travis Heights is {{live:nbhd=travis-heights:medianPrice|well above the metro median}}. For renters, set the current median monthly asks on MLS-listed rentals side by side: {{live:zip=78701,78702,78703,78704,78705,78751,78756;lease=1;beds=2:medianRent|on request}} for a central Austin 2-bedroom, and {{live:city=Cedar Park,Pflugerville;lease=1;type=sfr;beds=3:medianRent|on request}} for a 3-bedroom house in Cedar Park or Pflugerville.</p>
  </div>
  <div>
  <table class="price-table">
@@ -483,17 +484,18 @@
  <th>Area</th>
  <th>Median Asking Price</th>
  <th>Most Listings Asking</th>
+ <th>Median 2BR Asking Rent</th>
  </tr>
  </thead>
  <tbody>
- <tr><td>Downtown / Central (78701, 78703)</td><td>{{live:zip=78701,78703:medianPrice}}</td><td>{{live:zip=78701,78703:p10Price}} to {{live:zip=78701,78703:p90Price}}</td></tr>
- <tr><td>East Austin (78702)</td><td>{{live:zip=78702:medianPrice}}</td><td>{{live:zip=78702:p10Price}} to {{live:zip=78702:p90Price}}</td></tr>
- <tr><td>South Congress / SoCo (78704)</td><td>{{live:zip=78704:medianPrice}}</td><td>{{live:zip=78704:p10Price}} to {{live:zip=78704:p90Price}}</td></tr>
- <tr><td>North Austin (78750, 78759)</td><td>{{live:zip=78750,78759:medianPrice}}</td><td>{{live:zip=78750,78759:p10Price}} to {{live:zip=78750,78759:p90Price}}</td></tr>
- <tr><td>Cedar Park / Round Rock</td><td>{{live:city=Cedar Park,Round Rock:medianPrice}}</td><td>{{live:city=Cedar Park,Round Rock:p10Price}} to {{live:city=Cedar Park,Round Rock:p90Price}}</td></tr>
- <tr><td>Pflugerville / Georgetown</td><td>{{live:city=Pflugerville,Georgetown:medianPrice}}</td><td>{{live:city=Pflugerville,Georgetown:p10Price}} to {{live:city=Pflugerville,Georgetown:p90Price}}</td></tr>
- <tr><td>Kyle / Buda</td><td>{{live:city=Kyle,Buda:medianPrice}}</td><td>{{live:city=Kyle,Buda:p10Price}} to {{live:city=Kyle,Buda:p90Price}}</td></tr>
- <tr><td>Leander</td><td>{{live:city=Leander:medianPrice}}</td><td>{{live:city=Leander:p10Price}} to {{live:city=Leander:p90Price}}</td></tr>
+ <tr><td>Downtown / Central (78701, 78703)</td><td>{{live:zip=78701,78703:medianPrice}}</td><td>{{live:zip=78701,78703:p10Price}} to {{live:zip=78701,78703:p90Price}}</td><td>{{live:zip=78701,78703;lease=1;beds=2:medianRent|on request}}</td></tr>
+ <tr><td>East Austin (78702)</td><td>{{live:zip=78702:medianPrice}}</td><td>{{live:zip=78702:p10Price}} to {{live:zip=78702:p90Price}}</td><td>{{live:zip=78702;lease=1;beds=2:medianRent|on request}}</td></tr>
+ <tr><td>South Congress / SoCo (78704)</td><td>{{live:zip=78704:medianPrice}}</td><td>{{live:zip=78704:p10Price}} to {{live:zip=78704:p90Price}}</td><td>{{live:zip=78704;lease=1;beds=2:medianRent|on request}}</td></tr>
+ <tr><td>North Austin (78750, 78759)</td><td>{{live:zip=78750,78759:medianPrice}}</td><td>{{live:zip=78750,78759:p10Price}} to {{live:zip=78750,78759:p90Price}}</td><td>{{live:zip=78750,78759;lease=1;beds=2:medianRent|on request}}</td></tr>
+ <tr><td>Cedar Park / Round Rock</td><td>{{live:city=Cedar Park,Round Rock:medianPrice}}</td><td>{{live:city=Cedar Park,Round Rock:p10Price}} to {{live:city=Cedar Park,Round Rock:p90Price}}</td><td>{{live:city=Cedar Park,Round Rock;lease=1;beds=2:medianRent|on request}}</td></tr>
+ <tr><td>Pflugerville / Georgetown</td><td>{{live:city=Pflugerville,Georgetown:medianPrice}}</td><td>{{live:city=Pflugerville,Georgetown:p10Price}} to {{live:city=Pflugerville,Georgetown:p90Price}}</td><td>{{live:city=Pflugerville,Georgetown;lease=1;beds=2:medianRent|on request}}</td></tr>
+ <tr><td>Kyle / Buda</td><td>{{live:city=Kyle,Buda:medianPrice}}</td><td>{{live:city=Kyle,Buda:p10Price}} to {{live:city=Kyle,Buda:p90Price}}</td><td>{{live:city=Kyle,Buda;lease=1;beds=2:medianRent|on request}}</td></tr>
+ <tr><td>Leander</td><td>{{live:city=Leander:medianPrice}}</td><td>{{live:city=Leander:p10Price}} to {{live:city=Leander:p90Price}}</td><td>{{live:city=Leander;lease=1;beds=2:medianRent|few 2BRs listed}}</td></tr>
  </tbody>
  </table>
  </div>
@@ -655,7 +657,7 @@
  <div class="budget-grid">
  <div class="budget-card">
  <div class="budget-tier">Under $400K</div>
- <div class="budget-rent">Kyle median asking: {{live:city=Kyle:medianPrice}}</div>
+ <div class="budget-rent">Kyle median asking: {{live:city=Kyle:medianPrice}} · monthly rental ask (median): {{live:city=Kyle;lease=1:medianRent|on request}}</div>
  <ul class="budget-areas">
  <li>Kyle, Buda, Pflugerville</li>
  <li>Georgetown outer areas</li>
@@ -671,7 +673,7 @@
  </div>
  <div class="budget-card">
  <div class="budget-tier">$400K to $650K</div>
- <div class="budget-rent">Round Rock median asking: {{live:city=Round Rock:medianPrice}}</div>
+ <div class="budget-rent">Round Rock median asking: {{live:city=Round Rock:medianPrice}} · monthly rental ask (median): {{live:city=Round Rock;lease=1:medianRent|on request}}</div>
  <ul class="budget-areas">
  <li>Cedar Park, Round Rock</li>
  <li>Leander, Mueller</li>
@@ -687,7 +689,7 @@
  </div>
  <div class="budget-card">
  <div class="budget-tier">$650K+</div>
- <div class="budget-rent">78703 median asking: {{live:zip=78703:medianPrice}}</div>
+ <div class="budget-rent">78703 median asking: {{live:zip=78703:medianPrice}} · monthly rental ask (median): {{live:zip=78703;lease=1:medianRent|on request}}</div>
  <ul class="budget-areas">
  <li>Tarrytown, Travis Heights</li>
  <li>East Austin, South Congress</li>
@@ -713,7 +715,7 @@
  <div class="faq-grid">
  <div class="faq-item">
  <div class="faq-q">Is Austin TX expensive to live in?</div>
- <div class="faq-a">Austin is more expensive than the Texas average but significantly cheaper than coastal tech cities like San Francisco, Seattle, or New York. The metro median asking price of {{live:metro:medianPrice}} right now places it in the mid-range for major US metros. The no-state-income-tax benefit partially offsets higher housing and property tax costs.</div>
+ <div class="faq-a">Austin is more expensive than the Texas average but significantly cheaper than coastal tech cities like San Francisco, Seattle, or New York. The metro median asking price of {{live:metro:medianPrice}} right now (and a median monthly ask of {{live:metro;lease=1;beds=2:medianRent|moderate by big-city standards}} for an MLS-listed 2-bedroom rental) places it in the mid-range for major US metros. The no-state-income-tax benefit partially offsets higher housing and property tax costs.</div>
  </div>
  <div class="faq-item">
  <div class="faq-q">What is a good salary to live comfortably in Austin TX?</div>

@@ -409,7 +409,7 @@
  <div class="stat-item"><div class="stat-val">{{live:metro:medianPrice}}</div><div class="stat-lbl">Metro Median Asking Price</div></div>
  <div class="stat-item"><div class="stat-val">0%</div><div class="stat-lbl">TX State Income Tax</div></div>
  <div class="stat-item"><div class="stat-val">{{live:metro:medianDom}}</div><div class="stat-lbl">Median Days on Market</div></div>
- <div class="stat-item"><div class="stat-val">{{live:metro:reducedPct}}</div><div class="stat-lbl">Listings With a Price Cut</div></div>
+ <div class="stat-item"><div class="stat-val">{{live:metro;lease=1;type=sfr;beds=3:medianRent|Updating}}</div><div class="stat-lbl">Median Asking Rent, 3BR Houses</div></div>
  </div>
 </div>
 
@@ -544,22 +544,22 @@
  </div>
  <div class="cf-body">
  <div class="cf-row"><span class="lbl">Purchase Price</span><span class="val">$430,000</span></div>
- <div class="cf-row"><span class="lbl">Down Payment (25%)</span><span class="val neg">, $107,500</span></div>
+ <div class="cf-row"><span class="lbl">Down Payment (25%)</span><span class="val neg">-$107,500</span></div>
  <div class="cf-row"><span class="lbl">Loan Amount</span><span class="val">$322,500</span></div>
- <div class="cf-row"><span class="lbl">Monthly Mortgage (7.25%, 30yr)</span><span class="val neg">, $2,200 / mo</span></div>
+ <div class="cf-row"><span class="lbl">Monthly Mortgage (7.25%, 30yr)</span><span class="val neg">-$2,200 / mo</span></div>
 
  <div class="cf-divider"></div>
 
  <div class="cf-row"><span class="lbl">Gross Monthly Rent</span><span class="val pos">+$2,150 / mo</span></div>
- <div class="cf-row"><span class="lbl">Property Tax (~2.2% assessed)</span><span class="val neg">, $787 / mo</span></div>
- <div class="cf-row"><span class="lbl">Homeowner's Insurance</span><span class="val neg">, $150 / mo</span></div>
- <div class="cf-row"><span class="lbl">Property Management (8%)</span><span class="val neg">, $172 / mo</span></div>
- <div class="cf-row"><span class="lbl">Vacancy Reserve (5%)</span><span class="val neg">, $108 / mo</span></div>
- <div class="cf-row"><span class="lbl">Maintenance Reserve (5%)</span><span class="val neg">, $108 / mo</span></div>
+ <div class="cf-row"><span class="lbl">Property Tax (~2.2% assessed)</span><span class="val neg">-$787 / mo</span></div>
+ <div class="cf-row"><span class="lbl">Homeowner's Insurance</span><span class="val neg">-$150 / mo</span></div>
+ <div class="cf-row"><span class="lbl">Property Management (8%)</span><span class="val neg">-$172 / mo</span></div>
+ <div class="cf-row"><span class="lbl">Vacancy Reserve (5%)</span><span class="val neg">-$108 / mo</span></div>
+ <div class="cf-row"><span class="lbl">Maintenance Reserve (5%)</span><span class="val neg">-$108 / mo</span></div>
 
  <div class="cf-divider"></div>
 
- <div class="cf-row hl total"><span class="lbl">Monthly Cash Flow</span><span class="val neg">, $1,375 / mo</span></div>
+ <div class="cf-row hl total"><span class="lbl">Monthly Cash Flow</span><span class="val neg">-$1,375 / mo</span></div>
  <div class="cf-row hl total"><span class="lbl">Cap Rate (on purchase price)</span><span class="val">~3.6%</span></div>
  <div class="cf-row hl total"><span class="lbl">Principal Paydown (yr 1)</span><span class="val pos">+$4,800 / yr</span></div>
  </div>
@@ -574,7 +574,7 @@
  <div class="section" id="neighborhoods">
  <p class="section-label">Where to Invest</p>
  <h2>Best Austin-Area Neighborhoods for Rental Properties</h2>
- <p>These markets consistently deliver the strongest combination of rental demand, reasonable acquisition pricing, and long-term appreciation. Each serves a different investor profile.</p>
+ <p>These markets consistently deliver the strongest combination of rental demand, reasonable acquisition pricing, and long-term appreciation. Each serves a different investor profile. Every figure on these cards updates automatically from active MLS listings; the rent line is the median monthly asking rent of 3-bedroom houses currently listed for lease in that area, not a signed-lease figure.</p>
 
  <div class="nbhd-grid">
  <div class="nbhd-card">
@@ -584,6 +584,7 @@
  <div class="ns"><div class="nv">{{live:city=Pflugerville:medianPrice}}</div><div class="nl">Median Ask</div></div>
  <div class="ns"><div class="nv">{{live:city=Pflugerville:medianDom}}</div><div class="nl">Median Days on Market</div></div>
  <div class="ns"><div class="nv">{{live:city=Pflugerville:p10Price}} to {{live:city=Pflugerville:p90Price}}</div><div class="nl">Typical Asking Range</div></div>
+ <div class="ns" style="grid-column:1/-1;"><div class="nv">{{live:city=Pflugerville;lease=1;type=sfr;beds=3:medianRent|See current rentals}}</div><div class="nl">Median Asking Rent, 3BR Houses for Lease</div></div>
  </div>
  <p>Highest-consistency rental market in Austin. Dense tech worker population, excellent schools, and strong family renter demand. 1990s, 2000s SFR inventory is well-priced for investors.</p>
  </div>
@@ -595,6 +596,7 @@
  <div class="ns"><div class="nv">{{live:city=Cedar Park,Leander:medianPrice}}</div><div class="nl">Median Ask</div></div>
  <div class="ns"><div class="nv">{{live:city=Cedar Park,Leander:medianDom}}</div><div class="nl">Median Days on Market</div></div>
  <div class="ns"><div class="nv">{{live:city=Cedar Park,Leander:p10Price}} to {{live:city=Cedar Park,Leander:p90Price}}</div><div class="nl">Typical Asking Range</div></div>
+ <div class="ns" style="grid-column:1/-1;"><div class="nv">{{live:city=Cedar Park,Leander;lease=1;type=sfr;beds=3:medianRent|See current rentals}}</div><div class="nl">Median Asking Rent, 3BR Houses for Lease</div></div>
  </div>
  <p>NW Austin growth corridor with strong family rental demand, top-rated Leander ISD, and new employer relocations. Strong appreciation trajectory with reliable long-term tenants.</p>
  </div>
@@ -606,6 +608,7 @@
  <div class="ns"><div class="nv">{{live:city=Kyle,Buda:medianPrice}}</div><div class="nl">Median Ask</div></div>
  <div class="ns"><div class="nv">{{live:city=Kyle,Buda:medianDom}}</div><div class="nl">Median Days on Market</div></div>
  <div class="ns"><div class="nv">{{live:city=Kyle,Buda:p10Price}} to {{live:city=Kyle,Buda:p90Price}}</div><div class="nl">Typical Asking Range</div></div>
+ <div class="ns" style="grid-column:1/-1;"><div class="nv">{{live:city=Kyle,Buda;lease=1;type=sfr;beds=3:medianRent|See current rentals}}</div><div class="nl">Median Asking Rent, 3BR Houses for Lease</div></div>
  </div>
  <p>Two of the fastest-growing cities in Texas. Lower entry prices mean better initial cap rates. Tesla Gigafactory and SH-45 extension fueling employment growth and renter demand.</p>
  </div>
@@ -617,6 +620,7 @@
  <div class="ns"><div class="nv">{{live:city=Georgetown:medianPrice}}</div><div class="nl">Median Ask</div></div>
  <div class="ns"><div class="nv">{{live:city=Georgetown:medianDom}}</div><div class="nl">Median Days on Market</div></div>
  <div class="ns"><div class="nv">{{live:city=Georgetown:p10Price}} to {{live:city=Georgetown:p90Price}}</div><div class="nl">Typical Asking Range</div></div>
+ <div class="ns" style="grid-column:1/-1;"><div class="nv">{{live:city=Georgetown;lease=1;type=sfr;beds=3:medianRent|See current rentals}}</div><div class="nl">Median Asking Rent, 3BR Houses for Lease</div></div>
  </div>
  <p>One of the fastest-growing cities in the country. Master-planned communities (Wolf Ranch, Morningstar) with strong renter demand and new supply still priced attractively for investors.</p>
  </div>
@@ -628,6 +632,7 @@
  <div class="ns"><div class="nv">{{live:city=Manor:medianPrice}}</div><div class="nl">Median Ask</div></div>
  <div class="ns"><div class="nv">{{live:city=Manor:medianDom}}</div><div class="nl">Median Days on Market</div></div>
  <div class="ns"><div class="nv">{{live:city=Manor:p10Price}} to {{live:city=Manor:p90Price}}</div><div class="nl">Typical Asking Range</div></div>
+ <div class="ns" style="grid-column:1/-1;"><div class="nv">{{live:city=Manor;lease=1;type=sfr;beds=3:medianRent|See current rentals}}</div><div class="nl">Median Asking Rent, 3BR Houses for Lease</div></div>
  </div>
  <p>Austin's most affordable investor entry point. Eastern corridor proximity to Samsung fab and Tesla Gigafactory driving rapid growth. Best buy-to-rent ratios in the metro today.</p>
  </div>
@@ -639,6 +644,7 @@
  <div class="ns"><div class="nv">{{live:zip=78721,78702:medianPrice}}</div><div class="nl">Median Ask</div></div>
  <div class="ns"><div class="nv">{{live:zip=78721,78702:medianDom}}</div><div class="nl">Median Days on Market</div></div>
  <div class="ns"><div class="nv">{{live:zip=78721,78702:p10Price}} to {{live:zip=78721,78702:p90Price}}</div><div class="nl">Typical Asking Range</div></div>
+ <div class="ns" style="grid-column:1/-1;"><div class="nv">{{live:zip=78721,78702;lease=1;type=sfr;beds=3:medianRent|See current rentals}}</div><div class="nl">Median Asking Rent, 3BR Houses for Lease</div></div>
  </div>
  <p>Premium rents, strong appreciation, millennial renter concentration. Lower cap rates offset by higher income tenants and appreciation velocity. Best suited for long-hold investors.</p>
  </div>
@@ -694,10 +700,10 @@
  <label>Investment Budget</label>
  <select id="cf-budget" aria-label="Cf budget">
  <option value="">Select…</option>
- <option>$250K, $400K</option>
- <option>$400K, $600K</option>
- <option>$600K, $900K</option>
- <option>$900K, $1.5M</option>
+ <option>$250K to $400K</option>
+ <option>$400K to $600K</option>
+ <option>$600K to $900K</option>
+ <option>$900K to $1.5M</option>
  <option>$1.5M+</option>
  </select>
  </div>
