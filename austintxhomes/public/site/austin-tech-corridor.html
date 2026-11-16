@@ -130,7 +130,6 @@
    --r: 4px; --w: 1180px;
    /* one hue per corridor, used on the map, the finder, and the scoreboard */
    --c-nw: #3d6a87; --c-north: #8a6a2f; --c-east: #a8533a; --c-core: #b8935a; --c-sw: #4c7550;
-   --road: #cfc6b6; --water: #c9dbe3;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -169,29 +168,42 @@
   .dot { flex: 0 0 10px; width: 10px; height: 10px; border-radius: 50%; display: inline-block; transform: translateY(1px); }
   .d-nw { background: var(--c-nw); } .d-north { background: var(--c-north); } .d-east { background: var(--c-east); } .d-core { background: var(--c-core); } .d-sw { background: var(--c-sw); }
 
-  /* ── map ── */
-  .map-section { padding: 88px 0 72px; background: var(--warm); border-bottom: 1px solid var(--border); }
-  .map-head { max-width: 760px; margin-bottom: 34px; }
+  /* ── interactive map ── */
+  .map-section { padding: 88px 0 72px; background: var(--warm); border-bottom: 1px solid var(--border); scroll-margin-top: 70px; }
+  .map-head { max-width: 760px; margin-bottom: 26px; }
   .map-head h2 { font-size: clamp(30px, 4vw, 44px); line-height: 1.1; margin: 0 0 12px; }
   .map-head p { color: var(--mid); margin: 0; }
-  .map-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; align-items: start; }
+  .map-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+  .mf { display: inline-flex; align-items: center; gap: 7px; background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 8px 14px; font: 500 13.5px Inter, sans-serif; color: var(--text); cursor: pointer; }
+  .mf:hover { border-color: var(--gold); }
+  .mf.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .nb-toggle { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--text); cursor: pointer; background: var(--gold-pale); border: 1px solid var(--border); border-radius: 999px; padding: 7px 14px; }
+  .nb-toggle input { accent-color: var(--gold); width: 16px; height: 16px; margin: 0; }
+  .map-grid { display: grid; grid-template-columns: 1fr 330px; gap: 22px; align-items: stretch; }
   .map-grid > *, .c-body > *, .hero-grid > *, .contact-grid > *, .faq-grid > * { min-width: 0; }
-  .map-frame { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .map-frame svg { display: block; width: 100%; min-width: 560px; height: auto; }
-  .map-hint { display: none; font-size: 12px; color: var(--light); margin: 8px 2px 0; }
-  .road { fill: none; stroke: var(--road); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
-  .road.toll { stroke-dasharray: 7 5; }
-  .road-lbl { font: 600 9.5px Inter, sans-serif; fill: var(--light); letter-spacing: .04em; }
-  .place-lbl { font: italic 12.5px 'Cormorant Garamond', Georgia, serif; fill: var(--mid); }
-  .zone { stroke-width: 1.5; stroke-dasharray: 4 4; fill-opacity: .13; }
-  .pin circle { stroke: #fff; stroke-width: 2; }
-  .pin text { font: 700 10px Inter, sans-serif; fill: #fff; text-anchor: middle; }
-  .zone-lbl { font: 700 10px Inter, sans-serif; letter-spacing: .16em; text-transform: uppercase; }
-  .map-key { list-style: none; margin: 0; padding: 0; counter-reset: none; }
-  .map-key li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 14px; line-height: 1.45; }
-  .map-key .num { width: 22px; height: 22px; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
-  .map-key small { display: block; color: var(--mid); font-size: 12.5px; }
-  .map-key-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; margin: 0 0 6px; }
+  .map-box { position: relative; background: var(--cream); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; min-height: 600px; }
+  #tech-map { position: absolute; inset: 0; }
+  .map-status { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin: 0; color: var(--mid); font-size: 14px; text-align: center; max-width: 80%; }
+  .site-list-wrap { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 16px 0 10px; display: flex; flex-direction: column; max-height: 600px; }
+  .map-key-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; margin: 0 18px 6px; }
+  .site-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; }
+  .site-list li { border-top: 1px solid var(--border); }
+  .site-list button { all: unset; box-sizing: border-box; width: 100%; display: grid; grid-template-columns: 14px 1fr; gap: 10px; padding: 10px 18px; cursor: pointer; font-size: 14px; line-height: 1.35; }
+  .site-list button:hover, .site-list button:focus-visible { background: var(--warm); }
+  .site-list button .dot { margin-top: 4px; }
+  .site-list small { display: block; color: var(--mid); font-size: 12.5px; }
+  .site-list li.hide { display: none; }
+  .site-list-note { font-size: 12px; color: var(--light); margin: 10px 18px 0; line-height: 1.5; }
+  /* info window */
+  .iw { font-family: Inter, sans-serif; color: var(--text); max-width: 270px; padding: 2px 2px 4px; }
+  .iw-corr { font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 6px; margin: 0 0 4px; color: var(--mid); }
+  .iw h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; line-height: 1.15; margin: 0 0 4px; color: var(--ink); }
+  .iw p { margin: 0 0 8px; font-size: 13px; line-height: 1.45; }
+  .iw .iw-addr { color: var(--mid); }
+  .iw a { color: var(--gold); font-weight: 600; }
+  .iw-btn { display: inline-block; background: var(--gold); color: #fff !important; border-radius: var(--r); padding: 8px 12px; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; margin: 2px 8px 0 0; }
+  .iw-btn:hover { background: var(--gold-lt); text-decoration: none; }
+  .iw-price { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 26px; color: var(--ink); margin: 0 0 2px; }
 
   /* ── employer finder ── */
   .finder { padding: 84px 0; background: var(--ink); color: #fff; }
@@ -309,6 +321,7 @@
 
   @media (max-width: 960px) {
    .hero-grid, .map-grid, .c-body, .contact-grid, .faq-grid { grid-template-columns: 1fr; gap: 34px; }
+   .map-grid { gap: 16px; }
    .fix-row { grid-template-columns: 1fr 1fr; }
    .fix { border-right: none; margin-right: 0; padding-right: 0; border-bottom: 1px solid var(--border); }
    .fix:nth-child(odd) { padding-right: 18px; }
@@ -317,7 +330,9 @@
    .hero { padding: 120px 18px 60px; }
    .wrap { padding: 0 18px; }
    .answer-card { padding: 24px 20px 18px; }
-   .map-hint { display: block; }
+   .map-box { min-height: 440px; }
+   .site-list-wrap { max-height: 360px; }
+   .nb-toggle { margin-left: 0; }
    .c-head { grid-template-columns: 1fr; gap: 4px; }
    .c-num { font-size: 72px; line-height: 1; margin-bottom: 6px; }
    .fix-row { grid-template-columns: 1fr; }
@@ -342,7 +357,7 @@
    <p class="hero-sub">Apple, Dell, Tesla, Samsung, Google and AMD are not in the same part of town. Pick the corridor where you will badge in, and the neighborhoods worth touring fall out of the map. Prices below come live from the Austin MLS.</p>
    <p class="hero-meta">By Luke Allen &middot; Austin Realtor &middot; TREC #788149</p>
    <div class="hero-ctas">
-    <a href="#finder" class="btn btn-gold">Find my corridor</a>
+    <a href="#map" class="btn btn-gold">Explore the map</a>
     <a href="#connect" class="btn btn-ghost">Get a commute shortlist</a>
    </div>
   </div>
@@ -360,103 +375,31 @@
  </div>
 </section>
 
-<section class="map-section" aria-labelledby="map-h">
+<section class="map-section" id="map" aria-labelledby="map-h">
  <div class="wrap">
   <div class="map-head">
-   <p class="kicker">The map</p>
-   <h2 id="map-h">Austin's tech corridors, drawn by the roads that connect them</h2>
-   <p>A schematic, not a survey map: highways, the main campuses, and the towns around them. The roads tell you more than the miles do, because MoPac, I-35, US-183 and the SH-130 toll road decide how most of these commutes actually feel.</p>
+   <p class="kicker">Interactive map</p>
+   <h2 id="map-h">Every major Austin tech campus on one map</h2>
+   <p>Tap a pin to see the campus, its corridor, and the neighborhoods closest to it. Filter by corridor, or switch on the neighborhood layer to see live median asking prices from the MLS right on the map.</p>
+  </div>
+  <div class="map-tools" role="group" aria-label="Filter the map">
+   <button type="button" class="mf on" data-corr="all">All campuses</button>
+   <button type="button" class="mf" data-corr="nw"><span class="dot d-nw"></span>Domain &amp; Parmer</button>
+   <button type="button" class="mf" data-corr="north"><span class="dot d-north"></span>I-35 &amp; US-79</button>
+   <button type="button" class="mf" data-corr="east"><span class="dot d-east"></span>SH-130</button>
+   <button type="button" class="mf" data-corr="core"><span class="dot d-core"></span>Downtown</button>
+   <button type="button" class="mf" data-corr="sw"><span class="dot d-sw"></span>Southwest Pkwy</button>
+   <label class="nb-toggle"><input type="checkbox" id="nb-toggle" /> <span>Show neighborhoods with live prices</span></label>
   </div>
   <div class="map-grid">
-   <div>
-    <div class="map-frame">
-     <svg viewBox="0 0 640 540" role="img" aria-labelledby="svg-t svg-d">
-      <title id="svg-t">Schematic map of the five Austin tech corridors</title>
-      <desc id="svg-d">Downtown Austin sits at the center on Lady Bird Lake. The Domain and Parmer Lane corridor lies to the north and northwest, the I-35 and US-79 corridor runs north to Round Rock and east to Hutto and Taylor, the SH-130 corridor runs along the east and southeast side past Tesla, and the Southwest Parkway corridor lies to the southwest.</desc>
-      <!-- water -->
-      <path d="M20 268 C 70 250, 110 300, 150 286 S 205 310, 228 336" fill="none" stroke="var(--water)" stroke-width="9" stroke-linecap="round"/>
-      <path d="M228 336 C 260 344, 300 348, 345 350 S 470 380, 630 420" fill="none" stroke="var(--water)" stroke-width="6" stroke-linecap="round"/>
-      <!-- corridor zones -->
-      <ellipse class="zone" cx="232" cy="182" rx="112" ry="66" fill="var(--c-nw)" stroke="var(--c-nw)"/>
-      <ellipse class="zone" cx="468" cy="100" rx="168" ry="44" transform="rotate(-5 468 100)" fill="var(--c-north)" stroke="var(--c-north)"/>
-      <ellipse class="zone" cx="418" cy="300" rx="72" ry="132" fill="var(--c-east)" stroke="var(--c-east)"/>
-      <circle class="zone" cx="302" cy="336" r="36" fill="var(--c-core)" stroke="var(--c-core)"/>
-      <ellipse class="zone" cx="200" cy="405" rx="72" ry="44" fill="var(--c-sw)" stroke="var(--c-sw)"/>
-      <!-- roads -->
-      <path class="road" d="M332 22 L326 120 L318 212 L305 330 L292 432 L280 535"/>
-      <path class="road" d="M244 140 L252 230 L262 330 L252 410 L238 470"/>
-      <path class="road" d="M110 100 L190 168 L270 214 L332 258 L360 330 L372 402"/>
-      <path class="road" d="M168 172 L300 168 L436 164"/>
-      <path class="road toll" d="M424 36 L428 160 L432 262 L430 380 L418 530"/>
-      <path class="road" d="M326 116 L452 100 L626 78"/>
-      <path class="road" d="M318 300 L452 290 L626 284"/>
-      <path class="road" d="M326 362 L432 396 L626 436"/>
-      <path class="road" d="M260 382 L170 420 L40 452"/>
-      <text class="road-lbl" x="336" y="50">I-35</text>
-      <text class="road-lbl" x="214" y="150">MoPac</text>
-      <text class="road-lbl" x="112" y="92">US-183</text>
-      <text class="road-lbl" x="292" y="160">Parmer Ln</text>
-      <text class="road-lbl" x="434" y="54">SH-130 (toll)</text>
-      <text class="road-lbl" x="560" y="72">US-79</text>
-      <text class="road-lbl" x="556" y="278">US-290 E</text>
-      <text class="road-lbl" x="560" y="425">SH-71</text>
-      <text class="road-lbl" x="44" y="444">US-290 W</text>
-      <!-- places -->
-      <text class="place-lbl" x="132" y="122">Leander</text>
-      <text class="place-lbl" x="140" y="200">Cedar Park</text>
-      <text class="place-lbl" x="282" y="24">Georgetown</text>
-      <text class="place-lbl" x="262" y="98">Round Rock</text>
-      <text class="place-lbl" x="344" y="146">Pflugerville</text>
-      <text class="place-lbl" x="492" y="124">Hutto</text>
-      <text class="place-lbl" x="584" y="112">Taylor</text>
-      <text class="place-lbl" x="470" y="312">Manor</text>
-      <text class="place-lbl" x="372" y="452">Del Valle</text>
-      <text class="place-lbl" x="586" y="464">Bastrop</text>
-      <text class="place-lbl" x="186" y="322">Westlake</text>
-      <text class="place-lbl" x="56" y="478">Dripping Springs</text>
-      <text class="place-lbl" x="270" y="384">Downtown</text>
-      <!-- zone labels -->
-      <text class="zone-lbl" x="108" y="262" fill="var(--c-nw)">Domain &amp; Parmer</text>
-      <text class="zone-lbl" x="500" y="162" fill="var(--c-north)">I-35 &amp; US-79</text>
-      <text class="zone-lbl" x="456" y="232" fill="var(--c-east)">SH-130</text>
-      <text class="zone-lbl" x="112" y="356" fill="var(--c-sw)">SW Parkway</text>
-      <!-- employer pins -->
-      <g class="pin"><circle cx="204" cy="172" r="10" fill="var(--c-nw)"/><text x="204" y="175.5">1</text></g>
-      <g class="pin"><circle cx="258" cy="200" r="10" fill="var(--c-nw)"/><text x="258" y="203.5">2</text></g>
-      <g class="pin"><circle cx="284" cy="222" r="10" fill="var(--c-nw)"/><text x="284" y="225.5">3</text></g>
-      <g class="pin"><circle cx="338" cy="104" r="10" fill="var(--c-north)"/><text x="338" y="107.5">4</text></g>
-      <g class="pin"><circle cx="476" cy="96" r="10" fill="var(--c-north)"/><text x="476" y="99.5">5</text></g>
-      <g class="pin"><circle cx="596" cy="84" r="10" fill="var(--c-north)"/><text x="596" y="87.5">6</text></g>
-      <g class="pin"><circle cx="384" cy="182" r="10" fill="var(--c-east)"/><text x="384" y="185.5">7</text></g>
-      <g class="pin"><circle cx="444" cy="290" r="10" fill="var(--c-east)"/><text x="444" y="293.5">8</text></g>
-      <g class="pin"><circle cx="432" cy="400" r="10" fill="var(--c-east)"/><text x="432" y="403.5">9</text></g>
-      <g class="pin"><circle cx="612" cy="440" r="10" fill="var(--c-east)"/><text x="612" y="443.5">10</text></g>
-      <g class="pin"><circle cx="296" cy="328" r="10" fill="var(--c-core)"/><text x="296" y="331.5">11</text></g>
-      <g class="pin"><circle cx="328" cy="352" r="10" fill="var(--c-core)"/><text x="328" y="355.5">12</text></g>
-      <g class="pin"><circle cx="196" cy="392" r="10" fill="var(--c-sw)"/><text x="196" y="395.5">13</text></g>
-      <g class="pin"><circle cx="214" cy="428" r="10" fill="var(--c-sw)"/><text x="214" y="431.5">14</text></g>
-     </svg>
-    </div>
-    <p class="map-hint">Swipe the map sideways to see the east side.</p>
+   <div class="map-box">
+    <div id="tech-map" role="region" aria-label="Interactive map of Austin tech campuses"></div>
+    <p class="map-status" id="map-status">Loading the map&hellip;</p>
    </div>
-   <div>
-    <p class="map-key-title">Campuses on the map</p>
-    <ol class="map-key">
-     <li><span class="num d-nw">1</span><div>Apple <small>West Parmer Lane campus</small></div></li>
-     <li><span class="num d-nw">2</span><div>IBM <small>11400 Burnet Road</small></div></li>
-     <li><span class="num d-nw">3</span><div>The Domain <small>Amazon and Nvidia offices, plus a long list of software firms</small></div></li>
-     <li><span class="num d-north">4</span><div>Dell Technologies <small>World headquarters, One Dell Way, Round Rock</small></div></li>
-     <li><span class="num d-north">5</span><div>Blue Origin <small>Constellation Park on SH-79 in Hutto, announced 2026</small></div></li>
-     <li><span class="num d-north">6</span><div>Samsung <small>Chip fab campus in Taylor</small></div></li>
-     <li><span class="num d-east">7</span><div>Samsung Austin Semiconductor <small>Northeast Austin, 78754</small></div></li>
-     <li><span class="num d-east">8</span><div>Applied Materials <small>Harris Branch campus on US-290 East</small></div></li>
-     <li><span class="num d-east">9</span><div>Tesla Giga Texas <small>SH-130 at SH-71, Southeast Austin</small></div></li>
-     <li><span class="num d-east">10</span><div>SpaceX Starlink <small>Factory in Bastrop, east on SH-71</small></div></li>
-     <li><span class="num d-core">11</span><div>Downtown <small>Google, Meta, Indeed Tower, Silicon Labs, Salesforce, CrowdStrike</small></div></li>
-     <li><span class="num d-core">12</span><div>Oracle <small>Lakeshore campus, south shore of Lady Bird Lake</small></div></li>
-     <li><span class="num d-sw">13</span><div>AMD <small>Southwest Parkway campus</small></div></li>
-     <li><span class="num d-sw">14</span><div>NXP Semiconductors <small>Oak Hill campus on William Cannon</small></div></li>
-    </ol>
+   <div class="site-list-wrap">
+    <p class="map-key-title">Campuses</p>
+    <ol class="site-list" id="site-list"></ol>
+    <p class="site-list-note">Meta, Salesforce and CrowdStrike also have downtown offices. Pins marked approximate sit on the announced site, not a finished building.</p>
    </div>
   </div>
  </div>
@@ -882,6 +825,58 @@
  </div>
 </section>
 
+<script type="application/json" id="tc-data">
+{
+ "sites": [
+  { "id": "apple-parmer", "name": "Apple", "sub": "West Parmer Lane campus", "addr": "West Parmer Lane, Northwest Austin", "c": "nw", "key": "apple", "lat": 30.45185, "lng": -97.74462 },
+  { "id": "apple-riata", "name": "Apple", "sub": "Riata Vista Circle offices", "addr": "12545 Riata Vista Circle, Austin", "c": "nw", "key": "apple", "lat": 30.43382, "lng": -97.73544 },
+  { "id": "ibm", "name": "IBM", "sub": "Burnet Road campus", "addr": "11400 Burnet Road, Austin", "c": "nw", "key": "ibm", "lat": 30.39379, "lng": -97.72412 },
+  { "id": "domain", "name": "The Domain", "sub": "Amazon, Nvidia and other tech offices", "addr": "The Domain, North Austin", "c": "nw", "key": "amazon", "lat": 30.39950, "lng": -97.72300 },
+  { "id": "dell", "name": "Dell Technologies", "sub": "World headquarters", "addr": "One Dell Way, Round Rock", "c": "north", "key": "dell", "lat": 30.48397, "lng": -97.66608 },
+  { "id": "blue-origin", "name": "Blue Origin", "sub": "Constellation Park (approximate, announced 2026)", "addr": "SH-79 between Innovation and Alliance Blvd, Hutto", "c": "north", "key": "blue-origin", "lat": 30.54620, "lng": -97.56960 },
+  { "id": "samsung-taylor", "name": "Samsung", "sub": "Taylor fab campus", "addr": "Taylor, Williamson County", "c": "north", "key": "samsung-taylor", "lat": 30.53739, "lng": -97.45258 },
+  { "id": "samsung-austin", "name": "Samsung Austin Semiconductor", "sub": "Northeast Austin fab", "addr": "12100 Samsung Boulevard, Austin", "c": "east", "key": "samsung-austin", "lat": 30.36731, "lng": -97.63499 },
+  { "id": "applied", "name": "Applied Materials", "sub": "Harris Branch campus", "addr": "9700 US-290 East, Austin", "c": "east", "key": "applied", "lat": 30.33504, "lng": -97.61449 },
+  { "id": "nxp-east", "name": "NXP Semiconductors", "sub": "Ed Bluestein site", "addr": "3501 Ed Bluestein Boulevard, Austin", "c": "east", "key": "nxp", "lat": 30.27008, "lng": -97.66974 },
+  { "id": "tesla", "name": "Tesla Giga Texas", "sub": "Gigafactory and Tesla headquarters", "addr": "1 Tesla Road, Austin", "c": "east", "key": "tesla", "lat": 30.22193, "lng": -97.61877 },
+  { "id": "spacex", "name": "SpaceX Starlink", "sub": "Starlink factory", "addr": "FM 1209, Bastrop County", "c": "east", "key": "spacex", "lat": 30.15685, "lng": -97.40647 },
+  { "id": "google", "name": "Google", "sub": "Downtown office", "addr": "500 West 2nd Street, Austin", "c": "core", "key": "google", "lat": 30.26677, "lng": -97.75019 },
+  { "id": "silabs", "name": "Silicon Labs", "sub": "Headquarters", "addr": "400 West Cesar Chavez Street, Austin", "c": "core", "key": "startup", "lat": 30.26499, "lng": -97.74844 },
+  { "id": "wholefoods", "name": "Amazon / Whole Foods Market", "sub": "Whole Foods global headquarters", "addr": "550 Bowie Street, Austin", "c": "core", "key": "amazon", "lat": 30.27081, "lng": -97.75279 },
+  { "id": "indeed", "name": "Indeed", "sub": "Indeed Tower", "addr": "200 West 6th Street, Austin", "c": "core", "key": "indeed", "lat": 30.26901, "lng": -97.74426 },
+  { "id": "oracle", "name": "Oracle", "sub": "Lakeshore campus", "addr": "2300 Oracle Way, Austin", "c": "core", "key": "oracle", "lat": 30.24351, "lng": -97.72183 },
+  { "id": "amd", "name": "AMD", "sub": "Southwest Parkway campus", "addr": "7171 Southwest Parkway, Austin", "c": "sw", "key": "amd", "lat": 30.25116, "lng": -97.86254 },
+  { "id": "nxp-oakhill", "name": "NXP Semiconductors", "sub": "Oak Hill campus", "addr": "6501 West William Cannon Drive, Austin", "c": "sw", "key": "nxp", "lat": 30.23564, "lng": -97.86638 }
+ ],
+ "areas": [
+  { "name": "Northwest Hills", "c": "nw", "lat": 30.35554, "lng": -97.76859, "price": "{{live:nbhd=northwest-hills:medianPrice|n/a}}", "count": "{{live:nbhd=northwest-hills:count|n/a}}", "href": "#domain-parmer" },
+  { "name": "Great Hills (78759)", "c": "nw", "lat": 30.41359, "lng": -97.76205, "price": "{{live:zip=78759:medianPrice|n/a}}", "count": "{{live:zip=78759:count|n/a}}", "href": "#domain-parmer" },
+  { "name": "Avery Ranch", "c": "nw", "lat": 30.49909, "lng": -97.77579, "price": "{{live:sub=Avery Ranch:medianPrice|n/a}}", "count": "{{live:sub=Avery Ranch:count|n/a}}", "href": "#domain-parmer" },
+  { "name": "Cedar Park", "c": "nw", "lat": 30.52171, "lng": -97.82783, "price": "{{live:city=Cedar Park:medianPrice|n/a}}", "count": "{{live:city=Cedar Park:count|n/a}}", "href": "/neighborhoods/cedar-park" },
+  { "name": "Leander", "c": "nw", "lat": 30.57361, "lng": -97.85673, "price": "{{live:city=Leander:medianPrice|n/a}}", "count": "{{live:city=Leander:count|n/a}}", "href": "/neighborhoods/leander" },
+  { "name": "Steiner Ranch", "c": "nw", "lat": 30.35569, "lng": -97.89942, "price": "{{live:sub=Steiner Ranch:medianPrice|n/a}}", "count": "{{live:sub=Steiner Ranch:count|n/a}}", "href": "/steiner-ranch-austin" },
+  { "name": "Round Rock", "c": "north", "lat": 30.50859, "lng": -97.67880, "price": "{{live:city=Round Rock:medianPrice|n/a}}", "count": "{{live:city=Round Rock:count|n/a}}", "href": "/round-rock" },
+  { "name": "Hutto", "c": "north", "lat": 30.54276, "lng": -97.54688, "price": "{{live:city=Hutto:medianPrice|n/a}}", "count": "{{live:city=Hutto:count|n/a}}", "href": "#i35-us79" },
+  { "name": "Taylor", "c": "north", "lat": 30.57080, "lng": -97.40920, "price": "{{live:city=Taylor:medianPrice|n/a}}", "count": "{{live:city=Taylor:count|n/a}}", "href": "#i35-us79" },
+  { "name": "Georgetown", "c": "north", "lat": 30.63701, "lng": -97.67756, "price": "{{live:city=Georgetown:medianPrice|n/a}}", "count": "{{live:city=Georgetown:count|n/a}}", "href": "/neighborhoods/georgetown" },
+  { "name": "Pflugerville", "c": "north", "lat": 30.43936, "lng": -97.62000, "price": "{{live:city=Pflugerville:medianPrice|n/a}}", "count": "{{live:city=Pflugerville:count|n/a}}", "href": "/neighborhoods/pflugerville" },
+  { "name": "Easton Park", "c": "east", "lat": 30.15579, "lng": -97.71160, "price": "{{live:sub=Easton Park:medianPrice|n/a}}", "count": "{{live:sub=Easton Park:count|n/a}}", "href": "/easton-park-realtor" },
+  { "name": "Del Valle (78617)", "c": "east", "lat": 30.17760, "lng": -97.61063, "price": "{{live:zip=78617:medianPrice|n/a}}", "count": "{{live:zip=78617:count|n/a}}", "href": "#sh130" },
+  { "name": "Northeast Austin (78754)", "c": "east", "lat": 30.35400, "lng": -97.65600, "price": "{{live:zip=78754:medianPrice|n/a}}", "count": "{{live:zip=78754:count|n/a}}", "href": "/best-realtor-78754-austin" },
+  { "name": "Manor", "c": "east", "lat": 30.34208, "lng": -97.55590, "price": "{{live:city=Manor:medianPrice|n/a}}", "count": "{{live:city=Manor:count|n/a}}", "href": "#sh130" },
+  { "name": "Bastrop", "c": "east", "lat": 30.11050, "lng": -97.31530, "price": "{{live:city=Bastrop:medianPrice|n/a}}", "count": "{{live:city=Bastrop:count|n/a}}", "href": "#sh130" },
+  { "name": "Downtown condos", "c": "core", "lat": 30.26150, "lng": -97.73900, "price": "{{live:zip=78701;type=condo:medianPrice|n/a}}", "count": "{{live:zip=78701;type=condo:count|n/a}}", "href": "/condos" },
+  { "name": "Travis Heights", "c": "core", "lat": 30.24447, "lng": -97.74399, "price": "{{live:nbhd=travis-heights:medianPrice|n/a}}", "count": "{{live:nbhd=travis-heights:count|n/a}}", "href": "/neighborhoods/travis-heights" },
+  { "name": "East Austin", "c": "core", "lat": 30.27454, "lng": -97.71648, "price": "{{live:nbhd=east-austin:medianPrice|n/a}}", "count": "{{live:nbhd=east-austin:count|n/a}}", "href": "/neighborhoods/east-austin" },
+  { "name": "Mueller", "c": "core", "lat": 30.29652, "lng": -97.70020, "price": "{{live:nbhd=mueller:medianPrice|n/a}}", "count": "{{live:nbhd=mueller:count|n/a}}", "href": "/neighborhoods/mueller" },
+  { "name": "Hyde Park", "c": "core", "lat": 30.30441, "lng": -97.73044, "price": "{{live:nbhd=hyde-park:medianPrice|n/a}}", "count": "{{live:nbhd=hyde-park:count|n/a}}", "href": "/neighborhoods/hyde-park" },
+  { "name": "Circle C Ranch", "c": "sw", "lat": 30.18746, "lng": -97.89026, "price": "{{live:sub=Circle C:medianPrice|n/a}}", "count": "{{live:sub=Circle C:count|n/a}}", "href": "#southwest" },
+  { "name": "Oak Hill", "c": "sw", "lat": 30.22200, "lng": -97.88500, "price": "{{live:nbhd=west-oak-hill:medianPrice|n/a}}", "count": "{{live:nbhd=west-oak-hill:count|n/a}}", "href": "#southwest" },
+  { "name": "Westlake (Eanes ISD)", "c": "sw", "lat": 30.28770, "lng": -97.80681, "price": "{{live:isd=Eanes:medianPrice|n/a}}", "count": "{{live:isd=Eanes:count|n/a}}", "href": "/eanes-isd-homes-for-sale" },
+  { "name": "Dripping Springs", "c": "sw", "lat": 30.19020, "lng": -98.08667, "price": "{{live:city=Dripping Springs:medianPrice|n/a}}", "count": "{{live:city=Dripping Springs:count|n/a}}", "href": "/dripping-springs-homes-for-sale" }
+ ]
+}
+</script>
 <script src="/js/footer.js"></script>
 <script>
 (function () {
@@ -939,13 +934,17 @@
    render(b.getAttribute('data-emp'));
   });
  });
- out.addEventListener('click', function (ev) {
-  var a = ev.target.closest('[data-pick]'); if (!a) return;
-  var e = E[a.getAttribute('data-pick')]; if (!e) return;
+ function prefill(key) {
+  var e = E[key]; if (!e) return;
   var comp = document.getElementById('company'); if (comp) comp.value = e.form;
   var area = document.getElementById('area'); if (area && e.c) area.value = C[e.c].form;
   var f = document.getElementById('field-company'); if (f) f.classList.remove('invalid');
   setTimeout(function () { var fn = document.getElementById('fn'); if (fn) fn.focus({ preventScroll: true }); }, 600);
+ }
+ window.tcFinder = { E: E, C: C, prefill: prefill };
+ out.addEventListener('click', function (ev) {
+  var a = ev.target.closest('[data-pick]'); if (!a) return;
+  prefill(a.getAttribute('data-pick'));
  });
 
  /* ── form validation (submission is handled by the site-wide lead handler in footer.js) ── */
@@ -988,6 +987,148 @@
   checks.forEach(function (c) { var good = c.ok(c.input.value); mark(c, good); if (!good && !first) first = c.input; });
   if (first) { e.preventDefault(); e.stopImmediatePropagation(); first.focus(); first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
  }, true);
+})();
+</script>
+<script>
+(function () {
+ /* ── interactive campus map (Google Maps, loaded when the section nears the viewport) ── */
+ var dataEl = document.getElementById('tc-data');
+ var DATA; try { DATA = JSON.parse(dataEl.textContent); } catch (e) { return; }
+ var ORDER = ['nw', 'north', 'east', 'core', 'sw'];
+ var NAMES = { nw: 'Domain & Parmer Lane', north: 'I-35 & US-79', east: 'SH-130', core: 'Downtown core', sw: 'Southwest Parkway' };
+ var ANCH = { nw: '#domain-parmer', north: '#i35-us79', east: '#sh130', core: '#downtown', sw: '#southwest' };
+ var css = getComputedStyle(document.documentElement);
+ var COL = {}; ORDER.forEach(function (k) { COL[k] = css.getPropertyValue('--c-' + k).trim(); });
+ var INK = css.getPropertyValue('--ink').trim();
+ var mapEl = document.getElementById('tech-map'), statusEl = document.getElementById('map-status');
+ var listEl = document.getElementById('site-list'), nbToggle = document.getElementById('nb-toggle');
+ var map = null, iw = null, siteMarkers = [], areaMarkers = [], filter = 'all';
+ function esc(s) { return String(s).replace(/[&<>"]/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; }); }
+ function hasVal(v) { return v && v !== 'n/a' && v.indexOf('{{') === -1; }
+
+ /* campus list (works with or without the map) */
+ ORDER.forEach(function (c) {
+  DATA.sites.forEach(function (s, i) {
+   if (s.c !== c) return;
+   var li = document.createElement('li'); li.dataset.c = s.c;
+   li.innerHTML = '<button type="button" data-i="' + i + '"><span class="dot d-' + s.c + '"></span><span>' + esc(s.name) + '<small>' + esc(s.sub) + '</small></span></button>';
+   listEl.appendChild(li);
+  });
+ });
+ listEl.addEventListener('click', function (ev) {
+  var b = ev.target.closest('button[data-i]'); if (!b) return;
+  var i = +b.dataset.i, s = DATA.sites[i];
+  if (!map) { location.hash = ANCH[s.c]; return; }
+  if (filter !== 'all' && filter !== s.c) setFilter('all', true);
+  map.panTo({ lat: s.lat, lng: s.lng }); if (map.getZoom() < 12) map.setZoom(12);
+  openSite(i);
+  if (window.innerWidth < 960) mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+ });
+
+ function siteIcon(c, big) {
+  var r = big ? 13 : 10, d = r * 2 + 6;
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + d + '" height="' + d + '"><circle cx="' + d / 2 + '" cy="' + d / 2 + '" r="' + r + '" fill="' + COL[c] + '" stroke="#fff" stroke-width="3"/><circle cx="' + d / 2 + '" cy="' + d / 2 + '" r="' + (r - 6) + '" fill="#fff" fill-opacity=".9"/></svg>';
+  return { url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg), scaledSize: new google.maps.Size(d, d), anchor: new google.maps.Point(d / 2, d / 2) };
+ }
+ function areaIcon(a) {
+  var label = hasVal(a.price) ? a.price : a.name;
+  var w = Math.round(16 + label.length * 7.2), h = 24;
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + (w + 2) + '" height="' + (h + 8) + '"><rect x="1" y="1" rx="12" ry="12" width="' + w + '" height="' + h + '" fill="#fff" stroke="' + COL[a.c] + '" stroke-width="2"/><path d="M' + (w / 2 - 4) + ' ' + (h + 0.5) + ' L' + (w / 2 + 1) + ' ' + (h + 7) + ' L' + (w / 2 + 6) + ' ' + (h + 0.5) + ' Z" fill="' + COL[a.c] + '"/><text x="' + (w / 2 + 1) + '" y="17" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700" fill="' + INK + '">' + esc(label) + '</text></svg>';
+  return { url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg), scaledSize: new google.maps.Size(w + 2, h + 8), anchor: new google.maps.Point(w / 2 + 1, h + 7) };
+ }
+
+ function openSite(i) {
+  var s = DATA.sites[i], F = window.tcFinder || {}, e = (F.E || {})[s.key] || {};
+  var areas = (e.areas || []).map(function (a) { return '<a href="' + a[1] + '">' + esc(a[0]) + '</a>'; }).join(', ');
+  var html = '<div class="iw"><p class="iw-corr"><span class="dot d-' + s.c + '"></span>' + esc(NAMES[s.c]) + '</p>' +
+   '<h3>' + esc(s.name) + '</h3><p>' + esc(s.sub) + '<br><span class="iw-addr">' + esc(s.addr) + '</span></p>' +
+   (areas ? '<p><b>Closest areas to start:</b> ' + areas + '</p>' : '') +
+   '<p><a class="iw-btn" href="#connect" data-prefill="' + esc(s.key) + '">Send me a shortlist</a>' +
+   (e.guide ? '<a href="' + e.guide + '">Relocation playbook</a>' : '<a href="' + ANCH[s.c] + '">About this corridor</a>') + '</p></div>';
+  iw.setContent(html); iw.open({ map: map, anchor: siteMarkers[i] });
+  siteMarkers.forEach(function (m, j) { m.setIcon(siteIcon(DATA.sites[j].c, j === i)); m.setZIndex(j === i ? 999 : 100); });
+ }
+ function openArea(i) {
+  var a = DATA.areas[i];
+  var html = '<div class="iw"><p class="iw-corr"><span class="dot d-' + a.c + '"></span>Near the ' + esc(NAMES[a.c]) + ' corridor</p><h3>' + esc(a.name) + '</h3>' +
+   (hasVal(a.price) ? '<p class="iw-price">' + esc(a.price) + '</p><p>Median asking price' + (hasVal(a.count) ? ', ' + esc(a.count) + ' homes listed' : '') + '. Live from the Austin MLS.</p>' : '<p>Ask Luke for the current numbers here.</p>') +
+   '<p><a class="iw-btn" href="#connect">Get homes here</a><a href="' + a.href + '">More on ' + esc(a.name) + '</a></p></div>';
+  iw.setContent(html); iw.open({ map: map, anchor: areaMarkers[i] });
+ }
+ document.addEventListener('click', function (ev) {
+  var p = ev.target.closest('[data-prefill]'); if (!p || !window.tcFinder) return;
+  window.tcFinder.prefill(p.getAttribute('data-prefill'));
+ });
+
+ function fit() {
+  if (!map) return;
+  var b = new google.maps.LatLngBounds(), n = 0;
+  siteMarkers.forEach(function (m) { if (m.getVisible()) { b.extend(m.getPosition()); n++; } });
+  areaMarkers.forEach(function (m) { if (m.getVisible()) { b.extend(m.getPosition()); n++; } });
+  if (!n) return;
+  map.fitBounds(b, window.innerWidth < 640 ? 30 : 60);
+  google.maps.event.addListenerOnce(map, 'idle', function () { if (map.getZoom() > 13) map.setZoom(13); });
+ }
+ function setFilter(c, keepView) {
+  filter = c;
+  document.querySelectorAll('.mf').forEach(function (b) { b.classList.toggle('on', b.dataset.corr === c); });
+  listEl.querySelectorAll('li').forEach(function (li) { li.classList.toggle('hide', c !== 'all' && li.dataset.c !== c); });
+  if (!map) return;
+  if (iw) iw.close();
+  siteMarkers.forEach(function (m, i) { m.setVisible(c === 'all' || DATA.sites[i].c === c); });
+  areaMarkers.forEach(function (m, i) { m.setVisible(nbToggle.checked && (c === 'all' || DATA.areas[i].c === c)); });
+  if (!keepView) fit();
+ }
+ document.querySelectorAll('.mf').forEach(function (b) { b.addEventListener('click', function () { setFilter(b.dataset.corr); }); });
+ nbToggle.addEventListener('change', function () { setFilter(filter); });
+
+ window.tcInitMap = function () {
+  try {
+   map = new google.maps.Map(mapEl, {
+    center: { lat: 30.36, lng: -97.70 }, zoom: 10, mapTypeControl: false, streetViewControl: false, fullscreenControl: true,
+    gestureHandling: 'cooperative', clickableIcons: false,
+    styles: [
+     { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+     { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+     { elementType: 'geometry', stylers: [{ saturation: -60 }, { lightness: 8 }] },
+     { featureType: 'water', elementType: 'geometry', stylers: [{ saturation: -20 }, { lightness: 10 }] },
+     { featureType: 'road.highway', elementType: 'geometry', stylers: [{ saturation: -70 }, { lightness: 20 }] },
+     { featureType: 'road.arterial', elementType: 'labels', stylers: [{ visibility: 'simplified' }] },
+     { featureType: 'road.local', stylers: [{ visibility: 'off' }] }
+    ]
+   });
+   iw = new google.maps.InfoWindow({ maxWidth: 300 });
+   map.addListener('click', function () { iw.close(); });
+   DATA.sites.forEach(function (s, i) {
+    var m = new google.maps.Marker({ position: { lat: s.lat, lng: s.lng }, map: map, icon: siteIcon(s.c, false), title: s.name + ', ' + s.sub, zIndex: 100, optimized: false });
+    m.addListener('click', function () { openSite(i); });
+    siteMarkers.push(m);
+   });
+   DATA.areas.forEach(function (a, i) {
+    var m = new google.maps.Marker({ position: { lat: a.lat, lng: a.lng }, map: map, icon: areaIcon(a), title: a.name, visible: false, zIndex: 1, optimized: false });
+    m.addListener('click', function () { openArea(i); });
+    areaMarkers.push(m);
+   });
+   statusEl.style.display = 'none';
+   setFilter(filter);
+  } catch (err) { failed(); }
+ };
+ function failed() { statusEl.textContent = 'The map could not load right now. The campus list still works, and every corridor is covered below.'; }
+ window.gm_authFailure = failed;
+ var started = false;
+ function start() {
+  if (started) return; started = true;
+  fetch('/api/config').then(function (r) { return r.json(); }).then(function (cfg) {
+   if (!cfg.googleMapsKey) return failed();
+   var sc = document.createElement('script');
+   sc.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(cfg.googleMapsKey) + '&callback=tcInitMap';
+   sc.async = true; sc.onerror = failed; document.head.appendChild(sc);
+  }).catch(failed);
+ }
+ if ('IntersectionObserver' in window) {
+  var io = new IntersectionObserver(function (en) { if (en.some(function (x) { return x.isIntersecting; })) { io.disconnect(); start(); } }, { rootMargin: '600px 0px' });
+  io.observe(mapEl);
+ } else { start(); }
 })();
 </script>
 </body>
