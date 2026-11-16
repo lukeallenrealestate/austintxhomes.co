@@ -283,6 +283,7 @@
   <div class="sf-col-subhead">Employer Relocation Guides</div>
   <ul class="sf-links">
   <li class="sf-hub-link"><a href="/employer-relocation-austin">All Employer Guides →</a></li>
+  <li><a href="/austin-tech-corridor">Austin Tech Corridors Map <span class="sf-badge">New</span></a></li>
   <li><a href="/apple-austin-relocation">Apple</a></li>
   <li><a href="/google-austin-relocation">Google</a></li>
   <li><a href="/tesla-austin-relocation">Tesla</a></li>

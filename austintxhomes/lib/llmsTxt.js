@@ -31,6 +31,7 @@ const KEY_PAGES = [
   ['/sell', 'Selling a home in Austin with Luke Allen'],
   ['/what-is-my-home-worth', 'Free home valuation request'],
   ['/moving-to-austin', 'Austin relocation guide'],
+  ['/austin-tech-corridor', 'Where the Austin tech corridor is: the five tech hubs (Domain and Parmer Lane, I-35 and US-79 to Taylor, SH-130, downtown, Southwest Parkway), their employers, and live asking prices for the neighborhoods near each'],
   ['/moving-to-austin-from-california-realtor', 'Relocating from California to Austin: remote buying workflow, tax comparison'],
   ['/austin-relocation-real-estate-agent', 'Relocation buyer representation in Austin'],
   ['/new-construction-realtor-austin', 'Buyer representation for Austin new construction'],
