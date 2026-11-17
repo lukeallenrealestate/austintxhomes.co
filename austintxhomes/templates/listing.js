@@ -341,7 +341,7 @@ function renderListingPage(listing, { market, comps, neighborhood, employers, in
     ['Living Area', listing.living_area ? fmt(listing.living_area)+' sqft' : ','],
     ['Lot Size', acres ? `${acres} acres${listing.lot_size_sqft?' ('+fmt(listing.lot_size_sqft)+' sqft)':''}` : ','],
     ['Year Built', listing.year_built||','], ['Garage', listing.garage_spaces ? listing.garage_spaces+' spaces' : ','],
-    ['Stories', listing.stories||','],
+    ['Stories', listing.stories ? (listing.stories >= 3 ? '3+' : String(listing.stories)) : ','],
     ['Type', [listing.property_type, listing.property_sub_type].filter(Boolean).join(' · ')||','],
     ['Subdivision', listing.subdivision_name||','], ['County', listing.county||','],
     ['Zip Code', zip||','], ['$/sqft', ppsf ? fmtPrice(ppsf)+'/sqft' : ','],

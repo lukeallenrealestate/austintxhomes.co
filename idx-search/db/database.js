@@ -326,4 +326,10 @@ if (currentVersion < CURRENT_SCHEMA_VERSION) {
   }
 }
 
+// One-shot job markers (e.g. the stories-from-Levels backfill in
+// sync/mlsSync.js). A row here means the job finished on this database.
+try {
+  db.exec(`CREATE TABLE IF NOT EXISTS migration_flags (name TEXT PRIMARY KEY, ran_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
+} catch {}
+
 module.exports = db;

@@ -55,7 +55,7 @@ const IDX_PUBLIC = path.join(__dirname, '../idx-search/public');
 // MLS sync + alert engine (merged — now runs in this process)
 const {
   syncListings, refreshPhotos, syncClosedLeases, syncClosedSales,
-  syncInvisibleActive, syncClosedResidential,
+  syncInvisibleActive, syncClosedResidential, backfillStoriesFromLevels,
 } = require('../idx-search/sync/mlsSync');
 const { runAlertJob, runFavoritePriceDropJob } = require('../idx-search/services/alertJob');
 const r2Service = require('../idx-search/services/r2');
@@ -173,6 +173,11 @@ const { renderMarketWidget, WIDGET_MARKER } = require('./templates/market-widget
 setImmediate(() => liveStats.warm());
 setInterval(() => liveStats.warm(), 30 * 60 * 1000);
 setTimeout(() => liveStats.backfillSchoolDistrict(), 3 * 60 * 1000);
+// One-time backfill of `stories` from MLS Levels for the search Stories
+// filter. No-op once it has finished (migration_flags row).
+setTimeout(() => {
+  backfillStoriesFromLevels().catch(err => console.error('[STORIES-BACKFILL]', err.message));
+}, 5 * 60 * 1000);
 
 // Every neighborhood / ZIP / ISD page gets the live snapshot widget, placed
 // just above the author block (or the footer script when there is no block).

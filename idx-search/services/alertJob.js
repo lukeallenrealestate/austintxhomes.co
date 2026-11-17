@@ -21,7 +21,7 @@ function buildFilterConditions(filters) {
 
   const {
     forRent, minPrice, maxPrice, minBeds, minBaths,
-    minSqft, maxSqft, minYear, maxYear,
+    minSqft, maxSqft, minYear, maxYear, stories,
     city, zip, neighborhood, schoolDistrict, keyword,
     pool, waterfront, newConstruction, propertyType, subType,
     north, south, east, west
@@ -48,6 +48,10 @@ function buildFilterConditions(filters) {
   if (maxSqft)  { conditions.push('living_area <= ?'); values.push(Number(maxSqft)); }
   if (minYear)  { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
   if (maxYear)  { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
+  // Stories: same buckets as storiesCondition() in routes/properties.js
+  if (String(stories) === '1') conditions.push('stories = 1');
+  else if (String(stories) === '2') conditions.push('stories >= 1.5 AND stories < 3');
+  else if (String(stories) === '3') conditions.push('stories >= 3');
 
   // Bounding box (from map view saved searches)
   if (north && south && east && west) {

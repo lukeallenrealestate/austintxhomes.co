@@ -140,6 +140,22 @@ const updateSyncState = db.prepare(`
   total_synced = total_synced + ? WHERE id = 1
 `);
 
+// ACTRIS leaves StoriesTotal blank; the story count lives in the RESO
+// `Levels` lookup list ("One", "One and One Half", "Two", "Three Or More",
+// "Multi/Split"). Collapse it to a number for the search filter: 1, 1.5, 2
+// or 3 (3 means three or more). Split-levels count as 2 since they have
+// stairs. Keep this in sync with the backfill in db/database.js.
+const LEVEL_STORIES = { 'One': 1, 'One and One Half': 1.5, 'Two': 2, 'Multi/Split': 2, 'Three Or More': 3 };
+function levelsToStories(levels) {
+  const list = Array.isArray(levels) ? levels : (levels ? [levels] : []);
+  let max = null;
+  for (const l of list) {
+    const n = LEVEL_STORIES[l];
+    if (n != null && (max == null || n > max)) max = n;
+  }
+  return max;
+}
+
 function mapListing(p) {
   const photos = (p.Media || [])
     .filter(m => m.MediaCategory === 'Photo' || !m.MediaCategory)
@@ -210,7 +226,7 @@ function mapListing(p) {
     pool_features: Array.isArray(p.PoolFeatures) ? p.PoolFeatures.join(', ') : (p.PoolFeatures || null),
     waterfront_yn: p.WaterfrontYN ? 1 : 0,
     new_construction_yn: p.NewConstructionYN ? 1 : 0,
-    stories: p.StoriesTotal || null,
+    stories: p.StoriesTotal || levelsToStories(p.Levels),
     parking_total: p.ParkingTotal || null,
     association_fee: p.AssociationFee || null,
     association_fee_frequency: p.AssociationFeeFrequency || null,
@@ -732,7 +748,62 @@ async function syncClosedResidential({ daysBack = 365 } = {}) {
   return totalSynced;
 }
 
+/**
+ * One-time backfill of `stories` for listings synced before we read Levels.
+ * Pulls only ListingKey + Levels from MLS Grid (no Media, so 5000 per page)
+ * for the statuses the public search shows, then updates rows whose stories
+ * is still NULL. Updates run in small transactions with a yield between them
+ * because each UPDATE rewrites the full row (raw_data included), roughly
+ * 1ms per row. Marks migration_flags when every pass finishes cleanly.
+ */
+async function backfillStoriesFromLevels() {
+  if (!TOKEN) return 0;
+  const FLAG = 'stories_from_levels';
+  try {
+    if (db.prepare('SELECT 1 FROM migration_flags WHERE name = ?').get(FLAG)) return 0;
+  } catch { return 0; }
+
+  const update = db.prepare('UPDATE listings SET stories = ? WHERE listing_key = ? AND stories IS NULL');
+  const runChunk = db.transaction(rows => {
+    let n = 0;
+    for (const [key, stories] of rows) n += update.run(stories, key).changes;
+    return n;
+  });
+
+  let updated = 0;
+  let clean = true;
+  for (const status of ['Active', 'Active Under Contract', 'Pending']) {
+    const filter = encodeURIComponent(
+      `OriginatingSystemName eq '${SYSTEM}' and StandardStatus eq '${status}' and MlgCanView eq true`
+    );
+    let url = `${BASE_URL}/Property?$filter=${filter}&$select=ListingKey,Levels&$top=5000`;
+    while (url) {
+      try {
+        const data = await fetchPage(url);
+        const pairs = (data.value || [])
+          .map(p => [p.ListingKey, levelsToStories(p.Levels)])
+          .filter(([k, s]) => k && s != null);
+        for (let i = 0; i < pairs.length; i += 100) {
+          updated += runChunk(pairs.slice(i, i + 100));
+          await new Promise(r => setImmediate(r));
+        }
+        url = data['@odata.nextLink'] || null;
+      } catch (err) {
+        console.error(`[STORIES-BACKFILL] ${status} failed:`, err.message);
+        clean = false;
+        break;
+      }
+    }
+  }
+  if (clean) {
+    try { db.prepare('INSERT OR IGNORE INTO migration_flags (name) VALUES (?)').run(FLAG); } catch {}
+  }
+  console.log(`[STORIES-BACKFILL] Set stories on ${updated} listings${clean ? '' : ' (incomplete, will retry next boot)'}`);
+  return updated;
+}
+
 module.exports = {
+  backfillStoriesFromLevels,
   syncListings, refreshPhotos, syncClosedLeases, syncClosedSales,
   syncInvisibleActive, syncClosedResidential,
 };

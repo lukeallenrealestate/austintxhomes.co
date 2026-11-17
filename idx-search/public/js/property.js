@@ -148,7 +148,7 @@ function renderDetail(listing) {
     { label: 'Style', value: listing.property_sub_type },
     { label: 'Year Built', value: listing.year_built },
     { label: 'Garage Spaces', value: listing.garage_spaces },
-    { label: 'Stories', value: listing.stories },
+    { label: 'Stories', value: listing.stories ? (listing.stories >= 3 ? '3+' : listing.stories) : listing.stories },
     { label: 'Parking Total', value: listing.parking_total },
     { label: 'Lot Size', value: listing.lot_size_sqft ? Math.round(listing.lot_size_sqft).toLocaleString() + ' sqft' : listing.lot_size_acres ? listing.lot_size_acres.toFixed(3) + ' acres' : null },
     { label: 'Subdivision', value: listing.subdivision_name },

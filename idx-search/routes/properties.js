@@ -236,13 +236,24 @@ function sanitizePublicStatus(raw) {
   return kept.length ? kept.join(',') : null;
 }
 
+// Stories filter: "1" = single story only, "2" = 1.5 to 2 stories
+// (split-levels included), "3" = three or more. Values come from the MLS
+// Levels field via levelsToStories() in sync/mlsSync.js.
+function storiesCondition(stories) {
+  const s = String(stories || '').trim();
+  if (s === '1') return 'stories = 1';
+  if (s === '2') return 'stories >= 1.5 AND stories < 3';
+  if (s === '3') return 'stories >= 3';
+  return null;
+}
+
 // Shared WHERE-clause builder v2 — mirrors /search logic so /map-bundle returns
 // identical result sets for pins and cards in a single pass.
 function buildSearchWhere(q) {
   const {
     propertyType, subType, forRent,
     minPrice, maxPrice, minBeds, maxBeds, minBaths,
-    minSqft, maxSqft, minYear, maxYear,
+    minSqft, maxSqft, minYear, maxYear, stories,
     city, zip, neighborhood, schoolDistrict, keyword,
     pool, waterfront, newConstruction, culDeSac,
     closedSince, closedAfter, pendingSince,
@@ -298,6 +309,8 @@ function buildSearchWhere(q) {
   if (maxSqft)  { conditions.push('living_area <= ?'); values.push(Number(maxSqft)); }
   if (minYear)  { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
   if (maxYear)  { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
+  const storiesSql = storiesCondition(stories);
+  if (storiesSql) conditions.push(storiesSql);
 
   if (city) {
     const cities = city.split(',').map(s => s.trim());
@@ -401,7 +414,7 @@ router.get('/search', async (req, res) => {
     const {
       propertyType, subType, forRent,
       minPrice, maxPrice, minBeds, maxBeds, minBaths,
-      minSqft, maxSqft, minYear, maxYear,
+      minSqft, maxSqft, minYear, maxYear, stories,
       city, zip, neighborhood, schoolDistrict, keyword,
       pool, waterfront, newConstruction, culDeSac,
       closedSince, closedAfter, pendingSince,
@@ -491,6 +504,10 @@ router.get('/search', async (req, res) => {
     // Year built
     if (minYear) { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
     if (maxYear) { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
+
+    // Stories
+    const storiesSql = storiesCondition(stories);
+    if (storiesSql) conditions.push(storiesSql);
 
     // Location
     if (city) {
@@ -651,7 +668,7 @@ router.get('/map-pins', (req, res) => {
     const { north, south, east, west, polygon, forRent, minPrice, maxPrice,
             minBeds, minBaths, propertyType, subType,
             city, zip, neighborhood, schoolDistrict,
-            minSqft, maxSqft, minYear, maxYear, pool, waterfront, newConstruction, keyword } = req.query;
+            minSqft, maxSqft, minYear, maxYear, stories, pool, waterfront, newConstruction, keyword } = req.query;
     // Public endpoint: strip "Closed" from any user-supplied status filter.
     const status = sanitizePublicStatus(req.query.status);
 
@@ -706,6 +723,8 @@ router.get('/map-pins', (req, res) => {
     if (maxSqft) { conditions.push('living_area <= ?'); values.push(Number(maxSqft)); }
     if (minYear) { conditions.push('year_built >= ?'); values.push(Number(minYear)); }
     if (maxYear) { conditions.push('year_built <= ?'); values.push(Number(maxYear)); }
+    const storiesSql = storiesCondition(stories);
+    if (storiesSql) conditions.push(storiesSql);
     if (pool === 'true') { conditions.push(`pool_features IS NOT NULL AND pool_features != ''`); }
     if (waterfront === 'true') { conditions.push(`waterfront_yn = 1`); }
     if (newConstruction === 'true') { conditions.push(`new_construction_yn = 1`); }

@@ -2,6 +2,8 @@
 let currentView = 'list';
 let currentPage = 1;
 let currentFilters = {};
+// Stories filter buckets (server side: storiesCondition() in routes/properties.js)
+const STORIES_LABELS = { '1': '1 story', '2': '2 stories', '3': '3+ stories' };
 let totalResults = 0;
 let googleMap = null;
 let mapMarkers = [];
@@ -65,6 +67,9 @@ function restoreSearchState() {
     if (filters.sortBy) document.getElementById('sort-select').value = filters.sortBy;
     if (searchInput) document.getElementById('location-search').value = searchInput;
 
+    if (filters.stories) {
+      document.querySelectorAll('#stories-pills .pill').forEach(p => p.classList.toggle('active', p.dataset.val === String(filters.stories)));
+    }
     if (filters.minBeds) {
       document.querySelectorAll('#beds-pills .pill').forEach(p => {
         p.classList.toggle('active', p.dataset.val === String(filters.minBeds));
@@ -109,6 +114,7 @@ function syncUrlFromFilters() {
   if (f.maxSqft)      params.set('maxSqft', f.maxSqft);
   if (f.minYear)      params.set('minYear', f.minYear);
   if (f.maxYear)      params.set('maxYear', f.maxYear);
+  if (f.stories)      params.set('stories', f.stories);
   if (f.schoolDistrict) params.set('schoolDistrict', f.schoolDistrict);
   if (f.pool === 'true')            params.set('pool', 'true');
   if (f.waterfront === 'true')      params.set('waterfront', 'true');
@@ -141,6 +147,7 @@ function applyUrlParams() {
   const maxSqft = params.get('maxSqft');
   const minYear = params.get('minYear');
   const maxYear = params.get('maxYear');
+  const stories = params.get('stories');
   const schoolDistrict = params.get('schoolDistrict');
   const pool = params.get('pool');
   const waterfront = params.get('waterfront');
@@ -197,6 +204,10 @@ function applyUrlParams() {
   if (maxSqft) { currentFilters.maxSqft = maxSqft; const el = document.getElementById('max-sqft'); if (el) el.value = maxSqft; }
   if (minYear) { currentFilters.minYear = minYear; const el = document.getElementById('min-year'); if (el) el.value = minYear; }
   if (maxYear) { currentFilters.maxYear = maxYear; const el = document.getElementById('max-year'); if (el) el.value = maxYear; }
+  if (stories && STORIES_LABELS[stories]) {
+    currentFilters.stories = stories;
+    document.querySelectorAll('#stories-pills .pill').forEach(p => p.classList.toggle('active', p.dataset.val === stories));
+  }
   if (schoolDistrict) { currentFilters.schoolDistrict = schoolDistrict; const el = document.getElementById('school-filter'); if (el) el.value = schoolDistrict; }
   if (pool === 'true') { currentFilters.pool = 'true'; const el = document.getElementById('pool-filter'); if (el) el.checked = true; }
   if (waterfront === 'true') { currentFilters.waterfront = 'true'; const el = document.getElementById('waterfront-filter'); if (el) el.checked = true; }
@@ -703,6 +714,7 @@ function saveRecentSearch() {
   }
   if (f.minBeds)  parts.push(f.minBeds + 'BR+');
   if (f.minBaths) parts.push(f.minBaths + 'BA+');
+  if (f.stories && STORIES_LABELS[f.stories]) parts.push(STORIES_LABELS[f.stories]);
   if (f.city)         parts.push(f.city.split(',')[0]);
   if (f.zip)          parts.push(f.zip.split(',')[0]);
   if (f.neighborhood) parts.push(f.neighborhood);
@@ -829,6 +841,21 @@ function updatePriceBtnLabel() {
 }
 
 function setupPillListeners() {
+  document.querySelectorAll('#stories-pills .pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const wasActive = pill.classList.contains('active');
+      document.querySelectorAll('#stories-pills .pill').forEach(p => p.classList.remove('active'));
+      if (!wasActive) {
+        pill.classList.add('active');
+        currentFilters.stories = pill.dataset.val;
+      } else {
+        delete currentFilters.stories;
+      }
+      currentPage = 1;
+      applyFilters();
+    });
+  });
+
   document.querySelectorAll('#beds-pills .pill').forEach(pill => {
     pill.addEventListener('click', () => {
       const wasActive = pill.classList.contains('active');
@@ -998,6 +1025,7 @@ function renderFilterChips() {
   if (f.minYear || f.maxYear) {
     chips.push({ label: `Year: ${f.minYear || 'Any'} – ${f.maxYear || 'Any'}`, key: 'year' });
   }
+  if (f.stories && STORIES_LABELS[f.stories]) chips.push({ label: STORIES_LABELS[f.stories], key: 'stories' });
   if (f.schoolDistrict) chips.push({ label: 'School: ' + f.schoolDistrict, key: 'schoolDistrict' });
   if (f.pool === 'true')            chips.push({ label: 'Pool',             key: 'pool' });
   if (f.waterfront === 'true')      chips.push({ label: 'Waterfront',       key: 'waterfront' });
@@ -1061,6 +1089,9 @@ function removeFilterChip(key) {
     delete currentFilters.minYear; delete currentFilters.maxYear;
     const mn = document.getElementById('min-year'); if (mn) mn.value = '';
     const mx = document.getElementById('max-year'); if (mx) mx.value = '';
+  } else if (key === 'stories') {
+    delete currentFilters.stories;
+    document.querySelectorAll('#stories-pills .pill').forEach(p => p.classList.remove('active'));
   } else if (key === 'schoolDistrict') {
     delete currentFilters.schoolDistrict;
     const el = document.getElementById('school-filter'); if (el) el.value = '';
@@ -1109,7 +1140,7 @@ function updateFilterButtons() {
 
   const hasMore = currentFilters.minSqft || currentFilters.maxSqft || currentFilters.schoolDistrict
     || currentFilters.pool || currentFilters.waterfront || currentFilters.newConstruction || currentFilters.culDeSac
-    || currentFilters.minYear || currentFilters.maxYear
+    || currentFilters.minYear || currentFilters.maxYear || currentFilters.stories
     || currentFilters.status || currentFilters.closedSince || currentFilters.pendingSince
     || currentFilters.nearAddress || currentFilters.radiusMi;
   document.getElementById('more-btn')?.classList.toggle('active', !!hasMore);
@@ -1330,6 +1361,7 @@ function clearAllFilters() {
   document.getElementById('new-construction-filter').checked = false;
   const culDeSacEl = document.getElementById('cul-de-sac-filter');
   if (culDeSacEl) culDeSacEl.checked = false;
+  document.querySelectorAll('#stories-pills .pill').forEach(p => p.classList.remove('active'));
   // New filters: status, sold-comp window, and radius-from-address
   const setChecked = (id, v) => { const el = document.getElementById(id); if (el) el.checked = v; };
   const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };

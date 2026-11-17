@@ -6,7 +6,7 @@ const fs = require('fs');
 const cron = require('node-cron');
 const {
   syncListings, refreshPhotos,
-  syncInvisibleActive, syncClosedResidential,
+  syncInvisibleActive, syncClosedResidential, backfillStoriesFromLevels,
   syncClosedLeases, syncClosedSales,
 } = require('./sync/mlsSync');
 const photoBackfill = require('./sync/photoBackfill');
@@ -350,6 +350,12 @@ setTimeout(() => {
     console.warn('[STARTUP] Invisible-Active count check failed:', err.message);
   }
 }, 30_000);
+
+// One-time stories backfill (search "Stories" filter). No-op once the
+// migration_flags row exists. Delayed so it doesn't compete with boot.
+setTimeout(() => {
+  backfillStoriesFromLevels().catch(err => console.error('[STORIES-BACKFILL]', err.message));
+}, 90_000);
 
 // Photo backfill scheduling lives inside photoBackfill.js itself, triggered by the
 // post-sync hook in mlsSync.js. We discovered that setInterval/setTimeout/cron from
