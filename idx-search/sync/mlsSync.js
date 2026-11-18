@@ -432,6 +432,17 @@ async function syncListings(isInitial = false) {
   // logs around the time this hook fired. Newly-arrived listings still get
   // hero photos within ~1 hour from the hourly cron — slight delay we
   // accept in exchange for a responsive site.
+
+  // The builder_name backfill is kicked from here, not from a timer in
+  // server.js, for the reason the scheduling note in that file already gives:
+  // setTimeout and setInterval do not fire reliably on this deployment. That is
+  // exactly what happened. The job reported ran=0 with no error, meaning it had
+  // never been called at all, through two deploys spent looking for a fault
+  // inside it. A sync, by contrast, demonstrably runs.
+  //
+  // Safe to chain here: it touches no MLS endpoint, so it cannot affect the
+  // rate budget, and it is a no-op once its migration flag is set.
+  backfillBuilderNames().catch(err => console.error('[BUILDER-BACKFILL]', err.message));
 }
 
 let refreshRunning = false;
