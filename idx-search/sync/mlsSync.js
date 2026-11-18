@@ -29,7 +29,8 @@ const SELECT_FIELDS = [
   'OriginalListPrice', 'PreviousListPrice', 'PriceChangeTimestamp',
   'ModificationTimestamp', 'PhotosChangeTimestamp', 'MlgCanView', 'MlgCanUse',
   'PoolFeatures', 'WaterfrontYN', 'NewConstructionYN', 'StoriesTotal',
-  'ParkingTotal', 'AssociationFee', 'AssociationFeeFrequency', 'TaxAnnualAmount'
+  'ParkingTotal', 'AssociationFee', 'AssociationFeeFrequency', 'TaxAnnualAmount',
+  'BuilderName'
 ].join(',');
 
 // Upsert preserves photos_r2 (Cloudflare R2 mirror URLs) across syncs.
@@ -52,7 +53,7 @@ const upsertListing = db.prepare(`
     modification_timestamp, photos_change_timestamp, mlg_can_view,
     photos, pool_features, waterfront_yn, new_construction_yn,
     stories, parking_total, association_fee, association_fee_frequency,
-    tax_annual_amount, raw_data, synced_at
+    tax_annual_amount, builder_name, raw_data, synced_at
   ) VALUES (
     @listing_key, @listing_id, @standard_status, @property_type, @property_sub_type,
     @list_price, @bedrooms_total, @bathrooms_total, @bathrooms_full, @bathrooms_half,
@@ -67,7 +68,7 @@ const upsertListing = db.prepare(`
     @modification_timestamp, @photos_change_timestamp, @mlg_can_view,
     @photos, @pool_features, @waterfront_yn, @new_construction_yn,
     @stories, @parking_total, @association_fee, @association_fee_frequency,
-    @tax_annual_amount, @raw_data, CURRENT_TIMESTAMP
+    @tax_annual_amount, @builder_name, @raw_data, CURRENT_TIMESTAMP
   )
   ON CONFLICT(listing_key) DO UPDATE SET
     listing_id = excluded.listing_id,
@@ -122,6 +123,7 @@ const upsertListing = db.prepare(`
     association_fee = excluded.association_fee,
     association_fee_frequency = excluded.association_fee_frequency,
     tax_annual_amount = excluded.tax_annual_amount,
+    builder_name = excluded.builder_name,
     raw_data = excluded.raw_data,
     photos_r2 = CASE
       WHEN excluded.photos_change_timestamp IS NOT NULL
@@ -231,6 +233,10 @@ function mapListing(p) {
     association_fee: p.AssociationFee || null,
     association_fee_frequency: p.AssociationFeeFrequency || null,
     tax_annual_amount: p.TaxAnnualAmount || null,
+    // Verbatim from the feed, trimmed only. Canonicalising here would throw
+    // away the original spelling, and the consumers that care about builder
+    // identity need to make that call themselves.
+    builder_name: (typeof p.BuilderName === 'string' && p.BuilderName.trim()) || null,
     raw_data: JSON.stringify(p)
   };
 }
@@ -802,8 +808,76 @@ async function backfillStoriesFromLevels() {
   return updated;
 }
 
+/**
+ * One-time backfill of `builder_name` for everything synced before we read
+ * BuilderName into its own column.
+ *
+ * This needs no MLS calls at all. syncListings has never sent a `$select`, so
+ * every row's raw_data already holds the full API record, BuilderName with it.
+ * The field was there the whole time, just buried in a blob no query could
+ * reach. So the backfill is pure local SQL and cannot hit the rate limiter.
+ *
+ * Both halves are paged by rowid and yield to the event loop between pages,
+ * which is the whole reason this is async. better-sqlite3 is synchronous, so
+ * reading every raw_data blob in one statement blocks Node for over a minute
+ * on this table, and a minute of blocked event loop is an outage as far as the
+ * API is concerned. Paging by rowid keeps each slice of blocking work bounded
+ * and advances monotonically, so a row updated in one page is never rescanned
+ * in the next.
+ */
+async function backfillBuilderNames() {
+  const FLAG = 'builder_name_from_raw';
+  try {
+    if (db.prepare('SELECT 1 FROM migration_flags WHERE name = ?').get(FLAG)) return 0;
+  } catch { return 0; }
+
+  const PAGE = 400;
+  // json_extract returns NULL when the key is absent, so no LIKE prefilter is
+  // needed and the rowid index carries the paging.
+  const read = db.prepare(`
+    SELECT rowid AS r, listing_key AS k, json_extract(raw_data, '$.BuilderName') AS b
+    FROM listings
+    WHERE rowid > ? AND builder_name IS NULL
+    ORDER BY rowid
+    LIMIT ${PAGE}
+  `);
+  const update = db.prepare(
+    'UPDATE listings SET builder_name = ? WHERE listing_key = ? AND builder_name IS NULL'
+  );
+  const runChunk = db.transaction(rows => {
+    let n = 0;
+    for (const [key, name] of rows) n += update.run(name, key).changes;
+    return n;
+  });
+
+  let updated = 0;
+  let lastRowid = 0;
+  try {
+    for (;;) {
+      const rows = read.all(lastRowid);
+      if (!rows.length) break;
+      lastRowid = rows[rows.length - 1].r;
+
+      const pairs = rows
+        .map(r => [r.k, typeof r.b === 'string' ? r.b.trim() : ''])
+        .filter(([k, b]) => k && b);
+      if (pairs.length) updated += runChunk(pairs);
+
+      await new Promise(r => setImmediate(r));
+    }
+    db.prepare('INSERT OR IGNORE INTO migration_flags (name) VALUES (?)').run(FLAG);
+  } catch (err) {
+    console.error('[BUILDER-BACKFILL] failed, will retry next boot:', err.message);
+    return updated;
+  }
+
+  console.log(`[BUILDER-BACKFILL] Set builder_name on ${updated} listings`);
+  return updated;
+}
+
 module.exports = {
   backfillStoriesFromLevels,
+  backfillBuilderNames,
   syncListings, refreshPhotos, syncClosedLeases, syncClosedSales,
   syncInvisibleActive, syncClosedResidential,
 };

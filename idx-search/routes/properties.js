@@ -93,7 +93,7 @@ const SEARCH_COLUMNS = [
   'days_on_market','listing_contract_date','close_date','close_price',
   'modification_timestamp','mlg_can_view','photos','photos_r2',
   'pool_features','waterfront_yn','new_construction_yn','stories','parking_total',
-  'association_fee','association_fee_frequency','tax_annual_amount'
+  'association_fee','association_fee_frequency','tax_annual_amount','builder_name'
 ].join(', ');
 
 // Return R2 URLs where available (direct Cloudflare edge), else fall back to local proxy

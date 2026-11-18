@@ -170,6 +170,19 @@ const migrations = [
   `ALTER TABLE listings ADD COLUMN previous_list_price REAL`,
   `ALTER TABLE listings ADD COLUMN price_change_timestamp TEXT`,
 
+  // Builder of record, straight from the feed. ACTRIS calls it "Builder Nm"
+  // in the agent UI and ships it as the RESO `BuilderName` field. On a new
+  // construction listing this is the single fact a buyer most wants, and
+  // downstream sites were reduced to inferring it from the listing office and
+  // the public remarks. ACTRIS fills it on about 93% of new-build listings.
+  //
+  // Nullable and dirty by nature: resale listings mostly leave it blank, the
+  // same builder appears under several spellings ("DR HORTON", "DR Horton"),
+  // and some agents type a placeholder such as "On File". Store it verbatim
+  // and let the consumer canonicalise, so we never lose the original string.
+  `ALTER TABLE listings ADD COLUMN builder_name TEXT`,
+  `CREATE INDEX IF NOT EXISTS idx_listings_builder ON listings(builder_name)`,
+
   // Per-(saved-search, listing) send log so we never notify the same client
   // about the same listing twice. Previously runAlertJob deduped by
   // modification_timestamp >= last_alerted_at at the SEARCH level - which

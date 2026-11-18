@@ -7,7 +7,7 @@ const cron = require('node-cron');
 const {
   syncListings, refreshPhotos,
   syncInvisibleActive, syncClosedResidential, backfillStoriesFromLevels,
-  syncClosedLeases, syncClosedSales,
+  syncClosedLeases, syncClosedSales, backfillBuilderNames,
 } = require('./sync/mlsSync');
 const photoBackfill = require('./sync/photoBackfill');
 const { runAlertJob, runFavoritePriceDropJob } = require('./services/alertJob');
@@ -356,6 +356,12 @@ setTimeout(() => {
 setTimeout(() => {
   backfillStoriesFromLevels().catch(err => console.error('[STORIES-BACKFILL]', err.message));
 }, 90_000);
+
+// One-time builder_name backfill out of raw_data. Local SQL only, no MLS
+// calls, so it is safe to run alongside a sync. No-op once the flag row is in.
+setTimeout(() => {
+  backfillBuilderNames().catch(err => console.error('[BUILDER-BACKFILL]', err.message));
+}, 45_000);
 
 // Photo backfill scheduling lives inside photoBackfill.js itself, triggered by the
 // post-sync hook in mlsSync.js. We discovered that setInterval/setTimeout/cron from
