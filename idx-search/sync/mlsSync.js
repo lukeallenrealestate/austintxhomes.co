@@ -815,104 +815,135 @@ async function backfillStoriesFromLevels() {
  * This needs no MLS calls at all. syncListings has never sent a `$select`, so
  * every row's raw_data already holds the full API record, BuilderName with it.
  * The field was there the whole time, just buried in a blob no query could
- * reach. So the backfill is pure local SQL and cannot hit the rate limiter.
+ * reach.
  *
- * Both halves are paged by rowid and yield to the event loop between pages,
- * which is the whole reason this is async. better-sqlite3 is synchronous, so
- * reading every raw_data blob in one statement blocks Node for over a minute
- * on this table, and a minute of blocked event loop is an outage as far as the
- * API is concerned. Paging by rowid keeps each slice of blocking work bounded
- * and advances monotonically, so a row updated in one page is never rescanned
- * in the next.
+ * The parsing is done in JavaScript rather than with json_extract on purpose.
+ * The SQL version wrote nothing on the deployed box and gave no reason why,
+ * and SQLite's JSON functions were the one dependency in it that could not be
+ * verified from outside. JSON.parse in a try/catch per row removes the
+ * question, isolates a malformed blob to the row it belongs to, and leaves the
+ * job depending on nothing but rowid paging.
+ *
+ * Paged and yielding between pages because better-sqlite3 is synchronous:
+ * reading every raw_data blob at once blocks Node for over a minute on this
+ * table, and a blocked event loop is an outage as far as the API is concerned.
+ * Pages are small because raw_data runs 5 to 50 KB a row and a page is held in
+ * memory all at once. Progress is durable, so a run cut short by a restart
+ * resumes instead of starting over.
  */
+const builderBackfill = { ran: 0, updated: 0, scanned: 0, skipped: 0, done: false, error: null };
+
 async function backfillBuilderNames() {
   const FLAG = 'builder_name_from_raw';
   try {
-    if (db.prepare('SELECT 1 FROM migration_flags WHERE name = ?').get(FLAG)) return 0;
-  } catch { return 0; }
+    if (db.prepare('SELECT 1 FROM migration_flags WHERE name = ?').get(FLAG)) {
+      builderBackfill.done = true;
+      return 0;
+    }
+  } catch (err) {
+    builderBackfill.error = `flag check: ${err.message}`;
+    return 0;
+  }
 
-  const PAGE = 400;
-  // json_extract returns NULL when the key is absent, so no LIKE prefilter is
-  // needed and the rowid index carries the paging.
-  //
-  // json_valid is not optional. json_extract RAISES on malformed JSON rather
-  // than returning null, and a single truncated raw_data blob anywhere in the
-  // table would throw for the whole page it lands in. Guarding here keeps one
-  // bad row from costing us the rows around it.
-  const read = db.prepare(`
-    SELECT rowid AS r, listing_key AS k, json_extract(raw_data, '$.BuilderName') AS b
-    FROM listings
-    WHERE rowid > ? AND builder_name IS NULL AND json_valid(raw_data)
-    ORDER BY rowid
-    LIMIT ${PAGE}
-  `);
-  // Where the next rowid is when a page fails outright, so a bad page costs us
-  // that page and not the rest of the table.
-  const nextRowid = db.prepare(
-    'SELECT rowid AS r FROM listings WHERE rowid > ? ORDER BY rowid LIMIT 1 OFFSET ?'
-  );
-  const update = db.prepare(
-    'UPDATE listings SET builder_name = ? WHERE listing_key = ? AND builder_name IS NULL'
-  );
-  const runChunk = db.transaction(rows => {
-    let n = 0;
-    for (const [key, name] of rows) n += update.run(name, key).changes;
-    return n;
-  });
+  builderBackfill.ran++;
+  const PAGE = 150;
+  let read;
+  let update;
+  let runChunk;
+  try {
+    read = db.prepare(
+      'SELECT rowid AS r, listing_key AS k, raw_data AS d FROM listings ' +
+      'WHERE rowid > ? AND builder_name IS NULL ORDER BY rowid LIMIT ' + PAGE
+    );
+    update = db.prepare(
+      'UPDATE listings SET builder_name = ? WHERE listing_key = ? AND builder_name IS NULL'
+    );
+    runChunk = db.transaction(rows => {
+      let n = 0;
+      for (const [key, name] of rows) n += update.run(name, key).changes;
+      return n;
+    });
+  } catch (err) {
+    // Statement preparation failing is exactly what hid the last failure: it
+    // happens before any try block the old version had.
+    builderBackfill.error = `prepare: ${err.message}`;
+    console.error('[BUILDER-BACKFILL] prepare failed:', err.message);
+    return 0;
+  }
 
   let updated = 0;
+  let scanned = 0;
+  let skipped = 0;
   let lastRowid = 0;
   let failedPages = 0;
+
   for (;;) {
     let rows;
     try {
       rows = read.all(lastRowid);
     } catch (err) {
-      // Step over the page and keep going. Aborting the run here is what made
-      // this silently do nothing in production: the same page failed on every
-      // boot, so nothing after it was ever reached.
       failedPages++;
-      const skip = nextRowid.get(lastRowid, PAGE - 1);
-      console.error(`[BUILDER-BACKFILL] page after rowid ${lastRowid} failed (${err.message}), skipping`);
-      if (!skip) break;
-      lastRowid = skip.r;
-      await new Promise(r => setImmediate(r));
-      continue;
+      builderBackfill.error = `read at rowid ${lastRowid}: ${err.message}`;
+      console.error(`[BUILDER-BACKFILL] read at rowid ${lastRowid} failed:`, err.message);
+      break;
     }
     if (!rows.length) break;
     lastRowid = rows[rows.length - 1].r;
+    scanned += rows.length;
 
-    const pairs = rows
-      .map(r => [r.k, typeof r.b === 'string' ? r.b.trim() : ''])
-      .filter(([k, b]) => k && b);
+    const pairs = [];
+    for (const r of rows) {
+      if (!r.k || typeof r.d !== 'string') continue;
+      let name;
+      try {
+        const v = JSON.parse(r.d).BuilderName;
+        name = typeof v === 'string' ? v.trim() : '';
+      } catch {
+        skipped++; // malformed blob: its own problem, not this page's
+        continue;
+      }
+      if (name) pairs.push([r.k, name]);
+    }
+
     if (pairs.length) {
       try {
         updated += runChunk(pairs);
       } catch (err) {
         failedPages++;
+        builderBackfill.error = `write at rowid ${lastRowid}: ${err.message}`;
         console.error(`[BUILDER-BACKFILL] write at rowid ${lastRowid} failed:`, err.message);
       }
     }
 
+    builderBackfill.updated = updated;
+    builderBackfill.scanned = scanned;
+    builderBackfill.skipped = skipped;
     await new Promise(r => setImmediate(r));
   }
 
   // Only call it done when nothing was skipped, so a partial run gets another
-  // pass next boot. Progress is durable either way: filled rows no longer match
-  // `builder_name IS NULL`, so a rerun resumes rather than repeating work.
+  // pass. Rows already filled no longer match `builder_name IS NULL`, so the
+  // next pass resumes rather than repeating work.
   if (!failedPages) {
-    try { db.prepare('INSERT OR IGNORE INTO migration_flags (name) VALUES (?)').run(FLAG); } catch {}
+    try {
+      db.prepare('INSERT OR IGNORE INTO migration_flags (name) VALUES (?)').run(FLAG);
+      builderBackfill.done = true;
+      builderBackfill.error = null;
+    } catch (err) {
+      builderBackfill.error = `flag write: ${err.message}`;
+    }
   }
   console.log(
-    `[BUILDER-BACKFILL] Set builder_name on ${updated} listings` +
-    (failedPages ? ` (${failedPages} page(s) skipped, will retry next boot)` : '')
+    `[BUILDER-BACKFILL] scanned ${scanned}, set builder_name on ${updated}` +
+    (skipped ? `, ${skipped} unparsable` : '') +
+    (failedPages ? ` (${failedPages} page(s) failed, will retry)` : '')
   );
   return updated;
 }
 
 module.exports = {
   backfillStoriesFromLevels,
-  backfillBuilderNames,
+  backfillBuilderNames, builderBackfill,
   syncListings, refreshPhotos, syncClosedLeases, syncClosedSales,
   syncInvisibleActive, syncClosedResidential,
 };

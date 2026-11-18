@@ -1568,7 +1568,17 @@ router.get('/sync-status', (req, res) => {
     const done = db.prepare(
       "SELECT 1 AS x FROM migration_flags WHERE name = 'builder_name_from_raw'"
     ).get();
-    builder = { new_construction: b.n, with_builder: b.filled, backfill_complete: !!done };
+    // The job's own view of itself, including why it stopped. Without this a
+    // failure is invisible outside the container's stdout, which is how the
+    // first version of this backfill managed to do nothing quietly.
+    let job = null;
+    try { job = require('../sync/mlsSync').builderBackfill ?? null; } catch (_) {}
+    builder = {
+      new_construction: b.n,
+      with_builder: b.filled,
+      backfill_complete: !!done,
+      job,
+    };
   } catch (err) {
     builder = { error: err.message };
   }
