@@ -1554,7 +1554,25 @@ router.get('/cash-flowing', async (req, res) => {
 router.get('/sync-status', (req, res) => {
   const state = db.prepare('SELECT * FROM sync_state WHERE id = 1').get();
   const count = db.prepare('SELECT COUNT(*) as total FROM listings WHERE mlg_can_view = 1').get();
-  res.json({ ...state, active_listings: count.total });
+  // builder_name coverage, so the one-time backfill out of raw_data can be
+  // watched from outside the box. Without this the job is invisible: it logs to
+  // stdout and nothing it does shows up in any response.
+  let builder = null;
+  try {
+    const b = db.prepare(`
+      SELECT COUNT(*) AS n,
+             SUM(CASE WHEN builder_name IS NOT NULL THEN 1 ELSE 0 END) AS filled
+      FROM listings WHERE mlg_can_view = 1 AND standard_status = 'Active'
+        AND (new_construction_yn = 1 OR year_built >= 2026)
+    `).get();
+    const done = db.prepare(
+      "SELECT 1 AS x FROM migration_flags WHERE name = 'builder_name_from_raw'"
+    ).get();
+    builder = { new_construction: b.n, with_builder: b.filled, backfill_complete: !!done };
+  } catch (err) {
+    builder = { error: err.message };
+  }
+  res.json({ ...state, active_listings: count.total, builder });
 });
 
 const r2Service = require('../services/r2');

@@ -834,13 +834,23 @@ async function backfillBuilderNames() {
   const PAGE = 400;
   // json_extract returns NULL when the key is absent, so no LIKE prefilter is
   // needed and the rowid index carries the paging.
+  //
+  // json_valid is not optional. json_extract RAISES on malformed JSON rather
+  // than returning null, and a single truncated raw_data blob anywhere in the
+  // table would throw for the whole page it lands in. Guarding here keeps one
+  // bad row from costing us the rows around it.
   const read = db.prepare(`
     SELECT rowid AS r, listing_key AS k, json_extract(raw_data, '$.BuilderName') AS b
     FROM listings
-    WHERE rowid > ? AND builder_name IS NULL
+    WHERE rowid > ? AND builder_name IS NULL AND json_valid(raw_data)
     ORDER BY rowid
     LIMIT ${PAGE}
   `);
+  // Where the next rowid is when a page fails outright, so a bad page costs us
+  // that page and not the rest of the table.
+  const nextRowid = db.prepare(
+    'SELECT rowid AS r FROM listings WHERE rowid > ? ORDER BY rowid LIMIT 1 OFFSET ?'
+  );
   const update = db.prepare(
     'UPDATE listings SET builder_name = ? WHERE listing_key = ? AND builder_name IS NULL'
   );
@@ -852,26 +862,51 @@ async function backfillBuilderNames() {
 
   let updated = 0;
   let lastRowid = 0;
-  try {
-    for (;;) {
-      const rows = read.all(lastRowid);
-      if (!rows.length) break;
-      lastRowid = rows[rows.length - 1].r;
-
-      const pairs = rows
-        .map(r => [r.k, typeof r.b === 'string' ? r.b.trim() : ''])
-        .filter(([k, b]) => k && b);
-      if (pairs.length) updated += runChunk(pairs);
-
+  let failedPages = 0;
+  for (;;) {
+    let rows;
+    try {
+      rows = read.all(lastRowid);
+    } catch (err) {
+      // Step over the page and keep going. Aborting the run here is what made
+      // this silently do nothing in production: the same page failed on every
+      // boot, so nothing after it was ever reached.
+      failedPages++;
+      const skip = nextRowid.get(lastRowid, PAGE - 1);
+      console.error(`[BUILDER-BACKFILL] page after rowid ${lastRowid} failed (${err.message}), skipping`);
+      if (!skip) break;
+      lastRowid = skip.r;
       await new Promise(r => setImmediate(r));
+      continue;
     }
-    db.prepare('INSERT OR IGNORE INTO migration_flags (name) VALUES (?)').run(FLAG);
-  } catch (err) {
-    console.error('[BUILDER-BACKFILL] failed, will retry next boot:', err.message);
-    return updated;
+    if (!rows.length) break;
+    lastRowid = rows[rows.length - 1].r;
+
+    const pairs = rows
+      .map(r => [r.k, typeof r.b === 'string' ? r.b.trim() : ''])
+      .filter(([k, b]) => k && b);
+    if (pairs.length) {
+      try {
+        updated += runChunk(pairs);
+      } catch (err) {
+        failedPages++;
+        console.error(`[BUILDER-BACKFILL] write at rowid ${lastRowid} failed:`, err.message);
+      }
+    }
+
+    await new Promise(r => setImmediate(r));
   }
 
-  console.log(`[BUILDER-BACKFILL] Set builder_name on ${updated} listings`);
+  // Only call it done when nothing was skipped, so a partial run gets another
+  // pass next boot. Progress is durable either way: filled rows no longer match
+  // `builder_name IS NULL`, so a rerun resumes rather than repeating work.
+  if (!failedPages) {
+    try { db.prepare('INSERT OR IGNORE INTO migration_flags (name) VALUES (?)').run(FLAG); } catch {}
+  }
+  console.log(
+    `[BUILDER-BACKFILL] Set builder_name on ${updated} listings` +
+    (failedPages ? ` (${failedPages} page(s) skipped, will retry next boot)` : '')
+  );
   return updated;
 }
 

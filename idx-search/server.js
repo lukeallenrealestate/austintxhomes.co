@@ -358,10 +358,18 @@ setTimeout(() => {
 }, 90_000);
 
 // One-time builder_name backfill out of raw_data. Local SQL only, no MLS
-// calls, so it is safe to run alongside a sync. No-op once the flag row is in.
-setTimeout(() => {
+// calls, so it is safe to run alongside a sync.
+//
+// Retried on an interval rather than run once, because "once" is not something
+// this box can promise. The process restarts often enough that a single timer
+// can be missed entirely, and a run that skips a page deliberately leaves
+// itself unfinished. Each call costs one indexed lookup on migration_flags
+// after the job is done, and progress is durable, so a later pass resumes
+// where the last one stopped instead of repeating it.
+const _runBuilderBackfill = () =>
   backfillBuilderNames().catch(err => console.error('[BUILDER-BACKFILL]', err.message));
-}, 45_000);
+setTimeout(_runBuilderBackfill, 45_000);
+setInterval(_runBuilderBackfill, 10 * 60_000);
 
 // Photo backfill scheduling lives inside photoBackfill.js itself, triggered by the
 // post-sync hook in mlsSync.js. We discovered that setInterval/setTimeout/cron from
