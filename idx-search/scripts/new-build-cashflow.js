@@ -8,11 +8,12 @@ const args = Object.fromEntries(process.argv.slice(2).reduce((acc, a, i, arr) =>
 }, []));
 
 (async () => {
-  const { scanNewBuildCashFlow } = require('../services/newBuildCashFlow');
+  const { scanAndVerify } = require('../services/newBuildCashFlow');
   const ratePct = args.rate ? Number(args.rate) : await require('../routes/properties').fetchLiveMortgageRate();
-  const out = scanNewBuildCashFlow({ ratePct, yearBuilt: args.year ? Number(args.year) : undefined });
+  const out = await scanAndVerify({ ratePct, yearBuilt: args.year ? Number(args.year) : undefined });
   const $ = n => n == null ? '' : '$' + Math.round(n).toLocaleString();
   console.log(`Rate ${ratePct}% | scanned ${out.totals.newBuildsScanned} new builds | ${out.totals.withEnoughComps} with 3+ comps | ${out.totals.cashFlowing} cash flow | lease pool ${out.totals.leasePool}`);
+  if (out.liveCheck) console.log('Live MLS check:', JSON.stringify(out.liveCheck));
   for (const r of out.cashFlowing) {
     console.log(`${r.address} | ${r.type} ${r.beds}bd ${r.sqft || '?'}sf | ${$(r.listPrice)} | pay ${$(r.monthly.total)} (PI ${$(r.monthly.principalInterest)} tax ${$(r.monthly.tax)} @${r.taxRate.pct}% hoa ${$(r.monthly.hoa)}) | median rent ${$(r.comps.medianRent)} of ${r.comps.count} | +${$(r.marginAtMedian)} | after ins ${$(r.marginAfterInsurance)} | investor rate ${$(r.marginAtInvestorRate)}`);
   }

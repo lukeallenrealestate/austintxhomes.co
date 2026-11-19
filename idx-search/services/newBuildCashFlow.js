@@ -174,7 +174,11 @@ function scanNewBuildCashFlow(opts = {}) {
       AND year_built = ?
       AND list_price > 50000
       AND latitude IS NOT NULL AND longitude IS NOT NULL
-  `).all(o.yearBuilt).filter(s => homeGroup(s.property_sub_type));
+  `).all(o.yearBuilt)
+    .filter(s => homeGroup(s.property_sub_type))
+    .filter(s => !(o.excludeKeys && o.excludeKeys.has(s.listing_key)))
+    .map(s => (o.priceOverrides && o.priceOverrides.has(s.listing_key))
+      ? { ...s, list_price: o.priceOverrides.get(s.listing_key) } : s);
 
   const cutoff = new Date(Date.now() - o.leaseLookbackDays * 864e5).toISOString();
   const leases = db.prepare(`
@@ -306,4 +310,53 @@ function scanNewBuildCashFlow(opts = {}) {
   };
 }
 
-module.exports = { scanNewBuildCashFlow, DEFAULTS };
+/**
+ * Scan, then confirm every passing home against the live MLS Grid feed
+ * before anyone sees it. Our table can hold rows that left the market
+ * without an update reaching us (seen on a stale local copy: sold homes
+ * still marked Active). A home is reported only if MLS Grid says it is
+ * Active right now; if the live price differs, the home is re-scored at
+ * the live price. Without an MLS token the check is skipped and flagged.
+ */
+async function scanAndVerify(opts = {}) {
+  const first = scanNewBuildCashFlow(opts);
+  const mls = require('../sync/mlsSync');
+  if (!process.env.MLSGRID_ACCESS_TOKEN) {
+    first.liveCheck = 'skipped: no MLS token';
+    return first;
+  }
+  const excludeKeys = new Set();
+  const priceOverrides = new Map();
+  const removed = [];
+  for (const r of first.cashFlowing) {
+    if (!r.mlsNumber) continue;
+    const filter = encodeURIComponent(`OriginatingSystemName eq '${mls.SYSTEM}' and ListingId eq '${r.mlsNumber}'`);
+    let live = null;
+    try {
+      const data = await mls.fetchPage(`${mls.BASE_URL}/Property?$filter=${filter}&$select=ListingKey,StandardStatus,MlgCanView,ListPrice`);
+      live = (data.value || [])[0] || null;
+    } catch (err) {
+      // Can't confirm it, so don't report it.
+      removed.push({ address: r.address, mlsNumber: r.mlsNumber, reason: `live check failed: ${err.message}` });
+      excludeKeys.add(r.listingKey);
+      continue;
+    }
+    if (!live || live.StandardStatus !== 'Active') {
+      removed.push({ address: r.address, mlsNumber: r.mlsNumber, reason: live ? `now ${live.StandardStatus}` : 'no longer in the MLS feed' });
+      excludeKeys.add(r.listingKey);
+    } else if (live.ListPrice && live.ListPrice !== r.listPrice) {
+      priceOverrides.set(r.listingKey, live.ListPrice);
+    }
+  }
+  const out = (excludeKeys.size || priceOverrides.size)
+    ? scanNewBuildCashFlow({ ...opts, excludeKeys, priceOverrides })
+    : first;
+  out.liveCheck = {
+    checked: first.cashFlowing.length,
+    removedNotActive: removed,
+    repricedFromLive: priceOverrides.size,
+  };
+  return out;
+}
+
+module.exports = { scanNewBuildCashFlow, scanAndVerify, DEFAULTS };

@@ -726,11 +726,11 @@ router.get('/listing/:key', (req, res) => {
  */
 router.get('/deals/new-build-cashflow', async (req, res) => {
   try {
-    const { scanNewBuildCashFlow } = require('../services/newBuildCashFlow');
+    const { scanAndVerify } = require('../services/newBuildCashFlow');
     const q = req.query;
     const num = (v, lo, hi) => { const n = parseFloat(v); return n >= lo && n <= hi ? n : undefined; };
     const ratePct = num(q.rate, 1, 20) ?? await require('./properties').fetchLiveMortgageRate();
-    const out = scanNewBuildCashFlow({
+    const out = await scanAndVerify({
       ratePct,
       yearBuilt: num(q.year, 2000, 2100),
       radiusMi: num(q.radius, 0.1, 5),

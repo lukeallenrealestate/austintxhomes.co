@@ -953,6 +953,7 @@ async function backfillBuilderNames() {
 }
 
 module.exports = {
+  fetchPage, BASE_URL, SYSTEM,
   backfillStoriesFromLevels,
   backfillBuilderNames, builderBackfill,
   syncListings, refreshPhotos, syncClosedLeases, syncClosedSales,

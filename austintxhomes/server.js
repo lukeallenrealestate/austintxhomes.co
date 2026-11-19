@@ -375,10 +375,10 @@ setInterval(checkMarketPulse, 20 * 60 * 1000);
 // demand: GET /api/internal/deals/new-build-cashflow (internal key).
 async function emailNewBuildCashFlow() {
   if (!process.env.EMAIL_USER) return;
-  const { scanNewBuildCashFlow } = require('../idx-search/services/newBuildCashFlow');
+  const { scanAndVerify } = require('../idx-search/services/newBuildCashFlow');
   const { fetchLiveMortgageRate } = require('../idx-search/routes/properties');
   const ratePct = await fetchLiveMortgageRate();
-  const out = scanNewBuildCashFlow({ ratePct });
+  const out = await scanAndVerify({ ratePct });
   const a = out.assumptions, t = out.totals;
   const $ = n => (n < 0 ? '-$' : '$') + Math.abs(Math.round(n)).toLocaleString();
   const esc = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -393,7 +393,7 @@ async function emailNewBuildCashFlow() {
   const html = `<div style="font-family:sans-serif;font-size:14px;color:#222">
     <h2 style="margin:0 0 8px">${t.cashFlowing} new builds cash flow this week</h2>
     <p>Scanned ${t.newBuildsScanned.toLocaleString()} active homes built in ${a.yearBuilt}. ${t.withEnoughComps} had at least ${a.minComps} closed leases within ${a.radiusMi} mi (same bedrooms, same home type). A home passes when the median of those leases beats principal + interest + tax + HOA at ${Math.round(a.downPct * 100)}% down, ${a.termYears}-year fixed at ${a.ratePct}% (Mortgage News Daily).</p>
-    <p style="color:#777;font-size:12px">Rent = final price on closed MLS leases from the last 12 months (ACTRIS does not send a separate lease close price). Tax = upper-quartile effective rate for the ZIP from our MLS tax data, applied to the list price. "After ins." subtracts ${(a.insuranceRate * 100).toFixed(1)}% of price per year for insurance. The second line reruns the loan at an investor rate of ${a.investorRatePct.toFixed(2)}%. Vacancy, repairs and management are not included.</p>
+    <p style="color:#777;font-size:12px">Every home below was confirmed Active in the live MLS feed when this email was built${out.liveCheck && out.liveCheck.removedNotActive ? ` (${out.liveCheck.removedNotActive.length} dropped as no longer active)` : ''}. Rent = final price on closed MLS leases from the last 12 months (ACTRIS does not send a separate lease close price). Tax = upper-quartile effective rate for the ZIP from our MLS tax data, applied to the list price. "After ins." subtracts ${(a.insuranceRate * 100).toFixed(1)}% of price per year for insurance. The second line reruns the loan at an investor rate of ${a.investorRatePct.toFixed(2)}%. Vacancy, repairs and management are not included.</p>
     ${rows ? `<table style="width:100%;border-collapse:collapse;font-size:13px"><tr style="text-align:left;color:#777"><th style="padding:6px 8px">Home</th><th style="padding:6px 8px">Price</th><th style="padding:6px 8px">Monthly cost</th><th style="padding:6px 8px">Median lease</th><th style="padding:6px 8px">Margin</th></tr>${rows}</table>` : '<p>None passed this week.</p>'}
   </div>`;
   await emailTransport().sendMail({
