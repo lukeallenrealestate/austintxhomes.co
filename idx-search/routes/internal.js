@@ -717,6 +717,33 @@ router.get('/listing/:key', (req, res) => {
 });
 
 /* ─── /api/internal/health — simple health + coverage check ────────────── */
+/**
+ * GET /api/internal/deals/new-build-cashflow
+ * Active new construction (default built 2026) whose half-mile closed-lease
+ * comps beat the monthly payment at 25% down. See services/newBuildCashFlow.js.
+ * Query: rate (30yr %, default live), year, radius, down (0.25), all=1 to
+ * include homes that fail or lack comps.
+ */
+router.get('/deals/new-build-cashflow', async (req, res) => {
+  try {
+    const { scanNewBuildCashFlow } = require('../services/newBuildCashFlow');
+    const q = req.query;
+    const num = (v, lo, hi) => { const n = parseFloat(v); return n >= lo && n <= hi ? n : undefined; };
+    const ratePct = num(q.rate, 1, 20) ?? await require('./properties').fetchLiveMortgageRate();
+    const out = scanNewBuildCashFlow({
+      ratePct,
+      yearBuilt: num(q.year, 2000, 2100),
+      radiusMi: num(q.radius, 0.1, 5),
+      downPct: num(q.down, 0, 1),
+    });
+    if (q.all !== '1') delete out.all;
+    res.json(out);
+  } catch (err) {
+    console.error('[NEW-BUILD-CF]', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get('/health', (_req, res) => {
   const total = db.prepare(`SELECT COUNT(*) AS n FROM listings`).get().n;
   const active = db.prepare(`SELECT COUNT(*) AS n FROM listings WHERE standard_status = 'Active'`).get().n;

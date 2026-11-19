@@ -369,6 +369,45 @@ function checkMarketPulse() {
 setTimeout(checkMarketPulse, 4 * 60 * 1000);
 setInterval(checkMarketPulse, 20 * 60 * 1000);
 
+// Weekly new-construction cash-flow scan, emailed to Luke Monday 7:30am CST
+// (13:30 UTC). Built-in-2026 homes vs closed MLS leases within half a mile,
+// 25% down. Logic: idx-search/services/newBuildCashFlow.js. Same data on
+// demand: GET /api/internal/deals/new-build-cashflow (internal key).
+async function emailNewBuildCashFlow() {
+  if (!process.env.EMAIL_USER) return;
+  const { scanNewBuildCashFlow } = require('../idx-search/services/newBuildCashFlow');
+  const { fetchLiveMortgageRate } = require('../idx-search/routes/properties');
+  const ratePct = await fetchLiveMortgageRate();
+  const out = scanNewBuildCashFlow({ ratePct });
+  const a = out.assumptions, t = out.totals;
+  const $ = n => (n < 0 ? '-$' : '$') + Math.abs(Math.round(n)).toLocaleString();
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const rows = out.cashFlowing.map(r => `
+    <tr>
+      <td style="padding:10px 8px;border-bottom:1px solid #eee"><a href="https://austintxhomes.co/homes/${encodeURIComponent(r.listingKey)}">${esc(r.address)}</a><br><span style="color:#777">${esc(r.city)} ${esc(r.zip)} · ${esc(r.subdivision || '')}</span></td>
+      <td style="padding:10px 8px;border-bottom:1px solid #eee">${$(r.listPrice)}<br><span style="color:#777">${r.beds}bd · ${r.sqft ? r.sqft.toLocaleString() + ' sf' : ''}</span></td>
+      <td style="padding:10px 8px;border-bottom:1px solid #eee">${$(r.monthly.total)}<br><span style="color:#777">P&amp;I ${$(r.monthly.principalInterest)} · tax ${$(r.monthly.tax)} · HOA ${$(r.monthly.hoa)}</span></td>
+      <td style="padding:10px 8px;border-bottom:1px solid #eee">${$(r.comps.medianRent)}<br><span style="color:#777">${r.comps.count} leases, ${$(r.comps.lowRent)} to ${$(r.comps.highRent)}</span></td>
+      <td style="padding:10px 8px;border-bottom:1px solid #eee;color:#2a7a2a;font-weight:600">+${$(r.marginAtMedian)}<br><span style="font-weight:400;color:${r.marginAfterInsurance >= 0 ? '#2a7a2a' : '#b23'}">after ins. ${$(r.marginAfterInsurance)}</span><br><span style="font-weight:400;color:${r.marginAtInvestorRate >= 0 ? '#2a7a2a' : '#b23'}">at ${a.investorRatePct.toFixed(2)}% ${$(r.marginAtInvestorRate)}</span></td>
+    </tr>`).join('');
+  const html = `<div style="font-family:sans-serif;font-size:14px;color:#222">
+    <h2 style="margin:0 0 8px">${t.cashFlowing} new builds cash flow this week</h2>
+    <p>Scanned ${t.newBuildsScanned.toLocaleString()} active homes built in ${a.yearBuilt}. ${t.withEnoughComps} had at least ${a.minComps} closed leases within ${a.radiusMi} mi (same bedrooms, same home type). A home passes when the median of those leases beats principal + interest + tax + HOA at ${Math.round(a.downPct * 100)}% down, ${a.termYears}-year fixed at ${a.ratePct}% (Mortgage News Daily).</p>
+    <p style="color:#777;font-size:12px">Rent = final price on closed MLS leases from the last 12 months (ACTRIS does not send a separate lease close price). Tax = upper-quartile effective rate for the ZIP from our MLS tax data, applied to the list price. "After ins." subtracts ${(a.insuranceRate * 100).toFixed(1)}% of price per year for insurance. The second line reruns the loan at an investor rate of ${a.investorRatePct.toFixed(2)}%. Vacancy, repairs and management are not included.</p>
+    ${rows ? `<table style="width:100%;border-collapse:collapse;font-size:13px"><tr style="text-align:left;color:#777"><th style="padding:6px 8px">Home</th><th style="padding:6px 8px">Price</th><th style="padding:6px 8px">Monthly cost</th><th style="padding:6px 8px">Median lease</th><th style="padding:6px 8px">Margin</th></tr>${rows}</table>` : '<p>None passed this week.</p>'}
+  </div>`;
+  await emailTransport().sendMail({
+    from: `"Austin TX Homes" <${process.env.EMAIL_USER}>`,
+    to: 'Luke@austinmdg.com',
+    subject: `New-build cash flow: ${t.cashFlowing} of ${t.withEnoughComps} homes pass at ${a.ratePct}%`,
+    html,
+  });
+  console.log(`[NewBuildCF] emailed: ${t.cashFlowing} cash flowing of ${t.withEnoughComps} with comps`);
+}
+cron.schedule('30 13 * * 1', () => {
+  emailNewBuildCashFlow().catch(e => console.error('[NewBuildCF] failed:', e.message));
+});
+
 // Daily cash flow alert — 8:30am CDT (13:30 UTC)
 cron.schedule('30 13 * * *', async () => {
   const subs = loadCashFlowSubs();

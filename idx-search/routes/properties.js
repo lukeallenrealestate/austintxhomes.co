@@ -1779,6 +1779,8 @@ function tryParse(str, fallback) {
 // breaking the express-router contract — extra properties on a router are ignored.
 router.refreshListingPhotos = refreshListingPhotos;
 module.exports = router;
+// Shared with the internal new-build cash-flow scan (routes/internal.js).
+module.exports.fetchLiveMortgageRate = fetchLiveMortgageRate;
 
 // ─── Builder inventory ────────────────────────────────────────────
 // Dedicated endpoint for the builder-filtered new construction pages
